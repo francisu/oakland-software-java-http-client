@@ -11,7 +11,7 @@
       <fileset dir="${basedir}/../com.oaklandsw.${package.name}.jars">
         <include name="*.jar" />
       </fileset>
-	  <dirset dir="${basedir}/../com.oaklandsw.util/bin"/>
+  	  <dirset dir="${basedir}/../com.oaklandsw.util/bin"/>
     </path>
 
   </target>
