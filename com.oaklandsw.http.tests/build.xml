@@ -1,0 +1,29 @@
+<project default="package-java" basedir=".">
+
+  <import file="../com.oaklandsw.build/build.common.xml"/>
+
+  <!-- =================================================================== -->
+  <!-- Initialization target                                               -->
+  <!-- =================================================================== -->
+  <target name="init" depends="common-init">
+
+  	<path id="compile.classpath">
+      <fileset dir="${basedir}/../com.oaklandsw.http.jars">
+        <include name="*.jar" />
+      </fileset>
+      <fileset dir="${basedir}/../com.oaklandsw.http.tests.jars">
+        <include name="*.jar" />
+      </fileset>
+    	  <fileset file="../com.oaklandsw.build/junit.jar"/>	
+   	  <dirset dir="${basedir}/../com.oaklandsw.http/bin"/>
+     	  <dirset dir="${basedir}/../com.oaklandsw.util/bin"/>
+     	  <dirset dir="${basedir}/../com.oaklandsw.build/bin"/>
+    </path>
+
+  </target>
+
+	<!-- we don't use this one -->
+	<target name="package-java" depends="compile-java"/>
+	<target name="create-versions"/>
+
+</project>

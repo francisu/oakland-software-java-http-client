@@ -1,0 +1,13 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Tests Plug-in
+Bundle-SymbolicName: com.oaklandsw.http.tests
+Bundle-Version: 1.0.0
+Bundle-Vendor: OAKLANDSW
+Bundle-Localization: plugin
+Require-Bundle: com.oaklandsw.http,
+ com.oaklandsw.util,
+ com.oaklandsw.util.tests,
+ org.junit,
+ com.oaklandsw.http.tests.jars,
+ com.oaklandsw.build
