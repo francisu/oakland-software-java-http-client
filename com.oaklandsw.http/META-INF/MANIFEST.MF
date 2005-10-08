@@ -1,0 +1,12 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Http Plug-in
+Bundle-SymbolicName: com.oaklandsw.http
+Bundle-Version: 1.0.0
+Bundle-Vendor: OAKLANDSW
+Bundle-Localization: plugin
+Require-Bundle: com.oaklandsw.util,
+ com.oaklandsw.http.jars
+Export-Package: com.oaklandsw.http,
+ com.oaklandsw.http.ntlm;x-friends:="com.oaklandsw.http.tests",
+ com.oaklandsw.https

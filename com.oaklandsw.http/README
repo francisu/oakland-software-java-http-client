@@ -1,0 +1,249 @@
+Copyright 2002-2005 oakland software incorporated, all rights reserved.
+
+Readme file for oakland software HTTP client support.
+
+HTTP client version @HttpVersion@
+
+See http://www.oaklandsoftware.com/support.html for current known problems.
+
+
+
+Fixed in this version
+-----------------------------------------------
+1043 NPE when using an Applet with SSL
+1045 HostnameVerifier is obfuscated
+
+Installation Instructions
+------------------------------------------------
+
+
+The distribution has the following jar files you will need to include in your
+CLASSPATH:
+
+http.jar - The HTTP Client protocol support.
+
+This software has no dependencies on other software, except if you are
+using NTLM support, see step 1 and 2 below.  
+
+
+
+This requires JRE 1.2.2 (or higher)
+
+
+There is a sample program at:
+
+   http://www.oaklandsoftware.com/HttpGetSample.java        
+
+
+To use the HTTP client support:
+
+*** NOTE - if you are using https (SSL) connections and you are
+    getting exceptions when trying to connect, this may be caused by
+    an expired root CA associated with your JRE.  Please see:
+
+    http://sunsolve.sun.com/search/document.do?assetkey=1-26-57436-1
+
+    For how to correct the problem.
+
+
+1) If you are using NTLM support, make sure you have a DES cipher
+   and MD4 digest algorithms available.  You can get the DES/MD4
+   from www.bouncycastle.org.
+
+   The recommended Bouncy Castle JAR files are:
+
+      JRE 1.4 - bcprov-jdk14-120
+      JRE 1.3 - jce-jdk13-120
+      JRE 1.2 - jce-jdk12-120
+
+   You may use higher versions of the Bouncy Castle libraries if
+   they are available.
+
+        // DES/MD4 Crypto algorithms - needed for NTLM
+        // This line shows how to hook up the Bouncy Castle Providers
+        // If you prefer another provider for your crypto algorithms,
+        // then replace this with adding your preferred provider.
+        Security.addProvider
+            (new org.bouncycastle.jce.provider.BouncyCastleProvider());
+
+
+2) Make sure you have the JSSE jar files if you are not using JDK 1.4
+   or higher.  Here is the code you must include if you are JDK 1.2 or
+   1.3:
+
+        // SSL - Uncomment this if you are < JDK 1.4
+        Security.addProvider(new com.sun.net.ssl.internal.ssl.Provider());
+
+
+3) To enable the HTTP support (you must do this before you open
+   the first URL connection):
+
+        System.setProperty("java.protocol.handler.pkgs", "com.oaklandsw");
+
+   Alternatively, you can use these other methods to explicitly specify
+   the use of this HTTP client:
+   
+   a) Explicitly specify the Handler objects:
+
+      // HTTP
+      URL url = new URL("http", "host", 9999, "file", new com.oaklandsw.http.Handler());
+      // HTTPS
+      URL url = new URL("https", "host", 9999, "file", new com.oaklandsw.https.Handler());
+
+   b) Use a URLStreamHandlerFactory:
+
+            URL.setURLStreamHandlerFactory(new URLStreamHandlerFactory()
+            {
+                public URLStreamHandler createURLStreamHandler(String protocol)
+                {
+                    if (protocol.equalsIgnoreCase("http"))
+                        return new com.oaklandsw.http.Handler();
+                    else if (protocol.equalsIgnoreCase("https"))
+                        return new com.oaklandsw.https.Handler();
+                    return null;
+                }
+
+            });
+
+       However, if the URLStreamHandlerFactory was previously set (by 
+       something else), it will give you an error.  In that case, you must
+       use method a (explicitly specifying the handlers).
+
+
+4) You will need to make a class implement the HttpUserAgent
+   interface (see the javadoc for details, and sample below).  This
+   class is called when necessary to get the NTLM or basic
+   credentials.
+
+   Set the object using this code:
+
+        // Before creating the first connection
+        com.oaklandsw.http.HttpURLConnection.
+           setDefaultUserAgent(new YourHttpUserAgent());
+
+        -- or --   
+
+        // If you set the user agent for a specific connection 
+        HttpURLConnection urlCon = 
+           (HttpURLConnection)url.openConnection();
+        ((com.oaklandsw.http.HttpUrlConnection)urlCon).
+           setUserAgent(new YourHttpUserAgent());
+
+
+
+5) The tracing is using either log4j or JDK 1.4 logging.
+   If log4j is not present, the JDK1.4 tracing will be used.  If
+   that's not present, no tracing will occur.
+
+   log4j tracing  (see log4j.properties.sample)
+   -----------------------------------------------------------
+
+.  Use all of these statements in the log4j.properties file 
+   (which can be found in the current directory, or in the CLASSPATH).
+
+   To trace the events on the wire do this:
+
+      log4j.logger.com.oaklandsw.http.wireLog=DEBUG
+
+   If you don't want to see any messages at all:
+
+      log4j.logger.com.oaklandsw=OFF
+
+   If you want to see everything:
+
+      log4j.logger.com.oaklandsw=DEBUG
+
+   In general, you can turn tracing on for any class in the HTTP
+   client.
+
+      log4j.logger.com.oaklandsw.http.HttpConnectionManager=DEBUG
+
+
+
+   JDK 1.4 tracing  (see jdk14.logging.sample)
+   -----------------------------------------------------------
+
+   Set the logging configuration file as follows:
+
+      java -Djava.util.logging.config.file=mylogging.properties 
+
+   If you don't set the configuration file, the default file is
+   located at your JRE/lib directory and is called
+   logging.properties. 
+
+   To trace the events on the wire do this:
+
+      com.oaklandsw.http.wireLog.level = ALL
+
+   If you don't want to see any messages at all:
+
+      com.oaklandsw.level = OFF
+
+   If you want to see everything:
+
+      com.oaklandsw.level = ALL
+
+   In general, you can turn tracing on for any class in the HTTP
+   client.
+
+      com.oaklandsw.http.HttpConnectionManager.level = ALL
+
+
+
+
+
+----------------------------------------------------
+Below is a sample implementation of the HttpUserAgent interface
+
+
+package com.oaklandsw.http.webapp;
+
+import java.util.*;
+
+import com.oaklandsw.http.*;
+
+
+public class TestUserAgent implements HttpUserAgent
+{
+
+    public Credential getCredential(String realm,
+                                    String url,
+                                    int scheme)
+    {
+
+        Credential cred = null;
+
+        switch (scheme)
+        {
+        case Credential.AUTH_NTLM:
+            NtlmCredential ntlmCred = new NtlmCredential();
+            ntlmCred.setUser("testuser");
+            ntlmCred.setPassword("testpass");
+            ntlmCred.setDomain("testdomain");
+            ntlmCred.setHost("testhost");
+            cred = ntlmCred;
+            break;
+
+        case Credential.AUTH_BASIC:
+            UserCredential basicCred = new UserCredential();
+            basicCred.setUser("testuser");
+            basicCred.setPassword("testpass");
+            cred = basicCred;
+            break;
+        case Credential.AUTH_DIGEST:
+            break;
+        }
+
+        return cred;
+    }
+
+
+    public Credential getProxyCredential(String realm,
+                                    String url,
+                                    int scheme)
+    {
+        // As above
+    }
+}
+
+

@@ -1,0 +1,67 @@
+# All text in a line following '#' is treated as a comment, and is ignored.
+
+
+# Public documented classes - keep class names and all public methods
+
+.class com/oaklandsw/http/Credential public
+.class com/oaklandsw/http/Handler public
+.class com/oaklandsw/https/Handler public
+.class com/oaklandsw/http/HostnameVerifier public
+.class com/oaklandsw/http/HttpConnectionManager public
+.class com/oaklandsw/http/HttpException public
+.class com/oaklandsw/http/HttpTimeoutException public
+.class com/oaklandsw/http/HttpURLConnection public
+.class com/oaklandsw/http/HttpUserAgent public
+.class com/oaklandsw/http/NtlmCredential public
+.class com/oaklandsw/http/URIException public
+.class com/oaklandsw/http/UserCredential public
+
+
+#.class javax/*
+
+
+#
+# Used internally by logging
+#
+.class com/oaklandsw/log/LogFactoryImpl
+.class com/oaklandsw/log/NoOpLog
+.class com/oaklandsw/log/StdoutLog
+
+#
+# Used only for .class - need to preserve the class name only
+# 
+.class com/oaklandsw/http/Authenticator
+.class com/oaklandsw/http/AutoCloseInputStream
+.class com/oaklandsw/http/ChunkedInputStream
+.class com/oaklandsw/http/ContentLengthInputStream
+.class com/oaklandsw/http/Headers
+.class com/oaklandsw/http/HttpConnection
+.class com/oaklandsw/http/HttpConnectionManager
+.class com/oaklandsw/http/HttpConnectionTimeout
+.class com/oaklandsw/http/HttpStatus
+.class com/oaklandsw/http/HttpURLConnectInternal
+.class com/oaklandsw/http/ReleaseInputStream
+.class com/oaklandsw/http/RequestOutputStream
+.class com/oaklandsw/http/ntlm/* 
+.class com/oaklandsw/util/*
+.class com/oaklandsw/dns/*
+
+#
+# Classes used by tests
+#
+.class com/oaklandsw/http/URIUtil public
+.class com/oaklandsw/util/Util public
+.class com/oaklandsw/util/NetUtils public
+.class com/oaklandsw/log/Log public
+.class com/oaklandsw/log/LogFactory public
+
+.method com/oaklandsw/http/HttpConnectionManager/getActiveConnectionCount (Ljava/lang/String;)I
+.method com/oaklandsw/http/HttpConnectionManager/getTotalConnectionCount (Ljava/lang/String;)I
+.method com/oaklandsw/http/HttpConnectionManager/getConnection (Ljava/lang/String;)Lcom/oaklandsw/http/HttpConnection;
+.method com/oaklandsw/http/HttpConnectionManager/releaseConnection (Lcom/oaklandsw/http/HttpConnection;)V
+.method com/oaklandsw/http/HttpConnection/open ()V
+.method com/oaklandsw/http/HttpConnection/close ()V
+
+
+
+

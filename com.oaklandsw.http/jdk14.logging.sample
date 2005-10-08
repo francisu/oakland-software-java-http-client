@@ -1,0 +1,38 @@
+# Specify the handlers to create in the root logger
+# (all loggers are children of the root logger)
+# The following creates two handlers
+handlers = java.util.logging.ConsoleHandler
+    
+# Set the default logging level for the root logger
+.level = ALL
+    
+# Set the default logging level for new ConsoleHandler instances
+java.util.logging.ConsoleHandler.level = ALL
+    
+# Set the default formatter for new ConsoleHandler instances
+java.util.logging.ConsoleHandler.formatter = java.util.logging.SimpleFormatter
+    
+
+
+# All HTTP client logging (SEVERE turns off tracing)
+#com.nogoop.http.level = ALL
+com.nogoop.http.level = SEVERE
+
+# Wire tracing
+#com.nogoop.http.wireLog.level = ALL
+
+# Per-class logging
+#com.nogoop.http.ContentLengthInputStream.level = ALL
+#com.nogoop.http.ChunkedInputStream.level = ALL
+#com.nogoop.http.Headers.level = ALL
+#com.nogoop.http.HttpConnection.level = ALL
+#com.nogoop.http.HttpConnectionManager.level = ALL
+#com.nogoop.http.HttpURLConnection.level = ALL
+#com.nogoop.http.HttpURLConnection.level = INFO
+#com.nogoop.http.HttpURLConnectInternal.level = WARN
+#com.nogoop.http.HttpURLConnectInternal.level = ALL
+#com.nogoop.http.Authenticator.level = ALL
+
+
+
+

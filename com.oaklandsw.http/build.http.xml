@@ -1,0 +1,111 @@
+<project default="http" basedir=".">
+
+
+  <!-- =================================================================== -->
+  <!-- Initialization target                                               -->
+  <!-- =================================================================== -->
+  <target name="init">
+    <tstamp/>
+
+    <property name="src.dir" value="./src"/>
+    <property name="classes.dir" value="./classes"/>
+    <property name="outdocs.dir" value="./outdocs"/>
+    <property name="javadocs.dir" value="./javadocs"/>
+
+    <property name="java.src.dir" value="${src.dir}/java"/>
+
+    <property name="classes.prod.dir" value="${classes.dir}/"/>
+
+    <property name="jar.http.name" value="http"/>
+    <property name="java.http.name" value="oakland software HTTP Client"/>
+    <property name="java.http.shortname" value="http"/>
+    <property name="javadoc.packages" value="com.oaklandsw.util.*,com.oaklandsw.http.*"/>
+
+    <property name="java.target" value="1.2"/>
+    <property name="debug" value="on"/>
+    <property name="optimize" value="off"/>
+    <property name="deprecation" value="off"/>
+
+  </target>
+
+  <!-- =================================================================== -->
+  <!-- short target names                                                  -->
+  <!-- =================================================================== -->
+  <target name="http" depends="package-java, javadocs">
+  </target>
+
+
+  <!-- =================================================================== -->
+  <!-- prepare java source dirs                                            -->
+  <!-- =================================================================== -->
+  <target name="prepare-src" depends="init">
+    <mkdir dir="${classes.dir}"/>
+  </target>
+
+
+  <!-- =================================================================== -->
+  <!-- Java compile                                                        -->
+  <!-- =================================================================== -->
+  <target name="compile-java" depends="prepare-src">
+    <javac srcdir="${java.src.dir}"
+    	   excludes="${java.excludes}"
+           destdir="${classes.dir}"
+           target="${java.target}"
+           optimize="${optimize}"
+           deprecation="${deprecation}">
+    </javac>     
+		   
+  </target>
+
+
+  <!-- =================================================================== -->
+  <!-- Creates the API documentation                                       -->
+  <!-- =================================================================== -->
+  <target name="javadocs" depends="prepare-src">
+    <mkdir dir="${javadocs.dir}"/>
+    <javadoc sourcepath="${java.src.dir}"
+             destdir="${javadocs.dir}"
+             access="public"
+             windowtitle="${java.http.name} API"
+             doctitle="${java.http.name}"
+             bottom="Copyright &#169; 2002-2005 oakland software incorporated. All Rights Reserved."
+    >
+      <fileset dir="${java.src.dir}" defaultexcludes="yes">
+        <include name="com/oaklandsw/http/HttpURLConnection.java" />
+        <include name="com/oaklandsw/http/HttpConnectionManager.java" />
+        <include name="com/oaklandsw/http/URIException.java" />
+        <include name="com/oaklandsw/http/HttpException.java" />
+        <include name="com/oaklandsw/http/HttpTimeoutException.java" />
+        <include name="com/oaklandsw/http/HttpUserAgent.java" />
+        <include name="com/oaklandsw/http/Credential.java" />
+        <include name="com/oaklandsw/http/UserCredential.java" />
+        <include name="com/oaklandsw/http/NtlmCredential.java" />
+      </fileset>
+      </javadoc>
+  </target>
+
+
+  <!-- =================================================================== -->
+  <!-- Creates the class package                                           -->
+  <!-- =================================================================== -->
+  <target name="package-java" depends="compile-java">
+    <jar jarfile="${classes.dir}/${jar.http.name}.jar"
+         basedir="${classes.dir}"
+         includes="com/oaklandsw/http/**,com/oaklandsw/util/**,com/oaklandsw/log/**"/>
+
+  </target>
+
+
+  <!-- =================================================================== -->
+  <!-- Clean targets                                                       -->
+  <!-- =================================================================== -->
+  <target name="clean" depends="init">
+    <delete includeEmptyDirs="true"> 
+      <fileset dir="${classes.dir}" includes="**/*" defaultexcludes="no"/> 
+    </delete> 
+  </target>
+
+
+</project>
+
+<!-- End of file -->
