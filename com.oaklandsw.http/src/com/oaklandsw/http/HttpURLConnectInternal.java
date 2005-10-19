@@ -18,6 +18,7 @@ import java.util.Map;
 
 import com.oaklandsw.log.Log;
 import com.oaklandsw.log.LogFactory;
+import com.oaklandsw.util.URIUtil;
 import com.oaklandsw.util.Util;
 
 /**

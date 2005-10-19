@@ -59,6 +59,8 @@
 
 package com.oaklandsw.http;
 
+import com.oaklandsw.util.URIException;
+
 /**
  * Signals that an HTTP or HttpClient exception has occurred.
  * 

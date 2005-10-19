@@ -72,6 +72,7 @@ import org.apache.regexp.RESyntaxException;
 
 import com.oaklandsw.log.Log;
 import com.oaklandsw.log.LogFactory;
+import com.oaklandsw.util.URIUtil;
 
 /**
  * Creates and manages a pool of HttpConnections.
