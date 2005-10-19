@@ -18,7 +18,7 @@ import java.util.Map;
 import java.util.StringTokenizer;
 
 import com.oaklandsw.http.TestEnv;
-import com.oaklandsw.http.URIUtil;
+import com.oaklandsw.util.URIUtil;
 
 //
 // * Test class for simulating error conditions on remote sites 

@@ -9,7 +9,7 @@ import junit.framework.TestSuite;
 import com.oaklandsw.http.HttpException;
 import com.oaklandsw.http.TestBase;
 import com.oaklandsw.http.TestEnv;
-import com.oaklandsw.http.URIUtil;
+import com.oaklandsw.util.URIUtil;
 
 public class TestStatusLine extends TestBase
 {
