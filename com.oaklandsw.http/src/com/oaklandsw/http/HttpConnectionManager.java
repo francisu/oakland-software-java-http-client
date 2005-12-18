@@ -718,8 +718,7 @@ public class HttpConnectionManager
 
         boolean shutdown = false;
         long currentTime = System.currentTimeMillis();
-        // Just a really big number, beyond any possible timeout setting
-        long wakeTime = 0xfffffff + currentTime;
+        long wakeTime = 0;
 
         synchronized (_lock)
         {
@@ -755,7 +754,7 @@ public class HttpConnectionManager
                         connIt.remove();
                         shutdown |= reduceConnCount(ci, hostIt);
                     }
-                    else if (timeToDie < wakeTime)
+                    else if (wakeTime == 0 || timeToDie < wakeTime)
                     {
                         wakeTime = timeToDie;
                     }

@@ -7,6 +7,8 @@
   <!-- =================================================================== -->
   <target name="init" depends="common-init">
 
+    <!-- <property name="build.compiler" value="jikes"/> -->
+
   	<path id="compile.classpath">
       <fileset dir="${basedir}/../com.oaklandsw.${package.name}.jars">
         <include name="*.jar" />

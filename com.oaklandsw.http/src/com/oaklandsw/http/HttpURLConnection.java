@@ -20,6 +20,7 @@ import java.net.URL;
 import java.security.cert.Certificate;
 
 import javax.net.ssl.SSLPeerUnverifiedException;
+import javax.net.ssl.SSLSession;
 import javax.net.ssl.SSLSocketFactory;
 
 import com.oaklandsw.log.Log;
@@ -295,6 +296,15 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
                                                                             + "******  This is an evaluation version.  To purchase go to www.oaklandsoftware.com.\n"
                                                                             + "******\n******\n******\n******\n";
 
+    private static class DefaultHostnameVerifier implements HostnameVerifier
+    {
+        public boolean verify(String hostName, SSLSession session)
+        {
+            return false;
+        }
+    }
+    
+    
     static
     {
         _log.info("Oakland Software HttpURLConnection " + Version.VERSION);
@@ -567,6 +577,7 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
         {
             _defaultSSLSocketFactory = (SSLSocketFactory)SSLSocketFactory
                     .getDefault();
+            setDefaultHostnameVerifier(new DefaultHostnameVerifier());
         }
 
     }
