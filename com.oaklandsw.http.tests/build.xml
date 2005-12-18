@@ -22,8 +22,17 @@
 
   </target>
 
-	<!-- we don't use this one -->
-	<target name="package-java" depends="compile-java"/>
+	  <!-- =================================================================== -->
+	  <!-- Creates the package - overrides common                        -->
+	  <!-- =================================================================== -->
+	  <target name="package-java" depends="compile-java">
+	    <jar jarfile="${package.name}tests.jar">
+	      <fileset dir="${bin.dir}"/>
+          <fileset dir="../com.oaklandsw.build/bin"/>
+	    </jar>
+
+	  </target>
+
 	<target name="create-versions"/>
 
 </project>

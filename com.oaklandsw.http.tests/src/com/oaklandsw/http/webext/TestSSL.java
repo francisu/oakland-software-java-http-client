@@ -42,7 +42,9 @@ public class TestSSL extends TestBase
         com.oaklandsw.http.HttpURLConnection
                 .setDefaultSSLSocketFactory((SSLSocketFactory)SSLSocketFactory
                         .getDefault());
-        com.oaklandsw.http.HttpURLConnection.setDefaultHostnameVerifier(null);
+        // Need to leave it as it is to check that the default hostname
+        // verifier is properly setup
+        //com.oaklandsw.http.HttpURLConnection.setDefaultHostnameVerifier(null);
         com.oaklandsw.http.HttpConnection._testNonMatchHost = false;
     }
 
@@ -122,6 +124,32 @@ public class TestSSL extends TestBase
         if (!sf._used)
             fail("Default socket factory not used");
         checkNoActiveConns(url);
+    }
+
+    // Bug 1143 - a default hostname verifier should be installed which fails
+    // if the hostname does not match
+    // NOTE - must be first before the DefaultHostnameVerifier is disturbed
+    public void testHttpsGetSetHasDefaultVerifier() throws Exception
+    {
+        if (com.oaklandsw.http.HttpURLConnection.getDefaultHostnameVerifier() == null)
+            fail("No default verifier present");
+    }
+
+    // Bug 1143 - a default hostname verifier should be installed which fails
+    // if the hostname does not match
+    // NOTE - must be first before the DefaultHostnameVerifier is disturbed
+    public void testHttpsGetSetNoVerifierUsedFail() throws Exception
+    {
+        com.oaklandsw.http.HttpConnection._testNonMatchHost = true;
+        try
+        {
+            testHttpsGet(new URL(TestEnv.TEST_WEBEXT_SSL_URL));
+            fail("did not get expected exception");
+        }
+        catch (IOException ex)
+        {
+            // System.out.println("exc: " + ex);
+        }
     }
 
     public void testHttpsGetSetDefaultVerifierUsedPass() throws Exception
