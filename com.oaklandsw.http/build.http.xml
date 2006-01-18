@@ -12,7 +12,7 @@
     <property name="outdocs.dir" value="./outdocs"/>
     <property name="javadocs.dir" value="./javadocs"/>
 
-    <property name="java.src.dir" value="${src.dir}/java"/>
+    <property name="java.src.dir" value="${src.dir}"/>
 
     <property name="classes.prod.dir" value="${classes.dir}/"/>
 

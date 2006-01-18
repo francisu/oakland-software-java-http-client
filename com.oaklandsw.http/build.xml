@@ -107,11 +107,11 @@
     <zip
       zipfile="${dist.dir}/${dist.zip.name}Src.zip" 
       includes="**">
-       <zipfileset src="${dist.dir}/${dist.zip.name}.zip">
-       </zipfileset>
-       <zipfileset dir="${src.dir}" prefix="src"/>
+        <zipfileset dir="${src.dir}" prefix="src"/>
+        <zipfileset dir="../com.oaklandsw.util/src" prefix="src"/>
        <fileset dir="${basedir}">
-         <include name="SOURCE_LICENSE"/>
+        <include name="build.http.xml"/>
+        <include name="SOURCE_LICENSE"/>
        </fileset>
     </zip>
 
