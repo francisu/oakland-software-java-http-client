@@ -187,7 +187,7 @@ public class TestBase extends com.oaklandsw.TestCaseBase
         try
         {
             InputStream inStr = urlCon.getInputStream();
-            String str = Util.getStringFromInputStream(inStr);
+            String str = Util.getStringFromInputStream(inStr, null);
             inStr.close();
             return str;
         }

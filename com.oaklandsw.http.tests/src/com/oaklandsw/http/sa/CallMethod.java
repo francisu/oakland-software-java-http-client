@@ -28,7 +28,7 @@ public class CallMethod
         if (is == null)
         {
             System.out.println("response: " + 
-                               Util.getStringFromInputStream(is));
+                               Util.getStringFromInputStream(is, null));
         }
     }
 
