@@ -310,6 +310,10 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
         _log.info("Oakland Software HttpURLConnection " + Version.VERSION);
         _log.info("isObfuscated: " + ObfuscateSupport.isObfuscated());
 
+        // We want to force logging if the code is obfuscated (that's how
+        // we tell we are an eval version
+        LogFactory.setForceObfuscatedLogging(true);
+        
         if (ObfuscateSupport.isObfuscated())
         {
             System.out.println(EVAL_MESSAGE);
