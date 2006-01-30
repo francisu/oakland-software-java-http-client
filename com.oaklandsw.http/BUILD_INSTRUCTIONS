@@ -1,0 +1,8 @@
+Java HTTP client build instructions
+
+
+Use the file build.xml as the actual build script.  The file build.http.xml goes with the 
+source kit.
+
+
+Build the webprops target before building the website.  This creates the web.properties file.

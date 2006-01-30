@@ -29,7 +29,7 @@
              access="public"
              windowtitle="Oakland Software HTTP Client API"
              doctitle="Oakland Software HTTP Client"
-             bottom="Copyright &#169; 2002-2005 Oakland Software Incorporated. All Rights Reserved."
+             bottom="Copyright &#169; 2002-2006 Oakland Software Incorporated. All Rights Reserved."
     >
       <classpath refid="compile.classpath"/>
       <fileset dir="${src.dir}" defaultexcludes="yes">

@@ -19,6 +19,7 @@
     <property name="jar.http.name" value="http"/>
     <property name="java.http.name" value="oakland software HTTP Client"/>
     <property name="java.http.shortname" value="http"/>
+    <property name="http.productId" value="16"/>
     <property name="javadoc.packages" value="com.oaklandsw.util.*,com.oaklandsw.http.*"/>
 
     <property name="java.target" value="1.2"/>
@@ -92,19 +93,18 @@
     <jar jarfile="${classes.dir}/${jar.http.name}.jar"
          basedir="${classes.dir}"
          includes="com/oaklandsw/http/**,com/oaklandsw/util/**,com/oaklandsw/log/**"/>
-
   </target>
 
 
+	
   <!-- =================================================================== -->
-  <!-- Clean targets                                                       -->
+  <!-- clean						                                      -->
   <!-- =================================================================== -->
   <target name="clean" depends="init">
     <delete includeEmptyDirs="true"> 
       <fileset dir="${classes.dir}" includes="**/*" defaultexcludes="no"/> 
     </delete> 
   </target>
-
 
 </project>
 
