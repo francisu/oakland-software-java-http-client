@@ -129,6 +129,11 @@ public class HttpGetSample implements com.oaklandsw.http.HttpUserAgent
     {
         HttpGetSample userAgent = new HttpGetSample();
 
+        // To turn on logging for log4j
+        //Properties logProps = new Properties();
+        //logProps.setProperty("log4j.logger.com.oaklandsw", "DEBUG");
+        //PropertyConfigurator.configure(logProps);
+        
         _loopCount = 1;
         
         int index = 1;
