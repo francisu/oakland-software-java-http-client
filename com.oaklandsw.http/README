@@ -132,11 +132,12 @@ To use the HTTP client support:
 
 
 
-5) The tracing is using either log4j or JDK 1.4 logging.
-   If log4j is not present, the JDK1.4 tracing will be used.  If
-   that's not present, no tracing will occur.
+5) The logging is using either log4j or JDK 1.4 logging.
+   By default log4j is preferred.
+   If log4j is not present, the JDK 1.4 logging will be used.  
+   If JDK 1.4 logging is not present, no logging will occur.
 
-   log4j tracing  (see log4j.properties.sample)
+   log4j logging  (see log4j.properties.sample)
    -----------------------------------------------------------
 
 .  Use all of these statements in the log4j.properties file 
@@ -154,14 +155,20 @@ To use the HTTP client support:
 
       log4j.logger.com.oaklandsw=DEBUG
 
-   In general, you can turn tracing on for any class in the HTTP
+   In general, you can turn logging on for any class in the HTTP
    client.
 
       log4j.logger.com.oaklandsw.http.HttpConnectionManager=DEBUG
 
+   To programatically set Log4j logging:
+   
+        Properties logProps = new Properties();
+        logProps.setProperty("log4j.logger.com.oaklandsw", "DEBUG");
+        PropertyConfigurator.configure(logProps);
+   
 
 
-   JDK 1.4 tracing  (see jdk14.logging.sample)
+   JDK 1.4 logging  (see jdk14.logging.sample)
    -----------------------------------------------------------
 
    Set the logging configuration file as follows:
@@ -184,7 +191,7 @@ To use the HTTP client support:
 
       com.oaklandsw.level = ALL
 
-   In general, you can turn tracing on for any class in the HTTP
+   In general, you can turn logging on for any class in the HTTP
    client.
 
       com.oaklandsw.http.HttpConnectionManager.level = ALL
