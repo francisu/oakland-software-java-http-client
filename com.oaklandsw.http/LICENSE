@@ -50,12 +50,15 @@ oakland software Java HTTP Client Binary Code License
  
  5. Warranty of Software Title. Licensor warrants that it has the
     right to license the Software it purports to license to Licensee
-    and that such Software does not infringe on any United States
-    patent, copyright or other proprietary right of any person. If any
-    person makes any claim against Licensee asserting such
-    infringement, then the Licensor shall, at its sole option, either:
-    (a) defend Licensee all such claims; or (b) obtain for Licensee
-    the right to continue using such Software.
+    and that such Software does not infringe on any patent, copyright
+    or other proprietary right of any person. If any person makes 
+    any claim against Licensee asserting such infringement, then 
+    the Licensor shall, at its sole option, either: (a) defend 
+    Licensee all such claims; or (b) obtain for Licensee the right 
+    to continue using such Software.  Licensor shall fully indemnify, 
+    defend and hold harmless Licensee from and against all such claims, 
+    demands, causes of action, judgments, liabilities, damages, costs 
+    and expenses including but not limited to reasonable attorney fees.
  
  6. Disclaimer of Warranty. Except as expressly provided in Paragraph
     5 above with respect to title, the Software is provided "AS IS,"
@@ -64,12 +67,13 @@ oakland software Java HTTP Client Binary Code License
     WARRANTY OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE OR
     NON-INFRINGEMENT, ARE HEREBY EXCLUDED.
  
- 7. Limitation of Liability. OAKLAND AND ITS LICENSORS SHALL NOT BE
+ 7. Limitation of Liability. WITH THE EXCEPTION OF LIABILITY ARISING 
+    UNDER SECTION 5 ABOVE, OAKLAND AND ITS LICENSORS SHALL NOT BE
     LIABLE FOR ANY DAMAGES SUFFERED BY LICENSEE OR ANY THIRD PARTY AS
     A RESULT OF USING OR DISTRIBUTING SOFTWARE. WITHOUT LIMITING THE
     GENERALITY OF THE PRECEDING SENTENCE, IN NO EVENT WILL OAKLAND OR
     ITS LICENSORS BE LIABLE FOR ANY LOST REVENUE, PROFIT OR DATA, OR
-    FOR DIRECT, INDIRECT, SPECIAL, CONSEQUENTIAL, INCIDENTAL OR
+    FOR INDIRECT, SPECIAL, CONSEQUENTIAL, INCIDENTAL OR
     PUNITIVE DAMAGES, HOWEVER CAUSED AND REGARDLESS OF THE THEORY OF
     LIABILITY, ARISING OUT OF THE USE OF OR INABILITY TO USE SOFTWARE,
     EVEN IF OAKLAND HAS BEEN ADVISED OF THE POSSIBILITY OF SUCH
@@ -78,8 +82,10 @@ oakland software Java HTTP Client Binary Code License
  8. Termination. Licensee may terminate this License at any time by
     destroying all copies of Software. This License will terminate
     immediately without notice from oakland if Licensee fails to comply
-    with any provision of this License. Upon such termination,
-    Licensee must destroy all copies of Software.
+    with any provision of this License and does not cure such failure 
+    within thirty (30) days after receiving written notice of such 
+    failure from Licensor.  Upon such termination, Licensee must 
+    destroy all copies of Software.
  
  9. Restricted Rights. Use, duplication or disclosure by the United
     States government is subject to the restrictions as set forth in
@@ -99,10 +105,10 @@ oakland software Java HTTP Client Binary Code License
      any, and such refund shall be Licensee's sole and exclusive
      remedy.
  
- 11. No Waiver. No waiver by Licensor of any breach of any provision
+ 11. No Waiver. No waiver by either party of any breach of any provision
      of this Agreement shall be elective unless in writing signed by
-     Licensor. No waiver shall constitute a continuing waiver unless
-     expressly provided in the writing signed by Licensor.
+     such party. No waiver shall constitute a continuing waiver unless
+     expressly provided in the writing signed by the waiving party.
  
  12. UCC Applicability. To the extent the provisions of this License
      are not inconsistent therewith, this License shall be governed by
