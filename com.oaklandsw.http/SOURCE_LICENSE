@@ -24,7 +24,9 @@ oakland software Java HTTP Client Source Code License
     "oakland") grants to you ("Licensee") a non-exclusive,
     non-assignable, non-transferable limited license to use the
     Software.  The source code may not be redistributed or disclosed
-    in any form. 
+    in any form.  The binary code may be redistributed to others
+    only as an embedded part of a larger product whose functionality is 
+    significantly greater than that of the Java HTTP Client.
  
  3. Other Restrictions. Software is confidential copyrighted
     information of oakland and title to all copies is retained by
