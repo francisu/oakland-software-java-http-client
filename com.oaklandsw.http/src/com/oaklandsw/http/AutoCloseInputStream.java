@@ -64,7 +64,6 @@ import java.io.InputStream;
 
 import com.oaklandsw.log.Log;
 import com.oaklandsw.log.LogFactory;
-import com.oaklandsw.util.Util;
 
 /**
  * Closes a HttpConnection as soon as the end of the stream is reached.
@@ -109,7 +108,7 @@ class AutoCloseInputStream extends FilterInputStream
         int l = super.read();
         if (l == -1)
         {
-            _urlCon.releaseConnection(HttpURLConnection.CLOSE);
+            close();
         }
         return l;
     }
@@ -132,7 +131,7 @@ class AutoCloseInputStream extends FilterInputStream
         int l = super.read(b, off, len);
         if (l == -1)
         {
-            _urlCon.releaseConnection(HttpURLConnection.CLOSE);
+            close();
         }
         return l;
     }
@@ -152,7 +151,7 @@ class AutoCloseInputStream extends FilterInputStream
         int l = super.read(b);
         if (l == -1)
         {
-            _urlCon.releaseConnection(HttpURLConnection.CLOSE);
+            close();
         }
         return l;
     }
@@ -160,16 +159,7 @@ class AutoCloseInputStream extends FilterInputStream
     public void close() throws IOException
     {
         _log.trace("close");
-
-        try
-        {
-            Util.flushStream(this);
-        }
-        catch (IOException ex)
-        {
-            // Just ignore, this can happen if the connection
-            // was already closed
-        }
+        super.close();
         _urlCon.releaseConnection(HttpURLConnection.CLOSE);
     }
 

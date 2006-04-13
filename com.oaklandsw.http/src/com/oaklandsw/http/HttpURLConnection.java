@@ -1,5 +1,5 @@
 //
-// Copyright 2002-3003, oakland software, all rights reserved.
+// Copyright 2002-2006, oakland software, all rights reserved.
 //
 // May not be used or redistributed without specific written
 // permission from oakland software.
@@ -100,10 +100,11 @@ import com.oaklandsw.util.Util;
  * to enable preemtive authentication. The default is not set. See
  * setPreemptiveAuthentication().
  * <p>
- * <code>com.oaklandsw.http.userAgent</code>- set to specify an alternate value
- * for the User-Agent HTTP header.  This should be used with caution as the 
- * DEFAULT_USER_AGENT value contains values known to work correctly with NTLM/IIS.
- * The default is that the User-Agent header is set to DEFAULT_USER_AGENT.
+ * <code>com.oaklandsw.http.userAgent</code>- set to specify an alternate
+ * value for the User-Agent HTTP header. This should be used with caution as the
+ * DEFAULT_USER_AGENT value contains values known to work correctly with
+ * NTLM/IIS. The default is that the User-Agent header is set to
+ * DEFAULT_USER_AGENT.
  * 
  */
 
@@ -212,6 +213,14 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
     // The request has been sent and the reply received
     protected boolean                 _executed;
 
+    // If the connection died due to an I/O exception, it is recorded here.
+    // If getResponseCode() is called after the connection is dead and we
+    // threw somewhere else, we need to throw this same exception
+    protected IOException             _ioException;
+
+    // The request has failed
+    protected boolean                 _dead;
+
     protected static final int        BAD_CONTENT_LENGTH                = -2;
     protected static final int        UNINIT_CONTENT_LENGTH             = -1;
 
@@ -251,7 +260,7 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
      * The maximum number of attempts to attempt recovery from a recoverable
      * IOException.
      */
-    private static int                MAX_TRIES                         = 3;
+    public static int                 MAX_TRIES                         = 3;
     protected static int              _tries                            = MAX_TRIES;
 
     private static int                DEFAULT_RETRY_INTERVAL            = 50;
@@ -303,8 +312,7 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
             return false;
         }
     }
-    
-    
+
     static
     {
         _log.info("Oakland Software HttpURLConnection " + Version.VERSION);
@@ -313,7 +321,7 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
         // We want to force logging if the code is obfuscated (that's how
         // we tell we are an eval version
         LogFactory.setForceObfuscatedLogging(true);
-        
+
         if (ObfuscateSupport.isObfuscated())
         {
             System.out.println(EVAL_MESSAGE);
@@ -334,8 +342,8 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
                 }
                 catch (Exception ex)
                 {
-                    throw new RuntimeException(
-                        "Invalid value specified for timeout: " + timeoutStr);
+                    throw new RuntimeException("Invalid value specified for timeout: "
+                        + timeoutStr);
                 }
             }
 
@@ -351,9 +359,8 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
                 }
                 catch (Exception ex)
                 {
-                    throw new RuntimeException(
-                        "Invalid value specified for idleConnectionTimeout: "
-                            + timeoutStr);
+                    throw new RuntimeException("Invalid value specified for idleConnectionTimeout: "
+                        + timeoutStr);
                 }
             }
 
@@ -369,9 +376,8 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
                 }
                 catch (Exception ex)
                 {
-                    throw new RuntimeException(
-                        "Invalid value specified for idleConnectionPing: "
-                            + timeoutStr);
+                    throw new RuntimeException("Invalid value specified for idleConnectionPing: "
+                        + timeoutStr);
                 }
             }
 
@@ -403,9 +409,8 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
                 }
                 catch (Exception ex)
                 {
-                    throw new RuntimeException(
-                        "Invalid value specified for maxConnectionsPerHost: "
-                            + maxConStr);
+                    throw new RuntimeException("Invalid value specified for maxConnectionsPerHost: "
+                        + maxConStr);
                 }
             }
 
@@ -419,8 +424,8 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
                 }
                 catch (Exception ex)
                 {
-                    throw new RuntimeException(
-                        "Invalid value specified for tries: " + triesStr);
+                    throw new RuntimeException("Invalid value specified for tries: "
+                        + triesStr);
                 }
             }
 
@@ -435,9 +440,8 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
                 }
                 catch (Exception ex)
                 {
-                    throw new RuntimeException(
-                        "Invalid value specified for retryInterval: "
-                            + retryIntervalStr);
+                    throw new RuntimeException("Invalid value specified for retryInterval: "
+                        + retryIntervalStr);
                 }
             }
 
@@ -478,8 +482,8 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
                     }
                     catch (Exception ex)
                     {
-                        throw new RuntimeException(
-                            "Invalid value specified for proxyPort: " + portStr);
+                        throw new RuntimeException("Invalid value specified for proxyPort: "
+                            + portStr);
                     }
                 }
                 if (proxyPort == 0)
@@ -556,8 +560,7 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
                 catch (NoSuchMethodException cnf)
                 {
                     _log
-                            .debug(
-                                   "NOT FOUND - SSL 1.4 session cert/hostname verify methods",
+                            .debug("NOT FOUND - SSL 1.4 session cert/hostname verify methods",
                                    cnf);
                 }
             }
@@ -621,8 +624,8 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
         {
             // this should not happen, since we are getting the
             // URL from the URL class.
-            throw new RuntimeException(
-                "(bug - unexpected MalformedURLException) " + ex);
+            throw new RuntimeException("(bug - unexpected MalformedURLException) "
+                + ex);
         }
 
         _userAgent = _defaultUserAgent;
@@ -816,15 +819,13 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
     {
         if (!doOutput)
         {
-            throw new ProtocolException(
-                "cannot write to a URLConnection if doOutput=false "
-                    + "- call setDoOutput(true)");
+            throw new ProtocolException("cannot write to a URLConnection if doOutput=false "
+                + "- call setDoOutput(true)");
         }
 
         if (_executed)
         {
-            throw new ProtocolException(
-                "The reply to this URLConnection has already been received");
+            throw new ProtocolException("The reply to this URLConnection has already been received");
         }
 
         // Switch to post method - be compatible with JDK
@@ -924,8 +925,11 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
         try
         {
             setConnection(HttpConnectionManager
-                    .getConnection(_urlString, _connectionTimeout,
-                                   _idleTimeout, _idlePing, _proxyHost,
+                    .getConnection(_urlString,
+                                   _connectionTimeout,
+                                   _idleTimeout,
+                                   _idlePing,
+                                   _proxyHost,
                                    _proxyPort), RELEASE);
         }
         catch (MalformedURLException ex)
@@ -948,27 +952,29 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
     }
 
     /**
-     * Associates a connection with this object.
-     * This is used in conjunction with HttpConnectionManager.getConnection()
-     * to provide a means of controlling the allocation of socket 
-     * connections and associating them with HttpURLConnections.
-     * To close the underlying socket connection, call disconnect() on 
-     * this object.
+     * Associates a connection with this object. This is used in conjunction
+     * with HttpConnectionManager.getConnection() to provide a means of
+     * controlling the allocation of socket connections and associating them
+     * with HttpURLConnections. To close the underlying socket connection, call
+     * disconnect() on this object.
      * <p>
-     * The caller must ensure that the same HttpConnection object
-     * is not used by multiple HttpURLConnections.
-     * @exception IOException - if the connection cannot be opened
-     * @exception IllegalStateException - if a connection has 
-     * already been associated with this object.
+     * The caller must ensure that the same HttpConnection object is not used by
+     * multiple HttpURLConnections.
+     * 
+     * @exception IOException -
+     *                if the connection cannot be opened
+     * @exception IllegalStateException -
+     *                if a connection has already been associated with this
+     *                object.
      */
     public void setConnection(HttpConnection conn) throws IOException
     {
         if (_connection != null)
             throw new IllegalStateException("Connection already associated");
-        
+
         setConnection(conn, !RELEASE);
     }
-    
+
     static final boolean RELEASE = true;
 
     void setConnection(HttpConnection conn, boolean release) throws IOException
@@ -1028,6 +1034,8 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
      */
     public int getResponseCode() throws IOException
     {
+        if (_ioException != null)
+            throw _ioException;
         execute();
         return _responseCode;
     }
@@ -1037,6 +1045,8 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
      */
     public String getResponseMessage() throws IOException
     {
+        if (_ioException != null)
+            throw _ioException;
         execute();
         return new String(_responseText, 0, _responseTextLength);
     }
@@ -1088,8 +1098,9 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
                 + (_http11 ? "1" : "0")
                 + " "
                 + _responseCode
-                + ((_responseTextLength == 0) ? "" : (" " + new String(
-                    _responseText, 0, _responseTextLength)));
+                + ((_responseTextLength == 0)
+                    ? ""
+                    : (" " + new String(_responseText, 0, _responseTextLength)));
         }
 
         return _respHeaders.get(position - 1);
@@ -1156,6 +1167,9 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
     protected InputStream getResponseStream() throws IOException
     {
         InputStream is;
+
+        if (_dead)
+            return null;
 
         setupResponseBody();
 
@@ -1681,8 +1695,7 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
     {
         _log.debug("setTries: " + tries);
         if (tries < 1)
-            throw new IllegalArgumentException(
-                "You must allow at least one try");
+            throw new IllegalArgumentException("You must allow at least one try");
         _tries = tries;
     }
 
@@ -1935,8 +1948,7 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
     public String getCipherSuite()
     {
         if (_connection == null)
-            throw new IllegalStateException(
-                "Connection has not been established");
+            throw new IllegalStateException("Connection has not been established");
         return _connection.getCipherSuite();
     }
 
@@ -1954,8 +1966,7 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
     public Certificate[] getLocalCertificates()
     {
         if (_connection == null)
-            throw new IllegalStateException(
-                "Connection has not been established");
+            throw new IllegalStateException("Connection has not been established");
         if (_sslGetLocalCertMethod == null)
             throw new IllegalStateException(_sslmethmsg);
         return _connection.getLocalCertificates();
@@ -1974,8 +1985,7 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
         throws SSLPeerUnverifiedException
     {
         if (_connection == null)
-            throw new IllegalStateException(
-                "Connection has not been established");
+            throw new IllegalStateException("Connection has not been established");
         if (_sslGetServerCertMethod == null)
             throw new IllegalStateException(_sslmethmsg);
         return _connection.getServerCertificates();
@@ -2067,8 +2077,7 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
             case NTLM_ENCODING_UNICODE:
                 break;
             default:
-                throw new IllegalArgumentException(
-                    "Encoding must be either NTLM_ENCODING_OEM or NTLM_ENCODING_DEFAULT");
+                throw new IllegalArgumentException("Encoding must be either NTLM_ENCODING_OEM or NTLM_ENCODING_DEFAULT");
         }
         _ntlmPreferredEncoding = encoding;
     }

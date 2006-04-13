@@ -47,57 +47,64 @@ import com.oaklandsw.util.URIUtil;
 
 public class ErrorServer extends Thread
 {
-    public static final int PORT_NUMBER    = TestEnv.TEST_ERRORSVR_PORT;
+    public static final int    PORT_NUMBER          = TestEnv.TEST_ERRORSVR_PORT;
 
-    public static final int CONTENT_LENGTH = 8104;
-    public static final int CONTENT_LOOPS  = 100;
-    public static final int CONTENT_EOLS   = CONTENT_LOOPS + 2;
+    public static final int    CONTENT_LENGTH       = 8104;
+    public static final int    CONTENT_LOOPS        = 100;
+    public static final int    CONTENT_EOLS         = CONTENT_LOOPS + 2;
 
-    
-    public static final String ERROR_BEFORE_READ = "before-read";
+    public static final String ERROR_BEFORE_READ    = "before-read";
     public static final String ERROR_BEFORE_CONTENT = "before-content";
     public static final String ERROR_DURING_CONTENT = "during-content";
-    public static final String ERROR_DURING_READ = "during-read";
+    public static final String ERROR_DURING_READ    = "during-read";
     public static final String ERROR_BEFORE_HEADERS = "before-headers";
-    
+
+    public static final String ERROR_IDLE_TIMEOUT   = "idle-timeout";
+
+    public static final String ERROR_KEEP_ALIVE     = "keepAlive";
+
     // Used if the server is launched inside of another process
     // (i.e. the main method is called from another process)
-    static boolean          _running;
+    static boolean             _running;
 
-    String                  _version;
-    String                  _statusLine;
-    String                  _endOfLine;
+    String                     _version;
+    String                     _statusLine;
+    String                     _endOfLine;
 
-    boolean                 _closeConnection;
-    boolean                 _keepAlive;
+    boolean                    _closeConnection;
+    boolean                    _keepAlive;
+
+    // The amount of time to keep this connection alive if it
+    // has not been closed
+    int                        _idleTimeout;
 
     // Include the Content-Length header
-    boolean                 _contentLength = true;
-    boolean                 _badContentLength;
-    boolean                 _spaceContentLength;
+    boolean                    _contentLength       = true;
+    boolean                    _badContentLength;
+    boolean                    _spaceContentLength;
 
-    Socket                  request;
+    Socket                     request;
 
-    InputStream             is;
-    OutputStream            os;
-    PrintStream             ps;
+    InputStream                is;
+    OutputStream               os;
+    PrintStream                ps;
 
-    boolean                 post;
+    boolean                    post;
 
-    String                  errorType;
-    String                  errorLoc;
-    int                     errorLines;
-    int                     errorSec;
+    String                     errorType;
+    String                     errorLoc;
+    int                        errorLines;
+    int                        errorSec;
 
-    static boolean          debug;
+    static boolean             debug;
 
-    static String           defaultError   = "none";
+    static String              defaultError         = "none";
 
-    boolean                 unix           = (File.separatorChar == '/');
+    boolean                    unix                 = (File.separatorChar == '/');
 
-    static int              succeedAfter;
+    static int                 succeedAfter;
 
-    static boolean          _quit;
+    static boolean             _quit;
 
     // Accepts HTTP requests on a socket, can accept multiple requests
     // on the same socket.
@@ -207,20 +214,27 @@ public class ErrorServer extends Thread
 
         while (!closeConnection)
         {
+            // Will happen if the connection timed out
+            if (request == null)
+                return;
+
             // Assume we want to close the connection
             closeConnection = true;
 
             char[] buf = new char[10000];
-            this.is = request.getInputStream();
+            if (is == null)
+                is = request.getInputStream();
 
             char term[] = new char[] { '\r', '\n', '\r', '\n' };
             int termInd = 0;
+            int i = 0;
             // Read only the headers, no other data
-            for (int i = 0;; i++)
+            for (;; i++)
             {
                 int c = is.read();
                 if (c == -1)
                     break;
+
                 buf[i] = (char)c;
 
                 if (c == term[termInd])
@@ -237,7 +251,16 @@ public class ErrorServer extends Thread
                 }
             }
 
-            StringTokenizer tok = new StringTokenizer(new String(buf));
+            if (i == 0)
+            {
+                System.out.println("Stream EOF - thread returning");
+                return;
+            }
+
+            String strBuf = new String(buf, 0, i);
+            System.out.println("got message: " + strBuf);
+
+            StringTokenizer tok = new StringTokenizer(strBuf);
             String method = tok.nextToken();
             String query = tok.nextToken();
 
@@ -307,7 +330,7 @@ public class ErrorServer extends Thread
             if (args.get("close") != null)
                 _closeConnection = true;
 
-            if (args.get("keepAlive") != null)
+            if (args.get(ERROR_KEEP_ALIVE) != null)
                 _keepAlive = true;
 
             if (args.get("noContentLength") != null)
@@ -355,6 +378,46 @@ public class ErrorServer extends Thread
                 errorSec = Integer.parseInt(secStr);
             else
                 errorSec = 0;
+
+            String idleTimeout = (String)args.get(ERROR_IDLE_TIMEOUT);
+            if (idleTimeout != null)
+                _idleTimeout = Integer.parseInt(idleTimeout);
+            else
+                _idleTimeout = 0;
+
+            Thread timeoutThread = new Thread()
+            {
+                public void run()
+                {
+                    try
+                    {
+                        System.out.println("Starting timeout wait: "
+                            + _idleTimeout);
+                        Thread.sleep(_idleTimeout);
+                        System.out.println("Connection timeout");
+                        System.out.println("time: "
+                            + System.currentTimeMillis());
+                        if (is != null)
+                            is.close();
+                        if (request != null)
+                            request.close();
+                        request = null;
+                    }
+                    catch (InterruptedException e)
+                    {
+                        e.printStackTrace();
+                    }
+                    catch (IOException e)
+                    {
+                        e.printStackTrace();
+                    }
+                }
+            };
+
+            if (_idleTimeout != 0)
+            {
+                timeoutThread.start();
+            }
 
             // If we aren't already in a retry loop, set number of
             // times to fail before success now.
@@ -461,6 +524,12 @@ public class ErrorServer extends Thread
                 }
             }
             this.println("</table></body></html>");
+
+            if (closeConnection)
+            {
+                request.close();
+                request = null;
+            }
         }
 
     }
@@ -479,7 +548,8 @@ public class ErrorServer extends Thread
         {
             try
             {
-                this.request.close();
+                if (request != null)
+                    request.close();
             }
             catch (IOException ie)
             {

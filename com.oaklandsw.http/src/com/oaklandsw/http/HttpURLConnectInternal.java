@@ -46,70 +46,70 @@ public class HttpURLConnectInternal
     }
 
     /** My request path + query string. */
-    private String          _pathQuery;
+    private String      _pathQuery;
 
     /** Whether or not the request body has been sent. */
-    private boolean         _bodySent;
+    private boolean     _bodySent;
 
     /**
      * The credential that was most recently sent to try to authenticate this
      * request. If we get another request for authentication and we had
      * previously sent a credential, then it's the wrong credential.
      */
-    private Credential      _credentialSent;
+    private Credential  _credentialSent;
 
-    private Credential      _proxyCredentialSent;
+    private Credential  _proxyCredentialSent;
 
     /**
      * The host/port to be sent on this if this is a connect request.
      */
-    private String          _connectHostPort;
+    private String      _connectHostPort;
 
     /**
      * The input stream from which to read the request body. This is set before
      * the request is issued, if the source of the data is a stream.
      */
-    private InputStream     _requestBody;
+    private InputStream _requestBody;
 
     /**
      * The byte array of the request. If the request source is a byte array,
      * this is set. When the request is first written, the contents of the
      * request is saved here in case it needs to be resent for authentication.
      */
-    private byte[]          _requestBytes;
+    private byte[]      _requestBytes;
 
-    private boolean         _responseBodySetup;
+    private boolean     _responseBodySetup;
 
     /**
      * Indicates that we are sending an NTLM negotiate message on this URL
      * request and the underlying connection (when obtained) should be marked
      * with the setNtlmLeaveOpen() flag.
      */
-    private boolean         _ntlmAuth;
+    private boolean     _ntlmAuth;
 
     // Header values we are interested in
     // NOTE: be sure to change resetBeforeRead if anything is added
     // to this list
-    protected String        _hdrContentLength;
-    protected String        _hdrConnection;
-    protected String        _hdrProxyConnection;
-    protected String        _hdrTransferEncoding;
-    protected String        _hdrWWWAuth;
-    protected String        _hdrLocation;
-    protected String        _hdrProxyAuth;
-    protected int           _hdrContentLengthInt;
+    protected String    _hdrContentLength;
+    protected String    _hdrConnection;
+    protected String    _hdrProxyConnection;
+    protected String    _hdrTransferEncoding;
+    protected String    _hdrWWWAuth;
+    protected String    _hdrLocation;
+    protected String    _hdrProxyAuth;
+    protected int       _hdrContentLengthInt;
 
     // We have read the first character of the next line after
     // the status line, and it is here. This only applies if
     // _singleEolChar is true
-    protected int           _savedAfterStatusNextChar;
+    protected int       _savedAfterStatusNextChar;
 
-    protected boolean       _singleEolChar;
+    protected boolean   _singleEolChar;
 
     /**
      * Maximum number of redirects to forward through.
      */
-    private int             MAX_FORWARDS       = 100;
+    private int         MAX_FORWARDS = 100;
 
     public final String getName()
     {
@@ -297,11 +297,24 @@ public class HttpURLConnectInternal
         isResponseEmpty();
     }
 
+    // Used only on the reading of the first bytes of the connection
+    // This is the typical case where an idle connection was encountered.
     private final void readClosed() throws SocketException
     {
         // This can be retried
         throw new SocketException("Connection closed after request was "
             + "sent and before reply received (try #"
+            + _tryCount
+            + ").  This request was probably sent to a connection that the "
+            + "server closed after being idle.  Consider using the set[Default]IdleConnectionTimeout "
+            + "to avoid using connections that the server closed.");
+    }
+
+    private final void readClosedPartial() throws SocketException
+    {
+        // This can be retried
+        throw new SocketException("Connection closed in the middle of sending reply "
+            + "(try #"
             + _tryCount
             + ")");
     }
@@ -313,7 +326,7 @@ public class HttpURLConnectInternal
         {
             ch = _conInStream.read();
             if (ch < 0)
-                readClosed();
+                readClosedPartial();
             // System.out.println("sp: " + String.valueOf((char)ch));
         }
         while (ch == ' ');
@@ -327,12 +340,23 @@ public class HttpURLConnectInternal
         // Read HTTP/1.
         char[] httpHdr = { 'H', 'T', 'T', 'P', '/', '1', '.' };
         int httpInd = 0;
-        int ch;
+        int ch = -1;
         while (httpInd < httpHdr.length)
         {
-            ch = _conInStream.read();
+            try
+            {
+                ch = _conInStream.read();
+            }
+            catch (SocketException sex)
+            {
+               readClosed();
+               // throws
+            }
+
             if (ch < 0)
+            {
                 readClosed();
+            }
             // System.out.println("hdr: " + String.valueOf((char)ch));
 
             // Start looking at the beginning again
@@ -345,7 +369,7 @@ public class HttpURLConnectInternal
         // Check the number following the point
         ch = _conInStream.read();
         if (ch < 0)
-            readClosed();
+            readClosedPartial();
         // System.out.println("hdr1: " + String.valueOf((char)ch));
         if (ch == '1')
             _http11 = true;
@@ -369,7 +393,7 @@ public class HttpURLConnectInternal
             // System.out.println("resp code: " + _responseCode);
             ch = _conInStream.read();
             if (ch < 0)
-                readClosed();
+                readClosedPartial();
         }
         while (ch != ' ' && ch != '\r' && ch != '\n');
 
@@ -394,7 +418,7 @@ public class HttpURLConnectInternal
                 ch = _conInStream.read();
                 // System.out.println("msg: 0x" + Integer.toHexString((int)ch));
                 if (ch < 0)
-                    readClosed();
+                    readClosedPartial();
             }
             while (ch != '\r' && ch != '\n');
         }
@@ -408,7 +432,7 @@ public class HttpURLConnectInternal
 
         ch = _conInStream.read();
         if (ch < 0)
-            readClosed();
+            readClosedPartial();
 
         // System.out.println("Response text length: " + _responseTextLength);
 
@@ -468,7 +492,9 @@ public class HttpURLConnectInternal
     protected final void readResponseHeaders() throws IOException
     {
         _respHeaders.clear();
-        _respHeaders.read(_conInStream, this, _singleEolChar,
+        _respHeaders.read(_conInStream,
+                          this,
+                          _singleEolChar,
                           _savedAfterStatusNextChar);
 
     }
@@ -551,8 +577,9 @@ public class HttpURLConnectInternal
         }
         else if (_hdrContentLength != null)
         {
-            result = new ContentLengthInputStream(_conInStream, this,
-                _hdrContentLengthInt);
+            result = new ContentLengthInputStream(_conInStream,
+                                                  this,
+                                                  _hdrContentLengthInt);
         }
         else
         {
@@ -692,7 +719,9 @@ public class HttpURLConnectInternal
         // The content length may be smaller than the size of
         // the data
         _requestBytes = new byte[_contentLength];
-        total = Util.copyStreams(inputStream, _conOutStream, _requestBytes,
+        total = Util.copyStreams(inputStream,
+                                 _conOutStream,
+                                 _requestBytes,
                                  _contentLength);
 
         if (_log.isDebugEnabled())
@@ -808,8 +837,7 @@ public class HttpURLConnectInternal
             {
                 // This is non-recoverable, throw it up to the user
                 _log
-                        .info(
-                              "HttpException when writing request/reading response: ",
+                        .info("HttpException when writing request/reading response: ",
                               httpe);
                 // Handled at a higher level
                 throw httpe;
@@ -899,8 +927,10 @@ public class HttpURLConnectInternal
             Map challengeMap = Authenticator
                     .parseAuthenticateHeader(_respHeaders, reqType);
 
-            authenticated = Authenticator.authenticate(this, _respHeaders,
-                                                       reqType, challengeMap,
+            authenticated = Authenticator.authenticate(this,
+                                                       _respHeaders,
+                                                       reqType,
+                                                       challengeMap,
                                                        respType);
 
             if (authenticated && challengeMap.containsKey(Authenticator.NTLM))
@@ -1133,11 +1163,17 @@ public class HttpURLConnectInternal
             _executing = true;
 
             // pre-emptively add the authorization header, if required.
-            Authenticator.authenticate(this, null, null, null,
+            Authenticator.authenticate(this,
+                                       null,
+                                       null,
+                                       null,
                                        Authenticator.WWW_AUTH_RESP);
             if (_connection.isProxied())
             {
-                Authenticator.authenticate(this, null, null, null,
+                Authenticator.authenticate(this,
+                                           null,
+                                           null,
+                                           null,
                                            Authenticator.PROXY_AUTH_RESP);
             }
 
@@ -1148,23 +1184,29 @@ public class HttpURLConnectInternal
             // Timeout
             _log.info("Timeout when reading response: ", ioiex);
             releaseConnection(CLOSE);
+            _dead = true;
             throw new HttpTimeoutException();
         }
         catch (IOException httpe)
         {
             releaseConnection(CLOSE);
+            // Remember this in case we have to re-throw it
+            _ioException = httpe;
+            _dead = true;
             throw httpe;
         }
         catch (RuntimeException re)
         {
             _log.error("Unexpected exception processing request ", re);
             releaseConnection(CLOSE);
+            _dead = true;
             throw re;
         }
         catch (Error e)
         {
             _log.error("Unexpected error processing request ", e);
             releaseConnection(CLOSE);
+            _dead = true;
             throw e;
         }
         finally

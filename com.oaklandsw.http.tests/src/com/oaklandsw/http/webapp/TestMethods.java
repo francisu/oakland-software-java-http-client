@@ -13,6 +13,7 @@ import junit.framework.TestSuite;
 import com.oaklandsw.http.servlet.RequestBodyServlet;
 import com.oaklandsw.log.Log;
 import com.oaklandsw.log.LogFactory;
+import com.oaklandsw.util.Util;
 
 public class TestMethods extends TestWebappBase
 {
@@ -313,6 +314,22 @@ public class TestMethods extends TestWebappBase
 
         com.oaklandsw.http.HttpURLConnection.setExplicitClose(false);
     }
+
+    // Test a sequence of calls used by Credit-Suisse (bug 1433)
+    public void testGetCs() throws Exception
+    {
+        URL url = new URL(_urlBase + RequestBodyServlet.NAME);
+
+        HttpURLConnection urlCon = (HttpURLConnection)url.openConnection();
+
+        urlCon.getHeaderField(1);
+        
+        InputStream in = urlCon.getInputStream();
+        urlCon.getContentLength();
+        Util.getStringFromInputStream(in);
+        assertEquals(200, urlCon.getResponseCode());
+    }
+
 
     public void allTestMethods() throws Exception
     {
