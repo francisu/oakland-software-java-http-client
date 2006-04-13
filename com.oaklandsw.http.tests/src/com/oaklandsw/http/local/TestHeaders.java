@@ -3,6 +3,8 @@ package com.oaklandsw.http.local;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.StringBufferInputStream;
+import java.util.List;
+import java.util.Map;
 
 import junit.framework.Test;
 import junit.framework.TestCase;
@@ -102,6 +104,18 @@ public class TestHeaders extends TestCase
         h.add("one", "onevalnew2");
         // Should get the most recent one
         assertEquals("onevalnew2", h.get("one"));
+        
+        // Bug 1440 getHeaderFields() not implemented
+        Map map = h.getMap();
+        List list = (List)map.get("one");
+        assertEquals(4, list.size());
+        assertEquals("onevaloriginal", list.get(0));
+        assertEquals("onevalnew", list.get(1));
+        assertEquals("onevalrevised", list.get(2));
+        assertEquals("onevalnew2", list.get(3));
+        
+        assertEquals(null, map.get("two"));
+
     }
 
     public void testAddIndex() throws Exception

@@ -18,6 +18,7 @@ import java.net.MalformedURLException;
 import java.net.ProtocolException;
 import java.net.URL;
 import java.security.cert.Certificate;
+import java.util.Map;
 
 import javax.net.ssl.SSLPeerUnverifiedException;
 import javax.net.ssl.SSLSession;
@@ -1059,6 +1060,16 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
         checkConnectNoThrow();
 
         return _respHeaders.get(name);
+    }
+
+    /**
+     * @see java.net.URLConnection#getHeaderFields()
+     */
+    public Map getHeaderFields()
+    {
+        checkConnectNoThrow();
+
+        return _respHeaders.getMap();
     }
 
     /**

@@ -10,6 +10,11 @@ package com.oaklandsw.http;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import com.oaklandsw.log.Log;
 import com.oaklandsw.log.LogFactory;
@@ -367,7 +372,28 @@ public class Headers
             _log.debug(_headerKeys[i] + ": " + _headerValues[i]);
         }
     }
-
+    
+    public Map getMap()
+    {
+        if (_currentIndex == 0)
+            return Collections.EMPTY_MAP;
+        Map map = new HashMap(_currentIndex);
+        for (int i = 0; i < _currentIndex; i++)
+        {
+            String key = _headerKeys[i];
+            List values = new ArrayList();
+            
+            // Get each value for the specified key
+            for (int j = 0; j < _currentIndex; j++)
+            {
+                if (_headerKeys[j].equals(key))
+                    values.add(_headerValues[j]);
+            }
+            map.put(key, values);
+        }
+        return map;
+    }
+    
     private final void growCharBuf()
     {
         char[] newBuf = new char[_charBuf.length * 2];
