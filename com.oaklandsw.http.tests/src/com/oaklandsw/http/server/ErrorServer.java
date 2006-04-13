@@ -1,5 +1,6 @@
 //
 // Copyright (c) 2001 CrossWeave, Inc.
+// Portions copyright 2003-2006 Oakland Software.
 // All rights reserved.
 //
 
@@ -21,35 +22,44 @@ import com.oaklandsw.http.TestEnv;
 import com.oaklandsw.util.URIUtil;
 
 //
-// * Test class for simulating error conditions on remote sites 
+// * Test class for simulating error conditions on remote sites
 // * Use like so:
-// * 
-// * http://localhost:PORT_NUMBER/? <args>where <args>is (standard query encoding)
-// * 
-// * quit - to shutdown 
-// * close - add a connection close header 
-// * version - specifies protocol version, like "1.0" 
-// * status - specifies entire status line 
-// * error - specifies "none", "timeout", "disconnect", or an HTTP error code 
-// * when - one  of: "before-read", "during-read", "before-headers", "during-headers",
-// * "before-content", or "during-content" 
+// *
+// * http://localhost:PORT_NUMBER/? <args>where <args>is (standard query
+// encoding)
+// *
+// * quit - to shutdown
+// * close - add a connection close header
+// * version - specifies protocol version, like "1.0"
+// * status - specifies entire status line
+// * error - specifies "none", "timeout", "disconnect", or an HTTP error code
+// * when - one of: "before-read", "during-read", "before-headers",
+// "during-headers",
+// * "before-content", or "during-content"
 // * lines - # of lines to output before
-// * failing (used only for "during-content" case). 
-// * sec - timeout length in seconds (used only in "error=timeout" case) 
-// * noContentLength - the Content-Length header should be omitted 
-// * badContentLength - the Content-Length  header should be incorrect 
-// * spaceContentLength - the Content-Length header should have trailing spaces 
+// * failing (used only for "during-content" case).
+// * sec - timeout length in seconds (used only in "error=timeout" case)
+// * noContentLength - the Content-Length header should be omitted
+// * badContentLength - the Content-Length header should be incorrect
+// * spaceContentLength - the Content-Length header should have trailing spaces
 // * keepAlive - add keep-alive header
-// * 
- 
+// *
+
 public class ErrorServer extends Thread
 {
-    public static final int PORT_NUMBER      = TestEnv.TEST_ERRORSVR_PORT;
+    public static final int PORT_NUMBER    = TestEnv.TEST_ERRORSVR_PORT;
 
-    public static final int CONTENT_LENGTH   = 8104;
-    public static final int CONTENT_LOOPS    = 100;
-    public static final int CONTENT_EOLS     = CONTENT_LOOPS + 2;
+    public static final int CONTENT_LENGTH = 8104;
+    public static final int CONTENT_LOOPS  = 100;
+    public static final int CONTENT_EOLS   = CONTENT_LOOPS + 2;
 
+    
+    public static final String ERROR_BEFORE_READ = "before-read";
+    public static final String ERROR_BEFORE_CONTENT = "before-content";
+    public static final String ERROR_DURING_CONTENT = "during-content";
+    public static final String ERROR_DURING_READ = "during-read";
+    public static final String ERROR_BEFORE_HEADERS = "before-headers";
+    
     // Used if the server is launched inside of another process
     // (i.e. the main method is called from another process)
     static boolean          _running;
@@ -62,7 +72,7 @@ public class ErrorServer extends Thread
     boolean                 _keepAlive;
 
     // Include the Content-Length header
-    boolean                 _contentLength   = true;
+    boolean                 _contentLength = true;
     boolean                 _badContentLength;
     boolean                 _spaceContentLength;
 
@@ -81,12 +91,16 @@ public class ErrorServer extends Thread
 
     static boolean          debug;
 
-    static String           defaultError     = "none";
+    static String           defaultError   = "none";
 
-    boolean                 unix             = (File.separatorChar == '/');
+    boolean                 unix           = (File.separatorChar == '/');
 
     static int              succeedAfter;
 
+    static boolean          _quit;
+
+    // Accepts HTTP requests on a socket, can accept multiple requests
+    // on the same socket.
     public ErrorServer(Socket incoming)
     {
         this.request = incoming;
@@ -187,187 +201,183 @@ public class ErrorServer extends Thread
         return true;
     }
 
-    public boolean handleRequest() throws IOException
+    public void handleRequest() throws Exception
     {
-        char[] buf = new char[10000];
-        this.is = request.getInputStream();
+        boolean closeConnection = false;
 
-        char term[] = new char[] { '\r', '\n', '\r', '\n' };
-        int termInd = 0;
-        // Read only the headers, no other data
-        for (int i = 0;; i++)
+        while (!closeConnection)
         {
-            int c = is.read();
-            if (c == -1)
-                break;
-            buf[i] = (char)c;
+            // Assume we want to close the connection
+            closeConnection = true;
 
-            if (c == term[termInd])
+            char[] buf = new char[10000];
+            this.is = request.getInputStream();
+
+            char term[] = new char[] { '\r', '\n', '\r', '\n' };
+            int termInd = 0;
+            // Read only the headers, no other data
+            for (int i = 0;; i++)
             {
-                termInd++;
-                // We matched on all of them, we are at the end
-                if (termInd >= 4)
+                int c = is.read();
+                if (c == -1)
                     break;
-            }
-            else
-            {
-                // No match - reset count
-                termInd = 0;
-            }
-        }
+                buf[i] = (char)c;
 
-        StringTokenizer tok = new StringTokenizer(new String(buf));
-        String method = tok.nextToken();
-        String query = tok.nextToken();
-
-        if (query != null)
-        {
-            if (query.startsWith("/"))
-                query = query.substring(1);
-            if (query.startsWith("?"))
-                query = query.substring(1);
-        }
-
-
-        System.out.println("Query: " + query);
-        Map args = new HashMap();
-        String name = null;
-        String val = "";
-        StringTokenizer st = new StringTokenizer(URIUtil.decode(query), "&=",
-            true);
-        while (st.hasMoreTokens())
-        {
-            String token = st.nextToken();
-            System.out.println("Token: " + token);
-            if (token.equals("&"))
-            {
-                val = val.replace('_', ' ');
-                args.put(name, val);
-                name = null;
-                val = "";
-            }
-            else if (token.equals("="))
-            {
-                if (name == null)
-                    throw new IllegalArgumentException("no arg name!");
-            }
-            else
-            {
-                if (name == null)
-                    name = token;
+                if (c == term[termInd])
+                {
+                    termInd++;
+                    // We matched on all of them, we are at the end
+                    if (termInd >= 4)
+                        break;
+                }
                 else
-                    val = token;
+                {
+                    // No match - reset count
+                    termInd = 0;
+                }
             }
-        }
 
-        // Hack to allow spaces in the values
-        val = val.replace('_', ' ');
-        if (name != null)
-            args.put(name, val);
+            StringTokenizer tok = new StringTokenizer(new String(buf));
+            String method = tok.nextToken();
+            String query = tok.nextToken();
 
-        if (args.get("debug") != null)
-            debug = true;
+            if (query != null)
+            {
+                if (query.startsWith("/"))
+                    query = query.substring(1);
+                if (query.startsWith("?"))
+                    query = query.substring(1);
+            }
 
-        _statusLine = (String)args.get("status");
-        System.out.println("status: " + _statusLine);
+            System.out.println("Query: " + query);
+            Map args = new HashMap();
+            String name = null;
+            String val = "";
+            StringTokenizer st = new StringTokenizer(URIUtil.decode(query),
+                                                     "&=",
+                                                     true);
+            while (st.hasMoreTokens())
+            {
+                String token = st.nextToken();
+                System.out.println("Token: " + token);
+                if (token.equals("&"))
+                {
+                    val = val.replace('_', ' ');
+                    args.put(name, val);
+                    name = null;
+                    val = "";
+                }
+                else if (token.equals("="))
+                {
+                    if (name == null)
+                        throw new IllegalArgumentException("no arg name!");
+                }
+                else
+                {
+                    if (name == null)
+                        name = token;
+                    else
+                        val = token;
+                }
+            }
 
-        if ((String)args.get("endOfLine") != null)
-        {
-            _endOfLine = (String)args.get("endOfLine");
-            System.out.println("endOfLine: " + _endOfLine);
-            _endOfLine = _endOfLine.replace('N', '\n');
-            _endOfLine = _endOfLine.replace('R', '\r');
-        }
+            // Hack to allow spaces in the values
+            val = val.replace('_', ' ');
+            if (name != null)
+                args.put(name, val);
 
-        _version = (String)args.get("version");
-        if (_version == null)
-            _version = "1.1";
+            if (args.get("debug") != null)
+                debug = true;
 
-        if (args.get("close") != null)
-            _closeConnection = true;
+            _statusLine = (String)args.get("status");
+            System.out.println("status: " + _statusLine);
 
-        if (args.get("keepAlive") != null)
-            _keepAlive = true;
+            if ((String)args.get("endOfLine") != null)
+            {
+                _endOfLine = (String)args.get("endOfLine");
+                System.out.println("endOfLine: " + _endOfLine);
+                _endOfLine = _endOfLine.replace('N', '\n');
+                _endOfLine = _endOfLine.replace('R', '\r');
+            }
 
-        if (args.get("noContentLength") != null)
-            _contentLength = false;
+            _version = (String)args.get("version");
+            if (_version == null)
+                _version = "1.1";
 
-        if (args.get("badContentLength") != null)
-            _badContentLength = true;
+            if (args.get("close") != null)
+                _closeConnection = true;
 
-        if (args.get("spaceContentLength") != null)
-            _spaceContentLength = true;
+            if (args.get("keepAlive") != null)
+                _keepAlive = true;
 
-        // First check for shutdown message
-        if (args.get("quit") != null)
-        {
-            this.setupOutput();
-            this.println("HTTP/" + _version + " 200 OK");
-            this.println();
-            this.println("goodbye!");
-            request.close();
-            return false;
-        }
+            if (args.get("noContentLength") != null)
+                _contentLength = false;
 
-        if (method.equalsIgnoreCase("post"))
-            this.post = true;
+            if (args.get("badContentLength") != null)
+                _badContentLength = true;
 
-        if (debug)
-            System.out.println("ErrorServer received request: " + query);
+            if (args.get("spaceContentLength") != null)
+                _spaceContentLength = true;
 
-        errorType = (String)args.get("error");
-        if (errorType == null)
-            errorType = defaultError;
-        errorLoc = (String)args.get("when");
-        if (errorLoc == null)
-            errorLoc = "before-headers";
+            // First check for shutdown message
+            if (args.get("quit") != null)
+            {
+                this.setupOutput();
+                this.println("HTTP/" + _version + " 200 OK");
+                this.println();
+                this.println("goodbye!");
+                request.close();
+                _quit = true;
+            }
 
-        String linesStr = (String)args.get("lines");
-        String secStr = (String)args.get("sec");
+            if (method.equalsIgnoreCase("post"))
+                this.post = true;
 
-        if (linesStr != null)
-            errorLines = Integer.parseInt(linesStr);
-        else
-            errorLines = 0;
+            if (debug)
+                System.out.println("ErrorServer received request: " + query);
 
-        if (secStr != null)
-            errorSec = Integer.parseInt(secStr);
-        else
-            errorSec = 0;
+            errorType = (String)args.get("error");
+            if (errorType == null)
+                errorType = defaultError;
+            errorLoc = (String)args.get("when");
+            if (errorLoc == null)
+                errorLoc = "before-headers";
 
-        // If we aren't already in a retry loop, set number of
-        // times to fail before success now.
-        if (succeedAfter == 0)
-        {
-            String successStr = (String)args.get("success");
-            if (successStr != null)
-                succeedAfter = Integer.parseInt(successStr);
-        }
+            String linesStr = (String)args.get("lines");
+            String secStr = (String)args.get("sec");
 
-        if (debug)
-        {
-            System.out.println("errorType = " + errorType);
-            System.out.println("errorLoc = " + errorLoc);
-            System.out.println("errorLines = " + errorLines);
-            System.out.println("errorSec = " + errorSec);
-            System.out.println("succeedAfter = " + succeedAfter);
-            System.out.println("statusLine = " + _statusLine);
-        }
+            if (linesStr != null)
+                errorLines = Integer.parseInt(linesStr);
+            else
+                errorLines = 0;
 
-        // Run the actual request in its own thread in case it's a
-        // timeout request; otherwise we might block future requests
-        this.start();
+            if (secStr != null)
+                errorSec = Integer.parseInt(secStr);
+            else
+                errorSec = 0;
 
-        return true;
-    }
+            // If we aren't already in a retry loop, set number of
+            // times to fail before success now.
+            if (succeedAfter == 0)
+            {
+                String successStr = (String)args.get("success");
+                if (successStr != null)
+                    succeedAfter = Integer.parseInt(successStr);
+            }
 
-    public void run()
-    {
-        try
-        {
+            if (debug)
+            {
+                System.out.println("errorType = " + errorType);
+                System.out.println("errorLoc = " + errorLoc);
+                System.out.println("errorLines = " + errorLines);
+                System.out.println("errorSec = " + errorSec);
+                System.out.println("succeedAfter = " + succeedAfter);
+                System.out.println("statusLine = " + _statusLine);
+            }
+
             if (post)
             {
-                if (errorLoc.equalsIgnoreCase("before-read")
+                if (errorLoc.equalsIgnoreCase(ERROR_BEFORE_READ)
                     && this.simulateError())
                     return;
                 while (true)
@@ -375,12 +385,12 @@ public class ErrorServer extends Thread
                     int c = is.read();
                     if (c == -1)
                         break;
-                    if (errorLoc.equalsIgnoreCase("during-read")
+                    if (errorLoc.equalsIgnoreCase(ERROR_DURING_READ)
                         && this.simulateError())
                         return;
                 }
             }
-            if (errorLoc.equalsIgnoreCase("before-headers")
+            if (errorLoc.equalsIgnoreCase(ERROR_BEFORE_HEADERS)
                 && this.simulateError())
                 return;
 
@@ -392,10 +402,16 @@ public class ErrorServer extends Thread
                 this.println("HTTP/" + _version + " 200 OK");
 
             if (_closeConnection)
+            {
+                closeConnection = true;
                 this.println("Connection: close");
+            }
 
             if (_keepAlive)
-                this.println("Connection: close");
+            {
+                closeConnection = false;
+                this.println("Connection: keep-alive");
+            }
 
             this.println("Cache-Control: no-cache");
 
@@ -423,7 +439,7 @@ public class ErrorServer extends Thread
 
             this.println();
 
-            if (errorLoc.equalsIgnoreCase("before-content")
+            if (errorLoc.equalsIgnoreCase(ERROR_BEFORE_CONTENT)
                 && this.simulateError())
                 return;
 
@@ -438,13 +454,22 @@ public class ErrorServer extends Thread
                 this.println("<td>xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
                     + "</td></tr>");
                 if (errorLines == ln
-                    && errorLoc.equalsIgnoreCase("during-content"))
+                    && errorLoc.equalsIgnoreCase(ERROR_DURING_CONTENT))
                 {
                     if (this.simulateError())
                         return;
                 }
             }
             this.println("</table></body></html>");
+        }
+
+    }
+
+    public void run()
+    {
+        try
+        {
+            handleRequest();
         }
         catch (Exception e)
         {
@@ -477,7 +502,6 @@ public class ErrorServer extends Thread
     {
         ServerSocket listener;
         ErrorServer handler = null;
-        boolean response;
         int port = PORT_NUMBER;
 
         if (_running)
@@ -509,21 +533,13 @@ public class ErrorServer extends Thread
             try
             {
                 handler = new ErrorServer(listener.accept());
-                response = handler.handleRequest();
             }
-            catch (Exception e)
+            catch (IOException e)
             {
                 e.printStackTrace();
-                response = true;
-                try
-                {
-                    handler.request.close();
-                }
-                catch (IOException ie)
-                {
-                }
             }
+            handler.start();
         }
-        while (response);
+        while (!_quit);
     }
 }

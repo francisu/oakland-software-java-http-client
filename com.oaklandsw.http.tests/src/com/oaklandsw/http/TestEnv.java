@@ -8,15 +8,18 @@ public class TestEnv
 
 {
 
-    public static String HOST = null;
+    public static String       HOST                       = null;
+    public static String       ERROR_HOST                 = null;
 
+    // FIXME - why is squid host different
     public static final String SQUID_HOST                 = System
-                                                                  .getProperty(
-                                                                               "oaklandsw.squidhost",
+                                                                  .getProperty("oaklandsw.squidhost",
                                                                                "berlioz");
 
     public static int          PORT;
 
+    public static final String LOCALHOST = "127.0.0.1";
+    
     static
     {
         String defaultHost;
@@ -26,10 +29,14 @@ public class TestEnv
         }
         catch (UnknownHostException ex)
         {
-            defaultHost = "127.0.0.1";
+            defaultHost = LOCALHOST;
         }
 
         HOST = System.getProperty("oaklandsw.localhost", defaultHost);
+        
+        // Error host defaults to localhost if not set
+        ERROR_HOST = System
+                .getProperty("oaklandsw.errorhost", HOST);
 
         String portString = System.getProperty("oaklandsw.localport", "8081");
         int tempPort = 8081;
@@ -88,10 +95,14 @@ public class TestEnv
                                                               + ":"
                                                               + TEST_WEBSERVER_PORT;
 
-    public static String       TEST_WEBEXT_SSL_HOST        = "www.verisign.com";
-    public static String       TEST_WEBEXT_SSL_URL        = "https://" + TEST_WEBEXT_SSL_HOST + "/";
+    public static String       TEST_WEBEXT_SSL_HOST       = "www.verisign.com";
+    public static String       TEST_WEBEXT_SSL_URL        = "https://"
+                                                              + TEST_WEBEXT_SSL_HOST
+                                                              + "/";
 
-    public static String       TEST_WEBEXT_SSL_URL_PORT   = "https://" + TEST_WEBEXT_SSL_HOST + ":443/";
+    public static String       TEST_WEBEXT_SSL_URL_PORT   = "https://"
+                                                              + TEST_WEBEXT_SSL_HOST
+                                                              + ":443/";
 
     // Tomcat 4.1
     public static String       TEST_WEBAPP_HOST           = HOST;
@@ -122,12 +133,11 @@ public class TestEnv
                                                               + "/";
 
     public static String       TEST_URL_TOMCAT            = System
-                                                                  .getProperty(
-                                                                               "cat",
+                                                                  .getProperty("cat",
                                                                                TEST_URL_HOST_TOMCAT
                                                                                    + TEST_URL_APP_TOMCAT);
 
-    public static String       ERROR_HOST_PORT            = HOST
+    public static String       ERROR_HOST_PORT            = ERROR_HOST
                                                               + ":"
                                                               + TEST_ERRORSVR_PORT;
 
@@ -142,22 +152,16 @@ public class TestEnv
                                                               + ":8087/";
 
     public static boolean      SIMULATED_TIMEOUT_ENABLED  = System
-                                                                  .getProperty(
-                                                                               "java.version")
-                                                                  .compareTo(
-                                                                             "1.4.0") < 0;
+                                                                  .getProperty("java.version")
+                                                                  .compareTo("1.4.0") < 0;
 
     public static boolean      GETLOCALCERT_ENABLED       = System
-                                                                  .getProperty(
-                                                                               "java.version")
-                                                                  .compareTo(
-                                                                             "1.4.0") >= 0;
+                                                                  .getProperty("java.version")
+                                                                  .compareTo("1.4.0") >= 0;
 
     public static boolean      GETSERVERCERT_ENABLED      = System
-                                                                  .getProperty(
-                                                                               "java.version")
-                                                                  .compareTo(
-                                                                             "1.4.0") >= 0;
+                                                                  .getProperty("java.version")
+                                                                  .compareTo("1.4.0") >= 0;
 
     // public static String TEST_URL_TOMCAT =
     // TEST_URL_HOST_TOMCAT3 + TEST_URL_APP_TOMCAT3;
@@ -184,7 +188,8 @@ public class TestEnv
          * else if (System.getProperty("inno") != null) {
          * HTTPClient.HTTPConnection.removeDefaultModule
          * (HTTPClient.CookieModule.class); com.oaklandsw.ntlm.Ntlm.init(new
-         * com.oaklandsw.ntlm.TestUserAgent()); //System.out.println("Using inno"); }
+         * com.oaklandsw.ntlm.TestUserAgent()); //System.out.println("Using
+         * inno"); }
          **********************************************************************/
         else
         {

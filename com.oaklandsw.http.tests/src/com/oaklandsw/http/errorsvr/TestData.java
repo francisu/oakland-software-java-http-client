@@ -41,13 +41,15 @@ public class TestData extends TestBase
 
     public void tearDown()
     {
+        com.oaklandsw.http.HttpURLConnection.setExplicitClose(false);
     }
 
-    public void testDataCloseBase(String serverArgs) throws Exception
+    public HttpURLConnection testDataCloseBase(String serverArgs) throws Exception
     {
         URL url = new URL(_errorUrl + serverArgs + _errorDebug);
 
-        HttpURLConnection urlCon = (HttpURLConnection)url.openConnection();
+        com.oaklandsw.http.HttpURLConnection urlCon = (com.oaklandsw.http.HttpURLConnection)url
+                .openConnection();
         urlCon.setRequestMethod("GET");
         urlCon.connect();
 
@@ -57,6 +59,7 @@ public class TestData extends TestBase
 
         checkErrorSvrData(urlCon, false);
         checkNoActiveConns(url);
+        return urlCon;
     }
 
     public void testDataCloseNoCL() throws Exception
@@ -86,12 +89,41 @@ public class TestData extends TestBase
             + "&noContentLength=true");
     }
 
+    // Bug 1438 - explicit close can hang
     public void testData10KeepAliveNoCL() throws Exception
     {
-        testDataCloseBase("?error=none"
+        // Use explicit close in this case because the connection will
+        // be kept alive and can be continuously be read from
+        String serverArgs = "?error=none"
             + "&version=1.0"
             + "&keepAlive=true"
-            + "&noContentLength=true");
+            + "&noContentLength=true";
+
+        URL url = new URL(_errorUrl + serverArgs + _errorDebug);
+
+        com.oaklandsw.http.HttpURLConnection urlCon = (com.oaklandsw.http.HttpURLConnection)url
+                .openConnection();
+        com.oaklandsw.http.HttpURLConnection.setExplicitClose(true);
+        urlCon.setRequestMethod("GET");
+        urlCon.connect();
+
+        // Should work
+        urlCon.getResponseCode();
+        assertEquals(200, urlCon.getResponseCode());
+
+        urlCon.getInputStream().close();
+
+        assertEquals(1, getTotalConns(url));
+        urlCon.disconnect();
+        checkNoActiveConns(url);
+        checkNoTotalConns(url);
+    }
+
+    public void testData10KeepAliveCL() throws Exception
+    {
+        HttpURLConnection urlCon = testDataCloseBase("?error=none" + "&version=1.0" + "&keepAlive=true");
+        urlCon.disconnect();
+        checkNoTotalConns(urlCon.getURL());
     }
 
     public void testSpaceCL() throws Exception
@@ -108,7 +140,7 @@ public class TestData extends TestBase
         checkNoActiveConns(url);
     }
 
-    public void allTestMethods() throws Exception
+     public void allTestMethods() throws Exception
     {
         testDataCloseNoCL();
         testDataNoCL();

@@ -563,8 +563,5 @@ public class TestTimeout extends TestWebappBase
 
         assertEquals(200, response);
     }
-
-
-    
     
 }

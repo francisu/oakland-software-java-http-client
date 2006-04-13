@@ -12,6 +12,7 @@ import junit.framework.TestSuite;
 
 import com.oaklandsw.http.TestBase;
 import com.oaklandsw.http.TestEnv;
+import com.oaklandsw.http.server.ErrorServer;
 import com.oaklandsw.log.Log;
 import com.oaklandsw.log.LogFactory;
 import com.oaklandsw.util.Util;
@@ -86,8 +87,18 @@ public class TestDisconnect extends TestBase
             }
             catch (Exception ex)
             {
-                // System.out.println("Expected exception: " + ex);
-                assertTrue(ex.getMessage().indexOf("after request was sent") >= 0);
+                System.out.println("Expected exception: " + ex);
+                
+                boolean beforeRead =when.equals(ErrorServer.ERROR_BEFORE_READ);
+                // If the error server is local, then everything looks like a
+                // close before the read
+                if (TestEnv.ERROR_HOST.equals(TestEnv.LOCALHOST))
+                    beforeRead = true;
+                
+                if (beforeRead)
+                    assertTrue(ex.getMessage().indexOf("after request was sent") >= 0);
+                else 
+                    assertTrue(ex.getMessage().indexOf("in the middle") >= 0);
                 // Make sure no retries on a post
                 assertTrue(ex.getMessage().indexOf("try #1") >= 0);
                 // expected
@@ -175,32 +186,32 @@ public class TestDisconnect extends TestBase
 
     public void testServerCloseBR() throws Exception
     {
-        testTryResponse("before-read", 0);
+        testTryResponse(ErrorServer.ERROR_BEFORE_READ, 0);
     }
 
     public void testServerCloseDR() throws Exception
     {
-        testTryResponse("during-read", 0);
+        testTryResponse(ErrorServer.ERROR_DURING_READ, 0);
     }
 
     public void testServerCloseGetBCRead() throws Exception
     {
-        testTryRead("before-content", 0);
+        testTryRead(ErrorServer.ERROR_BEFORE_CONTENT, 0);
     }
 
     public void testServerCloseGetBCClose() throws Exception
     {
-        testNoRead("before-content", 0);
+        testNoRead(ErrorServer.ERROR_BEFORE_CONTENT, 0);
     }
 
     public void testServerCloseGetDCRead() throws Exception
     {
-        testTryRead("during-content", 10);
+        testTryRead(ErrorServer.ERROR_DURING_CONTENT, 10);
     }
 
     public void testServerCloseGetDCClose() throws Exception
     {
-        testNoRead("during-content", 20);
+        testNoRead(ErrorServer.ERROR_DURING_CONTENT, 20);
     }
 
     public void allTestMethods() throws Exception
