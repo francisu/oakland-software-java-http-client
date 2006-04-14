@@ -35,32 +35,94 @@ public class TestRedirect extends TestWebappBase
         return new TestSuite(TestRedirect.class);
     }
 
-    public void testRedirect() throws Exception
+    public void testRedirect(String method, int redirectCode) throws Exception
     {
         assertTrue(HttpURLConnection.getFollowRedirects());
 
-        URL url = new URL(_urlBase
-            + RedirectServlet.NAME
-            + "?to="
+        String qs = "";
+        if (redirectCode > 0)
+        {
+            qs += "responseCode=" + redirectCode + "&";
+        }
+        qs += "to="
             + URLEncoder.encode("http://"
                 + host
                 + ":"
                 + port
                 + "/"
                 + context
-                + ParamServlet.NAME));
+                + ParamServlet.NAME);
         int response = 0;
 
+        URL url;
+
+        String urlStr = _urlBase + RedirectServlet.NAME;
+        if (method.equals("GET"))
+            urlStr += "?" + qs;
+        url = new URL(urlStr);
+
         HttpURLConnection urlCon = (HttpURLConnection)url.openConnection();
-        urlCon.setRequestMethod("GET");
+        urlCon.setRequestMethod(method);
+
+        if (!method.equals("GET"))
+        {
+            urlCon.setDoOutput(true);
+            OutputStream os = urlCon.getOutputStream();
+            os.write(qs.getBytes("ASCII"));
+            if (method.equals("PUT"))
+            {
+                os.write("This is data to be sent in the body of an HTTP PUT."
+                        .getBytes("ASCII"));
+            }
+        }
+
         urlCon.connect();
         response = urlCon.getResponseCode();
         assertEquals(200, response);
 
         String reply = getReply(urlCon);
-        assertTrue(checkReplyNoAssert(reply,
-                                      "<title>Param Servlet: GET</title>"));
+        assertTrue(checkReplyNoAssert(reply, "<title>Param Servlet: "
+            + method
+            + "</title>"));
         checkNoActiveConns(url);
+    }
+
+    public void testRedirectGet301() throws Exception
+    {
+        testRedirect("GET", 301);
+    }
+
+    public void testRedirectGet302() throws Exception
+    {
+        testRedirect("GET", 302);
+    }
+
+    public void testRedirectGet307() throws Exception
+    {
+        testRedirect("GET", 307);
+    }
+
+    public void testRedirectPost301() throws Exception
+    {
+        testRedirect("POST", 301);
+    }
+
+    public void testRedirectPost302() throws Exception
+    {
+        testRedirect("POST", 302);
+    }
+
+    // Not implemented yet
+    // Let's let people ask for this
+//    public void testRedirectPost303() throws Exception
+//    {
+//        // This should be converted to a GET
+//        testRedirect("POST", 303);
+//    }
+
+    public void testRedirectPost307() throws Exception
+    {
+        testRedirect("POST", 307);
     }
 
     private static final boolean FAIL = true;
@@ -92,7 +154,7 @@ public class TestRedirect extends TestWebappBase
         // Make sure Host: header is what we expect it is
         if (!fail)
             urlCon.setRequestProperty(ParamServlet.HOST_CHECK, hostRedir);
-        
+
         urlCon.connect();
         try
         {
@@ -255,40 +317,8 @@ public class TestRedirect extends TestWebappBase
         checkNoActiveConns(url);
     }
 
-    public void testPostRedirect() throws Exception
-    {
-        String qs = "to="
-            + URLEncoder.encode("http://"
-                + host
-                + ":"
-                + port
-                + "/"
-                + context
-                + "/params?foo=bar&bar=foo");
-        URL url = new URL(_urlBase + RedirectServlet.NAME);
-        int response = 0;
-
-        HttpURLConnection urlCon = (HttpURLConnection)url.openConnection();
-        urlCon.setRequestMethod("POST");
-        urlCon.setDoOutput(true);
-
-        OutputStream os = urlCon.getOutputStream();
-        os.write(qs.getBytes("ASCII"));
-
-        urlCon.connect();
-
-        // Should not redirect
-        response = urlCon.getResponseCode();
-        assertEquals(HttpStatus.SC_MOVED_TEMPORARILY, response);
-
-        if (com.oaklandsw.http.HttpURLConnection.getExplicitClose())
-            urlCon.getInputStream().close();
-        checkNoActiveConns(url);
-    }
-
     public void testPutRedirect() throws Exception
     {
-
         String qs = "to="
             + URLEncoder.encode("http://"
                 + host
@@ -344,14 +374,18 @@ public class TestRedirect extends TestWebappBase
     // For explicit close testing
     public void allTestMethods() throws Exception
     {
-        testRedirect();
+        testRedirectGet301();
+        testRedirectGet302();
+        testRedirectGet307();
+        testRedirectPost301();
+        testRedirectPost302();
+        testRedirectPost307();
         testRedirectHost();
         testRedirectPort();
         testNoRedirect();
         testRelativeRedirect();
         testRedirectWithQueryString();
         testRecursiveRedirect();
-        testPostRedirect();
         testPutRedirect();
         testDetectRedirectLoop();
         doGetLikeMethod("GET", CHECK_CONTENT);

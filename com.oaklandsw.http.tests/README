@@ -1,0 +1,10 @@
+Test deployment to the tomcat server.
+
+The servlet directory in the tests gets built into the oaklandsw.war by the 
+http-war ant target.
+
+Put this in the webapp directory of the tomcat installation (typically
+on repoman) and restart the cat.  Make sure you delete the oaklandsw directory
+before you restart the cat.
+
+The oaklandsw.war file is checked in to make things easier.

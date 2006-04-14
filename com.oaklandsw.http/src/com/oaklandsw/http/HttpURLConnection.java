@@ -91,7 +91,8 @@ import com.oaklandsw.util.Util;
  * <p>
  * <code>com.oaklandsw.http.tries</code>- the number of times to try a
  * sending an idempotent request if there is a problem with getting the
- * response. The default is 3. See setTries().
+ * response. Also the number of times to try an idle connection ping on a POST
+ * request if this is enabled.  The default is 3. See setTries().
  * <p>
  * <code>com.oaklandsw.http.retryInterval</code>- the number of milliseconds
  * to wait before retrying an idempotent request. The default is 50ms. See
@@ -106,6 +107,12 @@ import com.oaklandsw.util.Util;
  * DEFAULT_USER_AGENT value contains values known to work correctly with
  * NTLM/IIS. The default is that the User-Agent header is set to
  * DEFAULT_USER_AGENT.
+ * <p>
+ * <code>com.oaklandsw.http.followRedirectsPost</code>- specifies that redirect
+ * response codes are followed for a POST request.  see setFollowRedirectsPost()
+ * for further details.  The default is to not follow redirect response
+ * codes for post.
+ * <p>
  * 
  */
 
@@ -800,16 +807,16 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
 
     /**
      * Whether or not I should automatically follow HTTP redirects (status code
-     * 302, etc.)
+     * 302, etc.)  Redirects are followed only for GET, POST, or HEAD requests.
      * 
      * @return <tt>true</tt> if I will automatically follow HTTP redirects
      */
     public final boolean getInstanceFollowRedirects()
     {
-        if (_methodId == GET || _methodId == HEAD)
+        if (_methodId == GET || _methodId == POST || _methodId == HEAD)
             return _followRedirects;
-
-        // No automatic following on anything but get
+        
+        // Don't allow redirects any other time.
         return false;
     }
 
@@ -1546,6 +1553,9 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
      * before a POST request. If this is not specified the default idle
      * connection ping value is used.
      * 
+     * In the event the ping fails, it is retried on a different connection.
+     * The number of tries is controlled by setTries().
+     * 
      * @param ms
      *            milliseconds to wait before pinging an idle connection.
      */
@@ -1567,12 +1577,8 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
     }
 
     /**
-     * Set the default idle connection ping value. This is used to ping the
-     * connection before sending a POST request. The ping is issued if the
-     * connection was idle for at least the number of milliseconds specified. an
-     * idle connection. Setting the value to 0 means idle connections are never
-     * pinged before a POST request. The default value for this is 0 (this
-     * feature is disabled). This is equivalent to setting the
+     * Set the default idle connection ping value. See setIdleConnectionPing().
+     * This is equivalent to setting the
      * <code>com.oaklandsw.http.idleConnectionPing</code> property.
      * 
      * @param ms
@@ -1697,7 +1703,9 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
 
     /**
      * Set the number of times an idempotent request is to be tried before
-     * considering it a failure. This value defaults to 3.
+     * considering it a failure. This value defaults to 3.  This also
+     * controls the number of times a ping message is set after failure
+     * when the idleConnectionPing is enabled.  See setIdleConnectionPing().
      * 
      * @param tries
      *            the number of times to try the request.
