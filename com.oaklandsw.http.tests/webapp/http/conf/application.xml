@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<!DOCTYPE application PUBLIC "-//Sun Microsystems, Inc.//DTD J2EE Application 1.2//EN" "http://java.sun.com/j2ee/dtds/application_1_2.dtd">
+
+<application>
+	<display-name>Oakland Software HTTP Test Client</display-name>
+	<module>
+		<web>
+			<web-uri>oaklandsw.war</web-uri>
+			<context-root>/oaklandsw</context-root>
+		</web>
+	</module>
+	<security-role>
+		<role-name>administrators</role-name>
+	</security-role>
+	<security-role>
+		<role-name>users</role-name>
+	</security-role>
+</application>
+

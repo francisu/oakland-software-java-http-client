@@ -19,6 +19,9 @@
      	  <dirset dir="${basedir}/../com.oaklandsw.util/bin"/>
      	  <dirset dir="${basedir}/../com.oaklandsw.build/bin"/>
     </path>
+  	
+    <property name="classes.test-webapp.dir" value="${classes.dir}/test-webapp"/>
+  	
 
   </target>
 
@@ -35,4 +38,25 @@
 
 	<target name="create-versions"/>
 
+	
+	  <!-- =================================================================== -->
+	  <!-- HTTP Tomcat test WAR file                                           -->
+	  <!-- =================================================================== -->
+	  <target name="http-war"
+	          depends="init, compile-java"
+	          description="Build all the files and package them into a WAR file">
+	    <war warfile="oaklandsw.war"
+	         webxml="webapp/http/conf/web.xml">
+	      <webinf dir="webapp/http/conf">
+	        <include name="**"/>
+	        <exclude name="web.xml"/>
+	        <exclude name="classes/**"/>
+	        <exclude name="lib/**"/>
+	      </webinf>
+	      <classes dir="bin">
+	        <include name="**"/>
+	      </classes>
+	    </war>
+	  </target>
+		
 </project>
