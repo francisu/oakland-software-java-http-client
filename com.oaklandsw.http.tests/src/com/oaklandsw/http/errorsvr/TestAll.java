@@ -15,6 +15,7 @@ public class TestAll extends TestCase
     public static Test suite()
     {
         TestSuite suite = new TestSuite();
+        suite.addTest(TestIdleTimeouts.suite());
         suite.addTest(TestError.suite());
         suite.addTest(TestDisconnect.suite());
         suite.addTest(TestTimeout.suite());

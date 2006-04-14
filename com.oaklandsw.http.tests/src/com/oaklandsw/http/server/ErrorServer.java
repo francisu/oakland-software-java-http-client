@@ -63,6 +63,9 @@ public class ErrorServer extends Thread
 
     public static final String ERROR_KEEP_ALIVE     = "keepAlive";
 
+    // The POST request has no data
+    public static final String POST_NO_DATA         = "postNoData";
+
     // Used if the server is launched inside of another process
     // (i.e. the main method is called from another process)
     static boolean             _running;
@@ -90,6 +93,8 @@ public class ErrorServer extends Thread
     PrintStream                ps;
 
     boolean                    post;
+
+    boolean                    _postNoData;
 
     String                     errorType;
     String                     errorLoc;
@@ -333,6 +338,9 @@ public class ErrorServer extends Thread
             if (args.get(ERROR_KEEP_ALIVE) != null)
                 _keepAlive = true;
 
+            if (args.get(POST_NO_DATA) != null)
+                _postNoData = true;
+
             if (args.get("noContentLength") != null)
                 _contentLength = false;
 
@@ -443,14 +451,17 @@ public class ErrorServer extends Thread
                 if (errorLoc.equalsIgnoreCase(ERROR_BEFORE_READ)
                     && this.simulateError())
                     return;
-                while (true)
+                if (!_postNoData)
                 {
-                    int c = is.read();
-                    if (c == -1)
-                        break;
-                    if (errorLoc.equalsIgnoreCase(ERROR_DURING_READ)
-                        && this.simulateError())
-                        return;
+                    while (true)
+                    {
+                        int c = is.read();
+                        if (c == -1)
+                            break;
+                        if (errorLoc.equalsIgnoreCase(ERROR_DURING_READ)
+                            && this.simulateError())
+                            return;
+                    }
                 }
             }
             if (errorLoc.equalsIgnoreCase(ERROR_BEFORE_HEADERS)

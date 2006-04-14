@@ -582,7 +582,7 @@ public class HttpConnection
         {
             int c = _input.read();
             if (c < 0)
-                throw new IOException("EOF during checkConnection");
+                throw new IOException("Idle Connection Ping failed");
             if (c == TERMINATOR[crlfInd])
             {
                 crlfInd++;

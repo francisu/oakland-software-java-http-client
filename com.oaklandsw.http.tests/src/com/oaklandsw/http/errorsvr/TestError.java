@@ -35,15 +35,6 @@ public class TestError extends TestBase
         mainRun(suite(), args);
     }
 
-    public void setUp()
-    {
-        TestEnv.setUp();
-    }
-
-    public void tearDown()
-    {
-    }
-
     public void testBadCL() throws Exception
     {
         URL url = new URL(_errorUrl

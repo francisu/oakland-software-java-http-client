@@ -1,17 +1,17 @@
 package com.oaklandsw.http.errorsvr;
 
-import java.io.InputStream;
+import java.io.IOException;
 import java.net.URL;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
+import com.oaklandsw.http.HttpURLConnection;
 import com.oaklandsw.http.TestBase;
 import com.oaklandsw.http.TestEnv;
 import com.oaklandsw.http.server.ErrorServer;
 import com.oaklandsw.log.Log;
 import com.oaklandsw.log.LogFactory;
-import com.oaklandsw.util.Util;
 
 /**
  * Test the idle connection timeouts and idle connection ping.
@@ -37,52 +37,133 @@ public class TestIdleTimeouts extends TestBase
         mainRun(suite(), args);
     }
 
-    public void tearDown() throws Exception
+    protected URL getTimeoutUrl(int timeout) throws Exception
     {
-        com.oaklandsw.http.HttpURLConnection.setDefaultTimeout(0);
-        com.oaklandsw.http.HttpURLConnection.setExplicitClose(false);
-        com.oaklandsw.http.HttpURLConnection.setTries(3);
+        String timeoutStr = "&"
+            + ErrorServer.ERROR_IDLE_TIMEOUT
+            + "="
+            + timeout;
+        if (timeout == 0)
+            timeoutStr = "";
+
+        return new URL(TestEnv.TEST_URL_HOST_ERROR
+            + "?"
+            + ErrorServer.ERROR_KEEP_ALIVE
+            + timeoutStr);
     }
 
-    public void testIdleConnTimeout(int type) throws Exception
+    protected URL getNormalUrl() throws Exception
     {
-        URL url = new URL(TestEnv.TEST_URL_HOST_ERROR
-            + "?"
-            + ErrorServer.ERROR_IDLE_TIMEOUT
-            + "=1000"
-            + "&"
-            + ErrorServer.ERROR_KEEP_ALIVE);
+        return new URL(TestEnv.TEST_URL_HOST_ERROR);
+    }
 
-        com.oaklandsw.http.HttpURLConnection urlCon = (com.oaklandsw.http.HttpURLConnection)url
-                .openConnection();
+    // server timesout idle connection and we hit it
+    public void testServerIdleConnTimeout() throws Exception
+    {
+        URL url = getTimeoutUrl(1000);
+
+        HttpURLConnection urlCon = (HttpURLConnection)url.openConnection();
         urlCon.getResponseCode();
-        
+
         // Wait until after the connection timed out at the server
         Thread.sleep(2000);
 
-        urlCon = (com.oaklandsw.http.HttpURLConnection)url.openConnection();
-        com.oaklandsw.http.HttpURLConnection.setTries(1);
+        url = getNormalUrl();
+        urlCon = (HttpURLConnection)url.openConnection();
+        HttpURLConnection.setTries(1);
 
-        urlCon.getHeaderField(1);
-        
-        InputStream in = urlCon.getInputStream();
-        urlCon.getContentLength();
-        Util.getStringFromInputStream(in);
-        
-        // Should fail
-        System.out.println("response: " + urlCon.getResponseCode());
-        System.out.println("time: " + System.currentTimeMillis());
-        checkNoActiveConns(url);
+        try
+        {
+            urlCon.getResponseCode();
+            fail("Did not get expected exception");
+        }
+        catch (IOException ex)
+        {
+            // Expected
+        }
     }
 
-    public void testIdleConnTimeout() throws Exception
+    // client timesout idle connection and we hit it
+    public void testClientIdleConnTimeout() throws Exception
     {
-        testIdleConnTimeout(1);
+        URL url = getTimeoutUrl(2000);
+
+        HttpURLConnection urlCon = (HttpURLConnection)url.openConnection();
+        urlCon.setIdleConnectionTimeout(1000);
+        urlCon.getResponseCode();
+
+        // Wait for connection to timeout at the client
+        Thread.sleep(1500);
+
+        // Should work since it's on a new connection
+        url = getNormalUrl();
+        urlCon = (HttpURLConnection)url.openConnection();
+        HttpURLConnection.setTries(1);
+
+        assertEquals(200, urlCon.getResponseCode());
+    }
+
+    // client timesout idle connection and we hit it
+    public void testClientIdleConnPing(int numTries, int serverTimeout) throws Exception
+    {
+        URL url = getTimeoutUrl(serverTimeout);
+
+        HttpURLConnection urlCon = (HttpURLConnection)url.openConnection();
+        urlCon.getResponseCode();
+
+        // Wait for connection to timeout at the server
+        Thread.sleep(1000);
+
+        // Should work since it's on a new connection, because the ping
+        // killed the previous connection
+        url = new URL(TestEnv.TEST_URL_HOST_ERROR
+            + "?"
+            + ErrorServer.POST_NO_DATA);
+        urlCon = (HttpURLConnection)url.openConnection();
+        urlCon.setIdleConnectionPing(500);
+        urlCon.setRequestMethod("POST");
+        HttpURLConnection.setTries(numTries);
+
+        if (numTries == 1 && serverTimeout > 0)
+        {
+            try
+            {
+                urlCon.getResponseCode();
+                fail("expected exception");
+            }
+            catch (IOException ex)
+            {
+                // Expected
+            }
+        }
+        else
+        {
+            assertEquals(200, urlCon.getResponseCode());
+        }
+    }
+
+    public void testClientIdleConnPing1() throws Exception
+    {
+        testClientIdleConnPing(1, 1000);
+    }
+
+    // Bug 1439 idle connection ping kills connection 
+    public void testClientIdleConnPing1NoTimeout() throws Exception
+    {
+        testClientIdleConnPing(1, 0);
+    }
+
+    public void testClientIdleConnPing2() throws Exception
+    {
+        testClientIdleConnPing(2, 1000);
     }
 
     public void allTestMethods() throws Exception
     {
-        testIdleConnTimeout();
+        testServerIdleConnTimeout();
+        testClientIdleConnTimeout();
+        testClientIdleConnPing1();
+        testClientIdleConnPing2();
     }
 
 }

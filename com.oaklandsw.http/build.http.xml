@@ -1,6 +1,8 @@
 <project default="http" basedir=".">
 
 
+    <!-- Provided for customers to build the HTTP client source -->
+    
   <!-- =================================================================== -->
   <!-- Initialization target                                               -->
   <!-- =================================================================== -->
@@ -81,6 +83,7 @@
         <include name="com/oaklandsw/http/Credential.java" />
         <include name="com/oaklandsw/http/UserCredential.java" />
         <include name="com/oaklandsw/http/NtlmCredential.java" />
+        <include name="com/oaklandsw/http/HostnameVerifier.java" />
       </fileset>
       </javadoc>
   </target>

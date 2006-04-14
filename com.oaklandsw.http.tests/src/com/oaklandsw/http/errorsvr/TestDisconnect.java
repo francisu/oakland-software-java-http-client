@@ -41,17 +41,6 @@ public class TestDisconnect extends TestBase
         mainRun(suite(), args);
     }
 
-    public void setUp()
-    {
-        TestEnv.setUp();
-    }
-
-    public void tearDown()
-    {
-        com.oaklandsw.http.HttpURLConnection
-                .setTries(com.oaklandsw.http.HttpURLConnection.MAX_TRIES);
-    }
-
     private URL makeUrl(String when, int lines) throws Exception
     {
         String urlStr = _errorUrl

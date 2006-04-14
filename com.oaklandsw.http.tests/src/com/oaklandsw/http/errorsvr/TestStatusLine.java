@@ -33,8 +33,9 @@ public class TestStatusLine extends TestBase
         return new TestSuite(TestStatusLine.class);
     }
 
-    public void setUp()
+    public void setUp() throws Exception
     {
+        super.setUp();
         _extraParam = "";
     }
 

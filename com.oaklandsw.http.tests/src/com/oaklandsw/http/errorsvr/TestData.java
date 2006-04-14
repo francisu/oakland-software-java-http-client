@@ -34,16 +34,6 @@ public class TestData extends TestBase
         mainRun(suite(), args);
     }
 
-    public void setUp()
-    {
-        TestEnv.setUp();
-    }
-
-    public void tearDown()
-    {
-        com.oaklandsw.http.HttpURLConnection.setExplicitClose(false);
-    }
-
     public HttpURLConnection testDataCloseBase(String serverArgs) throws Exception
     {
         URL url = new URL(_errorUrl + serverArgs + _errorDebug);

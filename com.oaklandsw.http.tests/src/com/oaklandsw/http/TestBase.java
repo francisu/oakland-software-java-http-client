@@ -98,6 +98,25 @@ public class TestBase extends com.oaklandsw.TestCaseBase
         }
     }
 
+    protected void setUp() throws Exception
+    {
+        super.setUp();
+        TestEnv.setUp();
+    }
+
+    protected void tearDown() throws Exception
+    {
+        super.tearDown();
+        com.oaklandsw.http.HttpURLConnection.setDefaultTimeout(0);
+        com.oaklandsw.http.HttpURLConnection.setDefaultConnectionTimeout(0);
+        com.oaklandsw.http.HttpURLConnection.setDefaultRequestTimeout(0);
+        com.oaklandsw.http.HttpURLConnection.setDefaultIdleConnectionTimeout(0);
+        com.oaklandsw.http.HttpURLConnection.setDefaultIdleConnectionPing(0);
+        com.oaklandsw.http.HttpURLConnection.setExplicitClose(false);
+        com.oaklandsw.http.HttpURLConnection
+                .setTries(com.oaklandsw.http.HttpURLConnection.MAX_TRIES);
+    }
+
     protected void setupDefaultTimeout(int type, int value)
     {
         switch (type)
@@ -175,8 +194,7 @@ public class TestBase extends com.oaklandsw.TestCaseBase
     }
 
     protected static final String context = System
-                                                  .getProperty(
-                                                               "httpclient.test.webappContext",
+                                                  .getProperty("httpclient.test.webappContext",
                                                                TestEnv.TEST_URL_APP_TOMCAT);
 
     protected static String       host    = TestEnv.HOST;
@@ -249,8 +267,10 @@ public class TestBase extends com.oaklandsw.TestCaseBase
                                                     boolean checkContent)
         throws IOException
     {
-        return doGetLikeMethod(_urlBase + ParamServlet.NAME, methodType,
-                               paramReply(methodType), checkContent);
+        return doGetLikeMethod(_urlBase + ParamServlet.NAME,
+                               methodType,
+                               paramReply(methodType),
+                               checkContent);
     }
 
     public static HttpURLConnection doGetLikeMethod(String urlStr,
@@ -437,7 +457,7 @@ public class TestBase extends com.oaklandsw.TestCaseBase
     public void testApplet() throws Exception
     {
         if (!_doAppletTest)
-        return;
+            return;
         //        
         // System.setSecurityManager(new sun.applet.AppletSecurity());
         // allTestMethods();

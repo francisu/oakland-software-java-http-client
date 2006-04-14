@@ -33,12 +33,6 @@ public class TestTimeout extends TestBase
         mainRun(suite(), args);
     }
 
-    public void tearDown() throws Exception
-    {
-        com.oaklandsw.http.HttpURLConnection.setDefaultTimeout(0);
-        com.oaklandsw.http.HttpURLConnection.setExplicitClose(false);
-    }
-
     // Test read timeout
     public void testReadTimeout(int type) throws Exception
     {
