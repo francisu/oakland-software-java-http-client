@@ -69,6 +69,11 @@ public class RedirectServlet extends MultiMethodServlet
         throws IOException,
             ServletException
     {
+        String responseStr = request.getParameter("responseCode");
+        int responseCode = HttpServletResponse.SC_MOVED_TEMPORARILY; 
+        if (responseStr != null)
+            responseCode = Integer.parseInt(responseStr);
+        
         String to = null;
         if (null != request.getParameter("loop"))
         {
@@ -83,7 +88,7 @@ public class RedirectServlet extends MultiMethodServlet
         {
             to = "/";
         }
-        response.setStatus(HttpServletResponse.SC_MOVED_TEMPORARILY);
+        response.setStatus(responseCode);
         response.setHeader("Location", to);
     }
 }
