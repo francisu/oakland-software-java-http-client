@@ -16,6 +16,7 @@ import java.net.SocketException;
 import java.net.URL;
 import java.util.Map;
 
+import com.oaklandsw.http.cookie.MalformedCookieException;
 import com.oaklandsw.log.Log;
 import com.oaklandsw.log.LogFactory;
 import com.oaklandsw.util.URIUtil;
@@ -217,6 +218,35 @@ public class HttpURLConnectInternal
 
         }
 
+        if (_cookieContainer != null && !_cookieContainer.isEmpty())
+        {
+            Cookie[] cookies = _cookieSpec.match(_connection.getHost(),
+                                                 _connection.getPort(),
+                                                 getPath(),
+                                                 _connection.isSecure(),
+                                                 _cookieContainer.getCookies());
+            if ((cookies != null) && (cookies.length > 0))
+            {
+                // FIXME - for now just assume all cookies go with a single
+                // header.  May want to parameterize this in the future
+                if (true)
+                {
+                    // In strict mode put all cookies on the same header
+                    String s = _cookieSpec.formatCookies(cookies);
+                    _reqHeaders.add(HDR_COOKIE, s);
+                }
+                else
+                {
+                    // In non-strict mode put each cookie on a separate header
+                    for (int i = 0; i < cookies.length; i++)
+                    {
+                        String s = _cookieSpec.formatCookie(cookies[i]);
+                        _reqHeaders.add(HDR_COOKIE, s);
+                    }
+                }
+            }
+        }
+
         // This would happen if we failed to parse the content-length
         // header when it was set. We could not throw then though
         if (_contentLength == BAD_CONTENT_LENGTH)
@@ -349,8 +379,8 @@ public class HttpURLConnectInternal
             }
             catch (SocketException sex)
             {
-               readClosed();
-               // throws
+                readClosed();
+                // throws
             }
 
             if (ch < 0)
@@ -445,46 +475,104 @@ public class HttpURLConnectInternal
 
     }
 
+    // This is called by the Headers class when parsing each header
+    // for every header value it sees
     final void getHeadersWeNeed(String name, String value)
     {
         char nameChar = Character.toUpperCase(name.charAt(0));
-        if (nameChar == 'C')
+        switch (nameChar)
         {
-            if (name.equalsIgnoreCase(HDR_CONTENT_LENGTH))
-                _hdrContentLength = value;
-            else if (name.equalsIgnoreCase(HDR_CONNECTION))
-                _hdrConnection = value;
-            return;
-        }
+            case 'C':
+                if (name.equalsIgnoreCase(HDR_CONTENT_LENGTH))
+                    _hdrContentLength = value;
+                else if (name.equalsIgnoreCase(HDR_CONNECTION))
+                    _hdrConnection = value;
+                break;
 
-        if (nameChar == 'T')
-        {
-            if (name.equalsIgnoreCase(HDR_TRANSFER_ENCODING))
-                _hdrTransferEncoding = value;
-            return;
-        }
+            case 'L':
+                if (name.equalsIgnoreCase(HDR_LOCATION))
+                    _hdrLocation = value;
+                break;
 
-        if (nameChar == 'W')
-        {
-            if (name.equalsIgnoreCase(Authenticator.WWW_AUTH))
-                _hdrWWWAuth = value;
-            return;
-        }
+            case 'P':
+                if (name.equalsIgnoreCase(Authenticator.PROXY_AUTH))
+                    _hdrProxyAuth = value;
+                else if (name.equalsIgnoreCase(HDR_PROXY_CONNECTION))
+                    _hdrProxyConnection = value;
+                break;
+            case 'S':
+                if (_cookieContainer != null)
+                {
+                    // Take either type of cookie header
+                    if (!name.equalsIgnoreCase("set-cookie")
+                        && !name.equalsIgnoreCase("set-cookie2"))
+                        break;
 
-        if (nameChar == 'P')
-        {
-            if (name.equalsIgnoreCase(Authenticator.PROXY_AUTH))
-                _hdrProxyAuth = value;
-            else if (name.equalsIgnoreCase(HDR_PROXY_CONNECTION))
-                _hdrProxyConnection = value;
-            return;
-        }
+                    String host = _connection.getHost();
+                    int port = _connection.getPort();
+                    boolean isSecure = _connection.isSecure();
+                    Cookie[] cookies = null;
+                    try
+                    {
+                        cookies = _cookieSpec.parse(host,
+                                                    port,
+                                                    getPath(),
+                                                    isSecure,
+                                                    value);
+                    }
+                    catch (MalformedCookieException e)
+                    {
+                        if (_log.isWarnEnabled())
+                        {
+                            _log.warn("Invalid cookie header: \""
+                                + value
+                                + "\". "
+                                + e.getMessage());
+                        }
+                    }
 
-        if (nameChar == 'L')
-        {
-            if (name.equalsIgnoreCase(HDR_LOCATION))
-                _hdrLocation = value;
-            return;
+                    if (cookies != null)
+                    {
+                        for (int j = 0; j < cookies.length; j++)
+                        {
+                            Cookie cookie = cookies[j];
+                            try
+                            {
+                                _cookieSpec.validate(host,
+                                                     port,
+                                                     getPath(),
+                                                     isSecure,
+                                                     cookie);
+                                _cookieContainer.addCookie(cookie);
+                                if (_log.isDebugEnabled())
+                                {
+                                    _log.debug("Cookie accepted: \""
+                                        + _cookieSpec.formatCookie(cookie)
+                                        + "\"");
+                                }
+                            }
+                            catch (MalformedCookieException e)
+                            {
+                                if (_log.isWarnEnabled())
+                                {
+                                    _log.warn("Cookie rejected: \""
+                                        + _cookieSpec.formatCookie(cookie)
+                                        + "\". "
+                                        + e.getMessage());
+                                }
+                            }
+                        }
+                    }
+                }
+                break;
+            case 'T':
+                if (name.equalsIgnoreCase(HDR_TRANSFER_ENCODING))
+                    _hdrTransferEncoding = value;
+                break;
+            case 'W':
+                if (name.equalsIgnoreCase(Authenticator.WWW_AUTH))
+                    _hdrWWWAuth = value;
+                break;
         }
 
     }

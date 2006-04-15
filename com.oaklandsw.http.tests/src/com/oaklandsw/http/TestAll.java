@@ -85,6 +85,7 @@ public class TestAll extends TestCase
         // Local tests must run first
         suite.addTest(com.oaklandsw.http.local.TestAll.suite());
 
+        suite.addTest(com.oaklandsw.http.cookie.TestCookieAll.suite());
         suite.addTest(com.oaklandsw.http.errorsvr.TestAll.suite());
         suite.addTest(com.oaklandsw.http.webapp.TestAll.suite());
         suite.addTest(com.oaklandsw.http.webserver.TestAll.suite());

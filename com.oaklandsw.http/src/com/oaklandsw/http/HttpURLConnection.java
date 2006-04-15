@@ -24,6 +24,7 @@ import javax.net.ssl.SSLPeerUnverifiedException;
 import javax.net.ssl.SSLSession;
 import javax.net.ssl.SSLSocketFactory;
 
+import com.oaklandsw.http.cookie.CookieSpec;
 import com.oaklandsw.log.Log;
 import com.oaklandsw.log.LogFactory;
 import com.oaklandsw.util.ObfuscateSupport;
@@ -92,7 +93,7 @@ import com.oaklandsw.util.Util;
  * <code>com.oaklandsw.http.tries</code>- the number of times to try a
  * sending an idempotent request if there is a problem with getting the
  * response. Also the number of times to try an idle connection ping on a POST
- * request if this is enabled.  The default is 3. See setTries().
+ * request if this is enabled. The default is 3. See setTries().
  * <p>
  * <code>com.oaklandsw.http.retryInterval</code>- the number of milliseconds
  * to wait before retrying an idempotent request. The default is 50ms. See
@@ -108,10 +109,13 @@ import com.oaklandsw.util.Util;
  * NTLM/IIS. The default is that the User-Agent header is set to
  * DEFAULT_USER_AGENT.
  * <p>
- * <code>com.oaklandsw.http.followRedirectsPost</code>- specifies that redirect
- * response codes are followed for a POST request.  see setFollowRedirectsPost()
- * for further details.  The default is to not follow redirect response
- * codes for post.
+ * <code>com.oaklandsw.http.followRedirectsPost</code>- specifies that
+ * redirect response codes are followed for a POST request. see
+ * setFollowRedirectsPost() for further details. The default is to not follow
+ * redirect response codes for post.
+ * <p>
+ * <code>com.oaklandsw.http.cookiePolicy</code>- specifies the default cookie
+ * policy to be used. See CookiePolicy for the possible values.
  * <p>
  * 
  */
@@ -153,6 +157,7 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
     static final String               HDR_LOCATION                      = "Location";
     static final String               HDR_EXPECT                        = "Expect";
     static final String               HDR_CONNECTION                    = "Connection";
+    static final String               HDR_COOKIE                        = "Cookie";
     static final String               HDR_PROXY_CONNECTION              = "Proxy-Connection";
 
     static final String               HDR_VALUE_KEEP_ALIVE              = "keep-alive";
@@ -294,6 +299,12 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
 
     protected static HostnameVerifier _defaultHostnameVerifier;
     protected HostnameVerifier        _hostnameVerifier;
+
+    protected static CookieContainer  _defaultCookieContainer;
+    protected CookieContainer         _cookieContainer;
+
+    protected static CookieSpec       _defaultCookieSpec;
+    protected CookieSpec              _cookieSpec;
 
     /** Whether or not I should use the HTTP/1.1 protocol. */
     protected boolean                 _http11                           = true;
@@ -510,6 +521,15 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
             USER_AGENT = System.getProperties()
                     .getProperty("com.oaklandsw.http.userAgent");
 
+            String cookiePolicy = System
+                    .getProperty("com.oaklandsw.http.cookiePolicy");
+            if (cookiePolicy != null)
+            {
+                _log.info("Default cookie policy: " + _defaultCookieSpec);
+                // This validates the policy and throws if there is a problem
+                _defaultCookieSpec = CookiePolicy.getCookieSpec(cookiePolicy);
+            }
+
         }
         catch (SecurityException sex)
         {
@@ -642,6 +662,8 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
         _requestTimeout = _defaultRequestTimeout;
         _idleTimeout = _defaultIdleTimeout;
         _idlePing = _defaultIdlePing;
+        _cookieContainer = _defaultCookieContainer;
+        _cookieSpec = _defaultCookieSpec;
         _proxyHost = HttpConnectionManager.getProxyHost();
         _proxyPort = HttpConnectionManager.getProxyPort();
 
@@ -807,7 +829,7 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
 
     /**
      * Whether or not I should automatically follow HTTP redirects (status code
-     * 302, etc.)  Redirects are followed only for GET, POST, or HEAD requests.
+     * 302, etc.) Redirects are followed only for GET, POST, or HEAD requests.
      * 
      * @return <tt>true</tt> if I will automatically follow HTTP redirects
      */
@@ -815,7 +837,7 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
     {
         if (_methodId == GET || _methodId == POST || _methodId == HEAD)
             return _followRedirects;
-        
+
         // Don't allow redirects any other time.
         return false;
     }
@@ -1122,6 +1144,55 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
         }
 
         return _respHeaders.get(position - 1);
+    }
+
+    /**
+     * Associates the given CookieContainer with this connection. This must be
+     * done before the request is connected. This will cause any cookies in the
+     * container to be sent with the request, and any cookies received from the
+     * server are stored in the container.
+     * 
+     * @param container
+     *            the container store/retrieve the cookies associated with this
+     *            request, null if the request should not used cookies.
+     * @param policy
+     *            the name of the CookiePolicy to use in processing cookies. -1
+     *            will use the default policy, if the container is not null.
+     */
+    public void setCookieSupport(CookieContainer container, String policy)
+    {
+        if (isConnected())
+            throw new IllegalStateException("Connection has been established");
+        _cookieContainer = container;
+        _cookieSpec = CookiePolicy.getCookieSpec(policy);
+    }
+
+    public static void setDefaultCookieSupport(CookieContainer container,
+                                               String policy)
+    {
+        _defaultCookieContainer = container;
+        _defaultCookieSpec = CookiePolicy.getCookieSpec(policy);
+    }
+
+    /**
+     * Returns the CookieContainer associated with this request.
+     * 
+     * @return CookieContainer
+     */
+    public CookieContainer getCookieContainer()
+    {
+        return _cookieContainer;
+
+    }
+
+    /**
+     * Returns the CookiePolicy string associated with this request.
+     * 
+     * @return an string identifying the cookie policy
+     */
+    public String getCookiePolicy()
+    {
+        return _cookieSpec.getPolicyName();
     }
 
     /**
@@ -1553,8 +1624,8 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
      * before a POST request. If this is not specified the default idle
      * connection ping value is used.
      * 
-     * In the event the ping fails, it is retried on a different connection.
-     * The number of tries is controlled by setTries().
+     * In the event the ping fails, it is retried on a different connection. The
+     * number of tries is controlled by setTries().
      * 
      * @param ms
      *            milliseconds to wait before pinging an idle connection.
@@ -1703,9 +1774,9 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
 
     /**
      * Set the number of times an idempotent request is to be tried before
-     * considering it a failure. This value defaults to 3.  This also
-     * controls the number of times a ping message is set after failure
-     * when the idleConnectionPing is enabled.  See setIdleConnectionPing().
+     * considering it a failure. This value defaults to 3. This also controls
+     * the number of times a ping message is set after failure when the
+     * idleConnectionPing is enabled. See setIdleConnectionPing().
      * 
      * @param tries
      *            the number of times to try the request.

@@ -1,102 +1,204 @@
-//
-// Some portions copyright 2002-3003, oakland software, all rights reserved.
-//
-// May not be used or redistributed without specific written
-// permission from oakland software.
-//
-
 /*
  * ====================================================================
  * 
- * The Apache Software License, Version 1.1
+ * Copyright 1999-2004 The Apache Software Foundation
  * 
- * Copyright (c) 1999-2002 The Apache Software Foundation. All rights reserved.
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  * 
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
+ * http://www.apache.org/licenses/LICENSE-2.0
  * 
- * 1. Redistributions of source code must retain the above copyright notice,
- * this list of conditions and the following disclaimer.
- * 
- * 2. Redistributions in binary form must reproduce the above copyright notice,
- * this list of conditions and the following disclaimer in the documentation
- * and/or other materials provided with the distribution.
- * 
- * 3. The end-user documentation included with the redistribution, if any, must
- * include the following acknowlegement: "This product includes software
- * developed by the Apache Software Foundation (http://www.apache.org/)."
- * Alternately, this acknowlegement may appear in the software itself, if and
- * wherever such third-party acknowlegements normally appear.
- * 
- * 4. The names "The Jakarta Project", "HttpClient", and "Apache Software
- * Foundation" must not be used to endorse or promote products derived from this
- * software without prior written permission. For written permission, please
- * contact apache@apache.org.
- * 
- * 5. Products derived from this software may not be called "Apache" nor may
- * "Apache" appear in their names without prior written permission of the Apache
- * Group.
- * 
- * THIS SOFTWARE IS PROVIDED ``AS IS'' AND ANY EXPRESSED OR IMPLIED WARRANTIES,
- * INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND
- * FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE APACHE
- * SOFTWARE FOUNDATION OR ITS CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
- * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
- * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA,
- * OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
- * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
- * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
- * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  * ====================================================================
  * 
  * This software consists of voluntary contributions made by many individuals on
  * behalf of the Apache Software Foundation. For more information on the Apache
  * Software Foundation, please see <http://www.apache.org/>.
  * 
- * [Additional notices, if required by prior licensing conditions]
- * 
  */
 
 package com.oaklandsw.http;
 
-import com.oaklandsw.util.URIException;
+import java.io.IOException;
+import java.io.PrintStream;
+import java.io.PrintWriter;
+import java.lang.reflect.Method;
 
 /**
  * Signals that an HTTP or HttpClient exception has occurred.
  * 
- * <p>
- * The usage of the reserved status and reason codes
- * <ul>
- * <li>-x: Internal use
- * <li>0: Unknown reason
- * <li>x: Basic ill-prepared reason
- * <li>1xx: Informational status
- * <li>2xx: Success status
- * <li>3xx: Redirection status
- * <li>4xx: Client error
- * <li>5xx: Server error
- * </ul>
+ * @author Laura Werner
  * 
+ * @version $Revision: 155418 $ $Date: 2005-02-26 05:01:52 -0800 (Sat, 26 Feb
+ *          2005) $
  */
-public class HttpException extends URIException
+public class HttpException extends IOException
 {
 
     /**
-     * Creates a new HttpException.
+     * Creates a new HttpException with a <tt>null</tt> detail message.
      */
     public HttpException()
     {
         super();
+        this.cause = null;
     }
 
     /**
-     * Creates a new HttpException with the specified message.
+     * Creates a new HttpException with the specified detail message.
      * 
      * @param message
-     *            exception message
+     *            the exception detail message
      */
     public HttpException(String message)
     {
         super(message);
+        this.cause = null;
     }
+
+    /**
+     * Creates a new HttpException with the specified detail message and cause.
+     * 
+     * @param message
+     *            the exception detail message
+     * @param cause1
+     *            the <tt>Throwable</tt> that caused this exception, or
+     *            <tt>null</tt> if the cause is unavailable, unknown, or not a
+     *            <tt>Throwable</tt>
+     * 
+     * @since 3.0
+     */
+    public HttpException(String message, Throwable cause1)
+    {
+        super(message);
+        this.cause = cause1;
+
+        // If we're running on JDK 1.4 or later, tell Throwable what the cause
+        // was
+        try
+        {
+            Class[] paramsClasses = new Class[] { Throwable.class };
+            Method initCause = Throwable.class.getMethod("initCause",
+                                                         paramsClasses);
+            initCause.invoke(this, new Object[] { cause1 });
+        }
+        catch (Exception e)
+        {
+            // The setCause method must not be available
+        }
+    }
+
+    /**
+     * Return the <tt>Throwable</tt> that caused this exception, or
+     * <tt>null</tt> if the cause is unavailable, unknown, or not a
+     * <tt>Throwable</tt>.
+     * 
+     * @return the <tt>Throwable</tt> that caused this exception, or
+     *         <tt>null</tt> if the cause is unavailable, unknown, or not a
+     *         <tt>Throwable</tt>
+     * 
+     * @since 3.0
+     */
+    public Throwable getCause()
+    {
+        return cause;
+    }
+
+    /**
+     * Print this HttpException and its stack trace to the standard error
+     * stream.
+     * 
+     * @since 3.0
+     */
+    public void printStackTrace()
+    {
+        printStackTrace(System.err);
+    }
+
+    /**
+     * Print this HttpException and its stack trace to the specified print
+     * stream.
+     * 
+     * @param s
+     *            the <tt>PrintStream</tt> to which the exception and its
+     *            stack trace should be written
+     * 
+     * @since 3.0
+     */
+    public void printStackTrace(PrintStream s)
+    {
+        try
+        {
+            // JDK 1.4 has a nice printStackTrace method that prints the cause's
+            // stack
+            // trace too and prunes out duplicate stack frames. Call it if
+            // possible,
+            // which is determined by checking whether JDK 1.4's getStackTrace
+            // method is present
+            Class[] paramsClasses = new Class[] {};
+            this.getClass().getMethod("getStackTrace", paramsClasses);
+            super.printStackTrace(s);
+        }
+        catch (Exception ex)
+        {
+            // If that didn't work, print it out ourselves
+            // First print this exception's stack trace.
+            super.printStackTrace(s);
+            if (cause != null)
+            {
+                // Print out the exception that caused this one.
+                // This will recurse if the cause is another HttpException.
+                s.print("Caused by: ");
+                cause.printStackTrace(s);
+            }
+        }
+    }
+
+    /**
+     * Print this HttpException and its stack trace to the specified print
+     * writer.
+     * 
+     * @param s
+     *            the <tt>PrintWriter</tt> to which the exception and its
+     *            stack trace should be written
+     * 
+     * @since 3.0
+     */
+    public void printStackTrace(PrintWriter s)
+    {
+        try
+        {
+            // JDK 1.4 has a nice printStackTrace method that prints the cause's
+            // stack
+            // trace too and prunes out duplicate stack frames. Call it if
+            // possible,
+            // which is determined by checking whether JDK 1.4's getStackTrace
+            // method is present
+            Class[] paramsClasses = new Class[] {};
+            this.getClass().getMethod("getStackTrace", paramsClasses);
+            super.printStackTrace(s);
+        }
+        catch (Exception ex)
+        {
+            // If that didn't work, print it out ourselves
+            // First print this exception's stack trace.
+            super.printStackTrace(s);
+            if (cause != null)
+            {
+                // Print out the exception that caused this one.
+                // This will recurse if the cause is another HttpException.
+                s.print("Caused by: ");
+                cause.printStackTrace(s);
+            }
+        }
+    }
+
+    /** The original Throwable representing the cause of this error */
+    private final Throwable cause;
 }
+
