@@ -65,7 +65,7 @@
 				<jvmarg value="-Djava.util.logging.config.file=../com.oaklandsw.build/src/logprops/ljp.none"/>
 				<sysproperty key="OAKLANDSW_ROOT" value=".."/>
 				<sysproperty key="oaklandsw.localhost" value="repoman"/>
-				<sysproperty key="oaklandsw.errorhost" value="127.0.0.1"/>
+				<sysproperty key="oaklandsw.errorhost" value="berlioz"/>
 				<sysproperty key="java.net.preferIPv4Stack" value="true"/>
 				<classpath refid="compile.classpath"/>
 				<formatter type="plain" usefile="false"/>
