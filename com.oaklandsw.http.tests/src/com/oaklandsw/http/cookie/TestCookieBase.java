@@ -29,8 +29,7 @@
 package com.oaklandsw.http.cookie;
 
 import com.oaklandsw.http.Cookie;
-
-import junit.framework.TestCase;
+import com.oaklandsw.http.TestBase;
 
 /**
  * Test cases for Cookie
@@ -38,7 +37,7 @@ import junit.framework.TestCase;
  * @author <a href="mailto:oleg@ural.ru">Oleg Kalnichevski</a>
  * @version $Revision: 155418 $
  */
-public class TestCookieBase extends TestCase {
+public class TestCookieBase extends TestBase {
 
     // ------------------------------------------------------------ Constructor
 
@@ -48,16 +47,16 @@ public class TestCookieBase extends TestCase {
 
     public static Cookie[] cookieParse(
         final CookieSpec parser,
-        String host,
-        int port,
+        String host1,
+        int port1,
         String path,
         boolean isSecure,
         String setHeader)
         throws MalformedCookieException {
-        Cookie[] cookies = parser.parse(host, port, path, isSecure, setHeader);
+        Cookie[] cookies = parser.parse(host1, port1, path, isSecure, setHeader);
         if (cookies != null) {
             for (int i = 0; i < cookies.length; i++) {
-                parser.validate(host, port, path, isSecure, cookies[i]);
+                parser.validate(host1, port1, path, isSecure, cookies[i]);
             }
         }
         return cookies;

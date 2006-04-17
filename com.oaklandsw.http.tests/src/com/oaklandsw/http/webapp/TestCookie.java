@@ -1,11 +1,14 @@
 package com.oaklandsw.http.webapp;
 
-import java.net.HttpURLConnection;
 import java.net.URL;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
+import com.oaklandsw.http.Cookie;
+import com.oaklandsw.http.CookieContainer;
+import com.oaklandsw.http.HttpURLConnection;
+import com.oaklandsw.http.servlet.ReadCookieServlet;
 import com.oaklandsw.http.servlet.WriteCookieServlet;
 import com.oaklandsw.log.Log;
 import com.oaklandsw.log.LogFactory;
@@ -31,28 +34,73 @@ public class TestCookie extends TestWebappBase
         mainRun(suite(), args);
     }
 
+    public void testSetCookieTooLate() throws Exception
+    {
+        URL url = new URL(_urlBase + WriteCookieServlet.NAME + "?simple=set");
+
+        CookieContainer cc = new CookieContainer();
+
+        HttpURLConnection urlCon = (HttpURLConnection)url.openConnection();
+        urlCon.connect();
+        try
+        {
+            urlCon.setCookieSupport(cc, null);
+            fail("Expected exception");
+        }
+        catch (Exception ex)
+        {
+            assertTrue(ex.getMessage().indexOf("has been established") > -1);
+        }
+        getReply(urlCon);
+    }
+
     public void testSetCookie(String method) throws Exception
     {
         URL url = new URL(_urlBase + WriteCookieServlet.NAME + "?simple=set");
         int response = 0;
 
+        CookieContainer cc = new CookieContainer();
+
         HttpURLConnection urlCon = (HttpURLConnection)url.openConnection();
         urlCon.setRequestMethod(method);
-        urlCon.connect();
+        urlCon.setCookieSupport(cc, null);
         response = urlCon.getResponseCode();
         assertEquals(200, response);
 
-        String cookie = urlCon.getHeaderField("set-cookie2");
-        if (cookie == null)
-            cookie = urlCon.getHeaderField("set-cookie");
-        assertTrue(cookie.indexOf("simplecookie=value;") >= 0);
-        assertTrue(cookie.indexOf("Version=1") >= 0);
+        assertEquals(1, cc.getCookies().length);
+        Cookie c = cc.getCookies()[0];
+        assertEquals("simplecookie", c.getName());
+        assertEquals("value", c.getValue());
+        // Update value for when cookie is given back to servlet
+        c.setValue(c.getValue() + "updated");
+        assertEquals(1, c.getVersion());
+        getReply(urlCon);
 
+        // Now have the cookie read
+        url = new URL(_urlBase + ReadCookieServlet.NAME);
+
+        urlCon = (HttpURLConnection)url.openConnection();
+        urlCon.setRequestMethod(method);
+        urlCon.setCookieSupport(cc, null);
+        response = urlCon.getResponseCode();
+        assertEquals(200, response);
         String reply = getReply(urlCon);
-        assertTrue(checkReplyNoAssert(reply, "<title>WriteCookieServlet: "
+        assertTrue(checkReplyNoAssert(reply, "<title>ReadCookieServlet: "
             + method
             + "</title>"));
-        assertTrue(checkReplyNoAssert(reply, "Wrote simplecookie.<br>"));
+        assertTrue(checkReplyNoAssert(reply, "simplecookie=\"valueupdated\""));
+        
+        // Now have the cookie removed
+        url = new URL(_urlBase + WriteCookieServlet.NAME + "?simple=unset");
+
+        urlCon = (HttpURLConnection)url.openConnection();
+        urlCon.setRequestMethod(method);
+        urlCon.setCookieSupport(cc, null);
+        response = urlCon.getResponseCode();
+        assertEquals(200, response);
+
+        assertEquals(0, cc.getCookies().length);
+        getReply(urlCon);
         checkNoActiveConns(url);
     }
 
@@ -78,34 +126,24 @@ public class TestCookie extends TestWebappBase
             + "?simple=set&domain=set");
         int response = 0;
 
+        CookieContainer cc = new CookieContainer();
+
         HttpURLConnection urlCon = (HttpURLConnection)url.openConnection();
         urlCon.setRequestMethod(method);
+        urlCon.setCookieSupport(cc, null);
         urlCon.connect();
         response = urlCon.getResponseCode();
         assertEquals(200, response);
 
-        String cookieField;
-        // FOR Tomcat 3.2 - this is no longer tested
-        //if (urlCon.getHeaderField(0).indexOf("HTTP/1.0") >= 0)
-        //    cookieField = "set-cookie2";
-        //else
-            cookieField = "set-cookie";
-
         int numFound = 0;
-        for (int i = 1; true; i++)
+        for (int i = 0; i < cc.getCookies().length; i++)
         {
-            String fieldName = urlCon.getHeaderFieldKey(i);
-            if (fieldName == null)
-                break;
-            if (fieldName.equalsIgnoreCase(cookieField))
-            {
-                String cookieVal = urlCon.getHeaderField(i);
-                _log.debug("cookie: " + cookieVal);
-                if (cookieVal.startsWith("simplecookie=value"))
-                    numFound++;
-                if (cookieVal.startsWith("domaincookie=value"))
-                    numFound++;
-            }
+            Cookie cookie = cc.getCookies()[i];
+            // System.out.println(cookie);
+            if (cookie.getName().equals("simplecookie"))
+                numFound++;
+            if (cookie.getName().equals("domaincookie"))
+                numFound++;
         }
 
         assertEquals(2, numFound);
@@ -134,8 +172,49 @@ public class TestCookie extends TestWebappBase
         testSetMultiCookie("PUT");
     }
 
+    public void testSetExpiredCookie(String method) throws Exception
+    {
+        URL url = new URL(_urlBase
+            + WriteCookieServlet.NAME
+            + "?simple=set&expire=1");
+        int response = 0;
+
+        CookieContainer cc = new CookieContainer();
+
+        HttpURLConnection urlCon = (HttpURLConnection)url.openConnection();
+        urlCon.setRequestMethod(method);
+        urlCon.setCookieSupport(cc, null);
+        urlCon.connect();
+        response = urlCon.getResponseCode();
+        assertEquals(200, response);
+        getReply(urlCon);
+
+        assertEquals(1, cc.getCookies().length);
+
+        Thread.sleep(1100);
+        cc.purgeExpiredCookies();
+
+        assertEquals(0, cc.getCookies().length);
+    }
+
+    public void testSetExpiredCookieGet() throws Exception
+    {
+        testSetExpiredCookie("GET");
+    }
+
+    public void testSetExpiredCookiePost() throws Exception
+    {
+        testSetExpiredCookie("POST");
+    }
+
+    public void testSetExpiredCookiePut() throws Exception
+    {
+        testSetExpiredCookie("PUT");
+    }
+
     public void allTestMethods() throws Exception
     {
+        testSetCookieTooLate();
         testSetCookieGet();
         testSetCookiePost();
         testSetCookiePut();
@@ -143,6 +222,10 @@ public class TestCookie extends TestWebappBase
         testSetMultiCookieGet();
         testSetMultiCookiePost();
         testSetMultiCookiePut();
+
+        testSetExpiredCookieGet();
+        testSetExpiredCookiePost();
+        testSetExpiredCookiePut();
     }
 
 }

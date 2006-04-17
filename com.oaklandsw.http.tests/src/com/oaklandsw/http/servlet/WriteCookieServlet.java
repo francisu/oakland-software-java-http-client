@@ -75,11 +75,18 @@ public class WriteCookieServlet extends MultiMethodServlet
             ServletException
     {
         StringBuffer html = new StringBuffer();
-
+        // Age for new cookies
+        int setMaxAge = -1;
+        
+        String setMaxAgeStr = request.getParameter("expire");
+        if (setMaxAgeStr != null)
+            setMaxAge = Integer.parseInt(setMaxAgeStr);
+        
         Cookie simple = new Cookie("simplecookie", "value");
         simple.setVersion(1);
         if ("set".equalsIgnoreCase(request.getParameter("simple")))
         {
+            simple.setMaxAge(setMaxAge);
             response.addCookie(simple);
             html.append("Wrote simplecookie.<br>");
         }
@@ -95,6 +102,7 @@ public class WriteCookieServlet extends MultiMethodServlet
         domain.setVersion(1);
         if ("set".equalsIgnoreCase(request.getParameter("domain")))
         {
+            domain.setMaxAge(setMaxAge);
             response.addCookie(domain);
             html.append("Wrote domaincookie.<br>");
         }
