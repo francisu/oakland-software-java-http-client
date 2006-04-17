@@ -50,7 +50,7 @@ public class TestEnv
         }
         PORT = tempPort;
 
-        setUp();
+        //setUp();
     }
 
     public static String       _protocol                  = "http:";

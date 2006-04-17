@@ -8,7 +8,6 @@ import junit.framework.TestSuite;
 import com.oaklandsw.http.HttpConnection;
 import com.oaklandsw.http.HttpConnectionManager;
 import com.oaklandsw.http.HttpURLConnection;
-import com.oaklandsw.http.TestEnv;
 import com.oaklandsw.http.servlet.ParamServlet;
 import com.oaklandsw.http.servlet.RequestBodyServlet;
 import com.oaklandsw.log.Log;
@@ -34,15 +33,6 @@ public class TestExplicitConnection extends TestWebappBase
     public static void main(String args[])
     {
         mainRun(suite(), args);
-    }
-
-    public void setUp()
-    {
-        TestEnv.setUp();
-    }
-
-    public void tearDown()
-    {
     }
 
     public void testConnect() throws Exception

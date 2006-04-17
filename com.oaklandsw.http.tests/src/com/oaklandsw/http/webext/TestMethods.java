@@ -60,7 +60,6 @@ import junit.framework.Test;
 import junit.framework.TestSuite;
 
 import com.oaklandsw.http.TestBase;
-import com.oaklandsw.http.TestEnv;
 
 /**
  * Simple tests for the HTTP client hitting an external webserver.
@@ -102,11 +101,6 @@ public class TestMethods extends TestBase
     public static void main(String args[])
     {
         mainRun(suite(), args);
-    }
-
-    public void setUp() throws Exception
-    {
-        TestEnv.setUp();
     }
 
     public void testMethodsOptionsExternal() throws IOException

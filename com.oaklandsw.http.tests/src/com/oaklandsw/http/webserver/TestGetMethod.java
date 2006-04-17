@@ -106,11 +106,6 @@ public class TestGetMethod extends TestBase
         junit.textui.TestRunner.main(testCaseName);
     }
 
-    public void setUp() throws Exception
-    {
-        TestEnv.setUp();
-    }
-
     public void testGetSlashWithoutDisk() throws IOException
     {
         URL url = new URL("http://" + _host + ":" + _port + "/");

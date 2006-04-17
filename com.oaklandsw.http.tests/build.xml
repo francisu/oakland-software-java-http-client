@@ -15,13 +15,11 @@
         <include name="*.jar" />
       </fileset>
     	  <fileset file="../com.oaklandsw.build/junit.jar"/>	
-   	  <dirset dir="${basedir}/../com.oaklandsw.http/bin"/>
+     	  <dirset dir="${basedir}/../com.oaklandsw.http/bin"/>
+     	  <dirset dir="${basedir}/../com.oaklandsw.http.tests/bin"/>
      	  <dirset dir="${basedir}/../com.oaklandsw.util/bin"/>
      	  <dirset dir="${basedir}/../com.oaklandsw.build/bin"/>
     </path>
-  	
-    <property name="classes.test-webapp.dir" value="${classes.dir}/test-webapp"/>
-  	
 
   </target>
 
@@ -58,5 +56,24 @@
 	      </classes>
 	    </war>
 	  </target>
-		
+	  <!-- =================================================================== -->
+	  <!-- Junit tests                        -->
+	  <!-- =================================================================== -->
+		<target name="junit" depends="compile-java">
+			<junit printsummary="on" fork="on">
+				<jvmarg value="-Dlog4j.configuration=../com.oaklandsw.build/src/logprops/ljp.none"/>
+				<jvmarg value="-Djava.util.logging.config.file=../com.oaklandsw.build/src/logprops/ljp.none"/>
+				<sysproperty key="OAKLANDSW_ROOT" value=".."/>
+				<sysproperty key="oaklandsw.localhost" value="repoman"/>
+				<sysproperty key="oaklandsw.errorhost" value="127.0.0.1"/>
+				<sysproperty key="java.net.preferIPv4Stack" value="true"/>
+				<classpath refid="compile.classpath"/>
+				<formatter type="plain" usefile="false"/>
+				<!--batchtest>
+					<fileset dir="bin/com/oaklandsw/http" includes="webapp/Test*.class"/>
+				</batchtest-->
+				<!--test name="com.oaklandsw.http.TestAll"/-->
+				<test name="com.oaklandsw.http.TestAll"/>
+			</junit>
+		</target>
 </project>

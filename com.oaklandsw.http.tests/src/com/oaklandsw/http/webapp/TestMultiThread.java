@@ -64,8 +64,8 @@ public class TestMultiThread extends TestWebappBase
 
     public void tearDown() throws Exception
     {
+        super.tearDown();
         _threadDelay = 0;
-        HttpURLConnection.setFollowRedirects(true);
     }
 
     protected void threadMethod(String method,

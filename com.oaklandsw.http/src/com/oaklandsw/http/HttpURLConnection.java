@@ -257,8 +257,9 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
 
     protected static boolean          _explicitClose;
 
-    protected static final int        DEFAULT_IDLE_TIMEOUT              = 14000;
-    protected static final int        DEFAULT_IDLE_PING                 = 0;
+    // For tests
+    public static final int           DEFAULT_IDLE_TIMEOUT              = 14000;
+    public static final int           DEFAULT_IDLE_PING                 = 0;
 
     protected static int              _defaultIdleTimeout               = DEFAULT_IDLE_TIMEOUT;
     protected int                     _idleTimeout;

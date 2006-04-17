@@ -107,14 +107,22 @@ public class TestBase extends com.oaklandsw.TestCaseBase
     protected void tearDown() throws Exception
     {
         super.tearDown();
+
         com.oaklandsw.http.HttpURLConnection.setDefaultTimeout(0);
         com.oaklandsw.http.HttpURLConnection.setDefaultConnectionTimeout(0);
         com.oaklandsw.http.HttpURLConnection.setDefaultRequestTimeout(0);
-        com.oaklandsw.http.HttpURLConnection.setDefaultIdleConnectionTimeout(0);
-        com.oaklandsw.http.HttpURLConnection.setDefaultIdleConnectionPing(0);
         com.oaklandsw.http.HttpURLConnection.setExplicitClose(false);
         com.oaklandsw.http.HttpURLConnection
                 .setTries(com.oaklandsw.http.HttpURLConnection.MAX_TRIES);
+
+        com.oaklandsw.http.HttpURLConnection
+                .setDefaultIdleConnectionTimeout(com.oaklandsw.http.HttpURLConnection.DEFAULT_IDLE_TIMEOUT);
+        com.oaklandsw.http.HttpURLConnection
+                .setDefaultIdleConnectionPing(com.oaklandsw.http.HttpURLConnection.DEFAULT_IDLE_PING);
+        com.oaklandsw.http.HttpURLConnection
+                .setMaxConnectionsPerHost(HttpConnectionManager.DEFAULT_MAX_CONNECTIONS);
+        com.oaklandsw.http.HttpURLConnection.closeAllPooledConnections();
+
     }
 
     protected void setupDefaultTimeout(int type, int value)

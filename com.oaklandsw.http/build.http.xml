@@ -71,7 +71,7 @@
              access="public"
              windowtitle="${java.http.name} API"
              doctitle="${java.http.name}"
-             bottom="Copyright &#169; 2002-2005 oakland software incorporated. All Rights Reserved."
+             bottom="Copyright &#169; 2002-2006 Oakland Software Incorporated. All Rights Reserved."
     >
       <fileset dir="${java.src.dir}" defaultexcludes="yes">
         <include name="com/oaklandsw/http/HttpURLConnection.java" />
@@ -84,6 +84,9 @@
         <include name="com/oaklandsw/http/UserCredential.java" />
         <include name="com/oaklandsw/http/NtlmCredential.java" />
         <include name="com/oaklandsw/http/HostnameVerifier.java" />
+        <include name="com/oaklandsw/http/Cookie.java" />
+        <include name="com/oaklandsw/http/CookieContainer.java" />
+        <include name="com/oaklandsw/http/CookiePolicy.java" />
       </fileset>
       </javadoc>
   </target>

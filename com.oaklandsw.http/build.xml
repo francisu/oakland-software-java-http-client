@@ -44,6 +44,9 @@
         <include name="com/oaklandsw/http/UserCredential.java" />
         <include name="com/oaklandsw/http/NtlmCredential.java" />
         <include name="com/oaklandsw/http/HostnameVerifier.java" />
+        <include name="com/oaklandsw/http/Cookie.java" />
+        <include name="com/oaklandsw/http/CookieContainer.java" />
+        <include name="com/oaklandsw/http/CookiePolicy.java" />
       </fileset>
       </javadoc>
   </target>
@@ -65,7 +68,8 @@
     </jar>
 
   </target>
-
+	
+	
   <!-- =================================================================== -->
   <!-- Creates the distribution - HTTP                                     -->
   <!-- =================================================================== -->

@@ -36,11 +36,6 @@ public class TestMethods extends TestWebappBase
         mainRun(suite(), args);
     }
 
-    public void tearDown() throws Exception
-    {
-        com.oaklandsw.http.HttpURLConnection.setExplicitClose(false);
-    }
-
     public void testGetMethod() throws Exception
     {
         doGetLikeMethod("GET", CHECK_CONTENT);

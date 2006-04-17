@@ -86,15 +86,6 @@ public class TestHttps extends TestBase
         return new TestSuite(TestHttps.class);
     }
 
-    public void setUp() throws Exception
-    {
-        TestEnv.setUp();
-    }
-
-    public void tearDown() throws Exception
-    {
-    }
-
     public void testHttpsGet(URL url) throws IOException
     {
         int response = 0;

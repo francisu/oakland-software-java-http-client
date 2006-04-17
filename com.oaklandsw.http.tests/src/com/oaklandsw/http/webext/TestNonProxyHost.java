@@ -30,13 +30,14 @@ public class TestNonProxyHost extends TestBase
 
     public void setUp() throws Exception
     {
-        TestEnv.setUp();
+        super.setUp();
         com.oaklandsw.http.HttpURLConnection.setProxyHost(TestEnv.TEST_PROXY_HOST);
         com.oaklandsw.http.HttpURLConnection.setProxyPort(TestEnv.TEST_PROXY_PORT);
     }
 
     public void tearDown() throws Exception
     {
+        super.tearDown();
         com.oaklandsw.http.HttpURLConnection.setProxyHost(null);
         com.oaklandsw.http.HttpURLConnection.setProxyPort(-1);
     }

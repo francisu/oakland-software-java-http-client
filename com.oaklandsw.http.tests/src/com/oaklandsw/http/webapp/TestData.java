@@ -34,16 +34,6 @@ public class TestData extends TestWebappBase
         mainRun(suite(), args);
     }
 
-    public void setUp()
-    {
-        TestEnv.setUp();
-    }
-
-    public void tearDown()
-    {
-        com.oaklandsw.http.HttpURLConnection.setExplicitClose(false);
-    }
-
     public void testDisconnect() throws Exception
     {
 

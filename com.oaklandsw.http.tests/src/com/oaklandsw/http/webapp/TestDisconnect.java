@@ -6,7 +6,6 @@ import java.net.URL;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
-import com.oaklandsw.http.TestEnv;
 import com.oaklandsw.http.servlet.RequestBodyServlet;
 import com.oaklandsw.log.Log;
 import com.oaklandsw.log.LogFactory;
@@ -30,16 +29,6 @@ public class TestDisconnect extends TestWebappBase
     public static void main(String args[])
     {
         mainRun(suite(), args);
-    }
-
-    public void setUp()
-    {
-        TestEnv.setUp();
-    }
-
-    public void tearDown()
-    {
-        com.oaklandsw.http.HttpURLConnection.setExplicitClose(false);
     }
 
     public void testDisconnect() throws Exception

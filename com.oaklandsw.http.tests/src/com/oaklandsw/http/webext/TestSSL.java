@@ -32,13 +32,9 @@ public class TestSSL extends TestBase
         return new TestSuite(TestSSL.class);
     }
 
-    public void setUp() throws Exception
-    {
-        TestEnv.setUp();
-    }
-
     public void tearDown() throws Exception
     {
+        super.tearDown();
         com.oaklandsw.http.HttpURLConnection
                 .setDefaultSSLSocketFactory((SSLSocketFactory)SSLSocketFactory
                         .getDefault());

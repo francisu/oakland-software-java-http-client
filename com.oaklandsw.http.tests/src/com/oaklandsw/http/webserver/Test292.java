@@ -6,7 +6,6 @@ import java.net.URL;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
-import com.oaklandsw.http.HttpConnectionManager;
 import com.oaklandsw.http.TestBase;
 import com.oaklandsw.http.TestEnv;
 
@@ -21,18 +20,6 @@ public class Test292 extends TestBase
     public static Test suite()
     {
         return new TestSuite(Test292.class);
-    }
-
-    public void setUp() throws Exception
-    {
-        TestEnv.setUp();
-    }
-
-    public void tearDown() throws Exception
-    {
-        com.oaklandsw.http.HttpURLConnection.setExplicitClose(false);
-        com.oaklandsw.http.HttpURLConnection
-                .setMaxConnectionsPerHost(HttpConnectionManager.DEFAULT_MAX_CONNECTIONS);
     }
 
     public static void main(String args[])

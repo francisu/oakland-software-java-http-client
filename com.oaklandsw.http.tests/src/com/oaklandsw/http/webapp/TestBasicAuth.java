@@ -7,7 +7,6 @@ import java.net.URL;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
-import com.oaklandsw.http.TestEnv;
 import com.oaklandsw.http.TestUserAgent;
 import com.oaklandsw.http.servlet.BasicAuthServlet;
 import com.oaklandsw.log.Log;
@@ -32,11 +31,6 @@ public class TestBasicAuth extends TestWebappBase
     public static void main(String args[])
     {
         mainRun(suite(), args);
-    }
-
-    protected void setUp()
-    {
-        TestEnv.setUp();
     }
 
     public void testSimpleAuthGet() throws Exception

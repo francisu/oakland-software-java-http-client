@@ -8,7 +8,6 @@ import java.net.UnknownHostException;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
-import com.oaklandsw.http.HttpConnectionManager;
 import com.oaklandsw.http.TestEnv;
 import com.oaklandsw.http.servlet.TimeoutServlet;
 import com.oaklandsw.log.Log;
@@ -19,9 +18,6 @@ public class TestFailover extends TestWebappBase
 
     private static final Log _log         = LogFactory
                                                   .getLog(TestFailover.class);
-
-    private long             _prevTimeout = com.oaklandsw.http.HttpURLConnection
-                                                  .getDefaultIdleConnectionTimeout();
 
     public TestFailover(String testName)
     {
@@ -37,17 +33,6 @@ public class TestFailover extends TestWebappBase
     public static void main(String args[])
     {
         mainRun(suite(), args);
-    }
-
-    public void tearDown() throws Exception
-    {
-        com.oaklandsw.http.HttpURLConnection.setDefaultTimeout(0);
-        com.oaklandsw.http.HttpURLConnection.setExplicitClose(false);
-        com.oaklandsw.http.HttpURLConnection
-                .setDefaultIdleConnectionTimeout((int)_prevTimeout);
-        com.oaklandsw.http.HttpURLConnection
-                .setMaxConnectionsPerHost(HttpConnectionManager.DEFAULT_MAX_CONNECTIONS);
-        com.oaklandsw.http.HttpURLConnection.closeAllPooledConnections();
     }
 
     public void testConnectProxyHostBad() throws Exception

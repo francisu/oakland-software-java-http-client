@@ -34,9 +34,9 @@ public class TestIIS extends TestBase
     }
 
     // We assume the web server is running
-    protected void setUp()
+    protected void setUp() throws Exception
     {
-        TestEnv.setUp();
+        super.setUp();
         TestUserAgent._type = TestUserAgent.GOOD;
         _getForm = "TestForm2.asp";
     }

@@ -5,7 +5,6 @@ import java.net.URL;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
-import com.oaklandsw.http.HttpConnectionManager;
 import com.oaklandsw.http.TestBase;
 import com.oaklandsw.http.TestEnv;
 
@@ -29,17 +28,16 @@ public class TestProxyHost extends TestBase
 
     public void setUp() throws Exception
     {
-        TestEnv.setUp();
+        super.setUp();
         com.oaklandsw.http.HttpURLConnection.setProxyHost(TestEnv.TEST_PROXY_HOST);
         com.oaklandsw.http.HttpURLConnection.setProxyPort(TestEnv.TEST_PROXY_PORT);
     }
 
     public void tearDown() throws Exception
     {
+        super.tearDown();
         com.oaklandsw.http.HttpURLConnection.setProxyHost(null);
         com.oaklandsw.http.HttpURLConnection.setProxyPort(-1);
-        com.oaklandsw.http.HttpURLConnection
-                .setMaxConnectionsPerHost(HttpConnectionManager.DEFAULT_MAX_CONNECTIONS);
     }
 
     // 958 unlimited max connections
