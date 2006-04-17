@@ -113,10 +113,13 @@ public class TestHeaders extends TestWebappBase
         assertEquals("Yes", urlCon.getHeaderField("headersetbyservlet"));
 
         // Bug 1440 getHeaderFields() not implemented
-        Map headerMap = urlCon.getHeaderFields();
+        // Need to cast this since getHeaderFields() is not provided prior
+        // to JDK14
+        Map headerMap = ((com.oaklandsw.http.HttpURLConnection)urlCon)
+                .getHeaderFields();
         List headerField = (List)headerMap.get("HeaderSetByServlet");
         assertEquals("Yes", headerField.get(0));
-        
+
         if (com.oaklandsw.http.HttpURLConnection.getExplicitClose())
             urlCon.getInputStream().close();
         checkNoActiveConns(url);
