@@ -112,7 +112,7 @@ public class TestIdleTimeouts extends TestBase
         urlCon.getResponseCode();
 
         // Wait for connection to timeout at the server
-        Thread.sleep(1000);
+        Thread.sleep(1500);
 
         // Should work since it's on a new connection, because the ping
         // killed the previous connection
