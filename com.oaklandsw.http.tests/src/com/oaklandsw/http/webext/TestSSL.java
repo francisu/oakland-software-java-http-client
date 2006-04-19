@@ -57,6 +57,11 @@ public class TestSSL extends TestBase
         checkNoActiveConns(url);
     }
 
+    public void testHttpsGetNothing() throws Exception
+    {
+        testHttpsGet(new URL(TestEnv.TEST_WEBEXT_SSL_URL));
+    }
+
     public void testHttpsGetSetDefault() throws Exception
     {
         TestSSLSocketFactory sf = new TestSSLSocketFactory();
