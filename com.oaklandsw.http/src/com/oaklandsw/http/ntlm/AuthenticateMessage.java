@@ -15,7 +15,7 @@ import javax.crypto.Cipher;
 import javax.crypto.spec.SecretKeySpec;
 
 import com.oaklandsw.http.HttpException;
-import com.oaklandsw.util.SecurityHelper;
+import com.oaklandsw.http.SecurityHelper;
 import com.oaklandsw.util.Util;
 
 public class AuthenticateMessage extends Message
