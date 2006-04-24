@@ -66,6 +66,7 @@ public class TestNtlmMessages extends TestCase
         cmsg.decode();
 
         AuthenticateMessage amsg = new AuthenticateMessage();
+        amsg.setChallenge(cmsg);
         amsg.setHost("testhost");
         amsg.setUser("testuser");
         amsg.setPassword("testpass");
@@ -74,6 +75,7 @@ public class TestNtlmMessages extends TestCase
         amsg.encode();
 
         amsg = new AuthenticateMessage();
+        amsg.setChallenge(cmsg);
         amsg.setHost("testhost");
         amsg.setUser("testuser");
         amsg.setPassword("testpast");

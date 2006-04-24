@@ -426,37 +426,6 @@ public class LocalTestAuthenticator extends TestCase
         assertTrue(null != method.getRequestProperty("Authorization"));
     }
 
-    public void testNTLMAuthenticationResponse1() throws Exception
-    {
-        String expected = "NTLM TlRMTVNTUAABAAAAA7IAAAYABgAkAAAABAAEACAAAABIT"
-            + "1NURE9NQUlO";
-        SimpleHttpMethod method = new SimpleHttpMethod();
-        assertTrue(Authenticator.authenticate(method, "NTLM",
-                                              Authenticator.WWW_AUTH_RESP));
-        assertTrue(null != method.getRequestProperty("Authorization"));
-        assertEquals(expected, method.getRequestProperty("Authorization"));
-    }
-
-    public void testNTLMAuthenticationResponse2() throws Exception
-    {
-        String expected = "NTLM TlRMTVNTUAADAAAAGAAYAFIAAAAYABgAagAAAAYABgBAAAAACAAIAEYAAAA"
-            + "EAAQATgAAAAAAAACCAAAAAoIAAERPTUFJTlVTRVJOQU1FSE9TVAaC+vLxUEHnU"
-            + "tpItj9Dp4kzwQfd61LztrsPrrYWxP9lHs0xp2ozJHa05o0TzEdB5w==";
-
-        SimpleHttpMethod method = new SimpleHttpMethod();
-        String ntlmAuth = "NTLM TlRMTVNTUAACAAAACgAKADAAAAAGgoEAPc4kP4LtCV8AAAAAAAAAAJ4AngA"
-            + "6AAAASU5UUkFFUEhPWAIAFABJAE4AVABSAEEARQBQAEgATwBYAAEAEgBCAE8AQQB"
-            + "SAEQAUgBPAE8ATQAEACgAaQBuAHQAcgBhAGUAcABoAG8AeAAuAGUAcABoAG8AeAA"
-            + "uAGMAbwBtAAMAPABCAG8AYQByAGQAcgBvAG8AbQAuAGkAbgB0AHIAYQBlAHAAaAB"
-            + "vAHgALgBlAHAAaABvAHgALgBjAG8AbQAAAAAA";
-
-        assertTrue(Authenticator.authenticate(method, ntlmAuth,
-                                              Authenticator.WWW_AUTH_RESP));
-
-        assertTrue(null != method.getRequestProperty("Authorization"));
-        assertEquals(expected, method.getRequestProperty("Authorization"));
-    }
-
     /**
      * Test that the Unauthorized response is returned when doAuthentication is
      * false.

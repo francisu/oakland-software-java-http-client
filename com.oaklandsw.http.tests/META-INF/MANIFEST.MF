@@ -6,6 +6,7 @@ Bundle-Version: 1.0.0
 Bundle-Vendor: OAKLANDSW
 Bundle-Localization: plugin
 Require-Bundle: com.oaklandsw.http,
+ com.oaklandsw.util.jars,
  com.oaklandsw.util,
  com.oaklandsw.util.tests,
  org.junit,

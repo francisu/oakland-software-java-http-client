@@ -35,14 +35,14 @@ public class TestIIS extends TestBase
     }
 
     // We assume the web server is running
-    protected void setUp() throws Exception
+    public void setUp() throws Exception
     {
         super.setUp();
         TestUserAgent._type = TestUserAgent.GOOD;
         _getForm = "TestForm2.asp";
     }
 
-    protected void tearDown() throws Exception
+    public void tearDown() throws Exception
     {
         super.tearDown();
     }
