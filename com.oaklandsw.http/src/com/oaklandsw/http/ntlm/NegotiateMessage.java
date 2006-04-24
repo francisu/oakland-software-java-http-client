@@ -20,6 +20,9 @@ public class NegotiateMessage extends Message
 
     protected static final int NEGOTIATE_HEADER_LEN = 32;
 
+    // Used for testing
+    public static boolean      _testForceV1         = false;
+
     // Default constructor
     public NegotiateMessage()
     {
@@ -99,6 +102,10 @@ public class NegotiateMessage extends Message
         // Offer Unicode if we prefer it
         if (HttpURLConnection.getNtlmPreferredEncoding() == HttpURLConnection.NTLM_ENCODING_UNICODE)
             _flags |= NEGOTIATE_UNICODE;
+
+        // These flags request NTLM V2 authentication if supported on the server
+        if (!_testForceV1)
+            _flags |= NEGOTIATE_NTLM2 | REQUEST_TARGET;
 
         if (domainLen == 0)
             domainOffset = 0;

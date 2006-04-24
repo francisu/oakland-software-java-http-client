@@ -270,14 +270,14 @@ public class Message implements Dump
 
         if (_nonce != null)
         {
-            ret.append("  Nonce: ");
+            ret.append("  Nonce: \n");
             ret.append(HexString.dump(_nonce));
-            ret.append("\n");
         }
 
         // Allow the subclasses to put their stuff here
         getMessageInfo(ret);
 
+        ret.append("Full message:\n");
         ret.append(HexString.dump(_msgBytes));
         return ret.toString();
     }

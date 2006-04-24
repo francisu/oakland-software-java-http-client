@@ -14,6 +14,7 @@ import junit.framework.TestSuite;
 import com.oaklandsw.http.TestBase;
 import com.oaklandsw.http.TestEnv;
 import com.oaklandsw.http.TestUserAgent;
+import com.oaklandsw.http.ntlm.NegotiateMessage;
 
 public class TestIIS extends TestBase
 {
@@ -41,6 +42,11 @@ public class TestIIS extends TestBase
         _getForm = "TestForm2.asp";
     }
 
+    protected void tearDown() throws Exception
+    {
+        super.tearDown();
+    }
+    
     public static Test suite()
     {
         return new TestSuite(TestIIS.class);
@@ -61,6 +67,7 @@ public class TestIIS extends TestBase
             + "TestForm1.asp");
         int response = 0;
 
+        //setLogging(true);
         _urlCon = (HttpURLConnection)url.openConnection();
 
         _urlCon.setRequestMethod("POST");
@@ -73,6 +80,7 @@ public class TestIIS extends TestBase
 
         String reply = getReply(_urlCon);
         iisCheckReply(reply);
+        //setLogging(false);
     }
 
     public void test110PostClose() throws MalformedURLException, IOException
@@ -204,6 +212,15 @@ public class TestIIS extends TestBase
         allTestMethods();
         com.oaklandsw.http.HttpURLConnection
                 .setNtlmPreferredEncoding(com.oaklandsw.http.HttpURLConnection.NTLM_ENCODING_UNICODE);
+    }
+
+
+    // Test test force NTLM V1
+    public void testForceNtlmV1() throws Exception
+    {
+        NegotiateMessage._testForceV1 = true;
+        allTestMethods();
+        NegotiateMessage._testForceV1 = false;
     }
 
 }

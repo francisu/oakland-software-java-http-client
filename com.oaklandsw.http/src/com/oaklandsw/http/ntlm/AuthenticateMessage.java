@@ -9,7 +9,6 @@ package com.oaklandsw.http.ntlm;
 
 import java.security.Key;
 import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 
 import javax.crypto.Cipher;
 import javax.crypto.spec.SecretKeySpec;
@@ -21,30 +20,31 @@ import com.oaklandsw.util.Util;
 public class AuthenticateMessage extends Message
 {
 
-    protected String              _host;
+    protected String           _host;
 
-    protected String              _user;
+    protected String           _user;
 
-    protected String              _domain;
+    protected String           _domain;
 
-    protected String              _password;
+    protected String           _password;
 
-    protected byte[]              _ntResponse;
+    protected byte[]           _ntResponse;
 
-    protected byte[]              _lmResponse;
+    protected byte[]           _lmResponse;
 
-    protected boolean             _encodingOem;
+    protected boolean          _encodingOem;
 
-    protected static final int    AUTHENTICATE_HEADER_LEN = 64;
+    protected boolean          _useNtlm2;
 
-    protected static final int    PASSWORD_LEN            = 14;
+    protected ChallengeMessage _challenge;
 
-    protected static final int    RESPONSE_LEN            = 24;
+    protected static final int AUTHENTICATE_HEADER_LEN = 64;
 
-    protected static final int    HASHED_PASSWORD_LEN     = 21;
+    protected static final int PASSWORD_LEN            = 14;
 
-    protected static final byte[] MAGIC                   = new byte[] { 0x4B,
-        0x47, 0x53, 0x21, 0x40, 0x23, 0x24, 0x25         };
+    protected static final int RESPONSE_LEN            = 24;
+
+    protected static final int HASHED_PASSWORD_LEN     = 21;
 
     // Default constructor
     public AuthenticateMessage()
@@ -76,54 +76,14 @@ public class AuthenticateMessage extends Message
         _encodingOem = encodingOem;
     }
 
-    protected byte[] calcLmPassword()
+    public void setUseNtlm2(boolean useNtlm2)
     {
-        String password = _password.toUpperCase();
-        if (password.length() > PASSWORD_LEN)
-            password = password.substring(0, PASSWORD_LEN);
-
-        // Get the first 14 bytes of the password, uppercase
-        byte[] passwordBytes = new byte[PASSWORD_LEN];
-        Util.toByteAscii(password.toUpperCase(), passwordBytes, 0);
-
-        // 21 byte result, only the first 16 are filled in, the rest will
-        // be zero
-        byte[] hashedPassword = new byte[HASHED_PASSWORD_LEN];
-
-        // Fill in the result
-        SecurityHelper.desEncrypt(hashedPassword, passwordBytes, 0, 0, MAGIC);
-        SecurityHelper.desEncrypt(hashedPassword, passwordBytes, 8, 7, MAGIC);
-
-        return hashedPassword;
+        _useNtlm2 = useNtlm2;
     }
 
-    protected byte[] calcNtPassword()
+    public void setChallenge(ChallengeMessage challenge)
     {
-        byte[] passwordBytes = new byte[_password.length() * 2];
-        // Always Unicode
-        Util.toByteUnicodeLittle(_password, passwordBytes, 0);
-
-        byte[] hashedPassword;
-
-        // MD4
-        MessageDigest md4 = null;
-        try
-        {
-            md4 = MessageDigest.getInstance("MD4");
-        }
-        catch (NoSuchAlgorithmException ex)
-        {
-            throw new RuntimeException("(bug) - " + ex);
-        }
-
-        md4.update(passwordBytes);
-        hashedPassword = md4.digest();
-
-        byte[] outPassword = new byte[HASHED_PASSWORD_LEN];
-        System.arraycopy(hashedPassword, 0, outPassword, 0,
-                         hashedPassword.length);
-
-        return outPassword;
+        _challenge = challenge;
     }
 
     // 
@@ -306,7 +266,12 @@ public class AuthenticateMessage extends Message
     {
         byte[] unicodePassword = password.getBytes("UnicodeLittleUnmarked");
         MessageDigest md4 = MessageDigest.getInstance("MD4");
-        return md4.digest(unicodePassword);
+        byte[] digest = md4.digest(unicodePassword);
+
+        byte[] outPassword = new byte[HASHED_PASSWORD_LEN];
+        System.arraycopy(digest, 0, outPassword, 0, digest.length);
+
+        return outPassword;
     }
 
     /**
@@ -382,12 +347,18 @@ public class AuthenticateMessage extends Message
     {
         byte[] data = new byte[challenge.length + clientData.length];
         System.arraycopy(challenge, 0, data, 0, challenge.length);
-        System.arraycopy(clientData, 0, data, challenge.length,
+        System.arraycopy(clientData,
+                         0,
+                         data,
+                         challenge.length,
                          clientData.length);
         byte[] mac = hmacMD5(data, hash);
         byte[] lmv2Response = new byte[mac.length + clientData.length];
         System.arraycopy(mac, 0, lmv2Response, 0, mac.length);
-        System.arraycopy(clientData, 0, lmv2Response, mac.length,
+        System.arraycopy(clientData,
+                         0,
+                         lmv2Response,
+                         mac.length,
                          clientData.length);
         return lmv2Response;
     }
@@ -439,12 +410,18 @@ public class AuthenticateMessage extends Message
         offset += reserved.length;
         System.arraycopy(timestamp, 0, blob, offset, timestamp.length);
         offset += timestamp.length;
-        System.arraycopy(clientChallenge, 0, blob, offset,
+        System.arraycopy(clientChallenge,
+                         0,
+                         blob,
+                         offset,
                          clientChallenge.length);
         offset += clientChallenge.length;
         System.arraycopy(unknown1, 0, blob, offset, unknown1.length);
         offset += unknown1.length;
-        System.arraycopy(targetInformation, 0, blob, offset,
+        System.arraycopy(targetInformation,
+                         0,
+                         blob,
+                         offset,
                          targetInformation.length);
         offset += targetInformation.length;
         System.arraycopy(unknown2, 0, blob, offset, unknown2.length);
@@ -564,12 +541,64 @@ public class AuthenticateMessage extends Message
 
     protected void calcResponses()
     {
-        byte[] lmPassword = calcLmPassword();
-        byte[] ntPassword = calcNtPassword();
+        try
+        {
+            byte[] chalBytes = new byte[_challenge._msgLength];
+            System.arraycopy(_challenge.getBytes(),
+                             0,
+                             chalBytes,
+                             0,
+                             _challenge._msgLength);
 
-        _lmResponse = encryptResponse(lmPassword);
-        _ntResponse = encryptResponse(ntPassword);
+            if ((_challenge.getFlags() & NEGOTIATE_TARGET_INFO) != 0)
+            {
+                byte[] clientChallenge = new byte[8];
+                Util.toByteLittle(System.currentTimeMillis(),
+                                  8,
+                                  clientChallenge,
+                                  0);
 
+                _lmResponse = getLMv2Response(_domain,
+                                              _user,
+                                              _password,
+                                              _nonce,
+                                              clientChallenge);
+
+                if (false && (_challenge.getFlags() & NEGOTIATE_NTLM2) != 0)
+                {
+                    // NTLM2 Session response
+                    _ntResponse = getNTLM2SessionResponse(_password,
+                                                          _nonce,
+                                                          clientChallenge);
+                    _flags |= NEGOTIATE_NTLM2;
+                }
+                else
+                {
+                    // NTLM V2 response
+                    _ntResponse = getNTLMv2Response(_domain,
+                                                    _user,
+                                                    _password,
+                                                    _challenge.getTargetBlock(),
+                                                    _nonce,
+                                                    clientChallenge);
+                }
+            }
+            else
+            {
+                // This is NTLM V1
+                _lmResponse = getLMResponse(_password, _nonce);
+                _ntResponse = getNTLMResponse(_password, _nonce);
+            }
+
+        }
+        catch (Exception e)
+        {
+            Util.impossible(e);
+        }
+
+        // _lmResponse = encryptResponse(lmPassword);
+        // if (!_useNtlm2)
+        // _ntResponse = encryptResponse(ntPassword);
     }
 
     public int decode() throws HttpException
@@ -633,7 +662,8 @@ public class AuthenticateMessage extends Message
             }
             else
             {
-                _domain = Util.fromByteUnicodeLittle(domainLen, _msgBytes,
+                _domain = Util.fromByteUnicodeLittle(domainLen,
+                                                     _msgBytes,
                                                      domainOffset);
             }
         }
@@ -647,7 +677,8 @@ public class AuthenticateMessage extends Message
             }
             else
             {
-                _host = Util.fromByteUnicodeLittle(hostLen, _msgBytes,
+                _host = Util.fromByteUnicodeLittle(hostLen,
+                                                   _msgBytes,
                                                    hostOffset);
             }
         }
@@ -661,7 +692,8 @@ public class AuthenticateMessage extends Message
             }
             else
             {
-                _user = Util.fromByteUnicodeLittle(userLen, _msgBytes,
+                _user = Util.fromByteUnicodeLittle(userLen,
+                                                   _msgBytes,
                                                    userOffset);
             }
         }
@@ -703,7 +735,7 @@ public class AuthenticateMessage extends Message
         _type = MSG_AUTHENTICATE;
         int index = super.encode();
 
-        _flags = NEGOTIATE_NTLM | NEGOTIATE_ALWAYS_SIGN;
+        _flags |= NEGOTIATE_NTLM | NEGOTIATE_ALWAYS_SIGN;
 
         if (_encodingOem)
             _flags |= NEGOTIATE_OEM;
@@ -749,13 +781,15 @@ public class AuthenticateMessage extends Message
         {
             if (_encodingOem)
             {
-                index = Util.toByteAscii(_domain.toUpperCase(), _msgBytes,
+                index = Util.toByteAscii(_domain.toUpperCase(),
+                                         _msgBytes,
                                          index);
             }
             else
             {
                 index = Util.toByteUnicodeLittle(_domain.toUpperCase(),
-                                                 _msgBytes, index);
+                                                 _msgBytes,
+                                                 index);
             }
         }
 
@@ -767,13 +801,20 @@ public class AuthenticateMessage extends Message
         else
         {
             index = Util.toByteUnicodeLittle(_user, _msgBytes, index);
-            index = Util.toByteUnicodeLittle(_host.toUpperCase(), _msgBytes,
+            index = Util.toByteUnicodeLittle(_host.toUpperCase(),
+                                             _msgBytes,
                                              index);
         }
 
-        System.arraycopy(_lmResponse, 0, _msgBytes, lmResponseOffset,
+        System.arraycopy(_lmResponse,
+                         0,
+                         _msgBytes,
+                         lmResponseOffset,
                          _lmResponse.length);
-        System.arraycopy(_ntResponse, 0, _msgBytes, ntResponseOffset,
+        System.arraycopy(_ntResponse,
+                         0,
+                         _msgBytes,
+                         ntResponseOffset,
                          _ntResponse.length);
 
         log();

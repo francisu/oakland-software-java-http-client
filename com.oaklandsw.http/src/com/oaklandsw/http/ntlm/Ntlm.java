@@ -42,43 +42,55 @@ public class Ntlm
         // No previous message, send the negotiate message
         if (message == null || message.trim().equals(""))
         {
-            NegotiateMessage msg = new NegotiateMessage();
-            msg.setHost(host);
-            msg.setDomain(domain);
-            msg.encode();
-            return new String(Base64.encode(msg.getBytes()), "8859_1");
+            NegotiateMessage negMsg = new NegotiateMessage();
+            negMsg.setHost(host);
+            negMsg.setDomain(domain);
+            negMsg.encode();
+            return new String(Base64.encode(negMsg.getBytes()), "8859_1");
         }
 
         // Decode previous challange and send response
-        ChallengeMessage msg = new ChallengeMessage();
-        msg.setBytes(Base64.decode(message.getBytes("8859_1")));
-        msg.decode();
+        ChallengeMessage challengeMsg = new ChallengeMessage();
+        challengeMsg.setBytes(Base64.decode(message.getBytes("8859_1")));
+        challengeMsg.decode();
 
-        AuthenticateMessage amsg = new AuthenticateMessage();
+        AuthenticateMessage authMsg = new AuthenticateMessage();
+        authMsg.setChallenge(challengeMsg);
+        
         // Both are allowed, use the preferred encoding
-        if ((msg.getFlags() & Message.NEGOTIATE_UNICODE) != 0
-            && (msg.getFlags() & Message.NEGOTIATE_OEM) != 0)
+        if ((challengeMsg.getFlags() & Message.NEGOTIATE_UNICODE) != 0
+            && (challengeMsg.getFlags() & Message.NEGOTIATE_OEM) != 0)
         {
             int preferredEncoding = HttpURLConnection
                     .getNtlmPreferredEncoding();
             if (preferredEncoding == HttpURLConnection.NTLM_ENCODING_UNICODE)
-                amsg.setEncodingOem(false);
+                authMsg.setEncodingOem(false);
             else
-                amsg.setEncodingOem(true);
+                authMsg.setEncodingOem(true);
         }
         // No choice, select the requested one
-        else if ((msg.getFlags() & Message.NEGOTIATE_UNICODE) != 0)
-            amsg.setEncodingOem(false);
+        else if ((challengeMsg.getFlags() & Message.NEGOTIATE_UNICODE) != 0)
+            authMsg.setEncodingOem(false);
         else
-            amsg.setEncodingOem(true);
+            authMsg.setEncodingOem(true);
 
-        amsg.setNonce(msg.getNonce());
-        amsg.setHost(host);
-        amsg.setUser(username);
-        amsg.setPassword(password);
-        amsg.setDomain(domain);
-        amsg.encode();
-        return new String(Base64.encode(amsg.getBytes()), "8859_1");
+        // Prefer NTLM v2 if requested
+        //if ((challengeMsg.getFlags() & Message.NEGOTIATE_NTLM2) != 0)
+        //    authMsg.setUseNtlm2(true);
+        
+        authMsg.setNonce(challengeMsg.getNonce());
+        authMsg.setHost(host);
+        authMsg.setUser(username);
+        authMsg.setPassword(password);
+        authMsg.setDomain(domain);
+
+        // Testing
+        //authMsg.setUseNtlm2(true);
+        //authMsg.encode();
+
+        //authMsg.setUseNtlm2(false);
+        authMsg.encode();
+        return new String(Base64.encode(authMsg.getBytes()), "8859_1");
     }
 
 }

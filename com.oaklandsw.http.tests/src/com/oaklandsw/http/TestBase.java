@@ -5,6 +5,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.Properties;
+
+import org.apache.log4j.PropertyConfigurator;
 
 import com.oaklandsw.http.server.ErrorServer;
 import com.oaklandsw.http.servlet.ParamServlet;
@@ -207,6 +210,16 @@ public class TestBase extends com.oaklandsw.TestCaseBase
 
     protected static String       host    = TestEnv.HOST;
     protected static int          port    = TestEnv.PORT;
+
+    public static void setLogging(boolean on)
+    {
+        Properties logProps = new Properties();
+        if (on)
+            logProps.setProperty("log4j.logger.com.oaklandsw", "DEBUG");
+        else
+            logProps.setProperty("log4j.logger.com.oaklandsw", "FATAL");
+        PropertyConfigurator.configure(logProps);
+    }
 
     public static String getReply(HttpURLConnection urlCon)
     {
