@@ -1,17 +1,8 @@
-Copyright 2002-2005 oakland software incorporated, all rights reserved.
+Copyright 2002-2006 oakland software incorporated, all rights reserved.
 
 Readme file for oakland software HTTP client support.
 
-HTTP client version 1.4.3
-
 See http://www.oaklandsoftware.com/support.html for current known problems.
-
-
-
-Fixed in this version
------------------------------------------------
-1143 Need a default SSL hostname verifier
-1259 HTTP connection timeout thread gets a negative wait sometimes
 
 
 Installation Instructions
