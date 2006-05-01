@@ -15,23 +15,23 @@ java.util.logging.ConsoleHandler.formatter = java.util.logging.SimpleFormatter
 
 
 # All HTTP client logging (SEVERE turns off tracing)
-#com.nogoop.http.level = ALL
-com.nogoop.http.level = SEVERE
+#com.oaklandsw.http.level = ALL
+com.oaklandsw.http.level = SEVERE
 
 # Wire tracing
-#com.nogoop.http.wireLog.level = ALL
+#com.oaklandsw.http.wireLog.level = ALL
 
 # Per-class logging
-#com.nogoop.http.ContentLengthInputStream.level = ALL
-#com.nogoop.http.ChunkedInputStream.level = ALL
-#com.nogoop.http.Headers.level = ALL
-#com.nogoop.http.HttpConnection.level = ALL
-#com.nogoop.http.HttpConnectionManager.level = ALL
-#com.nogoop.http.HttpURLConnection.level = ALL
-#com.nogoop.http.HttpURLConnection.level = INFO
-#com.nogoop.http.HttpURLConnectInternal.level = WARN
-#com.nogoop.http.HttpURLConnectInternal.level = ALL
-#com.nogoop.http.Authenticator.level = ALL
+#com.oaklandsw.http.ContentLengthInputStream.level = ALL
+#com.oaklandsw.http.ChunkedInputStream.level = ALL
+#com.oaklandsw.http.Headers.level = ALL
+#com.oaklandsw.http.HttpConnection.level = ALL
+#com.oaklandsw.http.HttpConnectionManager.level = ALL
+#com.oaklandsw.http.HttpURLConnection.level = ALL
+#com.oaklandsw.http.HttpURLConnection.level = INFO
+#com.oaklandsw.http.HttpURLConnectInternal.level = WARN
+#com.oaklandsw.http.HttpURLConnectInternal.level = ALL
+#com.oaklandsw.http.Authenticator.level = ALL
 
 
 

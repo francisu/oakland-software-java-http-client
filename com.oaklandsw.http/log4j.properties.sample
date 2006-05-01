@@ -22,23 +22,23 @@ log4j.appender.A1.layout.ConversionPattern=%-4r %-5p [%t] %37c %3x - %m%n
 
 
 # All HTTP client logging (FATAL turns off tracing)
-#log4j.logger.com.nogoop=DEBUG
-log4j.logger.com.nogoop=FATAL
+#log4j.logger.com.oaklandsw=DEBUG
+log4j.logger.com.oaklandsw=FATAL
 
 # Wire tracing
-#log4j.logger.com.nogoop.http.wireLog=DEBUG
+#log4j.logger.com.oaklandsw.http.wireLog=DEBUG
 
 # Per-class logging
-#log4j.logger.com.nogoop.http.ContentLengthInputStream=DEBUG
-#log4j.logger.com.nogoop.http.ChunkedInputStream=DEBUG
-#log4j.logger.com.nogoop.http.Headers=DEBUG
-#log4j.logger.com.nogoop.http.HttpConnection=DEBUG
-#log4j.logger.com.nogoop.http.HttpConnectionManager=DEBUG
-#log4j.logger.com.nogoop.http.HttpURLConnection=DEBUG
-#log4j.logger.com.nogoop.http.HttpURLConnection=INFO
-#log4j.logger.com.nogoop.http.HttpURLConnectInternal=WARN
-#log4j.logger.com.nogoop.http.HttpURLConnectInternal=DEBUG
-#log4j.logger.com.nogoop.http.Authenticator=DEBUG
+#log4j.logger.com.oaklandsw.http.ContentLengthInputStream=DEBUG
+#log4j.logger.com.oaklandsw.http.ChunkedInputStream=DEBUG
+#log4j.logger.com.oaklandsw.http.Headers=DEBUG
+#log4j.logger.com.oaklandsw.http.HttpConnection=DEBUG
+#log4j.logger.com.oaklandsw.http.HttpConnectionManager=DEBUG
+#log4j.logger.com.oaklandsw.http.HttpURLConnection=DEBUG
+#log4j.logger.com.oaklandsw.http.HttpURLConnection=INFO
+#log4j.logger.com.oaklandsw.http.HttpURLConnectInternal=WARN
+#log4j.logger.com.oaklandsw.http.HttpURLConnectInternal=DEBUG
+#log4j.logger.com.oaklandsw.http.Authenticator=DEBUG
 
 
 
