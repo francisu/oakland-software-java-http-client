@@ -128,6 +128,13 @@ import com.oaklandsw.util.Util;
 public abstract class HttpURLConnection extends java.net.HttpURLConnection
 {
 
+    static
+    {
+        // We want to force logging if the code is obfuscated (that's how
+        // we tell we are an eval version - do this before any logging calls
+        LogFactory.setForceObfuscatedLogging(true);
+    }
+     
     private static final Log          _log                              = LogFactory
                                                                                 .getLog(HttpURLConnection.class);
 
@@ -337,10 +344,6 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
     {
         _log.info("Oakland Software HttpURLConnection " + Version.VERSION);
         _log.info("isObfuscated: " + ObfuscateSupport.isObfuscated());
-
-        // We want to force logging if the code is obfuscated (that's how
-        // we tell we are an eval version
-        LogFactory.setForceObfuscatedLogging(true);
 
         if (ObfuscateSupport.isObfuscated())
         {
