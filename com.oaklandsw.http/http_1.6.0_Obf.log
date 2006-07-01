@@ -6,7 +6,7 @@
 #
 # RetroGuard Bytecode Obfuscator, v1.1.13, a product of Retrologic Systems - www.retrologic.com
 #
-# Logfile created on Tue Apr 25 05:35:22 PDT 2006
+# Logfile created on Thu Jun 01 10:42:10 PDT 2006
 #
 # Jar file to be obfuscated:           http.jar
 # Target Jar file for obfuscated code: httpOb.jar
@@ -29,8 +29,8 @@
 #      Your class com/oaklandsw/http/HttpConnection calls the java/lang/Class method getDeclaredMethod(Ljava/lang/String;[Ljava/lang/Class;)Ljava/lang/reflect/Method;
 #      Your class com/oaklandsw/http/HttpConnectionManager calls the java/lang/Class method forName(Ljava/lang/String;)Ljava/lang/Class;
 #      Your class com/oaklandsw/http/HttpConnectionTimeout calls the java/lang/Class method forName(Ljava/lang/String;)Ljava/lang/Class;
-#      Your class com/oaklandsw/http/HttpException calls the java/lang/Class method getMethod(Ljava/lang/String;[Ljava/lang/Class;)Ljava/lang/reflect/Method;
 #      Your class com/oaklandsw/http/HttpException calls the java/lang/Class method forName(Ljava/lang/String;)Ljava/lang/Class;
+#      Your class com/oaklandsw/http/HttpException calls the java/lang/Class method getMethod(Ljava/lang/String;[Ljava/lang/Class;)Ljava/lang/reflect/Method;
 #      Your class com/oaklandsw/http/HttpStatus calls the java/lang/Class method forName(Ljava/lang/String;)Ljava/lang/Class;
 #      Your class com/oaklandsw/http/HttpURLConnectInternal calls the java/lang/Class method forName(Ljava/lang/String;)Ljava/lang/Class;
 #      Your class com/oaklandsw/http/HttpURLConnection calls the java/lang/Class method forName(Ljava/lang/String;)Ljava/lang/Class;
@@ -40,26 +40,26 @@
 #      Your class com/oaklandsw/http/cookie/CookieSpecBase calls the java/lang/Class method forName(Ljava/lang/String;)Ljava/lang/Class;
 #      Your class com/oaklandsw/http/ntlm/Message calls the java/lang/Class method forName(Ljava/lang/String;)Ljava/lang/Class;
 #      Your class com/oaklandsw/log/Log4JCategoryLog calls the java/lang/Class method forName(Ljava/lang/String;)Ljava/lang/Class;
+#      Your class com/oaklandsw/log/LogFactory calls the java/lang/Class method forName(Ljava/lang/String;)Ljava/lang/Class;
 #      Your class com/oaklandsw/log/LogFactory calls the java/lang/Class method getMethod(Ljava/lang/String;[Ljava/lang/Class;)Ljava/lang/reflect/Method;
 #      Your class com/oaklandsw/log/LogFactory calls the java/lang/ClassLoader method loadClass(Ljava/lang/String;)Ljava/lang/Class;
-#      Your class com/oaklandsw/log/LogFactory calls the java/lang/Class method forName(Ljava/lang/String;)Ljava/lang/Class;
 #      Your class com/oaklandsw/log/LogFactoryImpl$1 calls the java/lang/ClassLoader method loadClass(Ljava/lang/String;)Ljava/lang/Class;
 #      Your class com/oaklandsw/log/LogFactoryImpl$1 calls the java/lang/Class method forName(Ljava/lang/String;)Ljava/lang/Class;
+#      Your class com/oaklandsw/log/LogFactoryImpl calls the java/lang/Class method forName(Ljava/lang/String;)Ljava/lang/Class;
 #      Your class com/oaklandsw/log/LogFactoryImpl calls the java/lang/ClassLoader method loadClass(Ljava/lang/String;)Ljava/lang/Class;
 #      Your class com/oaklandsw/log/LogFactoryImpl calls the java/lang/Class method getMethod(Ljava/lang/String;[Ljava/lang/Class;)Ljava/lang/reflect/Method;
-#      Your class com/oaklandsw/log/LogFactoryImpl calls the java/lang/Class method forName(Ljava/lang/String;)Ljava/lang/Class;
 #      Your class com/oaklandsw/log/LogSource calls the java/lang/Class method forName(Ljava/lang/String;)Ljava/lang/Class;
 #      Your class com/oaklandsw/util/AbstractRepositoryRecord calls the java/lang/Class method forName(Ljava/lang/String;)Ljava/lang/Class;
+#      Your class com/oaklandsw/util/BeanInfoFactory calls the java/lang/Class method forName(Ljava/lang/String;)Ljava/lang/Class;
 #      Your class com/oaklandsw/util/BeanInfoFactory calls the java/lang/Class method getMethod(Ljava/lang/String;[Ljava/lang/Class;)Ljava/lang/reflect/Method;
 #      Your class com/oaklandsw/util/BeanInfoFactory calls the java/lang/ClassLoader method loadClass(Ljava/lang/String;)Ljava/lang/Class;
-#      Your class com/oaklandsw/util/BeanInfoFactory calls the java/lang/Class method forName(Ljava/lang/String;)Ljava/lang/Class;
 #      Your class com/oaklandsw/util/BugReport calls the java/lang/Class method forName(Ljava/lang/String;)Ljava/lang/Class;
 #      Your class com/oaklandsw/util/DependRecord calls the java/lang/Class method forName(Ljava/lang/String;)Ljava/lang/Class;
 #      Your class com/oaklandsw/util/FileRepositoryImpl calls the java/lang/Class method forName(Ljava/lang/String;)Ljava/lang/Class;
 #      Your class com/oaklandsw/util/FileUtils calls the java/lang/Class method forName(Ljava/lang/String;)Ljava/lang/Class;
 #      Your class com/oaklandsw/util/LoggingContentHandler calls the java/lang/Class method forName(Ljava/lang/String;)Ljava/lang/Class;
-#      Your class com/oaklandsw/util/ObfuscateSupport calls the java/lang/Class method getField(Ljava/lang/String;)Ljava/lang/reflect/Field;
 #      Your class com/oaklandsw/util/ObfuscateSupport calls the java/lang/Class method forName(Ljava/lang/String;)Ljava/lang/Class;
+#      Your class com/oaklandsw/util/ObfuscateSupport calls the java/lang/Class method getField(Ljava/lang/String;)Ljava/lang/reflect/Field;
 #      Your class com/oaklandsw/util/RepositoryActivityRecord calls the java/lang/Class method forName(Ljava/lang/String;)Ljava/lang/Class;
 #      Your class com/oaklandsw/util/RepositoryFactory calls the java/lang/ClassLoader method loadClass(Ljava/lang/String;)Ljava/lang/Class;
 #      Your class com/oaklandsw/util/RepositoryFactory calls the java/lang/Class method forName(Ljava/lang/String;)Ljava/lang/Class;
@@ -69,30 +69,31 @@
 #      Your class com/oaklandsw/util/Util calls the java/lang/Class method forName(Ljava/lang/String;)Ljava/lang/Class;
 #      Your class com/oaklandsw/util/XmlUtils calls the java/lang/Class method forName(Ljava/lang/String;)Ljava/lang/Class;
 #
-# Memory in use after class data structure built: 1392880 bytes
-# Total memory available                        : 2912256 bytes
+# Memory in use after class data structure built: 1404944 bytes
+# Total memory available                        : 2932736 bytes
 #
 #
 # Obfuscated name overloading frequency:
-#  'a'   	used 487 times	(25%)
-#  'if'   	used 205 times	(10%)
-#  'do'   	used 132 times	(6%)
-#  'for'   	used 106 times	(5%)
-#  'int'   	used 79 times	(4%)
-#  'new'   	used 70 times	(3%)
-#  'try'   	used 57 times	(2%)
-#  'byte'   	used 47 times	(2%)
-#  'case'   	used 39 times	(2%)
-#  'char'   	used 30 times	(1%)
-#  'else'   	used 29 times	(1%)
-#  'goto'   	used 28 times	(1%)
-#  'long'   	used 26 times	(1%)
-#  'b'   	used 24 times	(1%)
-#  'null'   	used 24 times	(1%)
-#  'c'   	used 23 times	(1%)
-#  'd'   	used 22 times	(1%)
-#  'void'   	used 22 times	(1%)
-#  Other names (each used in <1% of mappings) used a total of 478 times (32%)
+#  'a'   	used 493 times	(25%)
+#  'if'   	used 206 times	(10%)
+#  'do'   	used 134 times	(6%)
+#  'for'   	used 107 times	(5%)
+#  'int'   	used 81 times	(4%)
+#  'new'   	used 71 times	(3%)
+#  'try'   	used 58 times	(2%)
+#  'byte'   	used 48 times	(2%)
+#  'case'   	used 40 times	(2%)
+#  'char'   	used 31 times	(1%)
+#  'else'   	used 30 times	(1%)
+#  'goto'   	used 29 times	(1%)
+#  'long'   	used 27 times	(1%)
+#  'b'   	used 26 times	(1%)
+#  'c'   	used 25 times	(1%)
+#  'null'   	used 25 times	(1%)
+#  'd'   	used 23 times	(1%)
+#  'void'   	used 23 times	(1%)
+#  'e'   	used 20 times	(1%)
+#  Other names (each used in <1% of mappings) used a total of 471 times (31%)
 #
 #
 # Names reserved from obfuscation:
@@ -127,6 +128,7 @@
 .method com/oaklandsw/util/Util/equalsWithNull (Ljava/lang/Object;Ljava/lang/Object;)Z
 .method com/oaklandsw/util/Util/escapeForCsv (Ljava/lang/String;)Ljava/lang/String;
 .method com/oaklandsw/util/Util/getIntProperty (Ljava/lang/String;)I
+.method com/oaklandsw/util/Util/getLineSep ()Ljava/lang/String;
 .method com/oaklandsw/util/Util/primClassToWrapClass (Ljava/lang/Class;)Ljava/lang/Class;
 .method com/oaklandsw/util/Util/id (Ljava/lang/Object;)I
 .method com/oaklandsw/util/Util/toString ()Ljava/lang/String;
@@ -169,12 +171,12 @@
 .class com/oaklandsw/util/RepositoryException
 .class com/oaklandsw/util/SerializeFixup
 .class com/oaklandsw/util/RepositoryTableKey
+.class com/oaklandsw/util/CommandLineTokenizer
 .class com/oaklandsw/util/BufferedInputStreamWithParent
 .class com/oaklandsw/util/DependRecord
 .class com/oaklandsw/util/ErrorStack
 .class com/oaklandsw/util/ImpossibleException
 .class com/oaklandsw/util/FileUtils
-.class com/oaklandsw/util/SecurityHelper
 .class com/oaklandsw/util/StringUtils
 .class com/oaklandsw/util/CharSet
 .class com/oaklandsw/util/DescriptorComparator
@@ -208,7 +210,6 @@
 .class com/oaklandsw/util/CharRange
 .class com/oaklandsw/util/Serializer
 .class com/oaklandsw/util/FileRepositoryImpl
-.class com/oaklandsw/util/Version
 .class com/oaklandsw/util/RepositoryReference
 .class com/oaklandsw/util/Base64
 .class com/oaklandsw/util/DateUtil
@@ -437,6 +438,52 @@
 #
 # Obfuscated name mappings (some of these may be unchanged due to polymorphism constraints):
 #
+.package_map com/oaklandsw/util/jak a
+.class_map com/oaklandsw/util/jak/LocMgr a
+.field_map com/oaklandsw/util/jak/LocMgr/DEFAULT_MSG a
+.method_map com/oaklandsw/util/jak/LocMgr/msg (ILjava/lang/Object;)Ljava/lang/String; a
+.method_map com/oaklandsw/util/jak/LocMgr/msg (ILjava/lang/Object;Ljava/lang/Object;)Ljava/lang/String; a
+.method_map com/oaklandsw/util/jak/LocMgr/msg (I)Ljava/lang/String; a
+.method_map com/oaklandsw/util/jak/LocMgr/getRoot (I)Ljava/lang/String; if
+.method_map com/oaklandsw/util/jak/LocMgr/msg (I[Ljava/lang/Object;)Ljava/lang/String; a
+.method_map com/oaklandsw/util/jak/LocMgr/format (Ljava/lang/String;[Ljava/lang/Object;)Ljava/lang/String; a
+.method_map com/oaklandsw/util/jak/LocMgr/msg (II)Ljava/lang/String; a
+.method_map com/oaklandsw/util/jak/LocMgr/getResource (I)Lcom/oaklandsw/util/jak/RootMsg; do
+.class_map com/oaklandsw/util/jak/RootMsg b
+.field_map com/oaklandsw/util/jak/RootMsg/msgCls a
+.field_map com/oaklandsw/util/jak/RootMsg/util if
+.field_map com/oaklandsw/util/jak/RootMsg/secmgr do
+.field_map com/oaklandsw/util/jak/RootMsg/security for
+.field_map com/oaklandsw/util/jak/RootMsg/thin int
+.field_map com/oaklandsw/util/jak/RootMsg/mdb new
+.field_map com/oaklandsw/util/jak/RootMsg/msg try
+.field_map com/oaklandsw/util/jak/RootMsg/applet byte
+.field_map com/oaklandsw/util/jak/RootMsg/main case
+.field_map com/oaklandsw/util/jak/RootMsg/jms char
+.field_map com/oaklandsw/util/jak/RootMsg/evtmgr else
+.field_map com/oaklandsw/util/jak/RootMsg/io goto
+.field_map com/oaklandsw/util/jak/RootMsg/webmgr long
+.field_map com/oaklandsw/util/jak/RootMsg/msgmgr null
+.field_map com/oaklandsw/util/jak/RootMsg/mdbmgr void
+.field_map com/oaklandsw/util/jak/RootMsg/OFFSET b
+.field_map com/oaklandsw/util/jak/RootMsg/tools c
+.field_map com/oaklandsw/util/jak/RootMsg/mgmt d
+.method_map com/oaklandsw/util/jak/RootMsg/getContents ()[[Ljava/lang/Object; getContents
+.class_map com/oaklandsw/util/jak/UtilMsg c
+.field_map com/oaklandsw/util/jak/UtilMsg/UM_TEST3 e
+.field_map com/oaklandsw/util/jak/UtilMsg/UM_TEST2 f
+.field_map com/oaklandsw/util/jak/UtilMsg/UM_BAD_ADDR g
+.field_map com/oaklandsw/util/jak/UtilMsg/UM_TEST1 h
+.field_map com/oaklandsw/util/jak/UtilMsg/contents i
+.field_map com/oaklandsw/util/jak/UtilMsg/UM_COPY_READ_FAIL j
+.field_map com/oaklandsw/util/jak/UtilMsg/UM_COPY_WRITE_FAIL k
+.field_map com/oaklandsw/util/jak/UtilMsg/UM_NULL_DIR l
+.field_map com/oaklandsw/util/jak/UtilMsg/UM_SETDIR_FAILED m
+.field_map com/oaklandsw/util/jak/UtilMsg/first n
+.field_map com/oaklandsw/util/jak/UtilMsg/UM_RM_FILES_FAIL o
+.field_map com/oaklandsw/util/jak/UtilMsg/UM_TEST5 p
+.field_map com/oaklandsw/util/jak/UtilMsg/UM_TEST4 q
+.method_map com/oaklandsw/util/jak/UtilMsg/getContents ()[[Ljava/lang/Object; getContents
 .field_map com/oaklandsw/util/BugReportSubmitException/_httpResponse a
 .method_map com/oaklandsw/util/BugReportSubmitException/getHttpResponse ()I a
 .method_map com/oaklandsw/util/BugReportSubmitException/toString ()Ljava/lang/String; toString
@@ -445,22 +492,29 @@
 .method_map com/oaklandsw/util/FileRepositorySession/getSessionInfo ()Ljava/lang/String; a
 .method_map com/oaklandsw/util/FileRepositorySession/toString ()Ljava/lang/String; toString
 .method_map com/oaklandsw/util/FileRepositorySession/setSessionInfo (Ljava/lang/String;)V a
-.field_map com/oaklandsw/util/Util/class$Ljava$lang$Short class$Ljava$lang$Short
-.field_map com/oaklandsw/util/Util/class$Ljava$lang$Long class$Ljava$lang$Long
-.field_map com/oaklandsw/util/Util/class$Ljava$lang$Double class$Ljava$lang$Double
-.field_map com/oaklandsw/util/Util/class$Ljava$lang$Byte class$Ljava$lang$Byte
-.field_map com/oaklandsw/util/Util/class$Ljava$lang$String class$Ljava$lang$String
+.field_map com/oaklandsw/util/Util/class$7 class$7
+.field_map com/oaklandsw/util/Util/class$6 class$6
+.field_map com/oaklandsw/util/Util/class$5 class$5
+.field_map com/oaklandsw/util/Util/class$4 class$4
+.field_map com/oaklandsw/util/Util/class$3 class$3
+.field_map com/oaklandsw/util/Util/class$2 class$2
+.field_map com/oaklandsw/util/Util/class$1 class$1
+.field_map com/oaklandsw/util/Util/class$0 class$0
 .field_map com/oaklandsw/util/Util/BUF_SIZE a
-.field_map com/oaklandsw/util/Util/class$Ljava$lang$Boolean class$Ljava$lang$Boolean
-.field_map com/oaklandsw/util/Util/class$Lcom$oaklandsw$util$Util class$Lcom$oaklandsw$util$Util
 .field_map com/oaklandsw/util/Util/_log if
-.field_map com/oaklandsw/util/Util/class$Ljava$lang$Integer class$Ljava$lang$Integer
-.field_map com/oaklandsw/util/Util/BIGSTR do
-.field_map com/oaklandsw/util/Util/class$Ljava$lang$Character class$Ljava$lang$Character
-.field_map com/oaklandsw/util/Util/class$Ljava$lang$Float class$Ljava$lang$Float
-.field_map com/oaklandsw/util/Util/_bitBucket for
-.field_map com/oaklandsw/util/Util/class$Ljava$lang$Void class$Ljava$lang$Void
-.method_map com/oaklandsw/util/Util/class$ (Ljava/lang/String;)Ljava/lang/Class; class$
+.field_map com/oaklandsw/util/Util/_lineSep do
+.field_map com/oaklandsw/util/Util/class$17 class$17
+.field_map com/oaklandsw/util/Util/BIGSTR for
+.field_map com/oaklandsw/util/Util/class$16 class$16
+.field_map com/oaklandsw/util/Util/class$15 class$15
+.field_map com/oaklandsw/util/Util/class$14 class$14
+.field_map com/oaklandsw/util/Util/class$13 class$13
+.field_map com/oaklandsw/util/Util/class$12 class$12
+.field_map com/oaklandsw/util/Util/_bitBucket int
+.field_map com/oaklandsw/util/Util/class$11 class$11
+.field_map com/oaklandsw/util/Util/class$10 class$10
+.field_map com/oaklandsw/util/Util/class$9 class$9
+.field_map com/oaklandsw/util/Util/class$8 class$8
 .field_map com/oaklandsw/util/RepositoryException/INVALID_NAME a
 .field_map com/oaklandsw/util/RepositoryException/ALREADY_EXISTS if
 .field_map com/oaklandsw/util/RepositoryException/DIR_NOT_DELETED do
@@ -477,12 +531,13 @@
 .method_map com/oaklandsw/util/SerializeFixup/doPostFixup (Ljava/lang/Class;Ljava/lang/Object;Ljava/lang/Object;Ljava/beans/Encoder;)V a
 .method_map com/oaklandsw/util/SerializeFixup/doPreFixup (Ljava/lang/Class;Ljava/lang/Object;Ljava/lang/Object;Ljava/beans/Encoder;)V if
 .field_map com/oaklandsw/util/RepositoryTableKey/_columns a
-.field_map com/oaklandsw/util/RepositoryTableKey/class$Lcom$oaklandsw$util$RepositoryTableKey class$Lcom$oaklandsw$util$RepositoryTableKey
 .field_map com/oaklandsw/util/RepositoryTableKey/_log if
+.field_map com/oaklandsw/util/RepositoryTableKey/class$0 class$0
 .method_map com/oaklandsw/util/RepositoryTableKey/equals (Ljava/lang/Object;)Z equals
 .method_map com/oaklandsw/util/RepositoryTableKey/hashCode ()I hashCode
 .method_map com/oaklandsw/util/RepositoryTableKey/toString ()Ljava/lang/String; toString
-.method_map com/oaklandsw/util/RepositoryTableKey/class$ (Ljava/lang/String;)Ljava/lang/Class; class$
+.method_map com/oaklandsw/util/CommandLineTokenizer/appendToBuffer (Ljava/util/List;Ljava/lang/StringBuffer;)V a
+.method_map com/oaklandsw/util/CommandLineTokenizer/tokenize (Ljava/lang/String;)[Ljava/lang/String; a
 .method_map com/oaklandsw/util/BufferedInputStreamWithParent/getParentStream ()Ljava/io/InputStream; a
 .field_map com/oaklandsw/util/DependRecord/LAST_DEP_TYPE e
 .field_map com/oaklandsw/util/DependRecord/USES f
@@ -494,7 +549,7 @@
 .field_map com/oaklandsw/util/DependRecord/_reposIdNames l
 .field_map com/oaklandsw/util/DependRecord/INHERITS_FROM m
 .field_map com/oaklandsw/util/DependRecord/PARENT n
-.field_map com/oaklandsw/util/DependRecord/class$Lcom$oaklandsw$util$DependRecord class$Lcom$oaklandsw$util$DependRecord
+.field_map com/oaklandsw/util/DependRecord/class$0 class$0
 .field_map com/oaklandsw/util/DependRecord/CHILD o
 .field_map com/oaklandsw/util/DependRecord/_columnNames p
 .field_map com/oaklandsw/util/DependRecord/DEP_TYPE q
@@ -503,7 +558,6 @@
 .method_map com/oaklandsw/util/DependRecord/getDependFile (Lcom/oaklandsw/util/Repository;)Ljava/io/File; a
 .method_map com/oaklandsw/util/DependRecord/createRecord ([Ljava/lang/Object;)Lcom/oaklandsw/util/RepositoryRecord; a
 .method_map com/oaklandsw/util/DependRecord/setColumnData (ILjava/lang/Object;)V a
-.method_map com/oaklandsw/util/DependRecord/class$ (Ljava/lang/String;)Ljava/lang/Class; class$
 .method_map com/oaklandsw/util/DependRecord/equals (Ljava/lang/Object;)Z equals
 .method_map com/oaklandsw/util/DependRecord/getColumnNames ()[Ljava/lang/String; if
 .method_map com/oaklandsw/util/DependRecord/removeAllDeps (ILcom/oaklandsw/util/RepositoryObjectId;Lcom/oaklandsw/util/Repository;)V a
@@ -531,16 +585,15 @@
 .field_map com/oaklandsw/util/FileUtils/_classes for
 .field_map com/oaklandsw/util/FileUtils/_classesListChanged int
 .field_map com/oaklandsw/util/FileUtils/_log new
+.field_map com/oaklandsw/util/FileUtils/class$0 class$0
 .field_map com/oaklandsw/util/FileUtils/NUM_TRIES try
 .field_map com/oaklandsw/util/FileUtils/_persistenceDelegateClass byte
-.field_map com/oaklandsw/util/FileUtils/class$Lcom$oaklandsw$util$FileUtils class$Lcom$oaklandsw$util$FileUtils
 .method_map com/oaklandsw/util/FileUtils/copyDirectory (Ljava/io/File;Ljava/io/File;)V a
 .method_map com/oaklandsw/util/FileUtils/resetPersistenceState ()V a
 .method_map com/oaklandsw/util/FileUtils/setupEncoder (Ljava/beans/Encoder;)V a
 .method_map com/oaklandsw/util/FileUtils/deleteFile (Ljava/io/File;)Z a
 .method_map com/oaklandsw/util/FileUtils/compareFiles (Ljava/io/File;Ljava/io/File;)Z if
 .method_map com/oaklandsw/util/FileUtils/importObject (Ljava/io/File;)Ljava/lang/Object; if
-.method_map com/oaklandsw/util/FileUtils/class$ (Ljava/lang/String;)Ljava/lang/Class; class$
 .method_map com/oaklandsw/util/FileUtils/exportObject (Ljava/lang/Object;Ljava/io/File;)V a
 .method_map com/oaklandsw/util/FileUtils/access$0 ()Lcom/oaklandsw/log/Log; access$0
 .method_map com/oaklandsw/util/FileUtils/getInputSource (Ljava/io/File;)Lorg/xml/sax/InputSource; do
@@ -557,9 +610,6 @@
 .method_map com/oaklandsw/util/FileUtils/setPersistenceDelegate (Ljava/beans/PersistenceDelegate;)V a
 .method_map com/oaklandsw/util/FileUtils/exportObject (Ljava/lang/Object;Ljava/io/OutputStream;)V a
 .method_map com/oaklandsw/util/FileUtils/getStringFromFile (Ljava/io/File;)Ljava/lang/String; new
-.method_map com/oaklandsw/util/SecurityHelper/addDesParity ([B)[B a
-.method_map com/oaklandsw/util/SecurityHelper/makeDesKeySpec ([B)Ljava/security/spec/KeySpec; if
-.method_map com/oaklandsw/util/SecurityHelper/desEncrypt ([B[BII[B)V a
 .field_map com/oaklandsw/util/StringUtils/PADDING a
 .field_map com/oaklandsw/util/StringUtils/EMPTY if
 .field_map com/oaklandsw/util/StringUtils/PAD_LIMIT do
@@ -759,11 +809,11 @@
 .method_map com/oaklandsw/util/SAXEventRecorder$SAXEvent/getParm (I)Ljava/lang/Object; a
 .field_map com/oaklandsw/util/SAXEventRecorder/OBJECT a
 .field_map com/oaklandsw/util/SAXEventRecorder/STRING if
-.field_map com/oaklandsw/util/SAXEventRecorder/events do
-.field_map com/oaklandsw/util/SAXEventRecorder/EMPTY_STRING for
+.field_map com/oaklandsw/util/SAXEventRecorder/EMPTY_STRING do
+.field_map com/oaklandsw/util/SAXEventRecorder/events for
 .field_map com/oaklandsw/util/SAXEventRecorder/NULL int
-.field_map com/oaklandsw/util/SAXEventRecorder/prefixMappings new
-.field_map com/oaklandsw/util/SAXEventRecorder/XMLNS try
+.field_map com/oaklandsw/util/SAXEventRecorder/XMLNS new
+.field_map com/oaklandsw/util/SAXEventRecorder/prefixMappings try
 .field_map com/oaklandsw/util/SAXEventRecorder/serialVersionUID byte
 .method_map com/oaklandsw/util/SAXEventRecorder/endPrefixMapping (Ljava/lang/String;)V endPrefixMapping
 .method_map com/oaklandsw/util/SAXEventRecorder/writeExternal (Ljava/io/ObjectOutput;)V writeExternal
@@ -776,11 +826,9 @@
 .method_map com/oaklandsw/util/SAXEventRecorder/processingInstruction (Ljava/lang/String;Ljava/lang/String;)V processingInstruction
 .method_map com/oaklandsw/util/SAXEventRecorder/internalEntityDecl (Ljava/lang/String;Ljava/lang/String;)V internalEntityDecl
 .method_map com/oaklandsw/util/SAXEventRecorder/elementDecl (Ljava/lang/String;Ljava/lang/String;)V elementDecl
-.method_map com/oaklandsw/util/SAXEventRecorder/access$0 ()B access$0
 .method_map com/oaklandsw/util/SAXEventRecorder/startCDATA ()V startCDATA
 .method_map com/oaklandsw/util/SAXEventRecorder/readExternal (Ljava/io/ObjectInput;)V readExternal
 .method_map com/oaklandsw/util/SAXEventRecorder/startEntity (Ljava/lang/String;)V startEntity
-.method_map com/oaklandsw/util/SAXEventRecorder/access$1 ()B access$1
 .method_map com/oaklandsw/util/SAXEventRecorder/endCDATA ()V endCDATA
 .method_map com/oaklandsw/util/SAXEventRecorder/startPrefixMapping (Ljava/lang/String;Ljava/lang/String;)V startPrefixMapping
 .method_map com/oaklandsw/util/SAXEventRecorder/endEntity (Ljava/lang/String;)V endEntity
@@ -800,44 +848,41 @@
 .method_map com/oaklandsw/util/SerializeByRef/getRepositoryType ()Ljava/lang/String; do
 .method_map com/oaklandsw/util/SerializeByRef/setSerializeByRef (Z)V a
 .field_map com/oaklandsw/util/AbstractRepositoryRecord/_columnData a
-.field_map com/oaklandsw/util/AbstractRepositoryRecord/class$Lcom$oaklandsw$util$AbstractRepositoryRecord class$Lcom$oaklandsw$util$AbstractRepositoryRecord
 .field_map com/oaklandsw/util/AbstractRepositoryRecord/_log if
-.method_map com/oaklandsw/util/AbstractRepositoryRecord/toCsv ()Ljava/lang/String; a
-.method_map com/oaklandsw/util/AbstractRepositoryRecord/setColumnData (ILjava/lang/Object;)V a
-.method_map com/oaklandsw/util/AbstractRepositoryRecord/setColumnData ([Ljava/lang/Object;)V if
-.method_map com/oaklandsw/util/AbstractRepositoryRecord/createRecord ([Ljava/lang/Object;)Lcom/oaklandsw/util/RepositoryRecord; a
-.method_map com/oaklandsw/util/AbstractRepositoryRecord/fromCsv (Ljava/lang/String;I)I a
-.method_map com/oaklandsw/util/AbstractRepositoryRecord/fromCsv (Ljava/lang/String;II)I a
-.method_map com/oaklandsw/util/AbstractRepositoryRecord/toString ()Ljava/lang/String; toString
-.method_map com/oaklandsw/util/AbstractRepositoryRecord/getColumnData ()[Ljava/lang/Object; int
-.method_map com/oaklandsw/util/AbstractRepositoryRecord/getTable ()Ljava/lang/String; new
-.method_map com/oaklandsw/util/AbstractRepositoryRecord/class$ (Ljava/lang/String;)Ljava/lang/Class; class$
-.method_map com/oaklandsw/util/AbstractRepositoryRecord/fromStringArray ([Ljava/lang/String;I)I a
-.method_map com/oaklandsw/util/AbstractRepositoryRecord/createRecord (Ljava/lang/String;)Lcom/oaklandsw/util/RepositoryRecord; if
-.method_map com/oaklandsw/util/AbstractRepositoryRecord/getColumnData (I)Ljava/lang/Object; a
-.method_map com/oaklandsw/util/AbstractRepositoryRecord/getKey ()Lcom/oaklandsw/util/RepositoryTableKey; for
-.method_map com/oaklandsw/util/AbstractRepositoryRecord/getMustMatchColumnIndexes ()[I do
-.method_map com/oaklandsw/util/AbstractRepositoryRecord/getMustMatchColumnIndexes (I)[I if
-.method_map com/oaklandsw/util/AbstractRepositoryRecord/getColumnNames ()[Ljava/lang/String; if
+.field_map com/oaklandsw/util/AbstractRepositoryRecord/class$0 class$0
 .method_map com/oaklandsw/util/AbstractRepositoryRecord/fromCsv (Ljava/lang/String;)V a
+.method_map com/oaklandsw/util/AbstractRepositoryRecord/createRecord (Ljava/lang/String;)Lcom/oaklandsw/util/RepositoryRecord; if
+.method_map com/oaklandsw/util/AbstractRepositoryRecord/setColumnData (ILjava/lang/Object;)V a
+.method_map com/oaklandsw/util/AbstractRepositoryRecord/createRecord ([Ljava/lang/Object;)Lcom/oaklandsw/util/RepositoryRecord; a
+.method_map com/oaklandsw/util/AbstractRepositoryRecord/toCsv ()Ljava/lang/String; a
+.method_map com/oaklandsw/util/AbstractRepositoryRecord/fromCsv (Ljava/lang/String;II)I a
+.method_map com/oaklandsw/util/AbstractRepositoryRecord/setColumnData ([Ljava/lang/Object;)V if
+.method_map com/oaklandsw/util/AbstractRepositoryRecord/getColumnNames ()[Ljava/lang/String; if
+.method_map com/oaklandsw/util/AbstractRepositoryRecord/fromCsv (Ljava/lang/String;I)I a
+.method_map com/oaklandsw/util/AbstractRepositoryRecord/getMustMatchColumnIndexes ()[I do
+.method_map com/oaklandsw/util/AbstractRepositoryRecord/fromStringArray ([Ljava/lang/String;I)I a
+.method_map com/oaklandsw/util/AbstractRepositoryRecord/getKey ()Lcom/oaklandsw/util/RepositoryTableKey; for
+.method_map com/oaklandsw/util/AbstractRepositoryRecord/toString ()Ljava/lang/String; toString
+.method_map com/oaklandsw/util/AbstractRepositoryRecord/getColumnData (I)Ljava/lang/Object; a
+.method_map com/oaklandsw/util/AbstractRepositoryRecord/getMustMatchColumnIndexes (I)[I if
+.method_map com/oaklandsw/util/AbstractRepositoryRecord/getColumnData ()[Ljava/lang/Object; int
 .field_map com/oaklandsw/util/RepositoryFactory/REPOS_CLASS_PROP a
 .field_map com/oaklandsw/util/RepositoryFactory/_repClass if
 .field_map com/oaklandsw/util/RepositoryFactory/_repClassStr do
-.field_map com/oaklandsw/util/RepositoryFactory/class$Lcom$oaklandsw$util$RepositoryOpenContext class$Lcom$oaklandsw$util$RepositoryOpenContext
+.field_map com/oaklandsw/util/RepositoryFactory/class$0 class$0
 .field_map com/oaklandsw/util/RepositoryFactory/DEFAULT_REPOS_CLASS for
 .method_map com/oaklandsw/util/RepositoryFactory/createRepository (Lcom/oaklandsw/util/RepositoryOpenContext;)Lcom/oaklandsw/util/Repository; a
-.method_map com/oaklandsw/util/RepositoryFactory/class$ (Ljava/lang/String;)Ljava/lang/Class; class$
 .method_map com/oaklandsw/util/RepositoryFactory/setRepositoryClassName (Ljava/lang/String;)V a
 .method_map com/oaklandsw/util/RepositoryFactory/setRepositoryClass (Ljava/lang/Class;)V a
 .method_map com/oaklandsw/util/RepositoryFactory/createRepository ()Lcom/oaklandsw/util/Repository; a
-.field_map com/oaklandsw/util/RepositoryActivityRecord/class$Lcom$oaklandsw$util$RepositoryActivityRecord class$Lcom$oaklandsw$util$RepositoryActivityRecord
 .field_map com/oaklandsw/util/RepositoryActivityRecord/OBJECT do
 .field_map com/oaklandsw/util/RepositoryActivityRecord/_type for
-.field_map com/oaklandsw/util/RepositoryActivityRecord/_sessionInfo int
-.field_map com/oaklandsw/util/RepositoryActivityRecord/SAVED new
+.field_map com/oaklandsw/util/RepositoryActivityRecord/SAVED int
+.field_map com/oaklandsw/util/RepositoryActivityRecord/_sessionInfo new
 .field_map com/oaklandsw/util/RepositoryActivityRecord/TYPE try
 .field_map com/oaklandsw/util/RepositoryActivityRecord/_log byte
 .field_map com/oaklandsw/util/RepositoryActivityRecord/_reposIdNames case
+.field_map com/oaklandsw/util/RepositoryActivityRecord/class$0 class$0
 .field_map com/oaklandsw/util/RepositoryActivityRecord/_object char
 .field_map com/oaklandsw/util/RepositoryActivityRecord/SESSION_INFO else
 .field_map com/oaklandsw/util/RepositoryActivityRecord/_columnNames goto
@@ -845,7 +890,6 @@
 .method_map com/oaklandsw/util/RepositoryActivityRecord/createRecord (Ljava/lang/String;)Lcom/oaklandsw/util/RepositoryRecord; if
 .method_map com/oaklandsw/util/RepositoryActivityRecord/setColumnData (ILjava/lang/Object;)V a
 .method_map com/oaklandsw/util/RepositoryActivityRecord/createRecord ([Ljava/lang/Object;)Lcom/oaklandsw/util/RepositoryRecord; a
-.method_map com/oaklandsw/util/RepositoryActivityRecord/class$ (Ljava/lang/String;)Ljava/lang/Class; class$
 .method_map com/oaklandsw/util/RepositoryActivityRecord/equals (Ljava/lang/Object;)Z equals
 .method_map com/oaklandsw/util/RepositoryActivityRecord/getColumnNames ()[Ljava/lang/String; if
 .method_map com/oaklandsw/util/RepositoryActivityRecord/getMustMatchColumnIndexes (I)[I if
@@ -854,9 +898,8 @@
 .field_map com/oaklandsw/util/LoggingContentHandler/_name a
 .field_map com/oaklandsw/util/LoggingContentHandler/_handler if
 .field_map com/oaklandsw/util/LoggingContentHandler/_log do
-.field_map com/oaklandsw/util/LoggingContentHandler/class$Lcom$oaklandsw$util$LoggingContentHandler class$Lcom$oaklandsw$util$LoggingContentHandler
+.field_map com/oaklandsw/util/LoggingContentHandler/class$0 class$0
 .method_map com/oaklandsw/util/LoggingContentHandler/endElement (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V endElement
-.method_map com/oaklandsw/util/LoggingContentHandler/class$ (Ljava/lang/String;)Ljava/lang/Class; class$
 .method_map com/oaklandsw/util/LoggingContentHandler/processingInstruction (Ljava/lang/String;Ljava/lang/String;)V processingInstruction
 .method_map com/oaklandsw/util/LoggingContentHandler/setDocumentLocator (Lorg/xml/sax/Locator;)V setDocumentLocator
 .method_map com/oaklandsw/util/LoggingContentHandler/setContentHandler (Lorg/xml/sax/ContentHandler;)V a
@@ -868,18 +911,17 @@
 .method_map com/oaklandsw/util/LoggingContentHandler/endPrefixMapping (Ljava/lang/String;)V endPrefixMapping
 .method_map com/oaklandsw/util/LoggingContentHandler/characters ([CII)V characters
 .method_map com/oaklandsw/util/LoggingContentHandler/startDocument ()V startDocument
-.field_map com/oaklandsw/util/RepositoryObjectId/_repType long
-.field_map com/oaklandsw/util/RepositoryObjectId/NUM_COLS null
-.field_map com/oaklandsw/util/RepositoryObjectId/_path void
-.field_map com/oaklandsw/util/RepositoryObjectId/_columnNames b
+.field_map com/oaklandsw/util/RepositoryObjectId/NUM_COLS long
+.field_map com/oaklandsw/util/RepositoryObjectId/_repType null
+.field_map com/oaklandsw/util/RepositoryObjectId/_columnNames void
+.field_map com/oaklandsw/util/RepositoryObjectId/_path b
 .field_map com/oaklandsw/util/RepositoryObjectId/_log c
-.field_map com/oaklandsw/util/RepositoryObjectId/class$Lcom$oaklandsw$util$RepositoryObjectId class$Lcom$oaklandsw$util$RepositoryObjectId
+.field_map com/oaklandsw/util/RepositoryObjectId/class$0 class$0
 .field_map com/oaklandsw/util/RepositoryObjectId/_incarnation d
 .method_map com/oaklandsw/util/RepositoryObjectId/createRecord (Ljava/lang/String;)Lcom/oaklandsw/util/RepositoryRecord; if
 .method_map com/oaklandsw/util/RepositoryObjectId/createRecord ([Ljava/lang/Object;)Lcom/oaklandsw/util/RepositoryRecord; a
 .method_map com/oaklandsw/util/RepositoryObjectId/setColumnData (ILjava/lang/Object;)V a
 .method_map com/oaklandsw/util/RepositoryObjectId/hashCode ()I hashCode
-.method_map com/oaklandsw/util/RepositoryObjectId/class$ (Ljava/lang/String;)Ljava/lang/Class; class$
 .method_map com/oaklandsw/util/RepositoryObjectId/equals (Ljava/lang/Object;)Z equals
 .method_map com/oaklandsw/util/RepositoryObjectId/getColumnNames ()[Ljava/lang/String; if
 .method_map com/oaklandsw/util/RepositoryObjectId/staticGetMustMatchColumnIndexes (I)[I do
@@ -888,10 +930,9 @@
 .method_map com/oaklandsw/util/RepositoryObjectId/staticGetColumnNames ()[Ljava/lang/String; try
 .method_map com/oaklandsw/util/RepositoryObjectId/getTable ()Ljava/lang/String; new
 .field_map com/oaklandsw/util/ObfuscateSupport/_fieldName1 a
-.field_map com/oaklandsw/util/ObfuscateSupport/class$Lcom$oaklandsw$util$ObfuscateSupport class$Lcom$oaklandsw$util$ObfuscateSupport
 .field_map com/oaklandsw/util/ObfuscateSupport/_log if
+.field_map com/oaklandsw/util/ObfuscateSupport/class$0 class$0
 .method_map com/oaklandsw/util/ObfuscateSupport/isObfuscated ()Z a
-.method_map com/oaklandsw/util/ObfuscateSupport/class$ (Ljava/lang/String;)Ljava/lang/Class; class$
 .method_map com/oaklandsw/util/EdiUtils/isEdi (Ljava/lang/String;)Z a
 .method_map com/oaklandsw/util/EdiUtils/normalizeEdi (Ljava/lang/String;)Ljava/lang/String; if
 .method_map com/oaklandsw/util/CharSetUtils/count (Ljava/lang/String;Ljava/lang/String;)I a
@@ -907,9 +948,8 @@
 .method_map com/oaklandsw/util/CharSetUtils/keep (Ljava/lang/String;[Ljava/lang/String;)Ljava/lang/String; for
 .field_map com/oaklandsw/util/BeanInfoFactory/methodCache a
 .field_map com/oaklandsw/util/BeanInfoFactory/_log if
-.field_map com/oaklandsw/util/BeanInfoFactory/class$Lcom$oaklandsw$util$BeanInfoFactory class$Lcom$oaklandsw$util$BeanInfoFactory
+.field_map com/oaklandsw/util/BeanInfoFactory/class$0 class$0
 .method_map com/oaklandsw/util/BeanInfoFactory/isContainer (Ljava/lang/Object;)Z a
-.method_map com/oaklandsw/util/BeanInfoFactory/class$ (Ljava/lang/String;)Ljava/lang/Class; class$
 .method_map com/oaklandsw/util/BeanInfoFactory/instantiate (Ljava/lang/Class;Ljava/lang/String;)Ljava/lang/Object; a
 .method_map com/oaklandsw/util/BeanInfoFactory/getBeanInfo (Ljava/lang/Class;)Ljava/beans/BeanInfo; a
 .method_map com/oaklandsw/util/BeanInfoFactory/getBeanAttribute (Ljava/lang/Class;Ljava/lang/String;)Ljava/lang/Object; if
@@ -959,7 +999,6 @@
 .method_map com/oaklandsw/util/XmlUtils$1/error (Lorg/xml/sax/SAXParseException;)V error
 .method_map com/oaklandsw/util/XmlUtils$1/warning (Lorg/xml/sax/SAXParseException;)V warning
 .method_map com/oaklandsw/util/XmlUtils$1/fatalError (Lorg/xml/sax/SAXParseException;)V fatalError
-.field_map com/oaklandsw/util/XmlUtils/class$Lcom$oaklandsw$util$XmlUtils class$Lcom$oaklandsw$util$XmlUtils
 .field_map com/oaklandsw/util/XmlUtils/XML_SCHEMA_INSTANCE_NS_PREFIX a
 .field_map com/oaklandsw/util/XmlUtils/EMPTY_ATTR if
 .field_map com/oaklandsw/util/XmlUtils/XML_SCHEMA_NS_PREFIX do
@@ -971,6 +1010,7 @@
 .field_map com/oaklandsw/util/XmlUtils/_xmlParserClass case
 .field_map com/oaklandsw/util/XmlUtils/XML_SCHEMA_INSTANCE_NS char
 .field_map com/oaklandsw/util/XmlUtils/XML_HEADER else
+.field_map com/oaklandsw/util/XmlUtils/class$0 class$0
 .field_map com/oaklandsw/util/XmlUtils/FEATURE_NS_PREFIX goto
 .field_map com/oaklandsw/util/XmlUtils/ERROR_HANDLER long
 .method_map com/oaklandsw/util/XmlUtils/escapeString (Ljava/lang/String;)Ljava/lang/String; a
@@ -985,7 +1025,6 @@
 .method_map com/oaklandsw/util/XmlUtils/getSaxParserFactory ()Ljavax/xml/parsers/SAXParserFactory; a
 .method_map com/oaklandsw/util/XmlUtils/getXmlReader ()Lorg/xml/sax/XMLReader; if
 .method_map com/oaklandsw/util/XmlUtils/getDomRootElem (Lorg/xml/sax/InputSource;)Lorg/w3c/dom/Node; if
-.method_map com/oaklandsw/util/XmlUtils/class$ (Ljava/lang/String;)Ljava/lang/Class; class$
 .method_map com/oaklandsw/util/XmlUtils/getXmlReader (Ljava/lang/String;)Lorg/xml/sax/XMLReader; int
 .method_map com/oaklandsw/util/XmlUtils/access$0 ()Lcom/oaklandsw/log/Log; access$0
 .method_map com/oaklandsw/util/XmlUtils/unEscapeString (Ljava/lang/String;)Ljava/lang/String; new
@@ -1298,10 +1337,10 @@
 .field_map com/oaklandsw/util/FileRepositoryImpl/_log byte
 .field_map com/oaklandsw/util/FileRepositoryImpl/_baseReposName case
 .field_map com/oaklandsw/util/FileRepositoryImpl/_tableNameDirtyMap char
+.field_map com/oaklandsw/util/FileRepositoryImpl/class$0 class$0
 .field_map com/oaklandsw/util/FileRepositoryImpl/_transDepth else
 .field_map com/oaklandsw/util/FileRepositoryImpl/APPEND goto
 .field_map com/oaklandsw/util/FileRepositoryImpl/TABLES long
-.field_map com/oaklandsw/util/FileRepositoryImpl/class$Lcom$oaklandsw$util$FileRepositoryImpl class$Lcom$oaklandsw$util$FileRepositoryImpl
 .method_map com/oaklandsw/util/FileRepositoryImpl/get (Lcom/oaklandsw/util/RepositoryRecord;Z)Ljava/util/ArrayList; a
 .method_map com/oaklandsw/util/FileRepositoryImpl/delete (Ljava/lang/String;Ljava/lang/String;)V for
 .method_map com/oaklandsw/util/FileRepositoryImpl/getFilePathRoot ()Ljava/lang/String; try
@@ -1324,7 +1363,6 @@
 .method_map com/oaklandsw/util/FileRepositoryImpl/endTrans ()Z int
 .method_map com/oaklandsw/util/FileRepositoryImpl/writeAllTables ()V case
 .method_map com/oaklandsw/util/FileRepositoryImpl/fileDelete (Ljava/io/File;)V a
-.method_map com/oaklandsw/util/FileRepositoryImpl/class$ (Ljava/lang/String;)Ljava/lang/Class; class$
 .method_map com/oaklandsw/util/FileRepositoryImpl/startTrans ()V for
 .method_map com/oaklandsw/util/FileRepositoryImpl/isDirectory (Ljava/lang/String;Ljava/lang/String;)Z a
 .method_map com/oaklandsw/util/FileRepositoryImpl/writeTableMap (Ljava/lang/String;)V try
@@ -1339,7 +1377,6 @@
 .method_map com/oaklandsw/util/FileRepositoryImpl/openTableOut (Ljava/lang/String;Z)Ljava/io/BufferedWriter; if
 .method_map com/oaklandsw/util/FileRepositoryImpl/deleteAllTables ()V do
 .method_map com/oaklandsw/util/FileRepositoryImpl/get (Lcom/oaklandsw/util/RepositoryRecord;)Ljava/util/ArrayList; a
-.field_map com/oaklandsw/util/Version/VERSION a
 .method_map com/oaklandsw/util/RepositoryReference/getReferenceIncarnation ()I a
 .method_map com/oaklandsw/util/RepositoryReference/setReferenceIncarnation (I)V a
 .method_map com/oaklandsw/util/RepositoryReference/getReferencedObject ()Ljava/lang/Object; if
@@ -1387,6 +1424,7 @@
 .field_map com/oaklandsw/util/Base64/BAD_ENCODING void
 .method_map com/oaklandsw/util/Base64/decodeToObject (Ljava/lang/String;)Ljava/lang/Object; a
 .method_map com/oaklandsw/util/Base64/decode4to3 ([B)[B a
+.method_map com/oaklandsw/util/Base64/access$2 ([BI[BI)I access$2
 .method_map com/oaklandsw/util/Base64/encode3to4 ([B[BI)[B a
 .method_map com/oaklandsw/util/Base64/decode ([BII)[B a
 .method_map com/oaklandsw/util/Base64/encodeBytes ([B)Ljava/lang/String; if
@@ -1396,16 +1434,12 @@
 .method_map com/oaklandsw/util/Base64/decode (Ljava/lang/String;)[B if
 .method_map com/oaklandsw/util/Base64/access$0 ([BII[BI)[B access$0
 .method_map com/oaklandsw/util/Base64/encode3to4 ([B)[B do
-.method_map com/oaklandsw/util/Base64/access$6 ()B access$6
 .method_map com/oaklandsw/util/Base64/encodeObject (Ljava/io/Serializable;I)Ljava/lang/String; a
-.method_map com/oaklandsw/util/Base64/access$3 ([BI[BI)I access$3
 .method_map com/oaklandsw/util/Base64/encodeBytes ([BII)Ljava/lang/String; if
 .method_map com/oaklandsw/util/Base64/encodeBytes ([BIII)Ljava/lang/String; a
-.method_map com/oaklandsw/util/Base64/access$5 ([B[BI)[B access$5
 .method_map com/oaklandsw/util/Base64/encodeObject (Ljava/io/Serializable;)Ljava/lang/String; a
-.method_map com/oaklandsw/util/Base64/access$2 ()B access$2
+.method_map com/oaklandsw/util/Base64/access$3 ([B[BI)[B access$3
 .method_map com/oaklandsw/util/Base64/access$1 ()[B access$1
-.method_map com/oaklandsw/util/Base64/access$4 ()I access$4
 .method_map com/oaklandsw/util/Base64/encode3to4 ([BI)[B if
 .field_map com/oaklandsw/util/DateUtil/DEFAULT_TWO_DIGIT_YEAR_START a
 .field_map com/oaklandsw/util/DateUtil/PATTERN_RFC1123 if
@@ -1455,9 +1489,9 @@
 .field_map com/oaklandsw/util/BugReport/_forceNewBug byte
 .field_map com/oaklandsw/util/BugReport/_defaultMsg case
 .field_map com/oaklandsw/util/BugReport/_fogBugzUrl char
-.field_map com/oaklandsw/util/BugReport/class$Lcom$oaklandsw$util$ImpossibleException class$Lcom$oaklandsw$util$ImpossibleException
 .field_map com/oaklandsw/util/BugReport/_project else
 .field_map com/oaklandsw/util/BugReport/_description goto
+.field_map com/oaklandsw/util/BugReport/class$0 class$0
 .field_map com/oaklandsw/util/BugReport/_userName long
 .field_map com/oaklandsw/util/BugReport/_area null
 .field_map com/oaklandsw/util/BugReport/_message void
@@ -1486,7 +1520,6 @@
 .method_map com/oaklandsw/util/BugReport/getVersion ()Ljava/lang/String; goto
 .method_map com/oaklandsw/util/BugReport/getProject ()Ljava/lang/String; long
 .method_map com/oaklandsw/util/BugReport/setCustomerEmail (Ljava/lang/String;)V try
-.method_map com/oaklandsw/util/BugReport/class$ (Ljava/lang/String;)Ljava/lang/Class; class$
 .method_map com/oaklandsw/util/BugReport/getMessage ()Ljava/lang/String; null
 .method_map com/oaklandsw/util/BugReport/setException (Ljava/lang/Throwable;)V if
 .method_map com/oaklandsw/util/BugReport/getExtraInformation ()Ljava/lang/String; void
@@ -1551,8 +1584,7 @@
 .method_map com/oaklandsw/util/NullWriter/close ()V close
 .field_map com/oaklandsw/util/ResourceManager/nameToRM a
 .field_map com/oaklandsw/util/ResourceManager/bundle if
-.field_map com/oaklandsw/util/ResourceManager/class$Lcom$oaklandsw$util$ResourceManager class$Lcom$oaklandsw$util$ResourceManager
-.method_map com/oaklandsw/util/ResourceManager/class$ (Ljava/lang/String;)Ljava/lang/Class; class$
+.field_map com/oaklandsw/util/ResourceManager/class$0 class$0
 .method_map com/oaklandsw/util/ResourceManager/get (Ljava/lang/String;)Lcom/oaklandsw/util/ResourceManager; a
 .method_map com/oaklandsw/util/ResourceManager/common ()Lcom/oaklandsw/util/ResourceManager; a
 .method_map com/oaklandsw/util/ResourceManager/all (Ljava/lang/Class;)Lcom/oaklandsw/util/ResourceManager; a
@@ -1645,11 +1677,10 @@
 .class_map com/oaklandsw/http/cookie/CookieSpecBase d
 .field_map com/oaklandsw/http/cookie/CookieSpecBase/LOG do
 .field_map com/oaklandsw/http/cookie/CookieSpecBase/datepatterns for
+.field_map com/oaklandsw/http/cookie/CookieSpecBase/class$0 class$0
 .field_map com/oaklandsw/http/cookie/CookieSpecBase/_policyName int
-.field_map com/oaklandsw/http/cookie/CookieSpecBase/class$Lcom$oaklandsw$http$cookie$CookieSpec class$Lcom$oaklandsw$http$cookie$CookieSpec
 .method_map com/oaklandsw/http/cookie/CookieSpecBase/setPolicyName (Ljava/lang/String;)V a
 .method_map com/oaklandsw/http/cookie/CookieSpecBase/parse (Ljava/lang/String;ILjava/lang/String;ZLjava/lang/String;)[Lcom/oaklandsw/http/Cookie; a
-.method_map com/oaklandsw/http/cookie/CookieSpecBase/class$ (Ljava/lang/String;)Ljava/lang/Class; class$
 .method_map com/oaklandsw/http/cookie/CookieSpecBase/domainMatch (Ljava/lang/String;Ljava/lang/String;)Z a
 .method_map com/oaklandsw/http/cookie/CookieSpecBase/addInPathOrder (Ljava/util/List;Lcom/oaklandsw/http/Cookie;)V a
 .method_map com/oaklandsw/http/cookie/CookieSpecBase/match (Ljava/lang/String;ILjava/lang/String;ZLcom/oaklandsw/http/Cookie;)Z a
@@ -1676,6 +1707,7 @@
 .method_map com/oaklandsw/http/ntlm/NegotiateMessage/encode ()I case
 .method_map com/oaklandsw/http/ntlm/Ntlm/getResponseFor (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String; a
 .field_map com/oaklandsw/http/ntlm/Message/REQUEST_TARGET if
+.field_map com/oaklandsw/http/ntlm/Message/class$0 class$0
 .field_map com/oaklandsw/http/ntlm/Message/NEGOTIATE_SIGN do
 .field_map com/oaklandsw/http/ntlm/Message/NEGOTIATE_OEM_DOMAIN_SUPPLIED for
 .field_map com/oaklandsw/http/ntlm/Message/NEGOTIATE_NTLM int
@@ -1689,7 +1721,6 @@
 .field_map com/oaklandsw/http/ntlm/Message/_msgLength long
 .field_map com/oaklandsw/http/ntlm/Message/NEGOTIATE_OEM_WORKSTATION_SUPPLIED null
 .field_map com/oaklandsw/http/ntlm/Message/MSG_NEGOTIATE void
-.field_map com/oaklandsw/http/ntlm/Message/class$Lcom$oaklandsw$http$ntlm$Message class$Lcom$oaklandsw$http$ntlm$Message
 .field_map com/oaklandsw/http/ntlm/Message/NEGOTIATE_NTLM2 b
 .field_map com/oaklandsw/http/ntlm/Message/REQUEST_INIT_RESPONSE c
 .field_map com/oaklandsw/http/ntlm/Message/TARGET_TYPE_SHARE d
@@ -1719,7 +1750,6 @@
 .method_map com/oaklandsw/http/ntlm/Message/getType ()I for
 .method_map com/oaklandsw/http/ntlm/Message/getMessageInfo (Ljava/lang/StringBuffer;)V a
 .method_map com/oaklandsw/http/ntlm/Message/getBytes ()[B int
-.method_map com/oaklandsw/http/ntlm/Message/class$ (Ljava/lang/String;)Ljava/lang/Class; class$
 .method_map com/oaklandsw/http/ntlm/Message/log ()V new
 .method_map com/oaklandsw/http/ntlm/Message/setMsgLength (I)V do
 .method_map com/oaklandsw/http/ntlm/Message/getNonce ()[B try
@@ -1742,10 +1772,10 @@
 .field_map com/oaklandsw/http/ntlm/AuthenticateMessage/_user H
 .field_map com/oaklandsw/http/ntlm/AuthenticateMessage/AUTHENTICATE_HEADER_LEN I
 .field_map com/oaklandsw/http/ntlm/AuthenticateMessage/HASHED_PASSWORD_LEN J
-.field_map com/oaklandsw/http/ntlm/AuthenticateMessage/_ntResponse K
-.field_map com/oaklandsw/http/ntlm/AuthenticateMessage/PASSWORD_LEN L
-.field_map com/oaklandsw/http/ntlm/AuthenticateMessage/_useNtlm2 M
-.field_map com/oaklandsw/http/ntlm/AuthenticateMessage/_host N
+.field_map com/oaklandsw/http/ntlm/AuthenticateMessage/PASSWORD_LEN K
+.field_map com/oaklandsw/http/ntlm/AuthenticateMessage/_ntResponse L
+.field_map com/oaklandsw/http/ntlm/AuthenticateMessage/_host M
+.field_map com/oaklandsw/http/ntlm/AuthenticateMessage/_useNtlm2 N
 .field_map com/oaklandsw/http/ntlm/AuthenticateMessage/_challenge O
 .field_map com/oaklandsw/http/ntlm/AuthenticateMessage/_lmResponse P
 .field_map com/oaklandsw/http/ntlm/AuthenticateMessage/_domain Q
@@ -1786,15 +1816,15 @@
 .field_map com/oaklandsw/http/HttpURLConnection/UNINIT_CONTENT_LENGTH new
 .field_map com/oaklandsw/http/HttpURLConnection/_releaseConnection try
 .field_map com/oaklandsw/http/HttpURLConnection/_sslSocketFactory byte
-.field_map com/oaklandsw/http/HttpURLConnection/_proxyHost case
-.field_map com/oaklandsw/http/HttpURLConnection/HDR_USER_AGENT char
+.field_map com/oaklandsw/http/HttpURLConnection/HDR_USER_AGENT case
+.field_map com/oaklandsw/http/HttpURLConnection/_proxyHost char
 .field_map com/oaklandsw/http/HttpURLConnection/HDR_EXPECT else
 .field_map com/oaklandsw/http/HttpURLConnection/_sslmethmsg goto
 .field_map com/oaklandsw/http/HttpURLConnection/_conInStream long
 .field_map com/oaklandsw/http/HttpURLConnection/_requestTimeout null
+.field_map com/oaklandsw/http/HttpURLConnection/class$0 class$0
 .field_map com/oaklandsw/http/HttpURLConnection/_cookieContainer void
 .field_map com/oaklandsw/http/HttpURLConnection/HDR_LOCATION b
-.field_map com/oaklandsw/http/HttpURLConnection/class$Lcom$oaklandsw$http$HttpURLConnection class$Lcom$oaklandsw$http$HttpURLConnection
 .field_map com/oaklandsw/http/HttpURLConnection/_hasContentLengthHeader c
 .field_map com/oaklandsw/http/HttpURLConnection/HDR_CONNECTION d
 .field_map com/oaklandsw/http/HttpURLConnection/_expectContinue e
@@ -1802,15 +1832,15 @@
 .field_map com/oaklandsw/http/HttpURLConnection/_hostnameVerifier g
 .field_map com/oaklandsw/http/HttpURLConnection/_respHeaders h
 .field_map com/oaklandsw/http/HttpURLConnection/_explicitClose i
-.field_map com/oaklandsw/http/HttpURLConnection/_idleTimeout j
-.field_map com/oaklandsw/http/HttpURLConnection/_dead k
-.field_map com/oaklandsw/http/HttpURLConnection/_defaultCookieSpec l
+.field_map com/oaklandsw/http/HttpURLConnection/_defaultCookieSpec j
+.field_map com/oaklandsw/http/HttpURLConnection/_idleTimeout k
+.field_map com/oaklandsw/http/HttpURLConnection/_dead l
 .field_map com/oaklandsw/http/HttpURLConnection/_methodId m
 .field_map com/oaklandsw/http/HttpURLConnection/_userAgent n
 .field_map com/oaklandsw/http/HttpURLConnection/_ioException o
 .field_map com/oaklandsw/http/HttpURLConnection/_executing p
-.field_map com/oaklandsw/http/HttpURLConnection/_responseCode q
-.field_map com/oaklandsw/http/HttpURLConnection/_defaultConnectionTimeout r
+.field_map com/oaklandsw/http/HttpURLConnection/_defaultConnectionTimeout q
+.field_map com/oaklandsw/http/HttpURLConnection/_responseCode r
 .field_map com/oaklandsw/http/HttpURLConnection/_urlString s
 .field_map com/oaklandsw/http/HttpURLConnection/_responseStream t
 .field_map com/oaklandsw/http/HttpURLConnection/_defaultHostnameVerifier u
@@ -1851,10 +1881,10 @@
 .field_map com/oaklandsw/http/HttpURLConnection/_outStream ad
 .field_map com/oaklandsw/http/HttpURLConnection/_idlePing ae
 .field_map com/oaklandsw/http/HttpURLConnection/_connectionTimeout af
-.field_map com/oaklandsw/http/HttpURLConnection/HDR_VALUE_KEEP_ALIVE ag
+.field_map com/oaklandsw/http/HttpURLConnection/_sslSessionClass ag
 .field_map com/oaklandsw/http/HttpURLConnection/_defaultIdlePing ah
-.field_map com/oaklandsw/http/HttpURLConnection/HDR_HOST ai
-.field_map com/oaklandsw/http/HttpURLConnection/_sslSessionClass aj
+.field_map com/oaklandsw/http/HttpURLConnection/HDR_VALUE_KEEP_ALIVE ai
+.field_map com/oaklandsw/http/HttpURLConnection/HDR_HOST aj
 .field_map com/oaklandsw/http/HttpURLConnection/_reqHeaders ak
 .field_map com/oaklandsw/http/HttpURLConnection/_executed al
 .field_map com/oaklandsw/http/HttpURLConnection/DEFAULT_RETRY_INTERVAL am
@@ -1874,20 +1904,17 @@
 .method_map com/oaklandsw/http/HttpURLConnection/shouldCloseConnection ()Z int
 .method_map com/oaklandsw/http/HttpURLConnection/setupResponseBody ()V new
 .method_map com/oaklandsw/http/HttpURLConnection/getPathQuery ()Ljava/lang/String; try
-.method_map com/oaklandsw/http/HttpURLConnection/access$0 (Lcom/oaklandsw/http/HttpURLConnection;)Ljava/lang/String; access$0
 .method_map com/oaklandsw/http/HttpURLConnection/getActualTries ()I byte
-.method_map com/oaklandsw/http/HttpURLConnection/access$1 (Lcom/oaklandsw/http/HttpURLConnection;Ljava/lang/String;)V access$1
-.method_map com/oaklandsw/http/HttpURLConnection/class$ (Ljava/lang/String;)Ljava/lang/Class; class$
 .method_map com/oaklandsw/http/HttpURLConnection/execute ()V case
 .class_map com/oaklandsw/http/CookiePolicy a
 .field_map com/oaklandsw/http/CookiePolicy/IGNORE_COOKIES a
-.field_map com/oaklandsw/http/CookiePolicy/class$Lcom$oaklandsw$http$CookiePolicy class$Lcom$oaklandsw$http$CookiePolicy
-.field_map com/oaklandsw/http/CookiePolicy/class$Lcom$oaklandsw$http$cookie$CookieSpecBase class$Lcom$oaklandsw$http$cookie$CookieSpecBase
 .field_map com/oaklandsw/http/CookiePolicy/BROWSER_COMPATIBILITY if
-.field_map com/oaklandsw/http/CookiePolicy/class$Lcom$oaklandsw$http$cookie$NetscapeDraftSpec class$Lcom$oaklandsw$http$cookie$NetscapeDraftSpec
 .field_map com/oaklandsw/http/CookiePolicy/DEFAULT do
 .field_map com/oaklandsw/http/CookiePolicy/NETSCAPE for
-.field_map com/oaklandsw/http/CookiePolicy/class$Lcom$oaklandsw$http$cookie$RFC2109Spec class$Lcom$oaklandsw$http$cookie$RFC2109Spec
+.field_map com/oaklandsw/http/CookiePolicy/class$3 class$3
+.field_map com/oaklandsw/http/CookiePolicy/class$2 class$2
+.field_map com/oaklandsw/http/CookiePolicy/class$1 class$1
+.field_map com/oaklandsw/http/CookiePolicy/class$0 class$0
 .field_map com/oaklandsw/http/CookiePolicy/LOG int
 .field_map com/oaklandsw/http/CookiePolicy/RFC_2109 new
 .field_map com/oaklandsw/http/CookiePolicy/SPECS try
@@ -1895,7 +1922,6 @@
 .method_map com/oaklandsw/http/CookiePolicy/unregisterCookieSpec (Ljava/lang/String;)V a
 .method_map com/oaklandsw/http/CookiePolicy/getCookieSpec (Ljava/lang/String;)Lcom/oaklandsw/http/cookie/CookieSpec; if
 .method_map com/oaklandsw/http/CookiePolicy/registerCookieSpec (Ljava/lang/String;Ljava/lang/Class;)V a
-.method_map com/oaklandsw/http/CookiePolicy/class$ (Ljava/lang/String;)Ljava/lang/Class; class$
 .field_map com/oaklandsw/http/NtlmCredential/_domain do
 .field_map com/oaklandsw/http/NtlmCredential/_host for
 .field_map com/oaklandsw/http/Authenticator/BASIC a
@@ -1905,14 +1931,13 @@
 .field_map com/oaklandsw/http/Authenticator/WWW_AUTH_RESP int
 .field_map com/oaklandsw/http/Authenticator/DIGEST new
 .field_map com/oaklandsw/http/Authenticator/log try
-.field_map com/oaklandsw/http/Authenticator/class$Lcom$oaklandsw$http$Authenticator class$Lcom$oaklandsw$http$Authenticator
+.field_map com/oaklandsw/http/Authenticator/class$0 class$0
 .field_map com/oaklandsw/http/Authenticator/PROXY_AUTH_RESP byte
 .field_map com/oaklandsw/http/Authenticator/HEXADECIMAL case
 .method_map com/oaklandsw/http/Authenticator/authenticate (Lcom/oaklandsw/http/HttpURLConnectInternal;Lcom/oaklandsw/http/Headers;Ljava/lang/String;Ljava/util/Map;Ljava/lang/String;)Z a
 .method_map com/oaklandsw/http/Authenticator/ntlm (Ljava/lang/String;Lcom/oaklandsw/http/HttpURLConnectInternal;Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String; a
 .method_map com/oaklandsw/http/Authenticator/basic (Ljava/lang/String;Lcom/oaklandsw/http/HttpURLConnectInternal;Ljava/lang/String;)Ljava/lang/String; a
 .method_map com/oaklandsw/http/Authenticator/getHTTPDigestCredentials (Ljava/lang/String;)Ljava/util/Map; a
-.method_map com/oaklandsw/http/Authenticator/class$ (Ljava/lang/String;)Ljava/lang/Class; class$
 .method_map com/oaklandsw/http/Authenticator/createCnonce ()Ljava/lang/String; a
 .method_map com/oaklandsw/http/Authenticator/encode ([B)Ljava/lang/String; a
 .method_map com/oaklandsw/http/Authenticator/parseAuthenticateHeader (Lcom/oaklandsw/http/Headers;Ljava/lang/String;)Ljava/util/Map; a
@@ -1942,34 +1967,32 @@
 .class_map com/oaklandsw/http/HttpConnectionTimeout$TimeoutThread a
 .method_map com/oaklandsw/http/HttpConnectionTimeout$TimeoutThread/run ()V run
 .field_map com/oaklandsw/http/HttpConnectionTimeout/_threadNoCheck a
-.field_map com/oaklandsw/http/HttpConnectionTimeout/class$Lcom$oaklandsw$http$HttpConnectionTimeout class$Lcom$oaklandsw$http$HttpConnectionTimeout
 .field_map com/oaklandsw/http/HttpConnectionTimeout/TIMEOUT_FUDGE if
 .field_map com/oaklandsw/http/HttpConnectionTimeout/_lock do
 .field_map com/oaklandsw/http/HttpConnectionTimeout/_timeoutThreadWake for
 .field_map com/oaklandsw/http/HttpConnectionTimeout/_timeoutThread int
 .field_map com/oaklandsw/http/HttpConnectionTimeout/_shutdown new
 .field_map com/oaklandsw/http/HttpConnectionTimeout/_log try
-.method_map com/oaklandsw/http/HttpConnectionTimeout/class$ (Ljava/lang/String;)Ljava/lang/Class; class$
-.method_map com/oaklandsw/http/HttpConnectionTimeout/access$9 (Z)V access$9
+.field_map com/oaklandsw/http/HttpConnectionTimeout/class$0 class$0
 .method_map com/oaklandsw/http/HttpConnectionTimeout/startIdleTimeout (Lcom/oaklandsw/http/HttpConnection;)V a
 .method_map com/oaklandsw/http/HttpConnectionTimeout/shutdown ()V a
-.method_map com/oaklandsw/http/HttpConnectionTimeout/access$5 ()Lcom/oaklandsw/http/HttpConnectionTimeout$TimeoutThread; access$5
-.method_map com/oaklandsw/http/HttpConnectionTimeout/access$7 ()Z access$7
+.method_map com/oaklandsw/http/HttpConnectionTimeout/access$8 (Z)V access$8
+.method_map com/oaklandsw/http/HttpConnectionTimeout/access$5 (Lcom/oaklandsw/http/HttpConnectionTimeout$TimeoutThread;)V access$5
 .method_map com/oaklandsw/http/HttpConnectionTimeout/access$2 ()J access$2
 .method_map com/oaklandsw/http/HttpConnectionTimeout/access$4 (Z)V access$4
 .method_map com/oaklandsw/http/HttpConnectionTimeout/access$3 ()Z access$3
-.method_map com/oaklandsw/http/HttpConnectionTimeout/access$6 (Lcom/oaklandsw/http/HttpConnectionTimeout$TimeoutThread;)V access$6
-.method_map com/oaklandsw/http/HttpConnectionTimeout/access$8 (J)V access$8
+.method_map com/oaklandsw/http/HttpConnectionTimeout/access$7 (J)V access$7
+.method_map com/oaklandsw/http/HttpConnectionTimeout/access$6 ()Z access$6
 .method_map com/oaklandsw/http/HttpConnectionTimeout/access$0 ()Lcom/oaklandsw/log/Log; access$0
 .method_map com/oaklandsw/http/HttpConnectionTimeout/access$1 ()Lcom/oaklandsw/http/HttpConnectionTimeout; access$1
 .class_map com/oaklandsw/http/Cookie d
-.field_map com/oaklandsw/http/Cookie/class$Lcom$oaklandsw$http$Cookie class$Lcom$oaklandsw$http$Cookie
 .field_map com/oaklandsw/http/Cookie/cookieExpiryDate int
 .field_map com/oaklandsw/http/Cookie/cookieComment new
 .field_map com/oaklandsw/http/Cookie/hasPathAttribute try
 .field_map com/oaklandsw/http/Cookie/cookieVersion byte
 .field_map com/oaklandsw/http/Cookie/isSecure case
 .field_map com/oaklandsw/http/Cookie/cookiePath char
+.field_map com/oaklandsw/http/Cookie/class$0 class$0
 .field_map com/oaklandsw/http/Cookie/STRING_COLLATOR else
 .field_map com/oaklandsw/http/Cookie/cookieDomain goto
 .field_map com/oaklandsw/http/Cookie/hasDomainAttribute long
@@ -1984,7 +2007,6 @@
 .method_map com/oaklandsw/http/Cookie/toString ()Ljava/lang/String; toString
 .method_map com/oaklandsw/http/Cookie/getVersion ()I byte
 .method_map com/oaklandsw/http/Cookie/isExpired (Ljava/util/Date;)Z a
-.method_map com/oaklandsw/http/Cookie/class$ (Ljava/lang/String;)Ljava/lang/Class; class$
 .method_map com/oaklandsw/http/Cookie/hashCode ()I hashCode
 .method_map com/oaklandsw/http/Cookie/getSecure ()Z case
 .method_map com/oaklandsw/http/Cookie/isPathAttributeSpecified ()Z char
@@ -2008,8 +2030,8 @@
 .method_map com/oaklandsw/http/WireLogInputStream/dumpBuff ()V a
 .method_map com/oaklandsw/http/WireLogInputStream/read ([BII)I read
 .field_map com/oaklandsw/http/HttpURLConnectInternal/_proxyCredentialSent ar
-.field_map com/oaklandsw/http/HttpURLConnectInternal/class$Lcom$oaklandsw$http$HttpURLConnectInternal class$Lcom$oaklandsw$http$HttpURLConnectInternal
 .field_map com/oaklandsw/http/HttpURLConnectInternal/_hdrProxyConnection as
+.field_map com/oaklandsw/http/HttpURLConnectInternal/class$0 class$0
 .field_map com/oaklandsw/http/HttpURLConnectInternal/_hdrContentLengthInt at
 .field_map com/oaklandsw/http/HttpURLConnectInternal/_credentialSent au
 .field_map com/oaklandsw/http/HttpURLConnectInternal/_requestBody av
@@ -2051,7 +2073,6 @@
 .method_map com/oaklandsw/http/HttpURLConnectInternal/readResponseHeaders ()V g
 .method_map com/oaklandsw/http/HttpURLConnectInternal/skipSpaces ()I h
 .method_map com/oaklandsw/http/HttpURLConnectInternal/processRequestLoop ()V i
-.method_map com/oaklandsw/http/HttpURLConnectInternal/class$ (Ljava/lang/String;)Ljava/lang/Class; class$
 .method_map com/oaklandsw/http/HttpURLConnectInternal/writeRequest ()V j
 .method_map com/oaklandsw/http/HttpURLConnectInternal/shouldCloseConnection ()Z int
 .method_map com/oaklandsw/http/HttpURLConnectInternal/getName ()Ljava/lang/String; k
@@ -2071,20 +2092,19 @@
 .field_map com/oaklandsw/http/ReleaseInputStream/_shouldClose a
 .field_map com/oaklandsw/http/ReleaseInputStream/_urlCon if
 .field_map com/oaklandsw/http/ReleaseInputStream/_log do
-.field_map com/oaklandsw/http/ReleaseInputStream/class$Lcom$oaklandsw$http$ReleaseInputStream class$Lcom$oaklandsw$http$ReleaseInputStream
+.field_map com/oaklandsw/http/ReleaseInputStream/class$0 class$0
 .method_map com/oaklandsw/http/ReleaseInputStream/close ()V close
-.method_map com/oaklandsw/http/ReleaseInputStream/class$ (Ljava/lang/String;)Ljava/lang/Class; class$
 .class_map com/oaklandsw/http/HttpConnectionManager$ConnectionInfo a
 .field_map com/oaklandsw/http/HttpConnectionManager$ConnectionInfo/_connections a
 .field_map com/oaklandsw/http/HttpConnectionManager$ConnectionInfo/_proxyIncarnation if
 .field_map com/oaklandsw/http/HttpConnectionManager$ConnectionInfo/_count do
 .field_map com/oaklandsw/http/HttpConnectionManager$ConnectionInfo/_connectionKey for
-.field_map com/oaklandsw/http/HttpConnectionManager/class$Lcom$oaklandsw$http$HttpConnectionManager class$Lcom$oaklandsw$http$HttpConnectionManager
 .field_map com/oaklandsw/http/HttpConnectionManager/_proxyPort a
 .field_map com/oaklandsw/http/HttpConnectionManager/_hostMap if
 .field_map com/oaklandsw/http/HttpConnectionManager/_lock do
 .field_map com/oaklandsw/http/HttpConnectionManager/_log for
 .field_map com/oaklandsw/http/HttpConnectionManager/_nonProxyHosts int
+.field_map com/oaklandsw/http/HttpConnectionManager/class$0 class$0
 .field_map com/oaklandsw/http/HttpConnectionManager/_maxConns new
 .field_map com/oaklandsw/http/HttpConnectionManager/_nonProxyHostsString try
 .field_map com/oaklandsw/http/HttpConnectionManager/_globalProxyIncarnation byte
@@ -2096,7 +2116,6 @@
 .method_map com/oaklandsw/http/HttpConnectionManager/getConnectionInfoFromUrl (Ljava/lang/String;)Lcom/oaklandsw/http/HttpConnectionManager$ConnectionInfo; do
 .method_map com/oaklandsw/http/HttpConnectionManager/getProxyHost (Ljava/lang/String;)Ljava/lang/String; for
 .method_map com/oaklandsw/http/HttpConnectionManager/setProxyPort (I)V a
-.method_map com/oaklandsw/http/HttpConnectionManager/class$ (Ljava/lang/String;)Ljava/lang/Class; class$
 .method_map com/oaklandsw/http/HttpConnectionManager/reduceConnCount (Lcom/oaklandsw/http/HttpConnectionManager$ConnectionInfo;Ljava/util/Iterator;)Z a
 .method_map com/oaklandsw/http/HttpConnectionManager/getConnectionInfo (Ljava/lang/String;)Lcom/oaklandsw/http/HttpConnectionManager$ConnectionInfo; int
 .method_map com/oaklandsw/http/HttpConnectionManager/dumpConnectionPool ()V if
@@ -2129,6 +2148,7 @@
 .field_map com/oaklandsw/http/HttpStatus/SC_LOCKED a
 .field_map com/oaklandsw/http/HttpStatus/SC_INTERNAL_SERVER_ERROR if
 .field_map com/oaklandsw/http/HttpStatus/SC_NOT_MODIFIED do
+.field_map com/oaklandsw/http/HttpStatus/class$0 class$0
 .field_map com/oaklandsw/http/HttpStatus/SC_CONFLICT for
 .field_map com/oaklandsw/http/HttpStatus/SC_PAYMENT_REQUIRED int
 .field_map com/oaklandsw/http/HttpStatus/SC_UNAUTHORIZED new
@@ -2173,47 +2193,43 @@
 .field_map com/oaklandsw/http/HttpStatus/SC_NOT_IMPLEMENTED E
 .field_map com/oaklandsw/http/HttpStatus/SC_INSUFFICIENT_STORAGE F
 .field_map com/oaklandsw/http/HttpStatus/SC_PRECONDITION_FAILED G
-.field_map com/oaklandsw/http/HttpStatus/class$Lcom$oaklandsw$http$HttpStatus class$Lcom$oaklandsw$http$HttpStatus
 .field_map com/oaklandsw/http/HttpStatus/SC_PROCESSING H
 .field_map com/oaklandsw/http/HttpStatus/SC_BAD_REQUEST I
 .field_map com/oaklandsw/http/HttpStatus/SC_REQUEST_URI_TOO_LONG J
 .method_map com/oaklandsw/http/HttpStatus/getStatusText (I)Ljava/lang/String; a
 .method_map com/oaklandsw/http/HttpStatus/addStatusCodeMap (ILjava/lang/String;)V a
-.method_map com/oaklandsw/http/HttpStatus/class$ (Ljava/lang/String;)Ljava/lang/Class; class$
 .field_map com/oaklandsw/http/Headers/VALUE_CONTINUE a
 .field_map com/oaklandsw/http/Headers/HEADER if
 .field_map com/oaklandsw/http/Headers/INIT_BUF_SIZE do
-.field_map com/oaklandsw/http/Headers/_urlCon for
-.field_map com/oaklandsw/http/Headers/_headerValues int
+.field_map com/oaklandsw/http/Headers/_headerValues for
+.field_map com/oaklandsw/http/Headers/_urlCon int
 .field_map com/oaklandsw/http/Headers/VALUE new
 .field_map com/oaklandsw/http/Headers/_charBuf try
 .field_map com/oaklandsw/http/Headers/_log byte
-.field_map com/oaklandsw/http/Headers/class$Lcom$oaklandsw$http$Headers class$Lcom$oaklandsw$http$Headers
-.field_map com/oaklandsw/http/Headers/_currentIndex case
-.field_map com/oaklandsw/http/Headers/INIT_SIZE char
+.field_map com/oaklandsw/http/Headers/INIT_SIZE case
+.field_map com/oaklandsw/http/Headers/_currentIndex char
 .field_map com/oaklandsw/http/Headers/AFTER_HEADER else
 .field_map com/oaklandsw/http/Headers/_headerKeys goto
-.method_map com/oaklandsw/http/Headers/write (Ljava/io/OutputStream;)V a
-.method_map com/oaklandsw/http/Headers/set (Ljava/lang/String;Ljava/lang/String;)V a
-.method_map com/oaklandsw/http/Headers/add (Ljava/lang/String;Ljava/lang/String;)V if
-.method_map com/oaklandsw/http/Headers/grow ()V a
-.method_map com/oaklandsw/http/Headers/writeKeyValue (Ljava/io/OutputStream;Ljava/lang/String;Ljava/lang/String;)V a
-.method_map com/oaklandsw/http/Headers/getKey (I)Ljava/lang/String; a
-.method_map com/oaklandsw/http/Headers/getMap ()Ljava/util/Map; if
+.field_map com/oaklandsw/http/Headers/class$0 class$0
+.method_map com/oaklandsw/http/Headers/dumpHeaders ()V a
 .method_map com/oaklandsw/http/Headers/read (Ljava/io/InputStream;Lcom/oaklandsw/http/HttpURLConnectInternal;)V a
-.method_map com/oaklandsw/http/Headers/class$ (Ljava/lang/String;)Ljava/lang/Class; class$
+.method_map com/oaklandsw/http/Headers/writeKeyValue (Ljava/io/OutputStream;Ljava/lang/String;Ljava/lang/String;)V a
 .method_map com/oaklandsw/http/Headers/get (Ljava/lang/String;)Ljava/lang/String; a
-.method_map com/oaklandsw/http/Headers/setValue (I)V if
-.method_map com/oaklandsw/http/Headers/dumpHeaders ()V do
+.method_map com/oaklandsw/http/Headers/getMap ()Ljava/util/Map; if
+.method_map com/oaklandsw/http/Headers/clear ()V do
+.method_map com/oaklandsw/http/Headers/get (I)Ljava/lang/String; a
+.method_map com/oaklandsw/http/Headers/add (Ljava/lang/String;Ljava/lang/String;)V a
+.method_map com/oaklandsw/http/Headers/getKey (I)Ljava/lang/String; if
+.method_map com/oaklandsw/http/Headers/set (Ljava/lang/String;Ljava/lang/String;)V if
+.method_map com/oaklandsw/http/Headers/length ()I for
 .method_map com/oaklandsw/http/Headers/remove (Ljava/lang/String;)V if
-.method_map com/oaklandsw/http/Headers/growCharBuf ()V for
-.method_map com/oaklandsw/http/Headers/get (I)Ljava/lang/String; do
-.method_map com/oaklandsw/http/Headers/clear ()V int
 .method_map com/oaklandsw/http/Headers/read (Ljava/io/InputStream;Lcom/oaklandsw/http/HttpURLConnectInternal;ZI)V a
-.method_map com/oaklandsw/http/Headers/length ()I new
-.field_map com/oaklandsw/http/HttpException/class$Ljava$lang$Throwable class$Ljava$lang$Throwable
+.method_map com/oaklandsw/http/Headers/write (Ljava/io/OutputStream;)V a
+.method_map com/oaklandsw/http/Headers/growCharBuf ()V int
+.method_map com/oaklandsw/http/Headers/grow ()V new
+.method_map com/oaklandsw/http/Headers/setValue (I)V do
+.field_map com/oaklandsw/http/HttpException/class$0 class$0
 .field_map com/oaklandsw/http/HttpException/cause a
-.method_map com/oaklandsw/http/HttpException/class$ (Ljava/lang/String;)Ljava/lang/Class; class$
 .class_map com/oaklandsw/http/NameValuePair h
 .field_map com/oaklandsw/http/NameValuePair/name a
 .field_map com/oaklandsw/http/NameValuePair/value if
@@ -2231,14 +2247,13 @@
 .field_map com/oaklandsw/http/ContentLengthInputStream/contentLength a
 .field_map com/oaklandsw/http/ContentLengthInputStream/_urlCon if
 .field_map com/oaklandsw/http/ContentLengthInputStream/_log do
-.field_map com/oaklandsw/http/ContentLengthInputStream/class$Lcom$oaklandsw$http$ContentLengthInputStream class$Lcom$oaklandsw$http$ContentLengthInputStream
+.field_map com/oaklandsw/http/ContentLengthInputStream/class$0 class$0
 .field_map com/oaklandsw/http/ContentLengthInputStream/pos for
 .method_map com/oaklandsw/http/ContentLengthInputStream/read ()I read
 .method_map com/oaklandsw/http/ContentLengthInputStream/read ([B)I read
 .method_map com/oaklandsw/http/ContentLengthInputStream/checkShort ()V a
 .method_map com/oaklandsw/http/ContentLengthInputStream/close (Z)V a
 .method_map com/oaklandsw/http/ContentLengthInputStream/close ()V close
-.method_map com/oaklandsw/http/ContentLengthInputStream/class$ (Ljava/lang/String;)Ljava/lang/Class; class$
 .method_map com/oaklandsw/http/ContentLengthInputStream/read ([BII)I read
 .field_map com/oaklandsw/http/RequestOutputStream/ONE a
 .field_map com/oaklandsw/http/RequestOutputStream/useChunking if
@@ -2246,33 +2261,31 @@
 .field_map com/oaklandsw/http/RequestOutputStream/log for
 .field_map com/oaklandsw/http/RequestOutputStream/closed int
 .field_map com/oaklandsw/http/RequestOutputStream/ZERO new
-.field_map com/oaklandsw/http/RequestOutputStream/class$Lcom$oaklandsw$http$RequestOutputStream class$Lcom$oaklandsw$http$RequestOutputStream
 .field_map com/oaklandsw/http/RequestOutputStream/writingChunk try
+.field_map com/oaklandsw/http/RequestOutputStream/class$0 class$0
 .field_map com/oaklandsw/http/RequestOutputStream/CRLF byte
 .field_map com/oaklandsw/http/RequestOutputStream/stream case
-.method_map com/oaklandsw/http/RequestOutputStream/print (Ljava/lang/String;)V a
-.method_map com/oaklandsw/http/RequestOutputStream/close ()V close
-.method_map com/oaklandsw/http/RequestOutputStream/class$ (Ljava/lang/String;)Ljava/lang/Class; class$
-.method_map com/oaklandsw/http/RequestOutputStream/write (I)V write
-.method_map com/oaklandsw/http/RequestOutputStream/isUseChunking ()Z a
+.method_map com/oaklandsw/http/RequestOutputStream/println (Ljava/lang/String;)V a
 .method_map com/oaklandsw/http/RequestOutputStream/write ([BII)V write
-.method_map com/oaklandsw/http/RequestOutputStream/println ()V if
+.method_map com/oaklandsw/http/RequestOutputStream/write (I)V write
+.method_map com/oaklandsw/http/RequestOutputStream/println ()V a
+.method_map com/oaklandsw/http/RequestOutputStream/isUseChunking ()Z if
+.method_map com/oaklandsw/http/RequestOutputStream/close ()V close
 .method_map com/oaklandsw/http/RequestOutputStream/setUseChunking (Z)V a
-.method_map com/oaklandsw/http/RequestOutputStream/println (Ljava/lang/String;)V if
+.method_map com/oaklandsw/http/RequestOutputStream/print (Ljava/lang/String;)V if
 .field_map com/oaklandsw/http/UserCredential/_user a
 .field_map com/oaklandsw/http/UserCredential/_password if
-.field_map com/oaklandsw/http/AutoCloseInputStream/class$Lcom$oaklandsw$http$AutoCloseInputStream class$Lcom$oaklandsw$http$AutoCloseInputStream
 .field_map com/oaklandsw/http/AutoCloseInputStream/_urlCon a
 .field_map com/oaklandsw/http/AutoCloseInputStream/_log if
+.field_map com/oaklandsw/http/AutoCloseInputStream/class$0 class$0
 .method_map com/oaklandsw/http/AutoCloseInputStream/read ()I read
 .method_map com/oaklandsw/http/AutoCloseInputStream/read ([B)I read
 .method_map com/oaklandsw/http/AutoCloseInputStream/close ()V close
-.method_map com/oaklandsw/http/AutoCloseInputStream/class$ (Ljava/lang/String;)Ljava/lang/Class; class$
 .method_map com/oaklandsw/http/AutoCloseInputStream/read ([BII)I read
 .class_map com/oaklandsw/http/CookieContainer j
 .field_map com/oaklandsw/http/CookieContainer/LOG a
 .field_map com/oaklandsw/http/CookieContainer/_cookies if
-.field_map com/oaklandsw/http/CookieContainer/class$Lcom$oaklandsw$http$CookieContainer class$Lcom$oaklandsw$http$CookieContainer
+.field_map com/oaklandsw/http/CookieContainer/class$0 class$0
 .method_map com/oaklandsw/http/CookieContainer/retainAll (Ljava/util/Collection;)Z retainAll
 .method_map com/oaklandsw/http/CookieContainer/add (Ljava/lang/Object;)Z add
 .method_map com/oaklandsw/http/CookieContainer/toArray ()[Ljava/lang/Object; toArray
@@ -2281,7 +2294,6 @@
 .method_map com/oaklandsw/http/CookieContainer/addCookie (Lcom/oaklandsw/http/Cookie;)V a
 .method_map com/oaklandsw/http/CookieContainer/iterator ()Ljava/util/Iterator; iterator
 .method_map com/oaklandsw/http/CookieContainer/remove (Ljava/lang/Object;)Z remove
-.method_map com/oaklandsw/http/CookieContainer/class$ (Ljava/lang/String;)Ljava/lang/Class; class$
 .method_map com/oaklandsw/http/CookieContainer/purgeExpiredCookies ()Z a
 .method_map com/oaklandsw/http/CookieContainer/toArray ([Ljava/lang/Object;)[Ljava/lang/Object; toArray
 .method_map com/oaklandsw/http/CookieContainer/addAll (Ljava/util/Collection;)Z addAll
@@ -2295,16 +2307,15 @@
 .method_map com/oaklandsw/http/CookieContainer/clear ()V clear
 .field_map com/oaklandsw/http/ChunkedInputStream/in a
 .field_map com/oaklandsw/http/ChunkedInputStream/eof if
-.field_map com/oaklandsw/http/ChunkedInputStream/class$Lcom$oaklandsw$http$ChunkedInputStream class$Lcom$oaklandsw$http$ChunkedInputStream
 .field_map com/oaklandsw/http/ChunkedInputStream/HTTP_ENC do
 .field_map com/oaklandsw/http/ChunkedInputStream/_log for
+.field_map com/oaklandsw/http/ChunkedInputStream/class$0 class$0
 .field_map com/oaklandsw/http/ChunkedInputStream/method int
 .field_map com/oaklandsw/http/ChunkedInputStream/pos new
 .field_map com/oaklandsw/http/ChunkedInputStream/chunkSize try
 .method_map com/oaklandsw/http/ChunkedInputStream/read ([B)I read
 .method_map com/oaklandsw/http/ChunkedInputStream/close (Z)V a
 .method_map com/oaklandsw/http/ChunkedInputStream/close ()V close
-.method_map com/oaklandsw/http/ChunkedInputStream/class$ (Ljava/lang/String;)Ljava/lang/Class; class$
 .method_map com/oaklandsw/http/ChunkedInputStream/getChunkSizeFromInputStream (Ljava/io/InputStream;)I a
 .method_map com/oaklandsw/http/ChunkedInputStream/readLine ()Ljava/lang/String; a
 .method_map com/oaklandsw/http/ChunkedInputStream/parseFooters ()V if
@@ -2314,21 +2325,20 @@
 .class_map com/oaklandsw/http/HttpConnection$1 1
 .field_map com/oaklandsw/http/HttpConnection$1/this$0 this$0
 .field_map com/oaklandsw/http/HttpConnection$1/_connection a
-.field_map com/oaklandsw/http/HttpConnection$1/val$thisObject val$thisObject
 .method_map com/oaklandsw/http/HttpConnection$1/run ()V run
-.method_map com/oaklandsw/http/HttpConnection$1/constructor$0 (Lcom/oaklandsw/http/HttpConnection;)V a
 .field_map com/oaklandsw/http/HttpConnection/_ssl a
 .field_map com/oaklandsw/http/HttpConnection/_proxyPort if
-.field_map com/oaklandsw/http/HttpConnection/class$Ljava$net$Socket class$Ljava$net$Socket
 .field_map com/oaklandsw/http/HttpConnection/_hostPort do
+.field_map com/oaklandsw/http/HttpConnection/class$2 class$2
+.field_map com/oaklandsw/http/HttpConnection/class$1 class$1
 .field_map com/oaklandsw/http/HttpConnection/_wireLog for
-.field_map com/oaklandsw/http/HttpConnection/WIRE_LOG int
-.field_map com/oaklandsw/http/HttpConnection/TERMINATOR new
+.field_map com/oaklandsw/http/HttpConnection/class$0 class$0
+.field_map com/oaklandsw/http/HttpConnection/TERMINATOR int
+.field_map com/oaklandsw/http/HttpConnection/WIRE_LOG new
 .field_map com/oaklandsw/http/HttpConnection/_input try
 .field_map com/oaklandsw/http/HttpConnection/_host byte
-.field_map com/oaklandsw/http/HttpConnection/class$Ljava$lang$String class$Ljava$lang$String
-.field_map com/oaklandsw/http/HttpConnection/_asyncOpenCompleted case
-.field_map com/oaklandsw/http/HttpConnection/_inetSocketAddressCons char
+.field_map com/oaklandsw/http/HttpConnection/_inetSocketAddressCons case
+.field_map com/oaklandsw/http/HttpConnection/_asyncOpenCompleted char
 .field_map com/oaklandsw/http/HttpConnection/_log else
 .field_map com/oaklandsw/http/HttpConnection/_hostPortURL goto
 .field_map com/oaklandsw/http/HttpConnection/CONNECTION_LEN long
@@ -2355,7 +2365,6 @@
 .field_map com/oaklandsw/http/HttpConnection/_ntlmLeaveOpen t
 .field_map com/oaklandsw/http/HttpConnection/_hostnameVerifier u
 .field_map com/oaklandsw/http/HttpConnection/_connectMethod v
-.field_map com/oaklandsw/http/HttpConnection/class$Lcom$oaklandsw$http$HttpConnection class$Lcom$oaklandsw$http$HttpConnection
 .field_map com/oaklandsw/http/HttpConnection/_tunnelCon w
 .field_map com/oaklandsw/http/HttpConnection/STREAM_BUFFER_SIZE x
 .field_map com/oaklandsw/http/HttpConnection/_testNonMatchHost y
@@ -2389,7 +2398,6 @@
 .method_map com/oaklandsw/http/HttpConnection/getProxyPort ()I c
 .method_map com/oaklandsw/http/HttpConnection/setProxyPort (I)V if
 .method_map com/oaklandsw/http/HttpConnection/getPort ()I d
-.method_map com/oaklandsw/http/HttpConnection/class$ (Ljava/lang/String;)Ljava/lang/Class; class$
 .method_map com/oaklandsw/http/HttpConnection/isNtlmLeaveOpen ()Z e
 .method_map com/oaklandsw/http/HttpConnection/getCipherSuite ()Ljava/lang/String; f
 .method_map com/oaklandsw/http/HttpConnection/openSocket ()V g
@@ -2421,14 +2429,13 @@
 .method_map com/oaklandsw/http/WireLogOutputStream/close ()V close
 .class_map com/oaklandsw/http/HeaderElement l
 .field_map com/oaklandsw/http/HeaderElement/LOG do
-.field_map com/oaklandsw/http/HeaderElement/class$Lcom$oaklandsw$http$HeaderElement class$Lcom$oaklandsw$http$HeaderElement
 .field_map com/oaklandsw/http/HeaderElement/parameters for
+.field_map com/oaklandsw/http/HeaderElement/class$0 class$0
 .method_map com/oaklandsw/http/HeaderElement/getParameterByName (Ljava/lang/String;)Lcom/oaklandsw/http/NameValuePair; do
 .method_map com/oaklandsw/http/HeaderElement/parse (Ljava/lang/String;)[Lcom/oaklandsw/http/HeaderElement; for
 .method_map com/oaklandsw/http/HeaderElement/getParameters ()[Lcom/oaklandsw/http/NameValuePair; do
 .method_map com/oaklandsw/http/HeaderElement/parseElements ([C)[Lcom/oaklandsw/http/HeaderElement; a
 .method_map com/oaklandsw/http/HeaderElement/parseElements (Ljava/lang/String;)[Lcom/oaklandsw/http/HeaderElement; int
-.method_map com/oaklandsw/http/HeaderElement/class$ (Ljava/lang/String;)Ljava/lang/Class; class$
 .class_map com/oaklandsw/http/ParameterParser m
 .field_map com/oaklandsw/http/ParameterParser/len a
 .field_map com/oaklandsw/http/ParameterParser/i2 if
@@ -2445,7 +2452,6 @@
 .method_map com/oaklandsw/http/ParameterParser/getToken (Z)Ljava/lang/String; a
 .class_map com/oaklandsw/log/LogFactoryImpl$1 1
 .field_map com/oaklandsw/log/LogFactoryImpl$1/val$name val$name
-.method_map com/oaklandsw/log/LogFactoryImpl$1/constructor$0 ()V a
 .method_map com/oaklandsw/log/LogFactoryImpl$1/run ()Ljava/lang/Object; run
 .field_map com/oaklandsw/log/LogFactoryImpl/instances new
 .field_map com/oaklandsw/log/LogFactoryImpl/logConstructorSignature try
@@ -2455,19 +2461,18 @@
 .field_map com/oaklandsw/log/LogFactoryImpl/logMethodSignature else
 .field_map com/oaklandsw/log/LogFactoryImpl/LOG_STDOUT goto
 .field_map com/oaklandsw/log/LogFactoryImpl/LOG_DEFAULT long
-.field_map com/oaklandsw/log/LogFactoryImpl/class$Ljava$lang$String class$Ljava$lang$String
+.field_map com/oaklandsw/log/LogFactoryImpl/class$2 class$2
 .field_map com/oaklandsw/log/LogFactoryImpl/logConstructor null
 .field_map com/oaklandsw/log/LogFactoryImpl/LOG4JLOGIMPL void
+.field_map com/oaklandsw/log/LogFactoryImpl/class$1 class$1
 .field_map com/oaklandsw/log/LogFactoryImpl/logMethod b
-.field_map com/oaklandsw/log/LogFactoryImpl/class$Lcom$oaklandsw$log$Log class$Lcom$oaklandsw$log$Log
+.field_map com/oaklandsw/log/LogFactoryImpl/class$0 class$0
 .field_map com/oaklandsw/log/LogFactoryImpl/LOG_PROPERTY c
 .field_map com/oaklandsw/log/LogFactoryImpl/logClassName d
-.field_map com/oaklandsw/log/LogFactoryImpl/class$Lcom$oaklandsw$log$LogFactory class$Lcom$oaklandsw$log$LogFactory
 .method_map com/oaklandsw/log/LogFactoryImpl/removeAttribute (Ljava/lang/String;)V removeAttribute
 .method_map com/oaklandsw/log/LogFactoryImpl/getAttribute (Ljava/lang/String;)Ljava/lang/Object; getAttribute
 .method_map com/oaklandsw/log/LogFactoryImpl/getAttributeNames ()[Ljava/lang/String; getAttributeNames
 .method_map com/oaklandsw/log/LogFactoryImpl/release ()V release
-.method_map com/oaklandsw/log/LogFactoryImpl/class$ (Ljava/lang/String;)Ljava/lang/Class; class$
 .method_map com/oaklandsw/log/LogFactoryImpl/guessConfig ()V if
 .method_map com/oaklandsw/log/LogFactoryImpl/setAttribute (Ljava/lang/String;Ljava/lang/Object;)V setAttribute
 .method_map com/oaklandsw/log/LogFactoryImpl/getInstance (Ljava/lang/Class;)Lcom/oaklandsw/log/Log; getInstance
@@ -2540,23 +2545,21 @@
 .field_map com/oaklandsw/log/LogConfigurationException/cause a
 .method_map com/oaklandsw/log/LogConfigurationException/getCause ()Ljava/lang/Throwable; getCause
 .class_map com/oaklandsw/log/LogFactory$1 1
-.method_map com/oaklandsw/log/LogFactory$1/constructor$0 ()V a
 .method_map com/oaklandsw/log/LogFactory$1/run ()Ljava/lang/Object; run
-.field_map com/oaklandsw/log/LogFactory/class$Lcom$oaklandsw$log$LogFactory class$Lcom$oaklandsw$log$LogFactory
+.field_map com/oaklandsw/log/LogFactory/class$1 class$1
 .field_map com/oaklandsw/log/LogFactory/factories a
-.field_map com/oaklandsw/log/LogFactory/class$Ljava$lang$Thread class$Ljava$lang$Thread
+.field_map com/oaklandsw/log/LogFactory/class$0 class$0
 .field_map com/oaklandsw/log/LogFactory/SERVICE_ID if
 .field_map com/oaklandsw/log/LogFactory/_forceObfuscatedLogging do
-.method_map com/oaklandsw/log/LogFactory/class$ (Ljava/lang/String;)Ljava/lang/Class; class$
 .method_map com/oaklandsw/log/LogFactory/getCachedFactory (Ljava/lang/ClassLoader;)Lcom/oaklandsw/log/LogFactory; a
 .method_map com/oaklandsw/log/LogFactory/cacheFactory (Ljava/lang/ClassLoader;Lcom/oaklandsw/log/LogFactory;)V a
 .method_map com/oaklandsw/log/LogFactory/getContextClassLoader ()Ljava/lang/ClassLoader; a
 .method_map com/oaklandsw/log/LogFactory/newFactory (Ljava/lang/String;Ljava/lang/ClassLoader;)Lcom/oaklandsw/log/LogFactory; a
 .class_map com/oaklandsw/log/Log4JCategoryLog c
-.field_map com/oaklandsw/log/Log4JCategoryLog/class$Lcom$oaklandsw$log$Log4JCategoryLog class$Lcom$oaklandsw$log$Log4JCategoryLog
 .field_map com/oaklandsw/log/Log4JCategoryLog/LAYOUT if
 .field_map com/oaklandsw/log/Log4JCategoryLog/FQCN do
 .field_map com/oaklandsw/log/Log4JCategoryLog/category for
+.field_map com/oaklandsw/log/Log4JCategoryLog/class$0 class$0
 .field_map com/oaklandsw/log/Log4JCategoryLog/initialized int
 .method_map com/oaklandsw/log/Log4JCategoryLog/debug (Ljava/lang/Object;)V debug
 .method_map com/oaklandsw/log/Log4JCategoryLog/initialize ()V if
@@ -2573,7 +2576,6 @@
 .method_map com/oaklandsw/log/Log4JCategoryLog/error (Ljava/lang/Object;Ljava/lang/Throwable;)V error
 .method_map com/oaklandsw/log/Log4JCategoryLog/trace (Ljava/lang/Object;Ljava/lang/Throwable;)V trace
 .method_map com/oaklandsw/log/Log4JCategoryLog/warn (Ljava/lang/Object;)V warn
-.method_map com/oaklandsw/log/Log4JCategoryLog/class$ (Ljava/lang/String;)Ljava/lang/Class; class$
 .method_map com/oaklandsw/log/Log4JCategoryLog/isFatalEnabled ()Z isFatalEnabled
 .method_map com/oaklandsw/log/Log4JCategoryLog/info (Ljava/lang/Object;)V info
 .method_map com/oaklandsw/log/Log4JCategoryLog/isInfoEnabled ()Z isInfoEnabled
@@ -2852,59 +2854,59 @@
 .method_map org/apache/regexp/REDemo/textValueChanged (Ljava/awt/event/TextEvent;)V textValueChanged
 .method_map org/apache/regexp/REDemo/init ()V init
 .method_map org/apache/regexp/REDemo/updateRE (Ljava/lang/String;)V for
-# WARNING: Lcom.oaklandsw.http.Authenticator shouldn't be obfuscated: it is referenced as Lcom.oaklandsw.http.Authenticator.class from com/oaklandsw/http/Authenticator
-# WARNING: Lcom.oaklandsw.http.AutoCloseInputStream shouldn't be obfuscated: it is referenced as Lcom.oaklandsw.http.AutoCloseInputStream.class from com/oaklandsw/http/AutoCloseInputStream
-# WARNING: Lcom.oaklandsw.http.ChunkedInputStream shouldn't be obfuscated: it is referenced as Lcom.oaklandsw.http.ChunkedInputStream.class from com/oaklandsw/http/ChunkedInputStream
-# WARNING: Lcom.oaklandsw.http.ContentLengthInputStream shouldn't be obfuscated: it is referenced as Lcom.oaklandsw.http.ContentLengthInputStream.class from com/oaklandsw/http/ContentLengthInputStream
-# WARNING: Lcom.oaklandsw.http.Cookie shouldn't be obfuscated: it is referenced as Lcom.oaklandsw.http.Cookie.class from com/oaklandsw/http/Cookie
-# WARNING: Lcom.oaklandsw.http.CookieContainer shouldn't be obfuscated: it is referenced as Lcom.oaklandsw.http.CookieContainer.class from com/oaklandsw/http/CookieContainer
-# WARNING: Lcom.oaklandsw.http.cookie.RFC2109Spec shouldn't be obfuscated: it is referenced as Lcom.oaklandsw.http.cookie.RFC2109Spec.class from com/oaklandsw/http/CookiePolicy
-# WARNING: Lcom.oaklandsw.http.cookie.CookieSpecBase shouldn't be obfuscated: it is referenced as Lcom.oaklandsw.http.cookie.CookieSpecBase.class from com/oaklandsw/http/CookiePolicy
-# WARNING: Lcom.oaklandsw.http.cookie.NetscapeDraftSpec shouldn't be obfuscated: it is referenced as Lcom.oaklandsw.http.cookie.NetscapeDraftSpec.class from com/oaklandsw/http/CookiePolicy
-# WARNING: Lcom.oaklandsw.http.CookiePolicy shouldn't be obfuscated: it is referenced as Lcom.oaklandsw.http.CookiePolicy.class from com/oaklandsw/http/CookiePolicy
-# WARNING: Lcom.oaklandsw.http.HeaderElement shouldn't be obfuscated: it is referenced as Lcom.oaklandsw.http.HeaderElement.class from com/oaklandsw/http/HeaderElement
-# WARNING: Lcom.oaklandsw.http.Headers shouldn't be obfuscated: it is referenced as Lcom.oaklandsw.http.Headers.class from com/oaklandsw/http/Headers
-# WARNING: Lcom.oaklandsw.http.HttpConnection shouldn't be obfuscated: it is referenced as Lcom.oaklandsw.http.HttpConnection.class from com/oaklandsw/http/HttpConnection
-# WARNING: Ljava.net.Socket shouldn't be obfuscated: it is referenced as Ljava.net.Socket.class from com/oaklandsw/http/HttpConnection
-# WARNING: Ljava.lang.String shouldn't be obfuscated: it is referenced as Ljava.lang.String.class from com/oaklandsw/http/HttpConnection
-# WARNING: Lcom.oaklandsw.http.HttpConnectionManager shouldn't be obfuscated: it is referenced as Lcom.oaklandsw.http.HttpConnectionManager.class from com/oaklandsw/http/HttpConnectionManager
-# WARNING: Lcom.oaklandsw.http.HttpConnectionTimeout shouldn't be obfuscated: it is referenced as Lcom.oaklandsw.http.HttpConnectionTimeout.class from com/oaklandsw/http/HttpConnectionTimeout
-# WARNING: Ljava.lang.Throwable shouldn't be obfuscated: it is referenced as Ljava.lang.Throwable.class from com/oaklandsw/http/HttpException
-# WARNING: Lcom.oaklandsw.http.HttpStatus shouldn't be obfuscated: it is referenced as Lcom.oaklandsw.http.HttpStatus.class from com/oaklandsw/http/HttpStatus
-# WARNING: Lcom.oaklandsw.http.HttpURLConnectInternal shouldn't be obfuscated: it is referenced as Lcom.oaklandsw.http.HttpURLConnectInternal.class from com/oaklandsw/http/HttpURLConnectInternal
-# WARNING: Lcom.oaklandsw.http.HttpURLConnection shouldn't be obfuscated: it is referenced as Lcom.oaklandsw.http.HttpURLConnection.class from com/oaklandsw/http/HttpURLConnection
-# WARNING: Lcom.oaklandsw.http.ReleaseInputStream shouldn't be obfuscated: it is referenced as Lcom.oaklandsw.http.ReleaseInputStream.class from com/oaklandsw/http/ReleaseInputStream
-# WARNING: Lcom.oaklandsw.http.RequestOutputStream shouldn't be obfuscated: it is referenced as Lcom.oaklandsw.http.RequestOutputStream.class from com/oaklandsw/http/RequestOutputStream
-# WARNING: Lcom.oaklandsw.http.cookie.CookieSpec shouldn't be obfuscated: it is referenced as Lcom.oaklandsw.http.cookie.CookieSpec.class from com/oaklandsw/http/cookie/CookieSpecBase
-# WARNING: Lcom.oaklandsw.http.ntlm.Message shouldn't be obfuscated: it is referenced as Lcom.oaklandsw.http.ntlm.Message.class from com/oaklandsw/http/ntlm/Message
-# WARNING: Lcom.oaklandsw.log.Log4JCategoryLog shouldn't be obfuscated: it is referenced as Lcom.oaklandsw.log.Log4JCategoryLog.class from com/oaklandsw/log/Log4JCategoryLog
-# WARNING: Lcom.oaklandsw.log.LogFactory shouldn't be obfuscated: it is referenced as Lcom.oaklandsw.log.LogFactory.class from com/oaklandsw/log/LogFactory
-# WARNING: Ljava.lang.Thread shouldn't be obfuscated: it is referenced as Ljava.lang.Thread.class from com/oaklandsw/log/LogFactory
-# WARNING: Lcom.oaklandsw.log.Log shouldn't be obfuscated: it is referenced as Lcom.oaklandsw.log.Log.class from com/oaklandsw/log/LogFactoryImpl
-# WARNING: Ljava.lang.String shouldn't be obfuscated: it is referenced as Ljava.lang.String.class from com/oaklandsw/log/LogFactoryImpl
-# WARNING: Lcom.oaklandsw.log.LogFactory shouldn't be obfuscated: it is referenced as Lcom.oaklandsw.log.LogFactory.class from com/oaklandsw/log/LogFactoryImpl
-# WARNING: Lcom.oaklandsw.util.AbstractRepositoryRecord shouldn't be obfuscated: it is referenced as Lcom.oaklandsw.util.AbstractRepositoryRecord.class from com/oaklandsw/util/AbstractRepositoryRecord
-# WARNING: Lcom.oaklandsw.util.BeanInfoFactory shouldn't be obfuscated: it is referenced as Lcom.oaklandsw.util.BeanInfoFactory.class from com/oaklandsw/util/BeanInfoFactory
-# WARNING: Lcom.oaklandsw.util.ImpossibleException shouldn't be obfuscated: it is referenced as Lcom.oaklandsw.util.ImpossibleException.class from com/oaklandsw/util/BugReport
-# WARNING: Lcom.oaklandsw.util.DependRecord shouldn't be obfuscated: it is referenced as Lcom.oaklandsw.util.DependRecord.class from com/oaklandsw/util/DependRecord
-# WARNING: Lcom.oaklandsw.util.FileRepositoryImpl shouldn't be obfuscated: it is referenced as Lcom.oaklandsw.util.FileRepositoryImpl.class from com/oaklandsw/util/FileRepositoryImpl
-# WARNING: Lcom.oaklandsw.util.FileUtils shouldn't be obfuscated: it is referenced as Lcom.oaklandsw.util.FileUtils.class from com/oaklandsw/util/FileUtils
-# WARNING: Lcom.oaklandsw.util.LoggingContentHandler shouldn't be obfuscated: it is referenced as Lcom.oaklandsw.util.LoggingContentHandler.class from com/oaklandsw/util/LoggingContentHandler
-# WARNING: Lcom.oaklandsw.util.ObfuscateSupport shouldn't be obfuscated: it is referenced as Lcom.oaklandsw.util.ObfuscateSupport.class from com/oaklandsw/util/ObfuscateSupport
-# WARNING: Lcom.oaklandsw.util.RepositoryActivityRecord shouldn't be obfuscated: it is referenced as Lcom.oaklandsw.util.RepositoryActivityRecord.class from com/oaklandsw/util/RepositoryActivityRecord
-# WARNING: Lcom.oaklandsw.util.RepositoryOpenContext shouldn't be obfuscated: it is referenced as Lcom.oaklandsw.util.RepositoryOpenContext.class from com/oaklandsw/util/RepositoryFactory
-# WARNING: Lcom.oaklandsw.util.RepositoryObjectId shouldn't be obfuscated: it is referenced as Lcom.oaklandsw.util.RepositoryObjectId.class from com/oaklandsw/util/RepositoryObjectId
-# WARNING: Lcom.oaklandsw.util.RepositoryTableKey shouldn't be obfuscated: it is referenced as Lcom.oaklandsw.util.RepositoryTableKey.class from com/oaklandsw/util/RepositoryTableKey
-# WARNING: Lcom.oaklandsw.util.ResourceManager shouldn't be obfuscated: it is referenced as Lcom.oaklandsw.util.ResourceManager.class from com/oaklandsw/util/ResourceManager
-# WARNING: Ljava.lang.Boolean shouldn't be obfuscated: it is referenced as Ljava.lang.Boolean.class from com/oaklandsw/util/Util
-# WARNING: Ljava.lang.Integer shouldn't be obfuscated: it is referenced as Ljava.lang.Integer.class from com/oaklandsw/util/Util
-# WARNING: Ljava.lang.Byte shouldn't be obfuscated: it is referenced as Ljava.lang.Byte.class from com/oaklandsw/util/Util
-# WARNING: Ljava.lang.Character shouldn't be obfuscated: it is referenced as Ljava.lang.Character.class from com/oaklandsw/util/Util
-# WARNING: Ljava.lang.Long shouldn't be obfuscated: it is referenced as Ljava.lang.Long.class from com/oaklandsw/util/Util
-# WARNING: Ljava.lang.Short shouldn't be obfuscated: it is referenced as Ljava.lang.Short.class from com/oaklandsw/util/Util
-# WARNING: Ljava.lang.Float shouldn't be obfuscated: it is referenced as Ljava.lang.Float.class from com/oaklandsw/util/Util
-# WARNING: Ljava.lang.Double shouldn't be obfuscated: it is referenced as Ljava.lang.Double.class from com/oaklandsw/util/Util
-# WARNING: Ljava.lang.Void shouldn't be obfuscated: it is referenced as Ljava.lang.Void.class from com/oaklandsw/util/Util
-# WARNING: Ljava.lang.String shouldn't be obfuscated: it is referenced as Ljava.lang.String.class from com/oaklandsw/util/Util
-# WARNING: Lcom.oaklandsw.util.Util shouldn't be obfuscated: it is referenced as Lcom.oaklandsw.util.Util.class from com/oaklandsw/util/Util
-# WARNING: Lcom.oaklandsw.util.XmlUtils shouldn't be obfuscated: it is referenced as Lcom.oaklandsw.util.XmlUtils.class from com/oaklandsw/util/XmlUtils
+# WARNING: 0 shouldn't be obfuscated: it is referenced as 0.class from com/oaklandsw/http/Authenticator
+# WARNING: 0 shouldn't be obfuscated: it is referenced as 0.class from com/oaklandsw/http/AutoCloseInputStream
+# WARNING: 0 shouldn't be obfuscated: it is referenced as 0.class from com/oaklandsw/http/ChunkedInputStream
+# WARNING: 0 shouldn't be obfuscated: it is referenced as 0.class from com/oaklandsw/http/ContentLengthInputStream
+# WARNING: 0 shouldn't be obfuscated: it is referenced as 0.class from com/oaklandsw/http/Cookie
+# WARNING: 0 shouldn't be obfuscated: it is referenced as 0.class from com/oaklandsw/http/CookieContainer
+# WARNING: 0 shouldn't be obfuscated: it is referenced as 0.class from com/oaklandsw/http/CookiePolicy
+# WARNING: 1 shouldn't be obfuscated: it is referenced as 1.class from com/oaklandsw/http/CookiePolicy
+# WARNING: 2 shouldn't be obfuscated: it is referenced as 2.class from com/oaklandsw/http/CookiePolicy
+# WARNING: 3 shouldn't be obfuscated: it is referenced as 3.class from com/oaklandsw/http/CookiePolicy
+# WARNING: 0 shouldn't be obfuscated: it is referenced as 0.class from com/oaklandsw/http/HeaderElement
+# WARNING: 0 shouldn't be obfuscated: it is referenced as 0.class from com/oaklandsw/http/Headers
+# WARNING: 0 shouldn't be obfuscated: it is referenced as 0.class from com/oaklandsw/http/HttpConnection
+# WARNING: 1 shouldn't be obfuscated: it is referenced as 1.class from com/oaklandsw/http/HttpConnection
+# WARNING: 2 shouldn't be obfuscated: it is referenced as 2.class from com/oaklandsw/http/HttpConnection
+# WARNING: 0 shouldn't be obfuscated: it is referenced as 0.class from com/oaklandsw/http/HttpConnectionManager
+# WARNING: 0 shouldn't be obfuscated: it is referenced as 0.class from com/oaklandsw/http/HttpConnectionTimeout
+# WARNING: 0 shouldn't be obfuscated: it is referenced as 0.class from com/oaklandsw/http/HttpException
+# WARNING: 0 shouldn't be obfuscated: it is referenced as 0.class from com/oaklandsw/http/HttpStatus
+# WARNING: 0 shouldn't be obfuscated: it is referenced as 0.class from com/oaklandsw/http/HttpURLConnectInternal
+# WARNING: 0 shouldn't be obfuscated: it is referenced as 0.class from com/oaklandsw/http/HttpURLConnection
+# WARNING: 0 shouldn't be obfuscated: it is referenced as 0.class from com/oaklandsw/http/ReleaseInputStream
+# WARNING: 0 shouldn't be obfuscated: it is referenced as 0.class from com/oaklandsw/http/RequestOutputStream
+# WARNING: 0 shouldn't be obfuscated: it is referenced as 0.class from com/oaklandsw/http/cookie/CookieSpecBase
+# WARNING: 0 shouldn't be obfuscated: it is referenced as 0.class from com/oaklandsw/http/ntlm/Message
+# WARNING: 0 shouldn't be obfuscated: it is referenced as 0.class from com/oaklandsw/log/Log4JCategoryLog
+# WARNING: 0 shouldn't be obfuscated: it is referenced as 0.class from com/oaklandsw/log/LogFactory
+# WARNING: 1 shouldn't be obfuscated: it is referenced as 1.class from com/oaklandsw/log/LogFactory
+# WARNING: 0 shouldn't be obfuscated: it is referenced as 0.class from com/oaklandsw/log/LogFactoryImpl
+# WARNING: 1 shouldn't be obfuscated: it is referenced as 1.class from com/oaklandsw/log/LogFactoryImpl
+# WARNING: 2 shouldn't be obfuscated: it is referenced as 2.class from com/oaklandsw/log/LogFactoryImpl
+# WARNING: 0 shouldn't be obfuscated: it is referenced as 0.class from com/oaklandsw/util/AbstractRepositoryRecord
+# WARNING: 0 shouldn't be obfuscated: it is referenced as 0.class from com/oaklandsw/util/BeanInfoFactory
+# WARNING: 0 shouldn't be obfuscated: it is referenced as 0.class from com/oaklandsw/util/BugReport
+# WARNING: 0 shouldn't be obfuscated: it is referenced as 0.class from com/oaklandsw/util/DependRecord
+# WARNING: 0 shouldn't be obfuscated: it is referenced as 0.class from com/oaklandsw/util/FileRepositoryImpl
+# WARNING: 0 shouldn't be obfuscated: it is referenced as 0.class from com/oaklandsw/util/FileUtils
+# WARNING: 0 shouldn't be obfuscated: it is referenced as 0.class from com/oaklandsw/util/LoggingContentHandler
+# WARNING: 0 shouldn't be obfuscated: it is referenced as 0.class from com/oaklandsw/util/ObfuscateSupport
+# WARNING: 0 shouldn't be obfuscated: it is referenced as 0.class from com/oaklandsw/util/RepositoryActivityRecord
+# WARNING: 0 shouldn't be obfuscated: it is referenced as 0.class from com/oaklandsw/util/RepositoryFactory
+# WARNING: 0 shouldn't be obfuscated: it is referenced as 0.class from com/oaklandsw/util/RepositoryObjectId
+# WARNING: 0 shouldn't be obfuscated: it is referenced as 0.class from com/oaklandsw/util/RepositoryTableKey
+# WARNING: 0 shouldn't be obfuscated: it is referenced as 0.class from com/oaklandsw/util/ResourceManager
+# WARNING: 0 shouldn't be obfuscated: it is referenced as 0.class from com/oaklandsw/util/Util
+# WARNING: 1 shouldn't be obfuscated: it is referenced as 1.class from com/oaklandsw/util/Util
+# WARNING: 2 shouldn't be obfuscated: it is referenced as 2.class from com/oaklandsw/util/Util
+# WARNING: 3 shouldn't be obfuscated: it is referenced as 3.class from com/oaklandsw/util/Util
+# WARNING: 4 shouldn't be obfuscated: it is referenced as 4.class from com/oaklandsw/util/Util
+# WARNING: 5 shouldn't be obfuscated: it is referenced as 5.class from com/oaklandsw/util/Util
+# WARNING: 6 shouldn't be obfuscated: it is referenced as 6.class from com/oaklandsw/util/Util
+# WARNING: 7 shouldn't be obfuscated: it is referenced as 7.class from com/oaklandsw/util/Util
+# WARNING: 8 shouldn't be obfuscated: it is referenced as 8.class from com/oaklandsw/util/Util
+# WARNING: 9 shouldn't be obfuscated: it is referenced as 9.class from com/oaklandsw/util/Util
+# WARNING: 10 shouldn't be obfuscated: it is referenced as 10.class from com/oaklandsw/util/Util
+# WARNING: 0 shouldn't be obfuscated: it is referenced as 0.class from com/oaklandsw/util/XmlUtils
