@@ -33,7 +33,6 @@ exclude        *.* public get*() and // public properties
  */
 <% include "%plugin.base.dir%/com.oaklandsw.http/obfuscation.properties" %>
 <% include "%plugin.base.dir%/com.oaklandsw.util/obfuscation.properties" %>
-<% include "%plugin.base.dir%/com.oaklandsw.util.tests/obfuscation.properties" %>
 
 open     	%obfuscated.class.path%;
 
