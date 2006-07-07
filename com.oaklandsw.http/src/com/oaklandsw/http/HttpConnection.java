@@ -316,8 +316,7 @@ public class HttpConnection
         assertOpen();
         if (!(_socket instanceof SSLSocket))
         {
-            throw new IllegalStateException(
-                "Called on a connection that is not an SSL connection");
+            throw new IllegalStateException("Called on a connection that is not an SSL connection");
         }
 
         return ((SSLSocket)_socket).getSession().getCipherSuite();
@@ -332,8 +331,7 @@ public class HttpConnection
         assertOpen();
         if (!(_socket instanceof SSLSocket))
         {
-            throw new IllegalStateException(
-                "Called on a connection that is not an SSL connection");
+            throw new IllegalStateException("Called on a connection that is not an SSL connection");
         }
 
         try
@@ -365,8 +363,7 @@ public class HttpConnection
         assertOpen();
         if (!(_socket instanceof SSLSocket))
         {
-            throw new IllegalStateException(
-                "Called on a connection that is not an SSL connection");
+            throw new IllegalStateException("Called on a connection that is not an SSL connection");
         }
         try
         {
@@ -622,8 +619,7 @@ public class HttpConnection
                     {
                         _log
                                 .debug("Found closed connection on checkConnection");
-                        throw new IOException(
-                            "Connection: closed detected on checkConnection");
+                        throw new IOException("Connection: closed detected on checkConnection");
                     }
                     connectionInd = 0;
                 }
@@ -934,7 +930,9 @@ public class HttpConnection
                 throw new IOException("SSLSocketFactory not specified");
             }
 
-            _socket = _sslSocketFactory.createSocket(_socket, _host, _port,
+            _socket = _sslSocketFactory.createSocket(_socket,
+                                                     _host,
+                                                     _port,
                                                      true);
             if (_log.isDebugEnabled())
             {
@@ -988,8 +986,7 @@ public class HttpConnection
 
             }
 
-            checkCertificate(
-                             sslSocket.getSession().getPeerCertificateChain()[0],
+            checkCertificate(sslSocket.getSession().getPeerCertificateChain()[0],
                              _host);
         }
 
@@ -1098,8 +1095,7 @@ public class HttpConnection
             if (!result)
             {
                 _log.debug("verifier failed");
-                throw new IOException(
-                    "Connection rejected due to failure of hostname verification");
+                throw new IOException("Connection rejected due to failure of hostname verification");
             }
             _log.debug("verifier passed");
 

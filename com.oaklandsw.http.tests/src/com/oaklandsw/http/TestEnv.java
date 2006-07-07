@@ -16,10 +16,14 @@ public class TestEnv
                                                                   .getProperty("oaklandsw.squidhost",
                                                                                "berlioz");
 
+    public static final String WEBDAV_HOST                = System
+                                                                  .getProperty("oaklandsw.webdavhost",
+                                                                               "berlioz");
+
     public static int          PORT;
 
-    public static final String LOCALHOST = "127.0.0.1";
-    
+    public static final String LOCALHOST                  = "127.0.0.1";
+
     static
     {
         String defaultHost;
@@ -33,10 +37,9 @@ public class TestEnv
         }
 
         HOST = System.getProperty("oaklandsw.localhost", defaultHost);
-        
+
         // Error host defaults to localhost if not set
-        ERROR_HOST = System
-                .getProperty("oaklandsw.errorhost", HOST);
+        ERROR_HOST = System.getProperty("oaklandsw.errorhost", HOST);
 
         String portString = System.getProperty("oaklandsw.localport", "8081");
         int tempPort = 8081;
@@ -50,7 +53,7 @@ public class TestEnv
         }
         PORT = tempPort;
 
-        //setUp();
+        // setUp();
     }
 
     public static String       _protocol                  = "http:";
@@ -89,6 +92,10 @@ public class TestEnv
     // Standard Apache
     public static String       TEST_WEBSERVER_HOST        = HOST;
     public static int          TEST_WEBSERVER_PORT        = 80;
+
+    // WebDav server
+    public static String       TEST_WEBDAV_HOST           = WEBDAV_HOST;
+    public static int          TEST_WEBDAV_PORT           = 80;
 
     public static String       TEST_URL_WEBSERVER         = "http://"
                                                               + TEST_WEBSERVER_HOST

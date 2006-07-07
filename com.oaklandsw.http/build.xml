@@ -1,125 +1,181 @@
 <project default="package-java" basedir=".">
 
-  <import file="../com.oaklandsw.build/build.common.xml"/>
+	<import file="../com.oaklandsw.build/build.common.xml" />
 
-  <!-- =================================================================== -->
-  <!-- Initialization target                                               -->
-  <!-- =================================================================== -->
-  <target name="init" depends="common-init">
+	<!-- =================================================================== -->
+	<!-- Initialization target                                               -->
+	<!-- =================================================================== -->
+	<target name="init" depends="common-init">
 
-     <property name="build.compiler" value="jikes"/>
+<!--		<property name="build.compiler" value="jikes" />-->
 
-  	<path id="compile.classpath">
-      <fileset dir="${basedir}/../com.oaklandsw.${package.name}.jars">
-        <include name="*.jar" />
-      </fileset>
-  	  <dirset dir="${basedir}/../com.oaklandsw.util/bin"/>
-    </path>
+		<path id="compile.classpath">
+			<fileset dir="${basedir}/../com.oaklandsw.${package.name}.jars">
+				<include name="*.jar" />
+			</fileset>
+			<dirset dir="${basedir}/../com.oaklandsw.util/bin" />
+		</path>
 
-  </target>
-
-
-  <!-- =================================================================== -->
-  <!-- Creates the API documentation                                       -->
-  <!-- =================================================================== -->
-  <target name="javadoc" depends="prepare">
-    <mkdir dir="${javadocs.dir}"/>
-    <javadoc sourcepath="${src.dir}"
-             destdir="${javadocs.dir}"
-             access="public"
-             windowtitle="Oakland Software HTTP Client API"
-             doctitle="Oakland Software HTTP Client"
-             bottom="Copyright &#169; 2002-2006 Oakland Software Incorporated. All Rights Reserved."
-    >
-      <classpath refid="compile.classpath"/>
-      <fileset dir="${src.dir}" defaultexcludes="yes">
-        <!-- MAKE SURE TO update the build.http.xml file -->
-        <include name="com/oaklandsw/http/HttpURLConnection.java" />
-        <include name="com/oaklandsw/http/HttpConnectionManager.java" />
-        <include name="com/oaklandsw/http/URIException.java" />
-        <include name="com/oaklandsw/http/HttpException.java" />
-        <include name="com/oaklandsw/http/HttpTimeoutException.java" />
-        <include name="com/oaklandsw/http/HttpUserAgent.java" />
-        <include name="com/oaklandsw/http/Credential.java" />
-        <include name="com/oaklandsw/http/UserCredential.java" />
-        <include name="com/oaklandsw/http/NtlmCredential.java" />
-        <include name="com/oaklandsw/http/HostnameVerifier.java" />
-        <include name="com/oaklandsw/http/Cookie.java" />
-        <include name="com/oaklandsw/http/CookieContainer.java" />
-        <include name="com/oaklandsw/http/CookiePolicy.java" />
-      </fileset>
-      </javadoc>
-  </target>
+	</target>
 
 
-  <!-- =================================================================== -->
-  <!-- Creates the class package - overrides common                        -->
-  <!-- =================================================================== -->
-  <target name="package-java" depends="compile-java">
-    <jar jarfile="${package.name}.jar">
-      <fileset dir="${bin.dir}"/>
-      <fileset dir="../com.oaklandsw.util/bin"/>
-      <zipfileset src="../com.oaklandsw.http.jars/jakarta-regexp-1.3.jar"/>
-      <manifest>
-        <section name="org/apache/regexp/">
-          <attribute name="Sealed" value="true"/>
-        </section>
-      </manifest>
-    </jar>
+	<!-- =================================================================== -->
+	<!-- Creates the API documentation                                       -->
+	<!-- =================================================================== -->
+	<target name="javadoc" depends="prepare">
+		<mkdir dir="${javadocs.dir}" />
+		<javadoc sourcepath="${src.dir}" destdir="${javadocs.dir}" access="public" windowtitle="Oakland Software HTTP Client API" doctitle="Oakland Software HTTP Client" bottom="Copyright &#169; 2002-2006 Oakland Software Incorporated. All Rights Reserved.">
+			<classpath refid="compile.classpath" />
+			<fileset dir="${src.dir}" defaultexcludes="yes">
+				<!-- MAKE SURE TO update the build.http.xml file -->
+				<include name="com/oaklandsw/http/HttpURLConnection.java" />
+				<include name="com/oaklandsw/http/HttpConnectionManager.java" />
+				<include name="com/oaklandsw/http/URIException.java" />
+				<include name="com/oaklandsw/http/HttpException.java" />
+				<include name="com/oaklandsw/http/HttpTimeoutException.java" />
+				<include name="com/oaklandsw/http/HttpUserAgent.java" />
+				<include name="com/oaklandsw/http/Credential.java" />
+				<include name="com/oaklandsw/http/UserCredential.java" />
+				<include name="com/oaklandsw/http/NtlmCredential.java" />
+				<include name="com/oaklandsw/http/HostnameVerifier.java" />
+				<include name="com/oaklandsw/http/Cookie.java" />
+				<include name="com/oaklandsw/http/CookieContainer.java" />
+				<include name="com/oaklandsw/http/CookiePolicy.java" />
+			</fileset>
+		</javadoc>
+	</target>
 
-  </target>
-	
-	
-  <!-- =================================================================== -->
-  <!-- Creates the distribution - HTTP                                     -->
-  <!-- =================================================================== -->
-  <target name="dist" depends="javadoc, obf-java">
-    <mkdir dir="${dist.dir}"/>
 
-    <delete> 
-      <fileset dir="${dist.dir}"/>
-    </delete> 
+	<!-- =================================================================== -->
+	<!-- Creates the class package - overrides common                        -->
+	<!-- =================================================================== -->
+	<target name="package-java" depends="compile-java">
+		<jar jarfile="${package.name}.jar">
+			<fileset dir="${bin.dir}" />
+			<fileset dir="../com.oaklandsw.util/bin" />
+			<zipfileset src="../com.oaklandsw.http.jars/jakarta-regexp-1.3.jar" />
+			<manifest>
+				<section name="org/apache/regexp/">
+					<attribute name="Sealed" value="true" />
+				</section>
+			</manifest>
+		</jar>
 
-    <!-- normal -->
-    <zip
-      zipfile="${dist.dir}/${dist.zip.name}.zip" 
-      includes="**">
-       <fileset dir="${basedir}">
-         <include name="README"/>
-         <include name="*LICENSE"/>
-         <exclude name="SOURCE_LICENSE"/>
-         <include name="*.sample"/>
-         <include name="${package.name}.jar"/>
-       </fileset>
-       <fileset dir="../com.oaklandsw.http.tests/src/" >
-         <include name="HttpGetSample.java" />
-       </fileset>
-       <zipfileset dir="${javadocs.dir}" prefix="javadocs"/>
-    </zip>
+	</target>
 
-    <!-- obfuscated -->
-    <zip
-      zipfile="${dist.dir}/${dist.zip.name}Ob.zip" 
-      includes="**">
-       <zipfileset src="${dist.dir}/${dist.zip.name}.zip">
-         <exclude name="${package.name}.jar"/>
-       </zipfileset>
-       <zipfileset dir="." includes="${package.name}Ob.jar" fullpath="${package.name}.jar"/>
-    </zip>
 
-    <!-- source -->
-    <zip
-      zipfile="${dist.dir}/${dist.zip.name}Src.zip" 
-      includes="**">
-        <zipfileset dir="${src.dir}" prefix="src"/>
-        <zipfileset dir="../com.oaklandsw.util/src" prefix="src"/>
-       <fileset dir="${basedir}">
-        <include name="build.http.xml"/>
-        <include name="SOURCE_LICENSE"/>
-       </fileset>
-    </zip>
+	<target name="obf-java" depends="package-java">
+		<property name="obf.build.dir" value="${plugin.base.dir}/com.oaklandsw.build" />
 
-  </target>
+		<!-- Obfuscation log will be output to this directory. -->
+		<property name="obf.log.dir" location="obf-log" />
+		<mkdir dir="${obf.log.dir}" />
+
+		<property name="obf.out.dir" location="obf-out" />
+		<mkdir dir="${obf.out.dir}" />
+
+		<!-- Zelix obfuscation script that will manage the obfuscation process -->
+		<property name="zelix.script" location="obfuscate.txt" />
+
+		<!-- Incoming change log for incremental obfuscation -->
+		<property name="change.log.in" location="${obf.log.dir}/obfuscate-in.txt" />
+
+		<!-- Outgoing change log for future incrmental obfuscation -->
+		<property name="change.log.out" location="${obf.log.dir}/obfuscate-out.txt" />
+
+		<taskdef name="obfuscate" classname="ZKMTask">
+			<classpath path="${obf.build.dir}/ZKM.jar" />
+		</taskdef>
+
+		<!--
+    Path identifying jars that are part of the classpath but that should
+    NOT be obfuscated. This would include the Eclipse RCP distribution,
+    third-party jars, and any of your jars that contain derived work and
+    are being distributed under the EPL or similar license.
+    -->
+		<path id="non.obfuscated.jars">
+		</path>
+
+		<!--
+    compile path for all jars that should not be obfuscated, but that should
+    be on the classpath.
+    -->
+		<pathconvert pathsep=":" property="non.obfuscated.class.path">
+			<path refid="non.obfuscated.jars" />
+		</pathconvert>
+
+		<path id="obfuscated.jars">
+			<fileset dir="${basedir}">
+				<include name="${package.name}.jar" />
+			</fileset>
+		</path>
+
+		<!--
+    Compile path for all jars that should be obfuscated. Zelix requires each jar 
+    to be on a separate line and delimited by quotes. The following code produces 
+    this list.
+    -->
+		<pathconvert pathsep="&quot;${line.separator}&quot;" property="obfuscated.class.path.noqoutes">
+			<path refid="obfuscated.jars" />
+		</pathconvert>
+		<property name="obfuscated.class.path" value="&quot;${obfuscated.class.path.noqoutes}&quot;" />
+
+		<obfuscate scriptFileName="${zelix.script}" logFileName="${obf.log.dir}/obfuscate.log" trimLogFileName="${obf.log.dir}/trimlog.txt" defaultExcludeFileName="defaultExclude.txt" defaultTrimExcludeFileName="defaultTrimExclude.txt" isParseOnly="false" isVerbose="true" />
+
+		<move file="${change.log.in}" tofile="${change.log.in}.bak" overwrite="true" failonerror="false" />
+		<copy file="${change.log.out}" tofile="${change.log.out}_${oaklandswVersion.file}" overwrite="true" />
+		<move file="${change.log.out}" tofile="${change.log.in}" overwrite="true" />
+		<move file="${obf.out.dir}/${package.name}.jar" tofile="${package.name}Ob.jar" overwrite="true" />
+
+		<delete dir="${obf.out.dir}" />
+
+		<!-- save the obfuscation information in the releases for future use -->
+		<copy toDir="${release.dir}/http-obf-${oaklandswVersion}">
+			<fileset dir="${obf.log.dir}/" />
+		</copy>
+
+		<delete dir="${obf.log.dir}" />
+	</target>
+
+
+	<!-- =================================================================== -->
+	<!-- Creates the distribution - HTTP                                     -->
+	<!-- =================================================================== -->
+	<target name="dist" depends="javadoc, obf-java">
+		<!-- normal -->
+		<zip zipfile="${release.dir}/${dist.zip.name}.zip" includes="**">
+			<fileset dir="${basedir}">
+				<include name="README" />
+				<include name="*LICENSE" />
+				<exclude name="SOURCE_LICENSE" />
+				<include name="*.sample" />
+				<include name="${package.name}.jar" />
+			</fileset>
+			<fileset dir="../com.oaklandsw.http.tests/src/">
+				<include name="HttpGetSample.java" />
+			</fileset>
+			<zipfileset dir="${javadocs.dir}" prefix="javadocs" />
+		</zip>
+
+		<!-- obfuscated -->
+		<zip zipfile="${release.dir}/${dist.zip.name}Ob.zip" includes="**">
+			<zipfileset src="${release.dir}/${dist.zip.name}.zip">
+				<exclude name="${package.name}.jar" />
+			</zipfileset>
+			<zipfileset dir="." includes="${package.name}Ob.jar" fullpath="${package.name}.jar" />
+		</zip>
+
+		<!-- source -->
+		<zip zipfile="${release.dir}/${dist.zip.name}Src.zip" includes="**">
+			<zipfileset dir="${src.dir}" prefix="src" />
+			<zipfileset dir="../com.oaklandsw.util/src" prefix="src" />
+			<fileset dir="${basedir}">
+				<include name="build.http.xml" />
+				<include name="SOURCE_LICENSE" />
+			</fileset>
+		</zip>
+
+	</target>
 
 
 

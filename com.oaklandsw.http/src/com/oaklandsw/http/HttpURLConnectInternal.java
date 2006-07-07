@@ -228,7 +228,7 @@ public class HttpURLConnectInternal
             if ((cookies != null) && (cookies.length > 0))
             {
                 // FIXME - for now just assume all cookies go with a single
-                // header.  May want to parameterize this in the future
+                // header. May want to parameterize this in the future
                 if (true)
                 {
                     // In strict mode put all cookies on the same header
@@ -269,7 +269,7 @@ public class HttpURLConnectInternal
 
         if (!_hasContentLengthHeader)
         {
-            if (_methodId == POST || _methodId == PUT)
+            if ((_methodProperties & METHOD_PROP_ADD_CL_HEADER) != 0)
             {
                 _reqHeaders.add(HDR_CONTENT_LENGTH, String.valueOf(len));
                 _hasContentLengthHeader = true;
@@ -593,7 +593,7 @@ public class HttpURLConnectInternal
 
         // Does not have a response body, even though the headers suggest
         // that it does
-        if (_methodId == HEAD)
+        if ((_methodProperties & METHOD_PROP_IGNORE_RESPONSE_BODY) != 0)
         {
             _responseIsEmpty = true;
             return;
@@ -628,8 +628,7 @@ public class HttpURLConnectInternal
         }
         else if ((_responseCode >= HttpStatus.SC_CONTINUE && _responseCode <= 199)
             || _responseCode == HttpStatus.SC_NO_CONTENT
-            || _responseCode == HttpStatus.SC_NOT_MODIFIED
-            || _methodId == CONNECT)
+            || _responseCode == HttpStatus.SC_NOT_MODIFIED)
         {
             // There is not supposed to be any data
             _responseIsEmpty = true;
@@ -722,16 +721,7 @@ public class HttpURLConnectInternal
         buf.append(method);
         buf.append(" ");
 
-        // Put the host/port junk on the front if required
-        if (_methodId == OPTIONS)
-        {
-            buf.append("*");
-        }
-        else if (_methodId == CONNECT)
-        {
-            buf.append(_connection.getHostPort());
-        }
-        else
+        if ((_methodProperties & METHOD_PROP_REQ_LINE_URL) != 0)
         {
             if (_connection.isProxied() && !_connection.isTransparent())
             {
@@ -742,6 +732,15 @@ public class HttpURLConnectInternal
                 buf.append(_connection.getHostPortURL());
             }
             buf.append(_pathQuery);
+        }
+        else if ((_methodProperties & METHOD_PROP_REQ_LINE_STAR) != 0)
+        {
+            buf.append("*");
+        }
+        else if ((_methodProperties & METHOD_PROP_REQ_LINE_HOST_PORT) != 0)
+        {
+            // Put the host/port junk on the front if required
+            buf.append(_connection.getHostPort());
         }
 
         buf.append(_http11 ? " HTTP/1.1\r\n" : " HTTP/1.0\r\n");
@@ -882,7 +881,8 @@ public class HttpURLConnectInternal
             {
                 connect();
 
-                if (_methodId == POST)
+                // No retry allowed (POST)
+                if ((_methodProperties & METHOD_PROP_RETRY) == 0)
                 {
                     _connection.checkConnection();
                     // Don't allow any retries beyond this point
@@ -1213,15 +1213,15 @@ public class HttpURLConnectInternal
             return;
 
         // Default is GET
-        if (_methodId == 0)
+        if ((_methodProperties & METHOD_PROP_UNSPECIFIED_METHOD) != 0)
         {
             _log.debug("Method not specified, setting to GET");
-            _methodId = GET;
-            method = HTTP_METHOD_GET;
+            setRequestMethodInternal(HTTP_METHOD_GET);
         }
 
         // Handle the methods that allow data
-        if (_outStream != null && (_methodId == PUT || _methodId == POST))
+        if (_outStream != null
+            && ((_methodProperties & METHOD_PROP_CALCULATE_CONTENT_LEN) != 0))
         {
             byte[] outBytes = _outStream.toByteArray();
             setRequestBody(outBytes);
@@ -1229,7 +1229,7 @@ public class HttpURLConnectInternal
                 _contentLength = outBytes.length;
 
             // To be compatible with the JDK
-            if (_methodId != PUT)
+            if ((_methodProperties & METHOD_PROP_SEND_CONTENT_TYPE) != 0)
             {
                 if (_reqHeaders.get(HDR_CONTENT_TYPE) == null)
                 {
@@ -1390,7 +1390,7 @@ public class HttpURLConnectInternal
                 _log.debug("HTTP/1.0 - Leave OPEN - Proxy Keep-Alive");
                 result = false;
             }
-            else if (_methodId == CONNECT
+            else if (((_methodProperties & METHOD_PROP_LEAVE_OPEN) != 0)
                 && (_responseCode == HttpStatus.SC_OK))
             {
                 _log.debug("HTTP/1.0 - Leave OPEN - tunneling");

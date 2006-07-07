@@ -18,6 +18,7 @@ import java.net.MalformedURLException;
 import java.net.ProtocolException;
 import java.net.URL;
 import java.security.cert.Certificate;
+import java.util.HashMap;
 import java.util.Map;
 
 import javax.net.ssl.SSLPeerUnverifiedException;
@@ -134,7 +135,7 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
         // we tell we are an eval version - do this before any logging calls
         LogFactory.setForceObfuscatedLogging(true);
     }
-     
+
     private static final Log          _log                              = LogFactory
                                                                                 .getLog(HttpURLConnection.class);
 
@@ -147,14 +148,98 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
     public static final String        HTTP_METHOD_TRACE                 = "TRACE";
     public static final String        HTTP_METHOD_CONNECT               = "CONNECT";
 
-    public static final int           GET                               = 1;
-    public static final int           POST                              = 2;
-    public static final int           PUT                               = 3;
-    public static final int           OPTIONS                           = 4;
-    public static final int           DELETE                            = 5;
-    public static final int           HEAD                              = 6;
-    public static final int           TRACE                             = 7;
-    public static final int           CONNECT                           = 8;
+    public static final String        WEBDAV_METHOD_PROPFIND            = "PROPFIND";
+    public static final String        WEBDAV_METHOD_PROPPATCH           = "PROPPATCH";
+    public static final String        WEBDAV_METHOD_MKCOL               = "MKCOL";
+    public static final String        WEBDAV_METHOD_COPY                = "COPY";
+    public static final String        WEBDAV_METHOD_MOVE                = "MOVE";
+    public static final String        WEBDAV_METHOD_DELETE              = "DELETE";
+    public static final String        WEBDAV_METHOD_LOCK                = "LOCK";
+    public static final String        WEBDAV_METHOD_UNLOCK              = "UNLOCK";
+
+    public static final String        WEBDAV_METHOD_SEARCH              = "SEARCH";
+    public static final String        WEBDAV_METHOD_VERSION_CONTROL     = "VERSION-CONTROL";
+    public static final String        WEBDAV_METHOD_BASELINE_CONTROL    = "BASELINE-CONTROL";
+    public static final String        WEBDAV_METHOD_REPORT              = "REPORT";
+    public static final String        WEBDAV_METHOD_CHECKOUT            = "CHECKOUT";
+    public static final String        WEBDAV_METHOD_CHECKIN             = "CHECKIN";
+    public static final String        WEBDAV_METHOD_UNCHECKOUT          = "UNCHECKOUT";
+    public static final String        WEBDAV_METHOD_MKWORKSPACE         = "MKWORKSPACE";
+    public static final String        WEBDAV_METHOD_MERGE               = "MERGE";
+    public static final String        WEBDAV_METHOD_UPDATE              = "UPDATE";
+    public static final String        WEBDAV_METHOD_ACL= "ACL";
+
+    /**
+     * This method will be retried automatically.
+     */
+    public static final int           METHOD_PROP_RETRY                 = 0x0001;
+
+    /**
+     * This method will follow redirects.
+     */
+    public static final int           METHOD_PROP_REDIRECT              = 0x0002;
+
+    /**
+     * This is used for an HTTP GET method. If a GET method was specified, and
+     * getOutputStream() is subsequently called, this changes the method to a
+     * POST method. This is for JDK compatibility.
+     */
+    public static final int           METHOD_PROP_SWITCH_TO_POST        = 0x0004;
+
+    /**
+     * Add the content-length header if not already specified. Used for the POST
+     * and PUT methods.
+     */
+    public static final int           METHOD_PROP_ADD_CL_HEADER         = 0x0008;
+
+    /**
+     * The response body is ignored. Used for the HEAD method.
+     */
+    public static final int           METHOD_PROP_IGNORE_RESPONSE_BODY  = 0x0010;
+
+    /**
+     * The request line has a URL (most HTTP methods)
+     */
+    public static final int           METHOD_PROP_REQ_LINE_URL          = 0x0020;
+
+    /**
+     * The request line consists of only a "*" (for OPTIONS)
+     */
+    public static final int           METHOD_PROP_REQ_LINE_STAR         = 0x0040;
+
+    /**
+     * The request line has only the host/port (CONNECT)
+     */
+    public static final int           METHOD_PROP_REQ_LINE_HOST_PORT    = 0x0080;
+
+    /**
+     * The content length value is calculated (for potentially adding a
+     * content-length header) (POST/PUT).
+     */
+    public static final int           METHOD_PROP_CALCULATE_CONTENT_LEN = 0x0100;
+
+    /**
+     * A content-type header is automatically added (PUT). This is only used is
+     * the METHOD_PROP_CALCULATE_CONTENT_LEN is also set.
+     */
+    public static final int           METHOD_PROP_SEND_CONTENT_TYPE     = 0x0200;
+
+    /**
+     * The connection is left open for this method (CONNECT)
+     */
+    public static final int           METHOD_PROP_LEAVE_OPEN            = 0x0400;
+
+    /**
+     * This is what the method properties are set to initially, this value
+     * indicates no method was specified. If this is the case, then the GET
+     * method is assumed.
+     */
+    public static final int           METHOD_PROP_UNSPECIFIED_METHOD    = 0x10000;
+
+    /**
+     * A method was specified, but is not known (in the table of methods)
+     */
+    public static final int           METHOD_PROP_UNKNOWN_METHOD        = 0x20000;
 
     static final String               HDR_USER_AGENT                    = "User-Agent";
     static final String               HDR_CONTENT_LENGTH                = "Content-Length";
@@ -173,7 +258,11 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
     public static final int           NTLM_ENCODING_UNICODE             = 1;
     public static final int           NTLM_ENCODING_OEM                 = 2;
 
-    protected int                     _methodId;
+    // Stores the properties associated with each method
+    // K(Method name) V(Method property)
+    protected static Map              _methodPropertyMap;
+
+    protected int                     _methodProperties;
 
     protected boolean                 _followRedirects;
 
@@ -352,6 +441,67 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
 
         try
         {
+
+            //
+            // Standard HTTP methods
+            //
+            _methodPropertyMap = new HashMap();
+
+            setMethodProperties(HTTP_METHOD_GET, METHOD_PROP_RETRY
+                | METHOD_PROP_REDIRECT
+                | METHOD_PROP_SWITCH_TO_POST
+                | METHOD_PROP_REQ_LINE_URL);
+            setMethodProperties(HTTP_METHOD_POST, METHOD_PROP_REDIRECT
+                | METHOD_PROP_ADD_CL_HEADER
+                | METHOD_PROP_REQ_LINE_URL
+                | METHOD_PROP_CALCULATE_CONTENT_LEN
+                | METHOD_PROP_SEND_CONTENT_TYPE);
+            setMethodProperties(HTTP_METHOD_HEAD, METHOD_PROP_RETRY
+                | METHOD_PROP_REDIRECT
+                | METHOD_PROP_IGNORE_RESPONSE_BODY
+                | METHOD_PROP_REQ_LINE_URL);
+            setMethodProperties(HTTP_METHOD_PUT, METHOD_PROP_RETRY
+                | METHOD_PROP_ADD_CL_HEADER
+                | METHOD_PROP_REQ_LINE_URL
+                | METHOD_PROP_CALCULATE_CONTENT_LEN);
+            setMethodProperties(HTTP_METHOD_OPTIONS, METHOD_PROP_RETRY
+                | METHOD_PROP_REQ_LINE_STAR);
+            setMethodProperties(HTTP_METHOD_DELETE, METHOD_PROP_RETRY
+                | METHOD_PROP_REQ_LINE_URL);
+            setMethodProperties(HTTP_METHOD_TRACE, METHOD_PROP_RETRY
+                | METHOD_PROP_REQ_LINE_URL);
+            setMethodProperties(HTTP_METHOD_CONNECT,
+                                METHOD_PROP_IGNORE_RESPONSE_BODY
+                                    | METHOD_PROP_REQ_LINE_HOST_PORT
+                                    | METHOD_PROP_LEAVE_OPEN);
+
+            // WebDAV methods
+            int webDavProps = METHOD_PROP_RETRY
+                | METHOD_PROP_REDIRECT
+                | METHOD_PROP_ADD_CL_HEADER
+                | METHOD_PROP_CALCULATE_CONTENT_LEN
+                | METHOD_PROP_REQ_LINE_URL;
+
+            setMethodProperties(WEBDAV_METHOD_PROPFIND, webDavProps);
+            setMethodProperties(WEBDAV_METHOD_PROPPATCH, webDavProps);
+            setMethodProperties(WEBDAV_METHOD_MKCOL, webDavProps);
+            setMethodProperties(WEBDAV_METHOD_COPY, webDavProps);
+            setMethodProperties(WEBDAV_METHOD_MOVE, webDavProps);
+            setMethodProperties(WEBDAV_METHOD_DELETE, webDavProps);
+            setMethodProperties(WEBDAV_METHOD_LOCK, webDavProps);
+            setMethodProperties(WEBDAV_METHOD_UNLOCK, webDavProps);
+
+            setMethodProperties(WEBDAV_METHOD_SEARCH, webDavProps);
+            setMethodProperties(WEBDAV_METHOD_VERSION_CONTROL, webDavProps);
+            setMethodProperties(WEBDAV_METHOD_BASELINE_CONTROL, webDavProps);
+            setMethodProperties(WEBDAV_METHOD_REPORT, webDavProps);
+            setMethodProperties(WEBDAV_METHOD_CHECKOUT, webDavProps);
+            setMethodProperties(WEBDAV_METHOD_CHECKIN, webDavProps);
+            setMethodProperties(WEBDAV_METHOD_UNCHECKOUT, webDavProps);
+            setMethodProperties(WEBDAV_METHOD_MKWORKSPACE, webDavProps);
+            setMethodProperties(WEBDAV_METHOD_MERGE, webDavProps);
+            setMethodProperties(WEBDAV_METHOD_UPDATE, webDavProps);
+            setMethodProperties(WEBDAV_METHOD_ACL, webDavProps);
 
             String timeoutStr = System
                     .getProperty("com.oaklandsw.http.timeout");
@@ -640,6 +790,8 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
         setInstanceFollowRedirects(java.net.HttpURLConnection
                 .getFollowRedirects());
 
+        _methodProperties = METHOD_PROP_UNSPECIFIED_METHOD;
+
         _reqHeaders = new Headers();
         _respHeaders = new Headers();
         // The footers are created on demand, since they are not
@@ -712,52 +864,28 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
      */
     public void setRequestMethod(String meth) throws ProtocolException
     {
-        // This validates the method
-        super.setRequestMethod(meth);
+        if (connected)
+        {
+            throw new ProtocolException("Can't reset method: already connected");
+        }
 
-        setRequestMethodInternal(meth);
-    }
-
-    void setRequestMethodInternal(String meth) throws ProtocolException
-    {
         if (_connection != null)
         {
             throw new ProtocolException("getOutputStream() cannot be called "
                 + " before setRequestMethod()");
         }
 
-        if (meth.equalsIgnoreCase(HTTP_METHOD_GET))
-        {
-            _methodId = GET;
-        }
-        else if (meth.equalsIgnoreCase(HTTP_METHOD_POST))
-        {
-            _methodId = POST;
-        }
-        else if (meth.equalsIgnoreCase(HTTP_METHOD_HEAD))
-        {
-            _methodId = HEAD;
-        }
-        else if (meth.equalsIgnoreCase(HTTP_METHOD_PUT))
-        {
-            _methodId = PUT;
-        }
-        else if (meth.equalsIgnoreCase(HTTP_METHOD_DELETE))
-        {
-            _methodId = DELETE;
-        }
-        else if (meth.equalsIgnoreCase(HTTP_METHOD_OPTIONS))
-        {
-            _methodId = OPTIONS;
-        }
-        else if (meth.equalsIgnoreCase(HTTP_METHOD_TRACE))
-        {
-            _methodId = TRACE;
-        }
-        else if (meth.equalsIgnoreCase(HTTP_METHOD_CONNECT))
-        {
-            _methodId = CONNECT;
-        }
+        setRequestMethodInternal(meth);
+    }
+
+    void setRequestMethodInternal(String meth) throws ProtocolException
+    {
+        // This validates the method
+        // Do not call the superclass, as it checks the method name and
+        // we don't want to restrict the method name to anything.
+        // super.setRequestMethod(meth);
+
+        _methodProperties = getMethodProperties(meth);
         this.method = meth;
     }
 
@@ -839,7 +967,7 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
      */
     public final boolean getInstanceFollowRedirects()
     {
-        if (_methodId == GET || _methodId == POST || _methodId == HEAD)
+        if ((_methodProperties & METHOD_PROP_REDIRECT) != 0)
             return _followRedirects;
 
         // Don't allow redirects any other time.
@@ -863,10 +991,9 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
         }
 
         // Switch to post method - be compatible with JDK
-        if (_methodId == 0 || _methodId == GET)
+        if ((_methodProperties & (METHOD_PROP_SWITCH_TO_POST | METHOD_PROP_UNSPECIFIED_METHOD)) != 0)
         {
-            method = HTTP_METHOD_POST;
-            _methodId = POST;
+            setRequestMethodInternal(HTTP_METHOD_POST);
         }
 
         // Be compatible with JDK
@@ -2184,6 +2311,35 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
     public static int getNtlmPreferredEncoding()
     {
         return _ntlmPreferredEncoding;
+    }
+
+    /**
+     * Sets the properties for the specified method to the specified property
+     * value.
+     * 
+     * @param methodName
+     *            the name of the method, like GET or POST
+     * @param properties
+     *            the property value which is one or more (union) of the
+     *            constants beginning METHOD_PROP_
+     */
+    public static void setMethodProperties(String methodName, int properties)
+    {
+        synchronized (_methodPropertyMap)
+        {
+            Integer propVal = (Integer)_methodPropertyMap.get(methodName);
+            if (propVal != null)
+                _methodPropertyMap.remove(methodName);
+            _methodPropertyMap.put(methodName, new Integer(properties));
+        }
+    }
+
+    protected int getMethodProperties(String methodName)
+    {
+        Integer propVal = (Integer)_methodPropertyMap.get(methodName);
+        if (propVal == null)
+            return METHOD_PROP_UNKNOWN_METHOD;
+        return propVal.intValue();
     }
 
     protected abstract void execute() throws HttpException, IOException;

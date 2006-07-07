@@ -82,6 +82,7 @@ public class TestAll extends TestCase
         TestSuite suite = new TestSuite();
         suite.addTest(WebserverTestHttpConnectionManager.suite());
         suite.addTest(TestMethods.suite());
+        suite.addTest(TestWebDavMethods.suite());
         suite.addTest(TestGetMethod.suite());
         suite.addTest(TestTraceMethod.suite());
         suite.addTest(Test292.suite());
