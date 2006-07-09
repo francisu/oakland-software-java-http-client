@@ -7,14 +7,13 @@
 
 package com.oaklandsw.http.ntlm;
 
-import java.security.Key;
-import java.security.MessageDigest;
-
-import javax.crypto.Cipher;
-import javax.crypto.spec.SecretKeySpec;
+import org.bouncycastle.crypto.Digest;
+import org.bouncycastle.crypto.digests.MD4Digest;
+import org.bouncycastle.crypto.digests.MD5Digest;
+import org.bouncycastle.crypto.params.DESParameters;
 
 import com.oaklandsw.http.HttpException;
-import com.oaklandsw.http.SecurityHelper;
+import com.oaklandsw.util.SecurityHelper;
 import com.oaklandsw.util.Util;
 
 public class AuthenticateMessage extends Message
@@ -94,9 +93,40 @@ public class AuthenticateMessage extends Message
     // that the above copyright notice and this list of conditions
     // appear in all copies.
     //
+    // Some parts modified by Oakland Software (8 Jul 2006)
+    //
     /**
      * Calculates the various Type 3 responses.
      */
+
+    /**
+     * Creates a DES encryption key from the given key material.
+     * 
+     * @param bytes
+     *            A byte array containing the DES key material.
+     * @param offset
+     *            The offset in the given byte array at which the 7-byte key
+     *            material starts.
+     * 
+     * @return A DES encryption key created from the key material starting at
+     *         the specified offset in the given byte array.
+     */
+    private static byte[] createDESKey(byte[] bytes, int offset)
+    {
+        byte[] keyBytes = new byte[7];
+        System.arraycopy(bytes, offset, keyBytes, 0, 7);
+        byte[] material = new byte[8];
+        material[0] = keyBytes[0];
+        material[1] = (byte)(keyBytes[0] << 7 | (keyBytes[1] & 0xff) >>> 1);
+        material[2] = (byte)(keyBytes[1] << 6 | (keyBytes[2] & 0xff) >>> 2);
+        material[3] = (byte)(keyBytes[2] << 5 | (keyBytes[3] & 0xff) >>> 3);
+        material[4] = (byte)(keyBytes[3] << 4 | (keyBytes[4] & 0xff) >>> 4);
+        material[5] = (byte)(keyBytes[4] << 3 | (keyBytes[5] & 0xff) >>> 5);
+        material[6] = (byte)(keyBytes[5] << 2 | (keyBytes[6] & 0xff) >>> 6);
+        material[7] = (byte)(keyBytes[6] << 1);
+        DESParameters.setOddParity(material);
+        return material;
+    }
 
     /**
      * Calculates the LM Response for the given challenge, using the specified
@@ -216,11 +246,13 @@ public class AuthenticateMessage extends Message
         throws Exception
     {
         byte[] ntlmHash = ntlmHash(password);
-        MessageDigest md5 = MessageDigest.getInstance("MD5");
-        md5.update(challenge);
-        md5.update(clientChallenge);
+        Digest md5 = new MD5Digest();
+        byte[] md5out = new byte[md5.getDigestSize()];
+        md5.update(challenge, 0, challenge.length);
+        md5.update(clientChallenge, 0, clientChallenge.length);
+        md5.doFinal(md5out, 0);
         byte[] sessionHash = new byte[8];
-        System.arraycopy(md5.digest(), 0, sessionHash, 0, 8);
+        System.arraycopy(md5out, 0, sessionHash, 0, 8);
         return lmResponse(ntlmHash, sessionHash);
     }
 
@@ -239,17 +271,12 @@ public class AuthenticateMessage extends Message
         int length = Math.min(oemPassword.length, 14);
         byte[] keyBytes = new byte[14];
         System.arraycopy(oemPassword, 0, keyBytes, 0, length);
-        Key lowKey = createDESKey(keyBytes, 0);
-        Key highKey = createDESKey(keyBytes, 7);
         byte[] magicConstant = "KGS!@#$%".getBytes("US-ASCII");
-        Cipher des = Cipher.getInstance("DES/ECB/NoPadding");
-        des.init(Cipher.ENCRYPT_MODE, lowKey);
-        byte[] lowHash = des.doFinal(magicConstant);
-        des.init(Cipher.ENCRYPT_MODE, highKey);
-        byte[] highHash = des.doFinal(magicConstant);
         byte[] lmHash = new byte[16];
-        System.arraycopy(lowHash, 0, lmHash, 0, 8);
-        System.arraycopy(highHash, 0, lmHash, 8, 8);
+        byte[] key = createDESKey(keyBytes, 0);
+        SecurityHelper.des(SecurityHelper.ENCRYPT, magicConstant, key, lmHash, 0);
+        key = createDESKey(keyBytes, 7);
+        SecurityHelper.des(SecurityHelper.ENCRYPT, magicConstant, key, lmHash, 8);
         return lmHash;
     }
 
@@ -265,8 +292,10 @@ public class AuthenticateMessage extends Message
     private static byte[] ntlmHash(String password) throws Exception
     {
         byte[] unicodePassword = password.getBytes("UnicodeLittleUnmarked");
-        MessageDigest md4 = MessageDigest.getInstance("MD4");
-        byte[] digest = md4.digest(unicodePassword);
+        Digest md4 = new MD4Digest();
+        byte[] digest = new byte[md4.getDigestSize()];
+        md4.update(unicodePassword, 0, unicodePassword.length);
+        md4.doFinal(digest, 0);
 
         byte[] outPassword = new byte[HASHED_PASSWORD_LEN];
         System.arraycopy(digest, 0, outPassword, 0, digest.length);
@@ -308,22 +337,15 @@ public class AuthenticateMessage extends Message
     private static byte[] lmResponse(byte[] hash, byte[] challenge)
         throws Exception
     {
-        byte[] keyBytes = new byte[21];
-        System.arraycopy(hash, 0, keyBytes, 0, 16);
-        Key lowKey = createDESKey(keyBytes, 0);
-        Key middleKey = createDESKey(keyBytes, 7);
-        Key highKey = createDESKey(keyBytes, 14);
-        Cipher des = Cipher.getInstance("DES/ECB/NoPadding");
-        des.init(Cipher.ENCRYPT_MODE, lowKey);
-        byte[] lowResponse = des.doFinal(challenge);
-        des.init(Cipher.ENCRYPT_MODE, middleKey);
-        byte[] middleResponse = des.doFinal(challenge);
-        des.init(Cipher.ENCRYPT_MODE, highKey);
-        byte[] highResponse = des.doFinal(challenge);
         byte[] lmResponse = new byte[24];
-        System.arraycopy(lowResponse, 0, lmResponse, 0, 8);
-        System.arraycopy(middleResponse, 0, lmResponse, 8, 8);
-        System.arraycopy(highResponse, 0, lmResponse, 16, 8);
+        byte[] keyBytes = new byte[21];
+        System.arraycopy(hash, 0, keyBytes, 0, 16);        
+        byte[] key = createDESKey(keyBytes, 0);
+        SecurityHelper.des(SecurityHelper.ENCRYPT, challenge, key, lmResponse, 0);
+        key = createDESKey(keyBytes, 7);
+        SecurityHelper.des(SecurityHelper.ENCRYPT, challenge, key, lmResponse, 8);
+        key = createDESKey(keyBytes, 14);
+        SecurityHelper.des(SecurityHelper.ENCRYPT, challenge, key, lmResponse, 16);
         return lmResponse;
     }
 
@@ -456,88 +478,23 @@ public class AuthenticateMessage extends Message
         byte[] content = new byte[data.length + 64];
         System.arraycopy(ipad, 0, content, 0, 64);
         System.arraycopy(data, 0, content, 64, data.length);
-        MessageDigest md5 = MessageDigest.getInstance("MD5");
-        data = md5.digest(content);
-        content = new byte[data.length + 64];
+
+        Digest md5 = new MD5Digest();
+        md5.update(content, 0, content.length);
+        byte[] md5out = new byte[md5.getDigestSize()];
+        md5.doFinal(md5out, 0);
+
+        content = new byte[md5out.length + 64];
         System.arraycopy(opad, 0, content, 0, 64);
-        System.arraycopy(data, 0, content, 64, data.length);
-        return md5.digest(content);
-    }
-
-    /**
-     * Creates a DES encryption key from the given key material.
-     * 
-     * @param bytes
-     *            A byte array containing the DES key material.
-     * @param offset
-     *            The offset in the given byte array at which the 7-byte key
-     *            material starts.
-     * 
-     * @return A DES encryption key created from the key material starting at
-     *         the specified offset in the given byte array.
-     */
-    private static Key createDESKey(byte[] bytes, int offset)
-    {
-        byte[] keyBytes = new byte[7];
-        System.arraycopy(bytes, offset, keyBytes, 0, 7);
-        byte[] material = new byte[8];
-        material[0] = keyBytes[0];
-        material[1] = (byte)(keyBytes[0] << 7 | (keyBytes[1] & 0xff) >>> 1);
-        material[2] = (byte)(keyBytes[1] << 6 | (keyBytes[2] & 0xff) >>> 2);
-        material[3] = (byte)(keyBytes[2] << 5 | (keyBytes[3] & 0xff) >>> 3);
-        material[4] = (byte)(keyBytes[3] << 4 | (keyBytes[4] & 0xff) >>> 4);
-        material[5] = (byte)(keyBytes[4] << 3 | (keyBytes[5] & 0xff) >>> 5);
-        material[6] = (byte)(keyBytes[5] << 2 | (keyBytes[6] & 0xff) >>> 6);
-        material[7] = (byte)(keyBytes[6] << 1);
-        oddParity(material);
-        return new SecretKeySpec(material, "DES");
-    }
-
-    /**
-     * Applies odd parity to the given byte array.
-     * 
-     * @param bytes
-     *            The data whose parity bits are to be adjusted for odd parity.
-     */
-    private static void oddParity(byte[] bytes)
-    {
-        for (int i = 0; i < bytes.length; i++)
-        {
-            byte b = bytes[i];
-            boolean needsParity = (((b >>> 7)
-                ^ (b >>> 6)
-                ^ (b >>> 5)
-                ^ (b >>> 4)
-                ^ (b >>> 3)
-                ^ (b >>> 2) ^ (b >>> 1)) & 0x01) == 0;
-            if (needsParity)
-            {
-                bytes[i] |= (byte)0x01;
-            }
-            else
-            {
-                bytes[i] &= (byte)0xfe;
-            }
-        }
+        System.arraycopy(md5out, 0, content, 64, md5out.length);
+        md5.update(content, 0, content.length);
+        md5.doFinal(md5out, 0);
+        return md5out;
     }
 
     //
     // End of portion copyrighted by Eric Glass
     // 
-
-    /**
-     * Encrypts the hash password using the nonce and returns the response.
-     */
-    protected byte[] encryptResponse(byte[] hashedPassword)
-    {
-        byte[] response = new byte[RESPONSE_LEN];
-
-        SecurityHelper.desEncrypt(response, hashedPassword, 0, 0, _nonce);
-        SecurityHelper.desEncrypt(response, hashedPassword, 8, 7, _nonce);
-        SecurityHelper.desEncrypt(response, hashedPassword, 16, 14, _nonce);
-
-        return response;
-    }
 
     protected void calcResponses()
     {

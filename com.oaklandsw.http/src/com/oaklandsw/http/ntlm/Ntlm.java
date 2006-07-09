@@ -9,7 +9,8 @@ package com.oaklandsw.http.ntlm;
 
 import java.io.UnsupportedEncodingException;
 
-import com.oaklandsw.http.Base64;
+import org.bouncycastle.util.encoders.Base64;
+
 import com.oaklandsw.http.HttpException;
 import com.oaklandsw.http.HttpURLConnection;
 

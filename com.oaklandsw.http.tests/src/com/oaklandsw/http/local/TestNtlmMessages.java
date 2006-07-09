@@ -53,7 +53,7 @@ public class TestNtlmMessages extends TestCase
         msg.setBytes(msgBytes);
         msg.decode();
 
-        byte[] nonce = new byte[] { 1, 2, 3, 4, 5, 6, 7, 8 };
+        byte[] nonce = new byte[] { 89, 82, 72, 23, 33, 43, 7, 8 };
 
         ChallengeMessage cmsg = new ChallengeMessage();
         cmsg.setNonce(nonce);

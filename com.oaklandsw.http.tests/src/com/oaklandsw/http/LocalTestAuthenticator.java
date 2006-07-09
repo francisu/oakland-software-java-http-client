@@ -59,8 +59,9 @@ package com.oaklandsw.http;
 import java.util.Hashtable;
 import java.util.StringTokenizer;
 
+import org.bouncycastle.util.encoders.Base64;
+
 import com.oaklandsw.http.Authenticator;
-import com.oaklandsw.http.Base64;
 import com.oaklandsw.http.Credential;
 import com.oaklandsw.http.HttpException;
 import com.oaklandsw.http.UserCredential;

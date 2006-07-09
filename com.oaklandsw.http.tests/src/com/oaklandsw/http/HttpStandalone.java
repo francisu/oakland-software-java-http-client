@@ -5,7 +5,6 @@ package com.oaklandsw.http;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.security.Security;
 import java.util.ArrayList;
 
 /*******************************************************************************
@@ -281,12 +280,6 @@ public class HttpStandalone implements com.oaklandsw.http.HttpUserAgent
 
         if (_useConnectionProxy)
             System.out.println("Using per-connection proxy");
-
-        // Crypto algorithms - needed for NTLM, if you want to use
-        // a different one then comment out this line and setup the
-        // one you like
-        Security
-                .addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider());
 
         // SSL - Uncomment this if you are < JDK 1.4
         // Security.addProvider(new com.sun.net.ssl.internal.ssl.Provider());

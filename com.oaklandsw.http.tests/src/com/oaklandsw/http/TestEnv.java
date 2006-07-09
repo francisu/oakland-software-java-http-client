@@ -203,8 +203,6 @@ public class TestEnv
             System.out.println("Using sun");
         }
 
-        Security
-                .addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider());
         Security.addProvider(new com.sun.net.ssl.internal.ssl.Provider());
         // HTTPClient.Log.setLogging(-1, true);
     }

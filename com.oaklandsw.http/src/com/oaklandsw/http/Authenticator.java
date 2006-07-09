@@ -62,6 +62,8 @@ import java.util.Hashtable;
 import java.util.Map;
 import java.util.StringTokenizer;
 
+import org.bouncycastle.util.encoders.Base64;
+
 import com.oaklandsw.http.ntlm.Ntlm;
 import com.oaklandsw.log.Log;
 import com.oaklandsw.log.LogFactory;

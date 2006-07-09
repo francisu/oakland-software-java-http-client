@@ -1,10 +1,10 @@
-// Copyright 2002-2003 (c) oakland software, All rights reserved
-
-package com.oaklandsw.http.sa;
-
 import java.io.InputStream;
-import java.net.HttpURLConnection;
 import java.net.URL;
+import java.security.Security;
+
+import com.oaklandsw.http.Cookie;
+import com.oaklandsw.http.CookieContainer;
+import com.oaklandsw.http.HttpURLConnection;
 
 /*******************************************************************************
  * 
@@ -14,13 +14,16 @@ import java.net.URL;
  * 
  * url - the URL to get from options:
  * 
- * -pass <password> - the password to send -user <userName> - the user name to
- * send -host <hostName> - the host name to send (NTLM only) -dom <domainName> -
- * the domain name to send (NTLM only) -pxpass <password> - the password to send
- * to proxy server -pxuser <userName> - the user name to send to proxy server
- * -pxhost <hostName> - the host name to send to proxy server -pxdom
- * <domainName> - the domain name to send to proxy server -loop <count> - the
- * number of times to iterate -proxy <host:port> - the proxy host/port to use
+ * -pass <password> - the password to send<br>
+ * -user <userName> - the user name to send<br>
+ * -host <hostName> - the host name to send (NTLM only)<br>
+ * -dom <domainName> - the domain name to send (NTLM only)<br>
+ * -pxpass <password> - the password to send to proxy server<br>
+ * -pxuser <userName> - the user name to send to proxy server<br>
+ * -pxhost <hostName> - the host name to send to proxy server<br>
+ * -pxdom <domainName> - the domain name to send to proxy server<br>
+ * -loop <count> - the number of times to iterate<br>
+ * -proxy <host:port> - the proxy host/port to use
  * 
  * 
  ******************************************************************************/
@@ -34,8 +37,6 @@ public class HttpGetSample implements com.oaklandsw.http.HttpUserAgent
 
     private static boolean                          _interactive;
     private static boolean                          _nooutput;
-
-    private static boolean                          _dooaklandsw = true;
 
     private static int                              _loopCount;
 
@@ -123,6 +124,11 @@ public class HttpGetSample implements com.oaklandsw.http.HttpUserAgent
     {
         HttpGetSample userAgent = new HttpGetSample();
 
+        // To turn on logging for log4j
+        // Properties logProps = new Properties();
+        // logProps.setProperty("log4j.logger.com.oaklandsw", "DEBUG");
+        // PropertyConfigurator.configure(logProps);
+
         _loopCount = 1;
 
         int index = 1;
@@ -149,8 +155,6 @@ public class HttpGetSample implements com.oaklandsw.http.HttpUserAgent
                 _interactive = true;
             else if (args[index].equalsIgnoreCase("-nooutput"))
                 _nooutput = true;
-            else if (args[index].equalsIgnoreCase("-sun"))
-                _dooaklandsw = false;
             else if (args[index].equalsIgnoreCase("-loop"))
                 _loopCount = Integer.parseInt(args[++index]);
             else if (args[index].equalsIgnoreCase("-proxy"))
@@ -160,18 +164,17 @@ public class HttpGetSample implements com.oaklandsw.http.HttpUserAgent
             index++;
         }
 
+        // Crypto algorithms - needed for NTLM, if you want to use
+        // a different one then comment out this line and setup the
+        // one you like
+        Security
+                .addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider());
+
         // SSL - Uncomment this if you are < JDK 1.4
         // Security.addProvider(new com.sun.net.ssl.internal.ssl.Provider());
 
         // Tell Java to use the oaklandsw implementation
-        if (_dooaklandsw)
-        {
-            System.setProperty("java.protocol.handler.pkgs", "com.oaklandsw");
-        }
-        else
-        {
-            System.out.println("Using sun implementation");
-        }
+        System.setProperty("java.protocol.handler.pkgs", "com.oaklandsw");
 
         if (_proxyHost != null && !_useConnectionProxy)
         {
@@ -191,6 +194,7 @@ public class HttpGetSample implements com.oaklandsw.http.HttpUserAgent
         else
             urlStr = args[0];
 
+        CookieContainer cc = new CookieContainer();
         URL url = new URL(urlStr);
         while (true)
         {
@@ -205,31 +209,36 @@ public class HttpGetSample implements com.oaklandsw.http.HttpUserAgent
             try
             {
                 HttpURLConnection urlCon;
-                if (_dooaklandsw)
-                {
-                    urlCon = com.oaklandsw.http.HttpURLConnection
-                            .openConnection(url);
-                }
-                else
-                {
-                    urlCon = (HttpURLConnection)url.openConnection();
-                }
+
+                // This way should be used to force the Oakland Software
+                // implementation
+                urlCon = com.oaklandsw.http.HttpURLConnection
+                        .openConnection(url);
+
+                // This way can also be used, but if an HTTP request
+                // happened before you set the java.protocol.handler.pkgs
+                // property (see above), you will get the Sun implementation
+                // urlCon = (HttpURLConnection)url.openConnection();
 
                 if (_proxyHost != null && _useConnectionProxy)
                 {
-                    ((com.oaklandsw.http.HttpURLConnection)urlCon)
-                            .setConnectionProxyHost(_proxyHost);
-                    ((com.oaklandsw.http.HttpURLConnection)urlCon)
-                            .setConnectionProxyPort(_proxyPort);
+                    urlCon.setConnectionProxyHost(_proxyHost);
+                    urlCon.setConnectionProxyPort(_proxyPort);
                 }
 
                 urlCon.setRequestMethod("GET");
+                urlCon.setCookieSupport(cc, null);
                 urlCon.connect();
 
-                // System.out.println("User-Agent: " +
-                // urlCon.getRequestProperty("User-Agent"));
                 if (!_nooutput)
+                {
                     System.out.println("Response: " + urlCon.getResponseCode());
+                    for (int i = 0; i < cc.getCookies().length; i++)
+                    {
+                        Cookie cookie = cc.getCookies()[i];
+                        System.out.println(cookie);
+                    }
+                }
 
                 // Print the output stream
                 InputStream inputStream = urlCon.getInputStream();

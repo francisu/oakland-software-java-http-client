@@ -3,7 +3,8 @@
  */
 package com.oaklandsw.http;
 
-import com.oaklandsw.http.Base64;
+import org.bouncycastle.util.encoders.Base64;
+
 import com.oaklandsw.http.ntlm.AuthenticateMessage;
 import com.oaklandsw.http.ntlm.ChallengeMessage;
 import com.oaklandsw.http.ntlm.Message;

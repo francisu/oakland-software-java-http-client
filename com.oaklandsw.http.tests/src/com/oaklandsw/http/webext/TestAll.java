@@ -83,6 +83,7 @@ public class TestAll extends TestBase
     public static Test suite()
     {
         TestSuite suite = new TestSuite();
+        suite.addTest(TestCookie.suite());
         suite.addTest(TestSSL.suite());
         suite.addTest(TestHttps.suite());
         suite.addTest(TestMethods.suite());

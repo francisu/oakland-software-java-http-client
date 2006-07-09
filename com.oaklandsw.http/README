@@ -15,7 +15,7 @@ CLASSPATH:
 http.jar - The HTTP Client protocol support.
 
 This software has no dependencies on other software, except if you are
-using NTLM support, see step 1 and 2 below.  
+using SSL with a JRE versions 1.2 or 1.3 (see item 2 below)
 
 
 
@@ -38,36 +38,7 @@ To use the HTTP client support:
     For how to correct the problem.
 
 
-1) If you are using NTLM support, make sure you have a DES cipher
-   and MD4 digest algorithms available.  You can get the DES/MD4
-   from www.bouncycastle.org.
-
-   The recommended Bouncy Castle JAR files are:
-
-      JRE 1.4 - bcprov-jdk14-120
-      JRE 1.3 - jce-jdk13-120
-      JRE 1.2 - jce-jdk12-120
-
-   You may use higher versions of the Bouncy Castle libraries if
-   they are available.
-
-        // DES/MD4 Crypto algorithms - needed for NTLM
-        // This line shows how to hook up the Bouncy Castle Providers
-        // If you prefer another provider for your crypto algorithms,
-        // then replace this with adding your preferred provider.
-        Security.addProvider
-            (new org.bouncycastle.jce.provider.BouncyCastleProvider());
-
-
-2) Make sure you have the JSSE jar files if you are not using JDK 1.4
-   or higher.  Here is the code you must include if you are JDK 1.2 or
-   1.3:
-
-        // SSL - Uncomment this if you are < JDK 1.4
-        Security.addProvider(new com.sun.net.ssl.internal.ssl.Provider());
-
-
-3) To enable the HTTP support (you must do this before you open
+1) To enable the HTTP support (you must do this before you open
    the first URL connection):
 
         System.setProperty("java.protocol.handler.pkgs", "com.oaklandsw");
@@ -102,7 +73,15 @@ To use the HTTP client support:
        use method a (explicitly specifying the handlers).
 
 
-4) You will need to make a class implement the HttpUserAgent
+2) If using SSL, make sure you have the JSSE jar files if you are not using JDK 1.4
+   or higher.  Here is the code you must include if you are JDK 1.2 or
+   1.3:
+
+        // SSL - Uncomment this if you are < JDK 1.4
+        Security.addProvider(new com.sun.net.ssl.internal.ssl.Provider());
+
+
+3) You will need to make a class implement the HttpUserAgent
    interface (see the javadoc for details, and sample below).  This
    class is called when necessary to get the NTLM or basic
    credentials.
@@ -123,7 +102,7 @@ To use the HTTP client support:
 
 
 
-5) The logging is using either log4j or JDK 1.4 logging.
+4) The logging is using either log4j or JDK 1.4 logging.
    By default log4j is preferred.
    If log4j is not present, the JDK 1.4 logging will be used.  
    If JDK 1.4 logging is not present, no logging will occur.

@@ -46,8 +46,7 @@ public class CookieContainer implements Collection
 {
     private List             _cookies = new ArrayList();
 
-    /** Log object for this class. */
-    private static final Log LOG      = LogFactory
+    private static final Log _log     = LogFactory
                                               .getLog(CookieContainer.class);
 
     public CookieContainer()
@@ -70,7 +69,8 @@ public class CookieContainer implements Collection
      */
     public synchronized void addCookie(Cookie cookie)
     {
-        LOG.trace("enter HttpState.addCookie(Cookie)");
+        if (_log.isDebugEnabled())
+            _log.trace("addCookie " + cookie);
 
         if (cookie != null)
         {
@@ -87,6 +87,10 @@ public class CookieContainer implements Collection
             if (!cookie.isExpired())
             {
                 _cookies.add(cookie);
+            }
+            else
+            {
+                _log.debug("addCookie - not added - expired");
             }
         }
     }
@@ -106,8 +110,6 @@ public class CookieContainer implements Collection
      */
     public synchronized void addCookies(Cookie[] cookies)
     {
-        LOG.trace("enter HttpState.addCookies(Cookie[])");
-
         if (cookies != null)
         {
             for (int i = 0; i < cookies.length; i++)
@@ -264,6 +266,11 @@ public class CookieContainer implements Collection
     public synchronized Object[] toArray(Object[] a)
     {
         return _cookies.toArray(a);
+    }
+
+    public String toString()
+    {
+        return _cookies.toString();
     }
 
 }

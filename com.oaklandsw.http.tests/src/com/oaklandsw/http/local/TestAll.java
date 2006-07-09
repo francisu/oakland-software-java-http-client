@@ -89,7 +89,6 @@ public class TestAll extends TestBase
 
         suite.addTest(TestHttpStatus.suite());
         suite.addTest(TestDefaults.suite());
-        suite.addTest(TestBase64.suite());
         suite.addTest(TestHeaders.suite());
         suite.addTest(LocalTestAuthenticator.suite());
         suite.addTest(LocalTestHttpConnectionManager.suite());

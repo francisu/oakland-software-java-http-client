@@ -3,13 +3,11 @@ Bundle-ManifestVersion: 2
 Bundle-Name: Jars Plug-in
 Bundle-SymbolicName: com.oaklandsw.http.tests.jars
 Bundle-Version: 1.0.0
-Bundle-ClassPath: javax.servlet.jar,
- jce-jdk12-115.jar
+Bundle-ClassPath: javax.servlet.jar
 Bundle-Localization: plugin
 Export-Package: javax.servlet,
  javax.servlet.http,
  javax.servlet.jsp,
  javax.servlet.jsp.resources,
  javax.servlet.jsp.tagext,
- javax.servlet.resources,
- org.bouncycastle.jce.provider
+ javax.servlet.resources
