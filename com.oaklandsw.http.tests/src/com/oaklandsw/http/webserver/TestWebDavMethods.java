@@ -155,7 +155,7 @@ public class TestWebDavMethods extends TestBase
         // Lock the moved resource
         urlCon = (HttpURLConnection)movedUrl.openConnection();
         urlCon.setRequestMethod("LOCK");
-        urlCon.addRequestProperty("Depth", "0");
+        urlCon.setRequestProperty("Depth", "0");
         msg = "<?xml version='1.0' ?>"
             + "<lockinfo xmlns='DAV:'>"
             + "<lockscope><exclusive/></lockscope>"
@@ -241,7 +241,7 @@ public class TestWebDavMethods extends TestBase
 
         HttpURLConnection urlCon = (HttpURLConnection)url.openConnection();
         urlCon.setRequestMethod("PROPFIND");
-        urlCon.addRequestProperty("Depth", "1");
+        urlCon.setRequestProperty("Depth", "1");
 
         urlCon.setDoOutput(true);
         OutputStream outStr = urlCon.getOutputStream();
