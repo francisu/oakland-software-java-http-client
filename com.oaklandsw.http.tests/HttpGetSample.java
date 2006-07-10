@@ -1,6 +1,5 @@
 import java.io.InputStream;
 import java.net.URL;
-import java.security.Security;
 
 import com.oaklandsw.http.Cookie;
 import com.oaklandsw.http.CookieContainer;
@@ -163,12 +162,6 @@ public class HttpGetSample implements com.oaklandsw.http.HttpUserAgent
                 _useConnectionProxy = true;
             index++;
         }
-
-        // Crypto algorithms - needed for NTLM, if you want to use
-        // a different one then comment out this line and setup the
-        // one you like
-        Security
-                .addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider());
 
         // SSL - Uncomment this if you are < JDK 1.4
         // Security.addProvider(new com.sun.net.ssl.internal.ssl.Provider());

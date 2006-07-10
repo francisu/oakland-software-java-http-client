@@ -9,6 +9,17 @@
 
 <!--		<property name="build.compiler" value="jikes" />-->
 
+		<property name="command.file" value="${basedir}/lictool.scr" />
+		
+		<!-- see ConstantsOaklandsw -->
+		<property name="codebaseid" value="1" />
+		<!-- see http/LicensedCodeImpl -->
+		<property name="productid" value="1" />
+		<!-- see http/HttpURLConnection -->
+		<property name="licfile" value="http.lic" />
+
+		<property name="eval.jar.name" value="${package.name}Eval.jar"/>
+		
 		<path id="compile.classpath">
 			<fileset dir="${basedir}/../com.oaklandsw.${package.name}.jars">
 				<include name="*.jar" />
@@ -45,11 +56,26 @@
 		</javadoc>
 	</target>
 
+	<target name="create-lic" depends="init">
+		<echo file="${command.file}">
+			-licfile ${licfile} -create -productid  ${productid} -cbid ${codebaseid}
+		</echo>
+		
+		<java classpath="${lictool.classpath}" classname="${lictool.class}" fork="yes">
+			<arg value="-file" />
+			<arg value="${command.file}" />
+		</java>
+		<!-- put this where it can be read as a resource, in the eval version this
+		     file is deleted -->
+		<copy file="${licfile}" tofile="${src.dir}/com/oaklandsw/http/${licfile}" overwrite="true" />
+	</target>
+
 
 	<!-- =================================================================== -->
 	<!-- Creates the class package - overrides common                        -->
 	<!-- =================================================================== -->
-	<target name="package-java" depends="compile-java">
+	<target name="package-java" depends="compile-java, create-lic">
+		<copy file="${src.dir}/com/oaklandsw/http/${licfile}" tofile="${bin.dir}/com/oaklandsw/http/${licfile}" overwrite="true" />
 		<jar jarfile="${package.name}.jar">
 			<fileset dir="${bin.dir}" />
 			<fileset dir="../com.oaklandsw.util/bin" />
@@ -60,9 +86,7 @@
 				</section>
 			</manifest>
 		</jar>
-
 	</target>
-
 
 	<target name="obf-java" depends="package-java">
 		<property name="obf.build.dir" value="${plugin.base.dir}/com.oaklandsw.build" />
@@ -125,8 +149,8 @@
 		<move file="${change.log.in}" tofile="${change.log.in}.bak" overwrite="true" failonerror="false" />
 		<copy file="${change.log.out}" tofile="${change.log.out}_${oaklandswVersion.file}" overwrite="true" />
 		<move file="${change.log.out}" tofile="${change.log.in}" overwrite="true" />
-		<move file="${obf.out.dir}/${package.name}.jar" tofile="${package.name}Ob.jar" overwrite="true" />
-
+		<move file="${package.name}.jar" tofile="${package.name}NonObf.jar" overwrite="true" />
+		<move file="${obf.out.dir}/${package.name}.jar" tofile="${package.name}.jar" overwrite="true" />
 		<delete dir="${obf.out.dir}" />
 
 		<!-- save the obfuscation information in the releases for future use -->
@@ -142,6 +166,13 @@
 	<!-- Creates the distribution - HTTP                                     -->
 	<!-- =================================================================== -->
 	<target name="dist" depends="javadoc, obf-java">
+		<!-- create eval JAR which is just the real version missing the lic file -->
+		<jar jarfile="${eval.jar.name}">
+			<zipfileset src="${package.name}.jar">
+				<exclude name="com/oaklandsw/http/${licfile}" />
+			</zipfileset>
+		</jar>
+			
 		<!-- normal -->
 		<zip zipfile="${release.dir}/${dist.zip.name}.zip" includes="**">
 			<fileset dir="${basedir}">
@@ -157,12 +188,12 @@
 			<zipfileset dir="${javadocs.dir}" prefix="javadocs" />
 		</zip>
 
-		<!-- obfuscated -->
-		<zip zipfile="${release.dir}/${dist.zip.name}Ob.zip" includes="**">
+		<!-- eval -->
+		<zip zipfile="${release.dir}/${dist.zip.name}Eval.zip" includes="**">
 			<zipfileset src="${release.dir}/${dist.zip.name}.zip">
 				<exclude name="${package.name}.jar" />
 			</zipfileset>
-			<zipfileset dir="." includes="${package.name}Ob.jar" fullpath="${package.name}.jar" />
+			<zipfileset dir="." includes="${eval.jar.name}" fullpath="${package.name}.jar" />
 		</zip>
 
 		<!-- source -->

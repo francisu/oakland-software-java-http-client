@@ -26,9 +26,11 @@ import javax.net.ssl.SSLSession;
 import javax.net.ssl.SSLSocketFactory;
 
 import com.oaklandsw.http.cookie.CookieSpec;
+import com.oaklandsw.license.License;
+import com.oaklandsw.license.LicenseManager;
+import com.oaklandsw.license.LicensedCode;
 import com.oaklandsw.log.Log;
 import com.oaklandsw.log.LogFactory;
-import com.oaklandsw.util.ObfuscateSupport;
 import com.oaklandsw.util.Util;
 
 /**
@@ -129,16 +131,11 @@ import com.oaklandsw.util.Util;
 public abstract class HttpURLConnection extends java.net.HttpURLConnection
 {
 
-    static
-    {
-        // We want to force logging if the code is obfuscated (that's how
-        // we tell we are an eval version - do this before any logging calls
-        LogFactory.setForceObfuscatedLogging(true);
-    }
-
     private static final Log          _log                              = LogFactory
                                                                                 .getLog(HttpURLConnection.class);
 
+    private static final String LIC_FILE = "http.lic";
+    
     public static final String        HTTP_METHOD_GET                   = "GET";
     public static final String        HTTP_METHOD_POST                  = "POST";
     public static final String        HTTP_METHOD_PUT                   = "PUT";
@@ -167,7 +164,7 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
     public static final String        WEBDAV_METHOD_MKWORKSPACE         = "MKWORKSPACE";
     public static final String        WEBDAV_METHOD_MERGE               = "MERGE";
     public static final String        WEBDAV_METHOD_UPDATE              = "UPDATE";
-    public static final String        WEBDAV_METHOD_ACL= "ACL";
+    public static final String        WEBDAV_METHOD_ACL                 = "ACL";
 
     /**
      * This method will be retried automatically.
@@ -432,11 +429,22 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
     static
     {
         _log.info("Oakland Software HttpURLConnection " + Version.VERSION);
-        _log.info("isObfuscated: " + ObfuscateSupport.isObfuscated());
 
-        if (ObfuscateSupport.isObfuscated())
+        // We have a license with the kit, then it's a real version
+        URL licUrl = HttpURLConnection.class.getResource(LIC_FILE);
+        LicensedCode lc = new LicensedCodeImpl();
+        LicenseManager lm = new LicenseManager();
+        // Make this name kind of obscure in hopes that the user
+        // does not delete it
+        lm.setEvalLicenseFileName(".xmlfuoshc");
+        License lic = lm.licenseCheck(lc, licUrl);
+
+        if (lic.getExpirationDate() != null)
         {
-            System.out.println(EVAL_MESSAGE);
+            System.out.println(EVAL_MESSAGE
+                               + "\nExpires: "
+                               + lic.getExpirationDate()
+                               + "\n\n");
         }
 
         try

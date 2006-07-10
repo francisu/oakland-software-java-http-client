@@ -1,5 +1,14 @@
 Java HTTP client build instructions
 
+Build com.oaklandsw.util first (using it's build.xml).  This is necessary to make sure
+the LicenseTool is properly built.
+
+The build creates a license file (http.lic) which is put in the src, and is deleted
+from the evaluation (httpEval.jar) jar file.
+
+The http.jar file is obfuscated which is that way for the normal product the the
+evaluation version.
+
 
 Use the file build.xml as the actual build script.  The file build.http.xml goes with the 
 source kit.
