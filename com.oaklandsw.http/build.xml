@@ -11,8 +11,10 @@
 
 		<property name="command.file" value="${basedir}/lictool.scr" />
 		
+		<!-- see License -->
+		<property name="licensetype" value="1" />
 		<!-- see ConstantsOaklandsw -->
-		<property name="codebaseid" value="1" />
+		<property name="codebaseid" value="2" />
 		<!-- see http/LicensedCodeImpl -->
 		<property name="productid" value="1" />
 		<!-- see http/HttpURLConnection -->
@@ -58,7 +60,7 @@
 
 	<target name="create-lic" depends="init">
 		<echo file="${command.file}">
-			-licfile ${licfile} -create -productid  ${productid} -cbid ${codebaseid}
+			-licfile ${licfile} -create -lictype ${licensetype} -productid ${productid} -lictype ${licensetype} -cbid ${codebaseid}
 		</echo>
 		
 		<java classpath="${lictool.classpath}" classname="${lictool.class}" fork="yes">

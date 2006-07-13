@@ -136,6 +136,9 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
 
     private static final String LIC_FILE = "http.lic";
     
+    // Used by the tests to make sure we have the correct license type
+    static int _licenseType;
+    
     public static final String        HTTP_METHOD_GET                   = "GET";
     public static final String        HTTP_METHOD_POST                  = "POST";
     public static final String        HTTP_METHOD_PUT                   = "PUT";
@@ -432,14 +435,12 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
 
         // We have a license with the kit, then it's a real version
         URL licUrl = HttpURLConnection.class.getResource(LIC_FILE);
-        LicensedCode lc = new LicensedCodeImpl();
+        LicensedCode lc = new HttpClientLicensedCodeImpl();
         LicenseManager lm = new LicenseManager();
-        // Make this name kind of obscure in hopes that the user
-        // does not delete it
-        lm.setEvalLicenseFileName(".xmlfuoshc");
         License lic = lm.licenseCheck(lc, licUrl);
 
-        if (lic.getExpirationDate() != null)
+        _licenseType = lic.getLicenseType();
+        if (lic.getLicenseType() == License.LIC_EVALUATION)
         {
             System.out.println(EVAL_MESSAGE
                                + "\nExpires: "

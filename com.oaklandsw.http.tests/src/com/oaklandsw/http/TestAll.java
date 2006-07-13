@@ -52,6 +52,8 @@
 
 package com.oaklandsw.http;
 
+import com.oaklandsw.license.License;
+
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
@@ -85,6 +87,8 @@ public class TestAll extends TestCase
         // Local tests must run first
         suite.addTest(com.oaklandsw.http.local.TestAll.suite());
 
+        suite.addTest(TestLicense.suite());
+
         suite.addTest(com.oaklandsw.http.cookie.TestCookieAll.suite());
         suite.addTest(com.oaklandsw.http.errorsvr.TestAll.suite());
         suite.addTest(com.oaklandsw.http.webapp.TestAll.suite());
@@ -97,6 +101,11 @@ public class TestAll extends TestCase
     {
         String[] testCaseName = { TestAll.class.getName() };
         junit.textui.TestRunner.main(testCaseName);
+    }
+
+    public void testLicense()
+    {
+        assertTrue(HttpURLConnection._licenseType == License.LIC_NORMAL);
     }
 
 }
