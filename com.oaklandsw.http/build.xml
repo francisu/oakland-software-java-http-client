@@ -16,7 +16,7 @@
 		<!-- see ConstantsOaklandsw -->
 		<property name="codebaseid" value="2" />
 		<!-- see http/LicensedCodeImpl -->
-		<property name="productid" value="1" />
+		<property name="productid" value="16" />
 		<!-- see http/HttpURLConnection -->
 		<property name="licfile" value="http.lic" />
 

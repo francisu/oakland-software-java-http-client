@@ -134,8 +134,6 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
     private static final Log          _log                              = LogFactory
                                                                                 .getLog(HttpURLConnection.class);
 
-    private static final String LIC_FILE = "http.lic";
-    
     // Used by the tests to make sure we have the correct license type
     static int _licenseType;
     
@@ -433,11 +431,11 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
     {
         _log.info("Oakland Software HttpURLConnection " + Version.VERSION);
 
-        // We have a license with the kit, then it's a real version
-        URL licUrl = HttpURLConnection.class.getResource(LIC_FILE);
         LicensedCode lc = new HttpClientLicensedCodeImpl();
-        LicenseManager lm = new LicenseManager();
-        License lic = lm.licenseCheck(lc, licUrl);
+        LicenseManager lm = new LicenseManager(lc);
+        License lic = lm.licenseCheck();
+        if (lic == null || lic.validate(lc) != License.VALID)
+            throw new RuntimeException("License check failed");
 
         _licenseType = lic.getLicenseType();
         if (lic.getLicenseType() == License.LIC_EVALUATION)
