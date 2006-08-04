@@ -14,7 +14,10 @@
       <fileset dir="${basedir}/../com.oaklandsw.http.tests.jars">
         <include name="*.jar" />
       </fileset>
-    	  <fileset file="../com.oaklandsw.build/junit.jar"/>	
+        <fileset dir="${basedir}/../com.oaklandsw.util.jars">
+          <include name="*.jar" />
+        </fileset>
+  	  <fileset file="../com.oaklandsw.build/junit.jar"/>	
      	  <dirset dir="${basedir}/../com.oaklandsw.http/bin"/>
      	  <dirset dir="${basedir}/../com.oaklandsw.http.tests/bin"/>
      	  <dirset dir="${basedir}/../com.oaklandsw.util/bin"/>
