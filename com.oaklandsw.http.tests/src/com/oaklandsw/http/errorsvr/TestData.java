@@ -3,13 +3,14 @@ package com.oaklandsw.http.errorsvr;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
 import com.oaklandsw.http.TestBase;
 import com.oaklandsw.http.TestEnv;
-import com.oaklandsw.log.Log;
-import com.oaklandsw.log.LogFactory;
 
 public class TestData extends TestBase
 {

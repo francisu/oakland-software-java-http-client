@@ -3,12 +3,13 @@ package com.oaklandsw.http.webapp;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
 import com.oaklandsw.http.servlet.HeaderServlet;
-import com.oaklandsw.log.Log;
-import com.oaklandsw.log.LogFactory;
 
 public class TestURLMultiConn extends TestWebappBase
 {

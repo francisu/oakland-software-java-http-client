@@ -67,11 +67,11 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.StringTokenizer;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.regexp.RE;
 import org.apache.regexp.RESyntaxException;
 
-import com.oaklandsw.log.Log;
-import com.oaklandsw.log.LogFactory;
 import com.oaklandsw.util.URIUtil;
 
 /**
@@ -82,29 +82,31 @@ import com.oaklandsw.util.URIUtil;
  */
 public class HttpConnectionManager
 {
-    private static final Log _log                    = LogFactory
-                                                             .getLog(HttpConnectionManager.class);
+    private Log                   _log                    = LogFactory
+                                                                  .getLog(HttpConnectionManager.class);
 
     // RFC 2616 sec 8.1.4
-    public static int        DEFAULT_MAX_CONNECTIONS = 2;
+    public static int             DEFAULT_MAX_CONNECTIONS = 2;
 
-    private static Map       _hostMap                = new HashMap();
+    private Map                   _hostMap                = new HashMap();
 
-    private static int       _maxConns               = DEFAULT_MAX_CONNECTIONS;
+    private int                   _maxConns               = DEFAULT_MAX_CONNECTIONS;
 
-    private static String    _proxyHost              = null;
+    private String                _proxyHost              = null;
 
-    private static int       _proxyPort              = -1;
+    private int                   _proxyPort              = -1;
 
-    private static String    _nonProxyHostsString    = null;
+    private String                _nonProxyHostsString    = null;
 
-    private static ArrayList _nonProxyHosts          = null;
+    private ArrayList             _nonProxyHosts          = null;
+
+    private HttpConnectionTimeout _timeout;
 
     // Used to keep track of the global proxy state at the time
     // this connection was created.
-    private static int       _globalProxyIncarnation;
+    private int                   _globalProxyIncarnation;
 
-    private static class ConnectionInfo
+    private class ConnectionInfo
     {
 
         // The concatenation of host/port and if a specific
@@ -133,18 +135,15 @@ public class HttpConnectionManager
     // Object only for synchronization
     // You cannot get the HttpConnectionTimeout lock while you have
     // this lock as this lock is obtained with the timeout lock locked.
-    private static HttpConnectionManager _lock;
-
-    static
-    {
-        _lock = new HttpConnectionManager();
-    }
+    private HttpConnectionManager _lock;
 
     /**
      * No-args constructor
      */
     public HttpConnectionManager()
     {
+        _lock = this;
+        _timeout = new HttpConnectionTimeout(this);
     }
 
     /**
@@ -153,7 +152,7 @@ public class HttpConnectionManager
      * @param proxyHost -
      *            the proxy host name
      */
-    static void setProxyHost(String proxyHost)
+    void setProxyHost(String proxyHost)
     {
         _proxyHost = proxyHost;
         // Get rid of all current connections as they are not
@@ -166,7 +165,7 @@ public class HttpConnectionManager
      * 
      * @return the proxy host name
      */
-    static String getProxyHost()
+    String getProxyHost()
     {
         return _proxyHost;
     }
@@ -177,7 +176,7 @@ public class HttpConnectionManager
      * @param proxyHost -
      *            the proxy host name
      */
-    static void setNonProxyHosts(String hosts)
+    void setNonProxyHosts(String hosts)
     {
         synchronized (_lock)
         {
@@ -193,8 +192,9 @@ public class HttpConnectionManager
             }
 
             _nonProxyHosts = new ArrayList();
-            StringTokenizer stringtokenizer = new StringTokenizer(
-                _nonProxyHostsString, "|", false);
+            StringTokenizer stringtokenizer = new StringTokenizer(_nonProxyHostsString,
+                                                                  "|",
+                                                                  false);
             while (stringtokenizer.hasMoreTokens())
             {
                 String host = stringtokenizer.nextToken().toLowerCase().trim();
@@ -206,13 +206,12 @@ public class HttpConnectionManager
                 }
                 catch (RESyntaxException rex)
                 {
-                    throw new RuntimeException(
-                        "Invalid syntax for nonProxyHosts: '"
-                            + hosts
-                            + "' on host '"
-                            + host
-                            + "': "
-                            + rex.getMessage());
+                    throw new RuntimeException("Invalid syntax for nonProxyHosts: '"
+                        + hosts
+                        + "' on host '"
+                        + host
+                        + "': "
+                        + rex.getMessage());
                 }
 
                 re.setMatchFlags(RE.MATCH_CASEINDEPENDENT);
@@ -222,7 +221,7 @@ public class HttpConnectionManager
         }
     }
 
-    static String getNonProxyHosts()
+    String getNonProxyHosts()
     {
         synchronized (_lock)
         {
@@ -236,7 +235,7 @@ public class HttpConnectionManager
      * @param proxyPort -
      *            the proxy port number
      */
-    static void setProxyPort(int proxyPort)
+    void setProxyPort(int proxyPort)
     {
         // Get rid of all current connections as they are not
         // going to the right place.
@@ -249,7 +248,7 @@ public class HttpConnectionManager
      * 
      * @return the proxy port number
      */
-    static int getProxyPort()
+    int getProxyPort()
     {
         return _proxyPort;
     }
@@ -261,7 +260,7 @@ public class HttpConnectionManager
      * @param maxConnections -
      *            number of connections allowed for each host:port
      */
-    static void setMaxConnectionsPerHost(int maxConnections)
+    void setMaxConnectionsPerHost(int maxConnections)
     {
         _maxConns = maxConnections;
     }
@@ -271,7 +270,7 @@ public class HttpConnectionManager
      * 
      * @return The maximum number of connections allowed for a given host:port.
      */
-    static int getMaxConnectionsPerHost()
+    int getMaxConnectionsPerHost()
     {
         return _maxConns;
     }
@@ -288,7 +287,7 @@ public class HttpConnectionManager
      *            the port provided with the url (could be -1)
      * @return the port for the specified port and protocol.
      */
-    private static int getPort(String protocol, int port)
+    private int getPort(String protocol, int port)
     {
         // default to provided port
         int portForProtocol = port;
@@ -309,7 +308,7 @@ public class HttpConnectionManager
     /**
      * Returns the proxy host for the specified host.
      */
-    static String getProxyHost(String host)
+    String getProxyHost(String host)
     {
         // This should be OK, as we never lock the connection
         // info while we have the lock on this.
@@ -351,7 +350,7 @@ public class HttpConnectionManager
      * @exception java.net.MalformedURLException
      * @exception com.oaklandsw.http.HttpException
      */
-    public static HttpConnection getConnection(String url)
+    public HttpConnection getConnection(String url)
         throws HttpException,
             MalformedURLException
     {
@@ -362,10 +361,9 @@ public class HttpConnectionManager
      * Get an HttpConnection for a given URL. The URL must be fully specified
      * (i.e. contain a protocol and a host (and optional port number). If the
      * maximum number of connections for the host has been reached, this method
-     * will block for <code>connectionTimeout</code> milliseconds or 
-     * until a connection
-     * becomes available. If no connection becomes available before the timeout
-     * expires an HttpException will be thrown.
+     * will block for <code>connectionTimeout</code> milliseconds or until a
+     * connection becomes available. If no connection becomes available before
+     * the timeout expires an HttpException will be thrown.
      * 
      * @param url -
      *            a fully specified string.
@@ -376,18 +374,19 @@ public class HttpConnectionManager
      *            the time (in milliseconds) to destroy the newly created
      *            connection after it becomes idle.
      * @param idlePing -
-     *            the idle time interval (in milliseconds) to 
-     *            send a ping message before
-     *            a POST on the newly created connection.
-     * @param proxyHost - the host to use as a proxy.
-     * @param proxyPort - the port number to use as a proxy.
+     *            the idle time interval (in milliseconds) to send a ping
+     *            message before a POST on the newly created connection.
+     * @param proxyHost -
+     *            the host to use as a proxy.
+     * @param proxyPort -
+     *            the port number to use as a proxy.
      * @return an HttpConnection for the given host:port
      * @exception java.net.MalformedURLException
      * @exception com.oaklandsw.http.HttpException -
      *                If no connection becomes available before the timeout
      *                expires
      */
-    public static HttpConnection getConnection(String url,
+    public HttpConnection getConnection(String url,
                                         long connectionTimeout,
                                         long idleTimeout,
                                         long idlePing,
@@ -400,7 +399,9 @@ public class HttpConnectionManager
         // Get the protocol and port (use default port if not specified)
         final String protocol = URIUtil.getProtocol(url);
         String hostAndPort = URIUtil.getProtocolHostPort(url);
-        String connectionKey = getConnectionKey(hostAndPort, proxyHost, proxyPort);
+        String connectionKey = getConnectionKey(hostAndPort,
+                                                proxyHost,
+                                                proxyPort);
         if (_log.isDebugEnabled())
         {
             _log.debug("Requested connection: " + connectionKey);
@@ -495,8 +496,13 @@ public class HttpConnectionManager
                 // Make a new connection, note that this does not open
                 // the connection, it only creates it, so this takes
                 // little time
-                conn = new HttpConnection(proxyHost, proxyPort, host, port,
-                    isSecure, ci._proxyIncarnation, connectionKey);
+                conn = new HttpConnection(proxyHost,
+                                          proxyPort,
+                                          host,
+                                          port,
+                                          isSecure,
+                                          ci._proxyIncarnation,
+                                          connectionKey);
                 ci._count++;
             }
 
@@ -510,9 +516,9 @@ public class HttpConnectionManager
         return conn;
     }
 
-    private static String getConnectionKey(String hostAndPort,
-                                           String proxyHost,
-                                           int proxyPort)
+    private String getConnectionKey(String hostAndPort,
+                                    String proxyHost,
+                                    int proxyPort)
     {
         String connectionKey = hostAndPort;
 
@@ -535,8 +541,7 @@ public class HttpConnectionManager
 
         return connectionKey;
     }
-    
-    
+
     /**
      * Get the pool (list) of connections available for the given host and port
      * and proxy host/port
@@ -545,7 +550,7 @@ public class HttpConnectionManager
      *            the key for the connection pool
      * @return the information for the connections of this host and port.
      */
-    private static ConnectionInfo getConnectionInfo(String connectionKey)
+    private ConnectionInfo getConnectionInfo(String connectionKey)
     {
         ConnectionInfo ci;
 
@@ -576,7 +581,7 @@ public class HttpConnectionManager
      * @param conn -
      *            The HttpConnection to make available.
      */
-    static void releaseConnection(HttpConnection conn)
+    void releaseConnection(HttpConnection conn)
     {
         if (_log.isDebugEnabled())
         {
@@ -617,9 +622,9 @@ public class HttpConnectionManager
 
         // Can't get the timeout lock while the manager is locked
         if (shutdown)
-            HttpConnectionTimeout.shutdown();
+            _timeout.shutdown();
         if (startIdle)
-            HttpConnectionTimeout.startIdleTimeout(conn);
+            _timeout.startIdleTimeout(conn);
 
     }
 
@@ -627,8 +632,8 @@ public class HttpConnectionManager
     // are no more connections, gets ride of the host table
     // entry. This assumes the ConnectionInfo is locked.
     // Return true to shutdown
-    private static final boolean reduceConnCount(ConnectionInfo ci,
-                                                 Iterator hostMapIterator)
+    private final boolean reduceConnCount(ConnectionInfo ci,
+                                          Iterator hostMapIterator)
     {
         synchronized (_lock)
         {
@@ -652,39 +657,35 @@ public class HttpConnectionManager
         // no shutdown
         return false;
     }
-    
-    
 
     /**
      * Returns the ConnectionInfo for the URL using the current proxy settings.
      */
-    private static ConnectionInfo getConnectionInfoFromUrl(String url)
+    private ConnectionInfo getConnectionInfoFromUrl(String url)
     {
         synchronized (_lock)
         {
             String hostAndPort = URIUtil.getProtocolHostPort(url);
             String proxyHost = HttpURLConnection.getProxyHost();
             int proxyPort = HttpURLConnection.getProxyPort();
-            String connectionKey = getConnectionKey(hostAndPort, proxyHost, proxyPort);
+            String connectionKey = getConnectionKey(hostAndPort,
+                                                    proxyHost,
+                                                    proxyPort);
             return getConnectionInfo(connectionKey);
-        }        
+        }
     }
-    
-    
+
     /**
      * Returns the number of connections currently in use for the specified
      * host/port.
      */
-    static int getActiveConnectionCount(String url)
+    int getActiveConnectionCount(String url)
     {
         synchronized (_lock)
         {
             ConnectionInfo ci = getConnectionInfoFromUrl(url);
             int count = ci._count - ci._connections.size();
-            _log.debug("active connection count: "
-                + url
-                + " - "
-                + count);
+            _log.debug("active connection count: " + url + " - " + count);
             return count;
         }
     }
@@ -693,15 +694,12 @@ public class HttpConnectionManager
      * Returns the number of connections currently in use for the specified
      * host/port.
      */
-    static int getTotalConnectionCount(String url)
+    int getTotalConnectionCount(String url)
     {
         synchronized (_lock)
         {
             ConnectionInfo ci = getConnectionInfoFromUrl(url);
-            _log.debug("total connection count: "
-                + url
-                + " - "
-                + ci._count);
+            _log.debug("total connection count: " + url + " - " + ci._count);
             return ci._count;
         }
     }
@@ -712,7 +710,7 @@ public class HttpConnectionManager
      * 
      * @return the number of milliseconds when the next connection will timeout
      */
-    static long checkIdleConnections()
+    long checkIdleConnections()
     {
         _log.trace("checkIdleConnections");
 
@@ -764,7 +762,7 @@ public class HttpConnectionManager
 
         // Can't get the timeout lock while the manager is locked
         if (shutdown)
-            HttpConnectionTimeout.shutdown();
+            _timeout.shutdown();
 
         // Time to wake up again
         _log.debug("Time to wake timeout thread: " + wakeTime);
@@ -775,7 +773,7 @@ public class HttpConnectionManager
      * Resets the connection pool, terminating all of the currently open
      * connections. This is called when the state of the proxy host changes.
      */
-    static void resetConnectionPool()
+    void resetConnectionPool()
     {
         synchronized (_lock)
         {
@@ -802,10 +800,10 @@ public class HttpConnectionManager
         }
 
         // Can't get the timeout lock while the manager is locked
-        HttpConnectionTimeout.shutdown();
+        _timeout.shutdown();
     }
 
-    static void dumpConnectionPool()
+    void dumpConnectionPool()
     {
         synchronized (_lock)
         {

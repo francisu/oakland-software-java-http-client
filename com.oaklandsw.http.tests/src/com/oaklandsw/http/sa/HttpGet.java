@@ -5,9 +5,10 @@ package com.oaklandsw.http.sa;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import com.oaklandsw.http.TestEnv;
-import com.oaklandsw.log.Log;
-import com.oaklandsw.log.LogFactory;
 import com.oaklandsw.util.Util;
 
 public class HttpGet

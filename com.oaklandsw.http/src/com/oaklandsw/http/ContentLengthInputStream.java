@@ -63,8 +63,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InterruptedIOException;
 
-import com.oaklandsw.log.Log;
-import com.oaklandsw.log.LogFactory;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import com.oaklandsw.util.Util;
 
 /**
@@ -76,8 +77,7 @@ import com.oaklandsw.util.Util;
 
 public class ContentLengthInputStream extends FilterInputStream
 {
-    /** Log object for this class. */
-    public static final Log   _log = LogFactory
+    public Log                _log = LogFactory
                                            .getLog(ContentLengthInputStream.class);
 
     private int               contentLength;

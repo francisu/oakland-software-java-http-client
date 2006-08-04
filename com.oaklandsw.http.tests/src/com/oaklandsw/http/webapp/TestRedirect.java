@@ -6,14 +6,15 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
 import com.oaklandsw.http.HttpStatus;
 import com.oaklandsw.http.servlet.ParamServlet;
 import com.oaklandsw.http.servlet.RedirectServlet;
-import com.oaklandsw.log.Log;
-import com.oaklandsw.log.LogFactory;
 
 public class TestRedirect extends TestWebappBase
 {

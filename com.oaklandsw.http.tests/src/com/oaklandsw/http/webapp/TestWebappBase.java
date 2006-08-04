@@ -1,8 +1,9 @@
 package com.oaklandsw.http.webapp;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import com.oaklandsw.http.TestBase;
-import com.oaklandsw.log.Log;
-import com.oaklandsw.log.LogFactory;
 
 public class TestWebappBase extends TestBase
 {

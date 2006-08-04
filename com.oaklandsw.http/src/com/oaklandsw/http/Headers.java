@@ -16,8 +16,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.oaklandsw.log.Log;
-import com.oaklandsw.log.LogFactory;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import com.oaklandsw.util.Util;
 
 /**
@@ -26,7 +27,7 @@ import com.oaklandsw.util.Util;
 public class Headers
 {
 
-    private static final Log         _log      = LogFactory
+    private Log                      _log      = LogFactory
                                                        .getLog(Headers.class);
 
     private static final int         INIT_SIZE = 10;
@@ -282,13 +283,11 @@ public class Headers
                                 ch = is.read();
                                 // Connection dropped - will retry
                                 if (ch < 0)
-                                    throw new IOException(
-                                        "Premature EOF reading headers");
+                                    throw new IOException("Premature EOF reading headers");
                                 if (ch != '\n')
                                 {
-                                    throw new HttpException(
-                                        "Expected LF after CR character in header: "
-                                            + _headerKeys[_currentIndex]);
+                                    throw new HttpException("Expected LF after CR character in header: "
+                                        + _headerKeys[_currentIndex]);
                                 }
                             }
                         }
@@ -372,7 +371,7 @@ public class Headers
             _log.debug(_headerKeys[i] + ": " + _headerValues[i]);
         }
     }
-    
+
     public Map getMap()
     {
         if (_currentIndex == 0)
@@ -382,7 +381,7 @@ public class Headers
         {
             String key = _headerKeys[i];
             List values = new ArrayList();
-            
+
             // Get each value for the specified key
             for (int j = 0; j < _currentIndex; j++)
             {
@@ -393,7 +392,7 @@ public class Headers
         }
         return map;
     }
-    
+
     private final void growCharBuf()
     {
         char[] newBuf = new char[_charBuf.length * 2];

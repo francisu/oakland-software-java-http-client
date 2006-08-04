@@ -7,13 +7,13 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Properties;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.log4j.PropertyConfigurator;
 
 import com.oaklandsw.http.server.ErrorServer;
 import com.oaklandsw.http.servlet.ParamServlet;
 import com.oaklandsw.http.servlet.TimeoutServlet;
-import com.oaklandsw.log.Log;
-import com.oaklandsw.log.LogFactory;
 import com.oaklandsw.util.Util;
 
 public class TestBase extends com.oaklandsw.TestCaseBase
@@ -342,13 +342,13 @@ public class TestBase extends com.oaklandsw.TestCaseBase
 
     public static int getActiveConns(URL url)
     {
-        return com.oaklandsw.http.HttpConnectionManager
+        return com.oaklandsw.http.HttpURLConnection.getConnectionManager()
                 .getActiveConnectionCount(url.toString());
     }
 
     public static int getTotalConns(URL url)
     {
-        return com.oaklandsw.http.HttpConnectionManager
+        return com.oaklandsw.http.HttpURLConnection.getConnectionManager()
                 .getTotalConnectionCount(url.toString());
     }
 

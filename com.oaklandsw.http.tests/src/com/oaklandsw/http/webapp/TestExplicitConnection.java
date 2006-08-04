@@ -2,6 +2,9 @@ package com.oaklandsw.http.webapp;
 
 import java.net.URL;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
@@ -10,8 +13,6 @@ import com.oaklandsw.http.HttpConnectionManager;
 import com.oaklandsw.http.HttpURLConnection;
 import com.oaklandsw.http.servlet.ParamServlet;
 import com.oaklandsw.http.servlet.RequestBodyServlet;
-import com.oaklandsw.log.Log;
-import com.oaklandsw.log.LogFactory;
 
 public class TestExplicitConnection extends TestWebappBase
 {
@@ -19,6 +20,8 @@ public class TestExplicitConnection extends TestWebappBase
     private static final Log _log = LogFactory
                                           .getLog(TestExplicitConnection.class);
 
+    protected HttpConnectionManager _connManager;
+    
     public TestExplicitConnection(String testName)
     {
         super(testName);
@@ -35,9 +38,14 @@ public class TestExplicitConnection extends TestWebappBase
         mainRun(suite(), args);
     }
 
+    public void setUp()
+    {
+        _connManager = HttpURLConnection.getConnectionManager();
+    }
+
     public void testConnect() throws Exception
     {
-        HttpConnection conn = HttpConnectionManager.getConnection(_urlBase);
+        HttpConnection conn = _connManager.getConnection(_urlBase);
 
         URL url = new URL(_urlBase + RequestBodyServlet.NAME);
 
@@ -70,8 +78,8 @@ public class TestExplicitConnection extends TestWebappBase
 
     public void testConnect2Conns() throws Exception
     {
-        HttpConnection conn = HttpConnectionManager.getConnection(_urlBase);
-        HttpConnection conn2 = HttpConnectionManager.getConnection(_urlBase);
+        HttpConnection conn = _connManager.getConnection(_urlBase);
+        HttpConnection conn2 = _connManager.getConnection(_urlBase);
 
         URL url = new URL(_urlBase + ParamServlet.NAME);
 
@@ -104,7 +112,7 @@ public class TestExplicitConnection extends TestWebappBase
 
     public void testConnectBadState() throws Exception
     {
-        HttpConnection conn = HttpConnectionManager.getConnection(_urlBase);
+        HttpConnection conn = _connManager.getConnection(_urlBase);
 
         URL url = new URL(_urlBase + RequestBodyServlet.NAME);
 

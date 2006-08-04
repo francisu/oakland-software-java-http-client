@@ -57,16 +57,12 @@ import java.io.IOException;
 import com.oaklandsw.http.HttpConnection;
 import com.oaklandsw.http.HttpException;
 import com.oaklandsw.http.HttpURLConnectInternal;
-import com.oaklandsw.log.Log;
-import com.oaklandsw.log.LogFactory;
 
 /**
  * For test-nohost testing purposes only.
  */
 public class SimpleHttpMethod extends HttpURLConnectInternal
 {
-
-    static Log     _log = LogFactory.getLog(SimpleHttpConnection.class);
 
     HttpConnection _saveConnection;
 

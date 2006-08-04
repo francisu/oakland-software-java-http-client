@@ -16,9 +16,9 @@ import java.net.SocketException;
 import java.net.URL;
 import java.util.Map;
 
+import org.apache.commons.logging.Log;
+
 import com.oaklandsw.http.cookie.MalformedCookieException;
-import com.oaklandsw.log.Log;
-import com.oaklandsw.log.LogFactory;
 import com.oaklandsw.util.URIUtil;
 import com.oaklandsw.util.Util;
 
@@ -29,9 +29,6 @@ public class HttpURLConnectInternal
     extends
         com.oaklandsw.http.HttpURLConnection
 {
-
-    private static final Log _log = LogFactory
-                                          .getLog(HttpURLConnectInternal.class);
 
     /**
      * @see java.net.HttpURLConnection#HttpURLConnection(URL)
@@ -112,6 +109,11 @@ public class HttpURLConnectInternal
      */
     private int         MAX_FORWARDS = 100;
 
+    public Log getLog()
+    {
+        return _log;
+    }
+    
     public final String getName()
     {
         return method;
@@ -1013,7 +1015,7 @@ public class HttpURLConnectInternal
         {
             // parse the authenticate header
             Map challengeMap = Authenticator
-                    .parseAuthenticateHeader(_respHeaders, reqType);
+                    .parseAuthenticateHeader(_respHeaders, reqType, this);
 
             authenticated = Authenticator.authenticate(this,
                                                        _respHeaders,

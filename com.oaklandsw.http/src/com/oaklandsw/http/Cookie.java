@@ -32,8 +32,6 @@ import java.util.Date;
 import java.util.Locale;
 
 import com.oaklandsw.http.cookie.CookieSpec;
-import com.oaklandsw.log.Log;
-import com.oaklandsw.log.LogFactory;
 import com.oaklandsw.util.StringUtils;
 import com.oaklandsw.util.Util;
 
@@ -118,8 +116,6 @@ public class Cookie extends NameValuePair implements Serializable, Comparator
     {
 
         super(name, value);
-        LOG
-                .trace("enter Cookie(String, String, String, String, Date, boolean)");
         if (name == null)
         {
             throw new IllegalArgumentException("Cookie name may not be null");
@@ -532,8 +528,6 @@ public class Cookie extends NameValuePair implements Serializable, Comparator
      */
     public int compare(Object o1, Object o2)
     {
-        LOG.trace("enter Cookie.compare(Object, Object)");
-
         if (!(o1 instanceof Cookie))
         {
             throw new ClassCastException(o1.getClass().getName());
@@ -626,9 +620,5 @@ public class Cookie extends NameValuePair implements Serializable, Comparator
                                                                       .getInstance(new Locale("en",
                                                                                               "US",
                                                                                               ""));
-
-    /** Log object for this class */
-    private static final Log               LOG                = LogFactory
-                                                                      .getLog(Cookie.class);
 
 }

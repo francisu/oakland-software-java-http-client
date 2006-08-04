@@ -60,8 +60,8 @@ package com.oaklandsw.http;
 
 import java.util.Hashtable;
 
-import com.oaklandsw.log.Log;
-import com.oaklandsw.log.LogFactory;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * <p>
@@ -81,12 +81,6 @@ public class HttpStatus
     /** Reason phrases (as Strings), by status code (as Integer). */
     private static Hashtable mapStatusCodes = new Hashtable();
 
-    /** Log object for this class. */
-    private static final Log log            = LogFactory
-                                                    .getLog(HttpStatus.class);
-
-    // --------------------------------------------------------- Public Methods
-
     /**
      * Get the "reason phrase" associated with the given HTTP status code, or
      * <tt>null</tt> if no such reason phrase can be found.
@@ -97,11 +91,10 @@ public class HttpStatus
      */
     public static String getStatusText(int nHttpStatusCode)
     {
-        log.trace("enter HttpStatus.getStatusText(int)");
-
         Integer intKey = new Integer(nHttpStatusCode);
         if (!mapStatusCodes.containsKey(intKey))
         {
+            Log log = LogFactory.getLog(HttpStatus.class);
             log.warn("No status text available for status code "
                 + nHttpStatusCode);
             return null;

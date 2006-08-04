@@ -58,16 +58,6 @@ import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
-/**
- * Tests that don't require any external host. I.e., that run entirely within
- * this JVM.
- * 
- * (True unit tests, by some definitions.)
- * 
- * @author Rodney Waldhoff
- * @author <a href="mailto:jsdever@apache.org">Jeff Dever </a>
- * @version $Revision: 1.12 $ $Date: 2002/09/05 00:21:57 $
- */
 public class TestAll extends TestCase
 {
 

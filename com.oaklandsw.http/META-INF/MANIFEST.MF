@@ -5,7 +5,8 @@ Bundle-SymbolicName: com.oaklandsw.http
 Bundle-Version: 1.0.0
 Bundle-Vendor: OAKLANDSW
 Bundle-Localization: plugin
-Require-Bundle: com.oaklandsw.util,
+Require-Bundle: com.oaklandsw.util.jars,
+ com.oaklandsw.util,
  com.oaklandsw.http.jars
 Export-Package: com.oaklandsw.http,
  com.oaklandsw.http.cookie,

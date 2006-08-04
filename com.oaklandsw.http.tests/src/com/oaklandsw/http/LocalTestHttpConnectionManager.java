@@ -72,6 +72,8 @@ import junit.framework.TestSuite;
 public class LocalTestHttpConnectionManager extends TestCase
 {
 
+    HttpConnectionManager _connManager;
+
     public LocalTestHttpConnectionManager(String testName)
     {
         super(testName);
@@ -89,37 +91,41 @@ public class LocalTestHttpConnectionManager extends TestCase
         return new TestSuite(LocalTestHttpConnectionManager.class);
     }
 
+    public void setUp()
+    {
+        _connManager = new HttpConnectionManager();
+    }
+
     public void tearDown()
     {
         // Back to default
-        HttpConnectionManager
+        _connManager
                 .setMaxConnectionsPerHost(HttpConnectionManager.DEFAULT_MAX_CONNECTIONS);
-        HttpConnectionManager.setProxyHost(null);
-        HttpConnectionManager.setProxyPort(-1);
+        _connManager.setProxyHost(null);
+        _connManager.setProxyPort(-1);
     }
 
     // Test the accessor methods
     public void testProxyHostAccessors()
     {
-        HttpConnectionManager.setProxyHost("proxyhost");
-        assertEquals("Proxy Host", "proxyhost", HttpConnectionManager
-                .getProxyHost());
+        _connManager.setProxyHost("proxyhost");
+        assertEquals("Proxy Host", "proxyhost", _connManager.getProxyHost());
     }
 
     public void testProxyPortAccessors()
     {
-        HttpConnectionManager.setProxyPort(8888);
-        assertEquals("Proxy Port", 8888, HttpConnectionManager.getProxyPort());
+        _connManager.setProxyPort(8888);
+        assertEquals("Proxy Port", 8888, _connManager.getProxyPort());
     }
 
     public void testMaxConnectionsAccessors()
     {
         // First test the default value (s/b 2 - don't use the constant)
-        assertEquals("Default MaxConnections", 2, HttpConnectionManager
+        assertEquals("Default MaxConnections", 2, _connManager
                 .getMaxConnectionsPerHost());
 
-        HttpConnectionManager.setMaxConnectionsPerHost(10);
-        assertEquals("MaxConnections", 10, HttpConnectionManager
+        _connManager.setMaxConnectionsPerHost(10);
+        assertEquals("MaxConnections", 10, _connManager
                 .getMaxConnectionsPerHost());
     }
 
@@ -128,31 +134,31 @@ public class LocalTestHttpConnectionManager extends TestCase
         try
         {
             // Create a new connection
-            HttpConnection conn = HttpConnectionManager
+            HttpConnection conn = _connManager
                     .getConnection("http://www.nosuchserver.com/path/path?query=string");
             // Validate the connection properties
             assertEquals("Host", "www.nosuchserver.com", conn.getHost());
             assertEquals("Port", 80, conn.getPort());
             // Release the connection
-            HttpConnectionManager.releaseConnection(conn);
+            _connManager.releaseConnection(conn);
 
             // Create a new connection
-            conn = HttpConnectionManager
+            conn = _connManager
                     .getConnection("https://www.nosuchserver.com/path/path?query=string");
             // Validate the connection properties
             assertEquals("Host", "www.nosuchserver.com", conn.getHost());
             assertEquals("Port", 443, conn.getPort());
             // Release the connection
-            HttpConnectionManager.releaseConnection(conn);
+            _connManager.releaseConnection(conn);
 
             // Create a new connection
-            conn = HttpConnectionManager
+            conn = _connManager
                     .getConnection("http://www.nowhere.org:8080/path/path?query=string");
             // Validate the connection properties
             assertEquals("Host", "www.nowhere.org", conn.getHost());
             assertEquals("Port", 8080, conn.getPort());
             // Release the connection
-            HttpConnectionManager.releaseConnection(conn);
+            _connManager.releaseConnection(conn);
 
         }
         catch (MalformedURLException e)

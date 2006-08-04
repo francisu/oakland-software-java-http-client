@@ -2,12 +2,13 @@
 
 package com.oaklandsw.http;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import com.oaklandsw.http.Credential;
 import com.oaklandsw.http.HttpUserAgent;
 import com.oaklandsw.http.NtlmCredential;
 import com.oaklandsw.http.UserCredential;
-import com.oaklandsw.log.Log;
-import com.oaklandsw.log.LogFactory;
 
 public class TestUserAgent implements HttpUserAgent
 {

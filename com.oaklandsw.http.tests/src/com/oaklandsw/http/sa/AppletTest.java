@@ -7,10 +7,11 @@ import java.net.URL;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 //import java.net.HttpURLConnection;
 import com.oaklandsw.http.HttpURLConnection;
-import com.oaklandsw.log.Log;
-import com.oaklandsw.log.LogFactory;
 
 public class AppletTest extends Applet
 {

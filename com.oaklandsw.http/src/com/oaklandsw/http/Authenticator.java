@@ -62,11 +62,10 @@ import java.util.Hashtable;
 import java.util.Map;
 import java.util.StringTokenizer;
 
+import org.apache.commons.logging.Log;
 import org.bouncycastle.util.encoders.Base64;
 
 import com.oaklandsw.http.ntlm.Ntlm;
-import com.oaklandsw.log.Log;
-import com.oaklandsw.log.LogFactory;
 
 /**
  * Utility methods for HTTP authorization and authentication. This class
@@ -93,27 +92,23 @@ class Authenticator
     // ~ Static variables/initializers
     // ������������������������������������������
 
-    /** <tt>com.oaklandsw.http.Authenticator</tt> log. */
-    private static final Log    log                 = LogFactory
-                                                            .getLog(Authenticator.class);
-
     /** The www authenticate challange header */
-    public static final String  WWW_AUTH            = "WWW-Authenticate";
+    public static final String  WWW_AUTH        = "WWW-Authenticate";
 
     /** The www authenticate response header */
-    public static final String  WWW_AUTH_RESP       = "Authorization";
+    public static final String  WWW_AUTH_RESP   = "Authorization";
 
     /** The proxy authenticate challange header */
-    public static final String  PROXY_AUTH          = "Proxy-Authenticate";
+    public static final String  PROXY_AUTH      = "Proxy-Authenticate";
 
     /** The proxy authenticate response header */
-    public static final String  PROXY_AUTH_RESP     = "Proxy-Authorization";
+    public static final String  PROXY_AUTH_RESP = "Proxy-Authorization";
 
-    public static final String  BASIC               = "basic";
+    public static final String  BASIC           = "basic";
 
-    public static final String  DIGEST              = "digest";
+    public static final String  DIGEST          = "digest";
 
-    public static final String  NTLM                = "ntlm";
+    public static final String  NTLM            = "ntlm";
 
     /**
      * Hexa values used when creating 32 character long digest in HTTP Digest in
@@ -121,8 +116,8 @@ class Authenticator
      * 
      * @see #encode(byte[])
      */
-    private static final char[] HEXADECIMAL         = { '0', '1', '2', '3',
-        '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f' };
+    private static final char[] HEXADECIMAL     = { '0', '1', '2', '3', '4',
+        '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f' };
 
     // Used only for the regression tests
     public static final boolean authenticate(HttpURLConnectInternal method,
@@ -137,7 +132,7 @@ class Authenticator
             h = null;
 
         // parse the authenticate header
-        Map challengeMap = parseAuthenticateHeader(h, WWW_AUTH);
+        Map challengeMap = parseAuthenticateHeader(h, WWW_AUTH, method);
 
         return authenticate(method, h, WWW_AUTH, challengeMap, respHeader);
     }
@@ -149,9 +144,8 @@ class Authenticator
                                              String respHeader)
         throws HttpException
     {
-        log.trace("authenticate");
-
         boolean preemptive = HttpURLConnection.getPreemptiveAuthentication();
+        Log log = method.getLog();
 
         // if there is no challenge, attempt to use preemptive authorization
         if (reqAuthenticators == null)
@@ -162,7 +156,8 @@ class Authenticator
 
                 try
                 {
-                    String requestHeader = Authenticator.basic(null, method,
+                    String requestHeader = Authenticator.basic(null,
+                                                               method,
                                                                respHeader);
                     method.addRequestProperty(respHeader, requestHeader);
 
@@ -188,20 +183,24 @@ class Authenticator
         if (challengeMap.containsKey(NTLM))
         {
             String challenge = (String)challengeMap.get(NTLM);
-            requestHeader = Authenticator.ntlm(challenge, method, reqType,
+            requestHeader = Authenticator.ntlm(challenge,
+                                               method,
+                                               reqType,
                                                respHeader);
         }
         else if (challengeMap.containsKey(DIGEST))
         {
             String challenge = (String)challengeMap.get(DIGEST);
-            String realm = parseRealmFromChallenge(challenge);
-            requestHeader = Authenticator.digest(realm, challenge, method,
+            String realm = parseRealmFromChallenge(challenge, method);
+            requestHeader = Authenticator.digest(realm,
+                                                 challenge,
+                                                 method,
                                                  respHeader);
         }
         else if (challengeMap.containsKey(BASIC))
         {
             String challenge = (String)challengeMap.get(BASIC);
-            String realm = parseRealmFromChallenge(challenge);
+            String realm = parseRealmFromChallenge(challenge, method);
             requestHeader = Authenticator.basic(realm, method, respHeader);
         }
         else if (challengeMap.size() == 0)
@@ -250,8 +249,6 @@ class Authenticator
                                             String pwd,
                                             Map mapCreds) throws HttpException
     {
-        log.trace("createDigest");
-
         final String digAlg = "MD5";
 
         // Collecting required tokens
@@ -276,9 +273,6 @@ class Authenticator
         }
         catch (Exception e)
         {
-            log.error("ERROR! Unsupported algorithm in HTTP Digest "
-                + "authentication: "
-                + digAlg, e);
             throw new HttpException("Unsupported algorithm in HTTP Digest "
                 + "authentication: "
                 + digAlg);
@@ -320,8 +314,6 @@ class Authenticator
                                       HttpURLConnectInternal method,
                                       String respHeader) throws HttpException
     {
-        log.trace("basic");
-
         boolean proxy = PROXY_AUTH_RESP.equals(respHeader);
 
         // We previously sent an response message and got back a 401/407,
@@ -363,17 +355,15 @@ class Authenticator
                                      String reqType,
                                      String respHeader) throws HttpException
     {
-        log.trace("ntlm");
-
         boolean proxy = PROXY_AUTH_RESP.equalsIgnoreCase(respHeader);
+        Log log = method.getLog();
         NtlmCredential cred = null;
 
         try
         {
-            challenge = challenge.substring(
-                                            challenge.toLowerCase()
-                                                    .indexOf(NTLM)
-                                                + NTLM.length()).trim();
+            challenge = challenge.substring(challenge.toLowerCase()
+                    .indexOf(NTLM)
+                + NTLM.length()).trim();
         }
         catch (IndexOutOfBoundsException e)
         {
@@ -433,8 +423,6 @@ class Authenticator
                                        HttpURLConnectInternal method,
                                        String respHeader) throws HttpException
     {
-        log.trace("digest");
-
         boolean proxy = PROXY_AUTH_RESP.equalsIgnoreCase(respHeader);
         UserCredential cred = null;
 
@@ -461,7 +449,8 @@ class Authenticator
         headers.put("uri", method.getPath());
         headers.put("methodname", method.getName());
 
-        String digest = createDigest(cred.getUser(), cred.getPassword(),
+        String digest = createDigest(cred.getUser(),
+                                     cred.getPassword(),
                                      headers);
 
         return "Digest " + createDigestHeader(cred.getUser(), headers, digest);
@@ -469,8 +458,6 @@ class Authenticator
 
     private static final Map getHTTPDigestCredentials(String challenge)
     {
-        log.trace("getHTTPDigestCredentials");
-
         // Get the authorization header value
         String authHeader = challenge.substring(7).trim();
 
@@ -497,14 +484,13 @@ class Authenticator
     }
 
     static final Map parseAuthenticateHeader(Headers authHeaders,
-                                             String authType)
+                                             String authType,
+                                             HttpURLConnectInternal method)
     {
-
-        log.trace("parseAuthenticateHeader");
-
         if (authHeaders == null)
             return new Hashtable(0);
 
+        Log log = method.getLog();
         Map challengeMap = new Hashtable(7);
 
         String challenge = null;
@@ -540,8 +526,6 @@ class Authenticator
 
     private static final String createCnonce() throws HttpException
     {
-        log.trace("createCnonce");
-
         String cnonce;
         final String digAlg = "MD5";
         MessageDigest md5Helper;
@@ -552,9 +536,6 @@ class Authenticator
         }
         catch (Exception e)
         {
-            log.error("ERROR! Unsupported algorithm in HTTP Digest "
-                + "authentication: "
-                + digAlg);
             throw new HttpException("Unsupported algorithm in HTTP Digest "
                 + "authentication: "
                 + digAlg);
@@ -570,8 +551,6 @@ class Authenticator
                                                    Map mapCreds,
                                                    String digest)
     {
-        log.trace("createDigestHeader");
-
         StringBuffer sb = new StringBuffer();
         String uri = removeQuotes((String)mapCreds.get("uri"));
         String realm = removeQuotes((String)mapCreds.get("realm"));
@@ -589,15 +568,11 @@ class Authenticator
 
         String algorithm = "MD5"; // we only support MD5
 
-        sb.append("username=\"" + uname + "\"").append(
-                                                       ", realm=\""
-                                                           + realm
-                                                           + "\"")
-                .append(", nonce=\"" + nonce + "\"").append(
-                                                            ", uri=\""
-                                                                + uri
-                                                                + "\"")
-                .append(((qop == null) ? "" : ", qop=\"" + qop + "\""))
+        sb.append("username=\"" + uname + "\"").append(", realm=\""
+            + realm
+            + "\"").append(", nonce=\"" + nonce + "\"").append(", uri=\""
+            + uri
+            + "\"").append(((qop == null) ? "" : ", qop=\"" + qop + "\""))
                 .append(", algorithm=\"" + algorithm + "\"")
                 .append(((qop == null) ? "" : ", nc=" + nc))
                 .append(((qop == null) ? "" : ", cnonce=\"" + cnonce + "\""))
@@ -620,8 +595,6 @@ class Authenticator
      */
     private static final String encode(byte[] binaryData)
     {
-        log.trace("encode");
-
         if (binaryData.length != 16)
         {
             return null;
@@ -640,9 +613,12 @@ class Authenticator
         return new String(buffer);
     }
 
-    private static final String parseRealmFromChallenge(String challenge)
+    private static final String parseRealmFromChallenge(String challenge,
+                                                        HttpURLConnectInternal method)
         throws HttpException
     {
+        Log log = method.getLog();
+        
         // FIXME: Note that this won't work if there is more than one realm
         // within the challenge
         try
@@ -679,8 +655,6 @@ class Authenticator
 
     private static final void processDigestToken(String token, Map tokens)
     {
-        log.trace("processDigestToken(String, Map)");
-
         int eqpos = token.indexOf("=");
 
         if ((eqpos > 0) && (eqpos < (token.length() - 1)))
@@ -692,8 +666,6 @@ class Authenticator
 
     private static final String removeQuotes(String str)
     {
-        log.trace("removeQuotes");
-
         if (str == null)
         {
             return null;
@@ -741,7 +713,8 @@ class Authenticator
                     .toString(), iScheme);
         }
 
-        return userAgent.getCredential(realm, method.getURL().toString(),
+        return userAgent.getCredential(realm,
+                                       method.getURL().toString(),
                                        iScheme);
 
     }

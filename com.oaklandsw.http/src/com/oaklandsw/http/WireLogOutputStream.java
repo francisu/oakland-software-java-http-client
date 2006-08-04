@@ -10,8 +10,8 @@ package com.oaklandsw.http;
 import java.io.BufferedOutputStream;
 import java.io.OutputStream;
 
-import com.oaklandsw.log.Log;
-import com.oaklandsw.log.LogFactory;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * Logs all data read to the wire log.
@@ -21,10 +21,9 @@ import com.oaklandsw.log.LogFactory;
 class WireLogOutputStream extends BufferedOutputStream
 {
 
-    private static final Log _wireLog = LogFactory
-                                              .getLog(HttpConnection.WIRE_LOG);
+    private Log          _wireLog = LogFactory.getLog(HttpConnection.WIRE_LOG);
 
-    private StringBuffer     _traceBuff;
+    private StringBuffer _traceBuff;
 
     public WireLogOutputStream(OutputStream in)
     {

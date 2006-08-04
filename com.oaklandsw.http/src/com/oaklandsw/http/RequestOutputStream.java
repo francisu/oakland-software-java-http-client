@@ -59,8 +59,9 @@ package com.oaklandsw.http;
 import java.io.IOException;
 import java.io.OutputStream;
 
-import com.oaklandsw.log.Log;
-import com.oaklandsw.log.LogFactory;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 
 /**
  * <p>
@@ -113,8 +114,7 @@ public class RequestOutputStream extends OutputStream
 
     // ------------------------------------------------------- Static Variables
 
-    /** Log object for this class. */
-    private static final Log  log          = LogFactory
+    private Log  log          = LogFactory
                                                    .getLog(RequestOutputStream.class);
 
     // ----------------------------------------------------- Instance Variables

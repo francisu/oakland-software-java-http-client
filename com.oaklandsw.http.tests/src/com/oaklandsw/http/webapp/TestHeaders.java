@@ -6,13 +6,14 @@ import java.net.URL;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
 import com.oaklandsw.http.TestEnv;
 import com.oaklandsw.http.servlet.HeaderServlet;
-import com.oaklandsw.log.Log;
-import com.oaklandsw.log.LogFactory;
 import com.oaklandsw.util.NetUtils;
 
 public class TestHeaders extends TestWebappBase

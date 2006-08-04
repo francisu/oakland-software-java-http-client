@@ -2,6 +2,9 @@ package com.oaklandsw.http.webapp;
 
 import java.net.URL;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
@@ -10,8 +13,6 @@ import com.oaklandsw.http.CookieContainer;
 import com.oaklandsw.http.HttpURLConnection;
 import com.oaklandsw.http.servlet.ReadCookieServlet;
 import com.oaklandsw.http.servlet.WriteCookieServlet;
-import com.oaklandsw.log.Log;
-import com.oaklandsw.log.LogFactory;
 
 public class TestCookie extends TestWebappBase
 {

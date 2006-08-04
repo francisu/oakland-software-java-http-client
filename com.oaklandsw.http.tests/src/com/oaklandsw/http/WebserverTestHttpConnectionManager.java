@@ -72,6 +72,8 @@ import junit.framework.TestSuite;
 public class WebserverTestHttpConnectionManager extends TestCase
 {
 
+    protected HttpConnectionManager _connManager;
+    
     public WebserverTestHttpConnectionManager(String testName)
     {
         super(testName);
@@ -89,36 +91,41 @@ public class WebserverTestHttpConnectionManager extends TestCase
         return new TestSuite(WebserverTestHttpConnectionManager.class);
     }
 
+    public void setUp()
+    {
+        _connManager = new HttpConnectionManager();
+    }
+
     public void testGetMultipleConnections() throws Exception
     {
         try
         {
             // Create a new connection
-            HttpConnection conn1 = HttpConnectionManager
+            HttpConnection conn1 = _connManager
                     .getConnection("http://localhost/path/path?query=string");
             conn1.open();
             // Release the connection
-            HttpConnectionManager.releaseConnection(conn1);
+            _connManager.releaseConnection(conn1);
 
             // Get the same connection again
-            HttpConnection conn2 = HttpConnectionManager
+            HttpConnection conn2 = _connManager
                     .getConnection("http://localhost/");
             assertEquals("Same connection", conn1, conn2);
             // don't release yet
 
             // Get another new connection
-            HttpConnection conn3 = HttpConnectionManager
+            HttpConnection conn3 = _connManager
                     .getConnection("http://localhost/");
             assertTrue(conn2 != conn3);
 
-            HttpConnectionManager.releaseConnection(conn2);
-            HttpConnectionManager.releaseConnection(conn3);
+            _connManager.releaseConnection(conn2);
+            _connManager.releaseConnection(conn3);
 
             // Clean up
-            conn1 = HttpConnectionManager
+            conn1 = _connManager
                     .getConnection("http://localhost/path/path?query=string");
             conn1.close();
-            HttpConnectionManager.releaseConnection(conn1);
+            _connManager.releaseConnection(conn1);
         }
         catch (MalformedURLException e)
         {

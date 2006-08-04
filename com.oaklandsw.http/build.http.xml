@@ -19,7 +19,7 @@
     <property name="classes.prod.dir" value="${classes.dir}/"/>
 
     <property name="jar.http.name" value="http"/>
-    <property name="java.http.name" value="oakland software HTTP Client"/>
+    <property name="java.http.name" value="Oakland Software HTTP Client"/>
     <property name="java.http.shortname" value="http"/>
     <property name="http.productId" value="16"/>
     <property name="javadoc.packages" value="com.oaklandsw.util.*,com.oaklandsw.http.*"/>
@@ -98,7 +98,7 @@
   <target name="package-java" depends="compile-java">
     <jar jarfile="${classes.dir}/${jar.http.name}.jar"
          basedir="${classes.dir}"
-         includes="com/oaklandsw/http/**,com/oaklandsw/util/**,com/oaklandsw/log/**"/>
+         includes="com/oaklandsw/http/**,com/oaklandsw/util/**"/>
   </target>
 
 

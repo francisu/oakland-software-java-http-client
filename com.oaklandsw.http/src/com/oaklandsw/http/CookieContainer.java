@@ -36,18 +36,17 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
-import com.oaklandsw.log.Log;
-import com.oaklandsw.log.LogFactory;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * Holds a set of cookies.
  */
 public class CookieContainer implements Collection
 {
-    private List             _cookies = new ArrayList();
+    private List _cookies = new ArrayList();
 
-    private static final Log _log     = LogFactory
-                                              .getLog(CookieContainer.class);
+    private Log  _log     = LogFactory.getLog(CookieContainer.class);
 
     public CookieContainer()
     {
@@ -124,8 +123,6 @@ public class CookieContainer implements Collection
      * contains.
      * 
      * @return an array of {@link Cookie cookies}.
-     * 
-     * @see #getCookies(String, int, String, boolean)
      * 
      */
     public synchronized Cookie[] getCookies()

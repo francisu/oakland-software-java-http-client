@@ -63,8 +63,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InterruptedIOException;
 
-import com.oaklandsw.log.Log;
-import com.oaklandsw.log.LogFactory;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import com.oaklandsw.util.Util;
 
 /**
@@ -85,8 +86,7 @@ import com.oaklandsw.util.Util;
 
 public class ChunkedInputStream extends InputStream
 {
-    /** Log object for this class. */
-    public static final Log        _log     = LogFactory
+    public Log                     _log     = LogFactory
                                                     .getLog(ChunkedInputStream.class);
 
     private InputStream            in;
@@ -217,9 +217,8 @@ public class ChunkedInputStream extends InputStream
                 parseFooters();
                 return;
             }
-            throw new IOException(
-                "Incorrect end of chunk after 0/CR sequence, expected LF, got "
-                    + lf);
+            throw new IOException("Incorrect end of chunk after 0/CR sequence, expected LF, got "
+                + lf);
         }
 
         if ((cr != '\r') || (lf != '\n'))
@@ -289,9 +288,8 @@ public class ChunkedInputStream extends InputStream
                     else
                     {
                         // this was not CRLF
-                        throw new IOException(
-                            "Protocol violation: Unexpected single "
-                                + "newline character in chunk size");
+                        throw new IOException("Protocol violation: Unexpected single "
+                            + "newline character in chunk size");
                     }
                     break;
 

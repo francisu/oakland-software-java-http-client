@@ -78,8 +78,9 @@ import javax.net.ssl.SSLSocket;
 import javax.net.ssl.SSLSocketFactory;
 import javax.security.cert.X509Certificate;
 
-import com.oaklandsw.log.Log;
-import com.oaklandsw.log.LogFactory;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import com.oaklandsw.util.Util;
 
 public class HttpConnection
@@ -96,11 +97,11 @@ public class HttpConnection
     private static final int       STREAM_BUFFER_SIZE = 65000;
 
     /** Log object for this class. */
-    public static final Log        _log               = LogFactory
+    public Log                     _log               = LogFactory
                                                               .getLog(HttpConnection.class);
 
     /** Log for any wire messages. */
-    private static final Log       _wireLog           = LogFactory
+    private Log                    _wireLog           = LogFactory
                                                               .getLog(WIRE_LOG);
 
     /** My host. */
@@ -200,6 +201,8 @@ public class HttpConnection
 
     static
     {
+        Log log = LogFactory.getLog(HttpConnection.class);
+
         try
         {
             Class inetSocketAddressClass = Class
@@ -211,24 +214,25 @@ public class HttpConnection
             _connectMethod = Socket.class.getDeclaredMethod("connect",
                                                             new Class[] {
         socketAddressClass, Integer.TYPE                   });
-            _log.debug("1.4 connect method found");
+
+            log.debug("1.4 connect method found");
 
             _inetSocketAddressCons = inetSocketAddressClass
                     .getConstructor(new Class[] { String.class, Integer.TYPE });
-            _log.debug("1.4 InetSocketAddress constructor method found");
+            log.debug("1.4 InetSocketAddress constructor method found");
 
         }
         catch (NoSuchMethodException nsm)
         {
-            _log.debug("1.4 method/constructor NOT found", nsm);
+            log.debug("1.4 method/constructor NOT found", nsm);
         }
         catch (ClassNotFoundException cnf)
         {
-            _log.debug("1.4 InetSocketAddress class NOT found", cnf);
+            log.debug("1.4 InetSocketAddress class NOT found", cnf);
         }
         catch (SecurityException sex)
         {
-            _log.debug("1.4 InetSocketAddress class (probably in applet)", sex);
+            log.debug("1.4 InetSocketAddress class (probably in applet)", sex);
         }
 
     }

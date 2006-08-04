@@ -31,11 +31,12 @@ import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import com.oaklandsw.http.Cookie;
 import com.oaklandsw.http.HeaderElement;
 import com.oaklandsw.http.NameValuePair;
-import com.oaklandsw.log.Log;
-import com.oaklandsw.log.LogFactory;
 import com.oaklandsw.util.DateParseException;
 import com.oaklandsw.util.DateUtil;
 
@@ -60,13 +61,12 @@ public class CookieSpecBase implements CookieSpec
 {
 
     /** Log object */
-    protected static final Log LOG          = LogFactory
-                                                    .getLog(CookieSpec.class);
+    protected Log      LOG          = LogFactory.getLog(CookieSpec.class);
 
     /** Valid date patterns */
-    private Collection         datepatterns = null;
+    private Collection datepatterns = null;
 
-    protected String           _policyName;
+    protected String   _policyName;
 
     /** Default constructor */
     public CookieSpecBase()
