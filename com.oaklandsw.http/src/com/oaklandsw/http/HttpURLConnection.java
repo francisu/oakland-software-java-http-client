@@ -29,9 +29,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import com.oaklandsw.http.cookie.CookieSpec;
-import com.oaklandsw.license.License;
-import com.oaklandsw.license.LicenseManager;
-import com.oaklandsw.license.LicensedCode;
 import com.oaklandsw.util.Util;
 
 /**
@@ -134,9 +131,6 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
 
     protected Log                          _log                              = LogFactory
                                                                                      .getLog(HttpURLConnection.class);
-
-    // Used by the tests to make sure we have the correct license type
-    static int                             _licenseType;
 
     public static final String             HTTP_METHOD_GET                   = "GET";
     public static final String             HTTP_METHOD_POST                  = "POST";
@@ -418,9 +412,6 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
                                                                                  + " Mozilla/4.0 (compatible; "
                                                                                  + "MSIE 6.0; Windows NT 5.0)";
 
-    private static final String            EVAL_MESSAGE                      = "******\n******\n******\n******\n"
-                                                                                 + "******  This is an evaluation version.  To purchase go to www.oaklandsoftware.com.\n"
-                                                                                 + "******\n******\n******\n******\n";
 
     private static class DefaultHostnameVerifier implements HostnameVerifier
     {
@@ -436,21 +427,32 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
 
         log.info("Oakland Software HttpURLConnection " + Version.VERSION);
 
-        LicensedCode lc = new HttpClientLicensedCodeImpl();
-        LicenseManager lm = new LicenseManager(lc);
-        License lic = lm.licenseCheck();
-        if (lic == null || lic.validate(lc) != License.VALID)
-            throw new RuntimeException("License check failed");
-
-        _licenseType = lic.getLicenseType();
-        if (lic.getLicenseType() == License.LIC_EVALUATION)
+        // Do the license check dynamically so we don't need to ship
+        // the license stuff with the source (and those who build from
+        // the source do not have to deal with license issues)
+        ClassLoader cl = HttpURLConnection.class.getClassLoader();
+        Class licClass = null;
+        try
         {
-            System.out.println(EVAL_MESSAGE
-                + "\nExpires: "
-                + lic.getExpirationDate()
-                + "\n\n");
+            licClass = cl.loadClass("com.oaklandsw.http.HttpLicenseCheck");
+            Object licObject = licClass.newInstance();
+            Method licMethod = licClass.getMethod("checkLicense", new Class[] {});
+            licMethod.invoke(licObject, new Object[] {});
         }
-
+        catch (ClassNotFoundException e)
+        {
+            // Ignored, means there is no license check required
+        }
+        catch (RuntimeException e)
+        {
+            throw new RuntimeException();
+        }
+        catch (Exception e)
+        {
+            // Something else is wrong
+            Util.impossible(e);
+        }
+        
         try
         {
             _connManager = new HttpConnectionManager();

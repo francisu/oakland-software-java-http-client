@@ -206,13 +206,31 @@
 		</zip>
 
 		<!-- source -->
+		<!-- don't include the license stuff -->
 		<zip zipfile="${release.dir}/${dist.zip.name}Src.zip" includes="**">
-			<zipfileset dir="${src.dir}" prefix="src" />
-			<zipfileset dir="../com.oaklandsw.util/src" prefix="src" />
+			<zipfileset dir="${src.dir}" prefix="src" >
+				<exclude name="**/HttpLicense*.java"/>
+			</zipfileset>
+			<zipfileset dir="../com.oaklandsw.util/src" prefix="src" >
+				<exclude name="**/license/**"/>
+				<exclude name="**/jak/**"/>
+				<exclude name="**/util/AbstractCommandLine.java"/>
+				</zipfileset>
+			<zipfileset dir="${basedir}" includes="build.http.xml" fullpath="build.xml"/>
 			<fileset dir="${basedir}">
-				<include name="build.http.xml" />
 				<include name="SOURCE_LICENSE" />
+				<include name="README_SOURCE" />
 			</fileset>
+			<fileset dir="../com.oaklandsw.http.jars">
+				<include name="*.jar" />
+			</fileset>
+			<fileset dir="../com.oaklandsw.util.jars">
+				<include name="commons-logging*.jar" />
+			</fileset>
+			<fileset dir="../com.oaklandsw.http.tests/src/">
+				<include name="HttpGetSample.java" />
+			</fileset>
+			<zipfileset dir="../com.oaklandsw.http.tests/" includes="runsrc*" filemode="755"/>
 		</zip>
 
 	</target>

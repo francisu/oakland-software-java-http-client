@@ -16,7 +16,7 @@ import com.oaklandsw.license.LicensedCode;
 /**
  * Licensed code implementation for Java HTTP Client
  */
-public class HttpClientLicensedCodeImpl implements LicensedCode
+public class HttpLicensedCodeImpl implements LicensedCode
 {
     private static final String LIC_FILE   = "http.lic";
 

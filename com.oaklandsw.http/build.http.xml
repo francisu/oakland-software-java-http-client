@@ -96,7 +96,7 @@
   <!-- Creates the class package                                           -->
   <!-- =================================================================== -->
   <target name="package-java" depends="compile-java">
-    <jar jarfile="${classes.dir}/${jar.http.name}.jar"
+    <jar jarfile="${jar.http.name}.jar"
          basedir="${classes.dir}"
          includes="com/oaklandsw/http/**,com/oaklandsw/util/**"/>
   </target>

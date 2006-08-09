@@ -1,0 +1,224 @@
+Copyright 2002-2006 oakland software incorporated, all rights reserved.
+
+
+Source distribution build notes:
+
+See http://www.oaklandsoftware.com/support.html for current known problems.
+
+To build:
+
+1) Apache Ant is required.
+
+2) Unpack the zip file into a directory.  
+
+3) In that directory type "ant".  This will create http.jar.
+
+4) To execute from the source, you must include the following in your classpath:
+
+- Apache Jakarta Commons Logging version 1.1 or higher.
+- Apache Jakarta Regular Expressions version 1.3 or higher.
+
+(These libraries are provided in the source distribuation zip file)
+
+
+Note that the http.jar file built from the source is different than that
+provided with the runtime version.  The runtime version is obfuscated and
+includes code for license checking.  The source version has no license checking.
+
+The runtime version also has the Jakarta regexp and commons logging packaged
+in the http.jar file.  When using the source version, you must provide
+these libraries in the classpath (as described above).
+
+
+
+
+
+
+Installation Instructions
+------------------------------------------------
+
+
+The distribution has the following jar files you will need to include in your
+CLASSPATH:
+
+http.jar - The HTTP Client protocol support.
+
+This software has no dependencies on other software, except if you are
+using SSL with a JRE versions 1.2 or 1.3 (see item 2 below)
+
+
+
+This requires JRE 1.2.2 (or higher)
+
+
+There is a sample program at:
+
+   http://www.oaklandsoftware.com/HttpGetSample.java        
+
+
+To use the HTTP client support:
+
+*** NOTE - if you are using https (SSL) connections and you are
+    getting exceptions when trying to connect, this may be caused by
+    an expired root CA associated with your JRE.  Please see:
+
+    http://sunsolve.sun.com/search/document.do?assetkey=1-26-57436-1
+
+    For how to correct the problem.
+
+
+1) To enable the HTTP support (you must do this before you open
+   the first URL connection):
+
+        System.setProperty("java.protocol.handler.pkgs", "com.oaklandsw");
+
+   Alternatively, you can use these other methods to explicitly specify
+   the use of this HTTP client:
+   
+   a) Explicitly specify the Handler objects:
+
+      // HTTP
+      URL url = new URL("http", "host", 9999, "file", new com.oaklandsw.http.Handler());
+      // HTTPS
+      URL url = new URL("https", "host", 9999, "file", new com.oaklandsw.https.Handler());
+
+   b) Use a URLStreamHandlerFactory:
+
+            URL.setURLStreamHandlerFactory(new URLStreamHandlerFactory()
+            {
+                public URLStreamHandler createURLStreamHandler(String protocol)
+                {
+                    if (protocol.equalsIgnoreCase("http"))
+                        return new com.oaklandsw.http.Handler();
+                    else if (protocol.equalsIgnoreCase("https"))
+                        return new com.oaklandsw.https.Handler();
+                    return null;
+                }
+
+            });
+
+       However, if the URLStreamHandlerFactory was previously set (by 
+       something else), it will give you an error.  In that case, you must
+       use method a (explicitly specifying the handlers).
+
+
+2) If using SSL, make sure you have the JSSE jar files if you are not using JDK 1.4
+   or higher.  Here is the code you must include if you are JDK 1.2 or
+   1.3:
+
+        // SSL - Uncomment this if you are < JDK 1.4
+        Security.addProvider(new com.sun.net.ssl.internal.ssl.Provider());
+
+
+3) You will need to make a class implement the HttpUserAgent
+   interface (see the javadoc for details, and sample below).  This
+   class is called when necessary to get the NTLM or basic
+   credentials.
+
+   Set the object using this code:
+
+        // Before creating the first connection
+        com.oaklandsw.http.HttpURLConnection.
+           setDefaultUserAgent(new YourHttpUserAgent());
+
+        -- or --   
+
+        // If you set the user agent for a specific connection 
+        HttpURLConnection urlCon = 
+           (HttpURLConnection)url.openConnection();
+        ((com.oaklandsw.http.HttpUrlConnection)urlCon).
+           setUserAgent(new YourHttpUserAgent());
+
+
+
+4) Logging is supported using only Apache Log4J version 1.2.x (not version 1.3).  
+   You must provide the log4j jar file
+   in the classpath.  This will automatically be detected if present.  If this jar file
+   is not present, no logging will occur.
+   
+   log4j logging  (see log4j.properties.sample)
+   -----------------------------------------------------------
+
+.  Use all of these statements in the log4j.properties file 
+   (which can be found in the current directory, or in the CLASSPATH).
+
+   To trace the events on the wire do this:
+
+      log4j.logger.com.oaklandsw.http.wireLog=DEBUG
+
+   If you don't want to see any messages at all:
+
+      log4j.logger.com.oaklandsw=OFF
+
+   If you want to see everything:
+
+      log4j.logger.com.oaklandsw=DEBUG
+
+   In general, you can turn logging on for any class in the HTTP
+   client.
+
+      log4j.logger.com.oaklandsw.http.HttpConnectionManager=DEBUG
+
+   To programatically set Log4j logging:
+   
+        Properties logProps = new Properties();
+        logProps.setProperty("log4j.logger.com.oaklandsw", "DEBUG");
+        PropertyConfigurator.configure(logProps);
+   
+
+
+----------------------------------------------------
+Below is a sample implementation of the HttpUserAgent interface
+
+
+package com.oaklandsw.http.webapp;
+
+import java.util.*;
+
+import com.oaklandsw.http.*;
+
+
+public class TestUserAgent implements HttpUserAgent
+{
+
+    public Credential getCredential(String realm,
+                                    String url,
+                                    int scheme)
+    {
+
+        Credential cred = null;
+
+        switch (scheme)
+        {
+        case Credential.AUTH_NTLM:
+            NtlmCredential ntlmCred = new NtlmCredential();
+            ntlmCred.setUser("testuser");
+            ntlmCred.setPassword("testpass");
+            ntlmCred.setDomain("testdomain");
+            ntlmCred.setHost("testhost");
+            cred = ntlmCred;
+            break;
+
+        case Credential.AUTH_BASIC:
+            UserCredential basicCred = new UserCredential();
+            basicCred.setUser("testuser");
+            basicCred.setPassword("testpass");
+            cred = basicCred;
+            break;
+        case Credential.AUTH_DIGEST:
+            break;
+        }
+
+        return cred;
+    }
+
+
+    public Credential getProxyCredential(String realm,
+                                    String url,
+                                    int scheme)
+    {
+        // As above
+    }
+}
+
+

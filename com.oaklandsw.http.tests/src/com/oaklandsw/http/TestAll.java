@@ -95,7 +95,7 @@ public class TestAll extends TestCase
 
     public void testLicense()
     {
-        assertTrue(HttpURLConnection._licenseType == License.LIC_NORMAL);
+        assertTrue(HttpLicenseCheck._licenseType == License.LIC_NORMAL);
     }
 
 }
