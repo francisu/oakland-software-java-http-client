@@ -52,8 +52,6 @@
 
 package com.oaklandsw.http;
 
-import com.oaklandsw.license.License;
-
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
@@ -92,10 +90,4 @@ public class TestAll extends TestCase
         String[] testCaseName = { TestAll.class.getName() };
         junit.textui.TestRunner.main(testCaseName);
     }
-
-    public void testLicense()
-    {
-        assertTrue(HttpLicenseCheck._licenseType == License.LIC_NORMAL);
-    }
-
 }

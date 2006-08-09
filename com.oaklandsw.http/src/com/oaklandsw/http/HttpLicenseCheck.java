@@ -8,16 +8,16 @@ import com.oaklandsw.license.LicenseManager;
 import com.oaklandsw.license.LicensedCode;
 
 /**
- * This does the HTTP cliense license check.  It is dynamically loaded by
- * HttpURLConnection.  This is done so that if this class does not exist,
- * the license check is bypassed.  This is to support the source distribution
- * so that it does not need to contain any of the license code, as well
- * as to not have the source version depend on a license.
+ * This does the HTTP cliense license check. It is dynamically loaded by
+ * HttpURLConnection. This is done so that if this class does not exist, the
+ * license check is bypassed. This is to support the source distribution so that
+ * it does not need to contain any of the license code, as well as to not have
+ * the source version depend on a license.
  */
 public class HttpLicenseCheck
 {
     // Used by the tests to make sure we have the correct license type
-    static int                  _licenseType;
+    public static int           _licenseType;
 
     private static final String EVAL_MESSAGE = "******\n******\n******\n******\n"
                                                  + "******  This is an evaluation version.  To purchase go to www.oaklandsoftware.com.\n"

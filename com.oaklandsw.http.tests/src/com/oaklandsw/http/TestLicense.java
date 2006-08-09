@@ -33,6 +33,8 @@ public class TestLicense extends TestCase
 
     public void testLicense()
     {
+        // Make sure it's statically initialized
+        HttpURLConnection.getDefaultConnectionTimeout();
         assertTrue(HttpLicenseCheck._licenseType == License.LIC_NORMAL);
     }
 
