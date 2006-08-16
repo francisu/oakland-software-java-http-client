@@ -7,6 +7,8 @@
 
 package com.oaklandsw.http;
 
+import com.oaklandsw.util.Util;
+
 /**
  * Records the user/password credentials required by authentication protocols.
  */
@@ -67,6 +69,33 @@ public class UserCredential implements Credential
     public void setPassword(String argPassword)
     {
         _password = argPassword;
+    }
+
+    public static Credential createCredential(String userID, String passwd)
+    {
+        Credential cred = null;
+
+        // if the username is in the form "user\domain"
+        // then use NTCredentials instead.
+        int domainIndex = userID.indexOf("\\");
+        if (domainIndex > 0)
+        {
+            String domain = userID.substring(0, domainIndex);
+            if (userID.length() > domainIndex + 1)
+            {
+                String user = userID.substring(domainIndex + 1);
+                cred = new NtlmCredential(user,
+                                          passwd,
+                                          Util.getHostName(),
+                                          domain);
+            }
+        }
+        else
+        {
+            cred = new UserCredential(userID, passwd);
+
+        }
+        return cred;
     }
 
     public String toString()

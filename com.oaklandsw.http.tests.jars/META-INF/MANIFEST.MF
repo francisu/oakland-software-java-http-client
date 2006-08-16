@@ -3,11 +3,39 @@ Bundle-ManifestVersion: 2
 Bundle-Name: Jars Plug-in
 Bundle-SymbolicName: com.oaklandsw.http.tests.jars
 Bundle-Version: 1.0.0
-Bundle-ClassPath: javax.servlet.jar
+Bundle-ClassPath: javax.servlet.jar,
+ wsdl4j-1.5.1.jar,
+ commons-discovery-0.2.jar
 Bundle-Localization: plugin
-Export-Package: javax.servlet,
+Export-Package: com.ibm.wsdl,
+ com.ibm.wsdl.extensions,
+ com.ibm.wsdl.extensions.http,
+ com.ibm.wsdl.extensions.mime,
+ com.ibm.wsdl.extensions.schema,
+ com.ibm.wsdl.extensions.soap,
+ com.ibm.wsdl.factory,
+ com.ibm.wsdl.util,
+ com.ibm.wsdl.util.xml,
+ com.ibm.wsdl.xml,
+ javax.servlet,
  javax.servlet.http,
  javax.servlet.jsp,
  javax.servlet.jsp.resources,
  javax.servlet.jsp.tagext,
- javax.servlet.resources
+ javax.servlet.resources,
+ javax.wsdl,
+ javax.wsdl.extensions,
+ javax.wsdl.extensions.http,
+ javax.wsdl.extensions.mime,
+ javax.wsdl.extensions.schema,
+ javax.wsdl.extensions.soap,
+ javax.wsdl.factory,
+ javax.wsdl.xml,
+ org.apache.commons.discovery,
+ org.apache.commons.discovery.ant,
+ org.apache.commons.discovery.jdk,
+ org.apache.commons.discovery.log,
+ org.apache.commons.discovery.resource,
+ org.apache.commons.discovery.resource.classes,
+ org.apache.commons.discovery.resource.names,
+ org.apache.commons.discovery.tools

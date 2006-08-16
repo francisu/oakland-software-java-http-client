@@ -1,6 +1,67 @@
+Running the tests:
+
+First, you will need to make sure you have the following servers
+running:
+
+Port  Server
+
+80    Apache (this must be configured as a proxy server)
+8080  IIS
+8081  Tomcat 4.x
+8085  Tomcat 3.2
+8086  Error Server
+
+8088  NetProxy
+8089  Apache (as proxy server)
+
+3128  Squid (Linux - currently berlioz)
+
+The machine to use for the non-squid is set by the nogoop.localhost property, 
+which defaults to localhost.
+
+The machine to use for squid is set by nogoop.squidhost property which defaults to berlioz.
+
+
+Not that the Tomcat 3.2 server is not presently used automatically
+unless you either alter a constant in TestEnv or specify the -Dcat
+parameter. 
+
+Tomcat 4.x
+-Dcat=http://localhost:8081/nogoop
+
+Tomcat 3.2
+-Dcat=http://localhost:8085/nogoop
+
+
+To run the error server:
+
+java com.nogoop.http.server.ErrorServer
+
+
+To run NetProxy (on Windows):
+
+start -> netproxy -> netproxy configuration.
+
+Ignore errors about evaluation period having expired.
+
+To run squid (on Linux):
+
+Start the squid service
+
+
+To use different implementations of the HTTP client, specify
+
+-Dsun - sun implementation
+-Dinno - innovation.ch implementation
+
+
+
+
+
+
 Test deployment to the tomcat server.
 
-The servlet directory in the tests gets built into the oaklandsw.war by the 
+The com.oaklandsw.http.servlet package in the tests gets built into the oaklandsw.war by the 
 http-war ant target.
 
 Put this in the webapp directory of the tomcat installation (typically
@@ -8,3 +69,22 @@ on repoman) and restart the cat.  Make sure you delete the oaklandsw directory
 before you restart the cat.
 
 The oaklandsw.war file is checked in to make things easier.
+
+
+Axis
+
+This uses Axis V1.4 (any 1.x after that is fine).  Axis2 is not presently used, even though
+it may be installed.
+
+The tests depend on Axis being installed on the webapp (above) Tomcat in the axis
+directory.
+
+The com.oaklandsw.http.webservice package contains the web services to be deployed for testing.
+None are used right now, testing is done only with the Axis built-in services.
+
+The webservice2 package is setup for Axis2 and is not currently used.
+
+
+
+
+

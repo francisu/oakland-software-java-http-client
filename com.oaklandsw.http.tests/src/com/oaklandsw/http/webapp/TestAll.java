@@ -18,6 +18,7 @@ public class TestAll extends TestBase
         TestSuite suite = new TestSuite();
         suite.addTest(TestTimeout.suite());
         suite.addTest(TestFailover.suite());
+        suite.addTest(TestAxis.suite());
         suite.addTest(TestIIS.suite());
         suite.addTest(TestExplicitConnection.suite());
         suite.addTest(TestMethods.suite());

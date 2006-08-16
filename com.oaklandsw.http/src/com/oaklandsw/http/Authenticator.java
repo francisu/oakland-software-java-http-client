@@ -618,7 +618,7 @@ class Authenticator
         throws HttpException
     {
         Log log = method.getLog();
-        
+
         // FIXME: Note that this won't work if there is more than one realm
         // within the challenge
         try
@@ -695,26 +695,57 @@ class Authenticator
     private static Credential getCredentials(String realm,
                                              boolean proxy,
                                              String scheme,
-                                             HttpURLConnectInternal method)
+                                             final HttpURLConnectInternal urlCon)
         throws HttpException
     {
 
-        HttpUserAgent userAgent = method.getUserAgent();
+        HttpUserAgent userAgent = urlCon.getUserAgent();
+
+        // Pay attention the proxy user in the HttpURLConnection if there
+        // is no user agent
+        if (userAgent == null
+            && proxy
+            && urlCon.getConnectionProxyUser() != null)
+        {
+            userAgent = new HttpUserAgent()
+            {
+
+                public Credential getCredential(String realm1,
+                                                String url,
+                                                int scheme1)
+                {
+                    return null;
+                }
+
+                public Credential getProxyCredential(String realm1,
+                                                     String url,
+                                                     int scheme1)
+                {
+                    return UserCredential.createCredential(urlCon
+                            .getConnectionProxyUser(), urlCon
+                            .getConnectionProxyPassword());
+                }
+            };
+        }
+
         if (userAgent == null)
         {
             throw new HttpException("No HttpUserAgent set - "
-                + "can't get credential");
+                + "can't get credential for "
+                + scheme
+                + ": "
+                + realm);
         }
 
         int iScheme = schemeToInt(scheme);
         if (proxy)
         {
-            return userAgent.getProxyCredential(realm, method.getURL()
+            return userAgent.getProxyCredential(realm, urlCon.getURL()
                     .toString(), iScheme);
         }
 
         return userAgent.getCredential(realm,
-                                       method.getURL().toString(),
+                                       urlCon.getURL().toString(),
                                        iScheme);
 
     }

@@ -35,6 +35,44 @@ public class TestTimeout extends TestWebappBase
         mainRun(suite(), args);
     }
 
+    // Bug 1585 - sometimes timeouts don't work
+    public void testConnectionIdleTimeoutShutdown() throws Exception
+    {
+        com.oaklandsw.http.HttpURLConnection.setDefaultIdleConnectionTimeout(2000);
+
+        URL url = new URL(_urlBase + TimeoutServlet.NAME);
+        int response = 0;
+
+        HttpURLConnection urlCon = (HttpURLConnection)url.openConnection();
+
+        urlCon.setRequestMethod("GET");
+        response = urlCon.getResponseCode();
+        assertEquals(200, response);
+        urlCon.getInputStream().close();
+        
+        // Wait for timeout thread to get started
+        Thread.sleep(500);
+
+        // Causes timeout thread to terminate
+        com.oaklandsw.http.HttpURLConnection.closeAllPooledConnections();
+        
+        // Do another one
+        urlCon = (HttpURLConnection)url.openConnection();
+
+        urlCon.setRequestMethod("GET");
+        response = urlCon.getResponseCode();
+        assertEquals(200, response);
+        urlCon.getInputStream().close();
+
+        // This would fail to timeout since the timeout thread would
+        // shutdown
+        int connCount = getTotalConns(url);
+        Thread.sleep(4000);
+
+        // Make sure we have one less connection
+        assertEquals(connCount - 1, getTotalConns(url));
+    }
+
     public void testConnectionIdleTimeout() throws Exception
     {
         com.oaklandsw.http.HttpURLConnection.setDefaultIdleConnectionTimeout(2000);

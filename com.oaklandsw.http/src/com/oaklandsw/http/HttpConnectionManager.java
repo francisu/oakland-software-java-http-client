@@ -92,13 +92,14 @@ public class HttpConnectionManager
 
     private int                   _maxConns               = DEFAULT_MAX_CONNECTIONS;
 
-    private String                _proxyHost              = null;
-
+    private String                _proxyHost;
     private int                   _proxyPort              = -1;
+    private String                _proxyUser;
+    private String                _proxyPassword;
 
-    private String                _nonProxyHostsString    = null;
+    private String                _nonProxyHostsString;
 
-    private ArrayList             _nonProxyHosts          = null;
+    private ArrayList             _nonProxyHosts;
 
     private HttpConnectionTimeout _timeout;
 
@@ -168,6 +169,26 @@ public class HttpConnectionManager
     String getProxyHost()
     {
         return _proxyHost;
+    }
+
+    public String getProxyPassword()
+    {
+        return _proxyPassword;
+    }
+
+    public void setProxyPassword(String proxyPassword)
+    {
+        _proxyPassword = proxyPassword;
+    }
+
+    public String getProxyUser()
+    {
+        return _proxyUser;
+    }
+
+    public void setProxyUser(String proxyUser)
+    {
+        _proxyUser = proxyUser;
     }
 
     /**
@@ -679,7 +700,7 @@ public class HttpConnectionManager
      * Returns the number of connections currently in use for the specified
      * host/port.
      */
-    int getActiveConnectionCount(String url)
+    public int getActiveConnectionCount(String url)
     {
         synchronized (_lock)
         {
@@ -694,7 +715,7 @@ public class HttpConnectionManager
      * Returns the number of connections currently in use for the specified
      * host/port.
      */
-    int getTotalConnectionCount(String url)
+    public int getTotalConnectionCount(String url)
     {
         synchronized (_lock)
         {

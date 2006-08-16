@@ -52,6 +52,7 @@ public class HttpConnectionTimeout
         {
             if (_timeoutThread != null)
             {
+                _log.debug("Timeout shutdown requested");
                 _shutdown = true;
                 _lock.notifyAll();
             }
@@ -62,58 +63,69 @@ public class HttpConnectionTimeout
     {
         public void run()
         {
-            _log.debug("Timeout thread starting");
-            // System.out
-            // .println("Timeout thread starting: " + _timeoutThreadWake);
-            // System.out.println(" current: " + System.currentTimeMillis());
-            // long delta = _timeoutThreadWake - System.currentTimeMillis();
-            // System.out.println(" delta: " + delta);
-            // if (delta < 0)
-            // System.out.println("!!!!!");
             Thread.currentThread().setName("HttpConnectionTimeout");
+
+            if (_log.isDebugEnabled())
+            {
+                long delta = _timeoutThreadWake - System.currentTimeMillis();
+                _log.debug("Timeout thread starting: "
+                    + _timeoutThreadWake
+                    + " current: "
+                    + System.currentTimeMillis()
+                    + " delta: "
+                    + delta);
+                if (delta < 0)
+                    _log.debug("!!!!! NEG DELTA");
+            }
+
             synchronized (_lock)
             {
-                long currentTime = System.currentTimeMillis();
-                while (_timeoutThreadWake > currentTime)
+                try
                 {
-                    if (_shutdown)
+                    long currentTime = System.currentTimeMillis();
+                    while (_timeoutThreadWake > currentTime)
                     {
-                        _log.debug("Timeout thread ending (shutdown)");
-                        _shutdown = false;
-                        _timeoutThread = null;
-                        // System.out.println("exit - shutdown");
-                        return;
-                    }
-                    try
-                    {
-                        _log.debug("Timeout wake time: " + _timeoutThreadWake);
-                        long waitTime = _timeoutThreadWake - currentTime;
+                        if (_shutdown)
+                        {
+                            _log.debug("Timeout thread ending (shutdown)");
+                            return;
+                        }
+                        try
+                        {
+                            _log.debug("Timeout wake time: "
+                                + _timeoutThreadWake);
+                            long waitTime = _timeoutThreadWake - currentTime;
 
-                        // System.out.println("WAITING: currentTime: "
-                        // + currentTime
-                        // + " threadWake: "
-                        // + _timeoutThreadWake
-                        // + " waitTime: "
-                        // + waitTime);
-                        _lock.wait(waitTime);
-                    }
-                    catch (InterruptedException ex)
-                    {
-                        // Ignore
-                    }
+                            // System.out.println("WAITING: currentTime: "
+                            // + currentTime
+                            // + " threadWake: "
+                            // + _timeoutThreadWake
+                            // + " waitTime: "
+                            // + waitTime);
+                            _lock.wait(waitTime);
+                        }
+                        catch (InterruptedException ex)
+                        {
+                            // Ignore
+                        }
 
-                    if (!_threadNoCheck)
-                    {
-                        _timeoutThreadWake = _connManager
-                                .checkIdleConnections();
+                        if (!_threadNoCheck)
+                        {
+                            _timeoutThreadWake = _connManager
+                                    .checkIdleConnections();
+                        }
+                        _threadNoCheck = false;
+                        currentTime = System.currentTimeMillis();
                     }
-                    _threadNoCheck = false;
-                    currentTime = System.currentTimeMillis();
+                    _log.debug("Timeout thread ending - nothing to do");
                 }
+                finally
+                {
+                    _timeoutThread = null;
+                    // Shutdown may have been requested while this thread is up
+                    _shutdown = false;
 
-                _timeoutThread = null;
-                _log.debug("Timeout thread ending - nothing to do");
-                // System.out.println("Timeout thread ending - nothing to do");
+                }
             }
         }
     }
@@ -122,23 +134,29 @@ public class HttpConnectionTimeout
     {
         synchronized (_lock)
         {
+            _log.debug("startIdleTimeout");
             long killTime = System.currentTimeMillis() + conn.getIdleTimeout();
 
-            // System.out.println("startIdleTimeout: timeout: "
-            // + conn.getIdleTimeout()
-            // + " current: "
-            // + System.currentTimeMillis()
-            // + " kill: "
-            // + killTime
-            // + " current Wake: "
-            // + _timeoutThreadWake
-            // + " current wake delta: "
-            // + (_timeoutThreadWake - System.currentTimeMillis())
-            // + " kill delta: "
-            // + (killTime - System.currentTimeMillis()));
+            if (_log.isDebugEnabled())
+            {
+                _log.debug("startIdleTimeout: timeout: "
+                    + conn.getIdleTimeout()
+                    + " current: "
+                    + System.currentTimeMillis()
+                    + " kill: "
+                    + killTime
+                    + " current Wake: "
+                    + _timeoutThreadWake
+                    + " current wake delta: "
+                    + (_timeoutThreadWake - System.currentTimeMillis())
+                    + " kill delta: "
+                    + (killTime - System.currentTimeMillis()));
+            }
 
             if (_timeoutThread != null)
             {
+                _log.debug("startIdleTimeout - existing timeout thread");
+
                 // The timeout thread will wake before this
                 // connection times out
                 if (_timeoutThreadWake <= killTime)
@@ -163,6 +181,7 @@ public class HttpConnectionTimeout
             }
             else
             {
+                _log.debug("startIdleTimeout - creating new timeout thread");
                 _timeoutThreadWake = killTime;
                 _timeoutThread = new TimeoutThread();
                 _timeoutThread.setDaemon(true);

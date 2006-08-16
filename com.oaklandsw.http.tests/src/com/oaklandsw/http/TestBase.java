@@ -14,6 +14,7 @@ import org.apache.log4j.PropertyConfigurator;
 import com.oaklandsw.http.server.ErrorServer;
 import com.oaklandsw.http.servlet.ParamServlet;
 import com.oaklandsw.http.servlet.TimeoutServlet;
+import com.oaklandsw.util.LogUtils;
 import com.oaklandsw.util.Util;
 
 public class TestBase extends com.oaklandsw.TestCaseBase
@@ -110,6 +111,7 @@ public class TestBase extends com.oaklandsw.TestCaseBase
     public void tearDown() throws Exception
     {
         super.tearDown();
+        LogUtils.logNone();
 
         com.oaklandsw.http.HttpURLConnection.setDefaultTimeout(0);
         com.oaklandsw.http.HttpURLConnection.setDefaultConnectionTimeout(0);
@@ -125,7 +127,6 @@ public class TestBase extends com.oaklandsw.TestCaseBase
         com.oaklandsw.http.HttpURLConnection
                 .setMaxConnectionsPerHost(HttpConnectionManager.DEFAULT_MAX_CONNECTIONS);
         com.oaklandsw.http.HttpURLConnection.closeAllPooledConnections();
-
     }
 
     protected void setupDefaultTimeout(int type, int value)
@@ -414,11 +415,17 @@ public class TestBase extends com.oaklandsw.TestCaseBase
                 .setProxyHost(TestEnv.TEST_AUTH_PROXY_HOST);
         com.oaklandsw.http.HttpURLConnection
                 .setProxyPort(TestEnv.TEST_AUTH_PROXY_PORT);
+        com.oaklandsw.http.HttpURLConnection
+                .setProxyUser(TestEnv.TEST_AUTH_PROXY_USER);
+        com.oaklandsw.http.HttpURLConnection
+                .setProxyPassword(TestEnv.TEST_AUTH_PROXY_PASSWORD);
         // Proxy type is used only for auth
         TestUserAgent._proxyType = TestUserAgent.PROXY;
         allTestMethods();
         com.oaklandsw.http.HttpURLConnection.setProxyHost(null);
         com.oaklandsw.http.HttpURLConnection.setProxyPort(-1);
+        com.oaklandsw.http.HttpURLConnection.setProxyUser(null);
+        com.oaklandsw.http.HttpURLConnection.setProxyPassword(null);
 
     }
 
@@ -432,11 +439,17 @@ public class TestBase extends com.oaklandsw.TestCaseBase
                 .setProxyHost(TestEnv.TEST_AUTH_PROXY_CLOSE_HOST);
         com.oaklandsw.http.HttpURLConnection
                 .setProxyPort(TestEnv.TEST_AUTH_PROXY_CLOSE_PORT);
+        com.oaklandsw.http.HttpURLConnection
+                .setProxyUser(TestEnv.TEST_AUTH_PROXY_CLOSE_USER);
+        com.oaklandsw.http.HttpURLConnection
+                .setProxyPassword(TestEnv.TEST_AUTH_PROXY_CLOSE_PASSWORD);
         // Proxy type is used only for auth
         TestUserAgent._proxyType = TestUserAgent.NETPROXY;
         allTestMethods();
         com.oaklandsw.http.HttpURLConnection.setProxyHost(null);
         com.oaklandsw.http.HttpURLConnection.setProxyPort(-1);
+        com.oaklandsw.http.HttpURLConnection.setProxyUser(null);
+        com.oaklandsw.http.HttpURLConnection.setProxyPassword(null);
 
     }
 

@@ -44,6 +44,16 @@ import com.oaklandsw.util.Util;
  * this is identical to the method to specify the proxy port for the
  * java.net.HttpURLConnection. See setProxyPort().
  * <p>
+ * <code>http.proxyUser</code>- specifies the user name used for
+ * authentication with a proxy server if required. Note this is identical to the
+ * method to specify the proxy user for the java.net.HttpURLConnection. See
+ * setProxyUser()
+ * <p>
+ * <code>http.proxyPassword</code>- specifies the password used for
+ * authentication with a proxy server if required. Note this is identical to the
+ * method to specify the proxy password for the java.net.HttpURLConnection. See
+ * setProxyPassword().
+ * <p>
  * <code>http.nonProxyHosts</code>- specifies a list of hosts to not direct
  * to the proxy server. Note this is identical to the method to specify such
  * hosts as for the java.net.HttpURLConnection. See setNonProxyHosts().
@@ -234,6 +244,11 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
      */
     public static final int                METHOD_PROP_UNKNOWN_METHOD        = 0x20000;
 
+    static final String                    PROP_PROXY_HOST                   = "http.proxyHost";
+    static final String                    PROP_PROXY_PORT                   = "http.proxyPort";
+    static final String                    PROP_PROXY_USER                   = "http.proxyUser";
+    static final String                    PROP_PROXY_PASSWORD               = "http.proxyPassword";
+
     static final String                    HDR_USER_AGENT                    = "User-Agent";
     static final String                    HDR_CONTENT_LENGTH                = "Content-Length";
     static final String                    HDR_CONTENT_TYPE                  = "Content-Type";
@@ -343,6 +358,8 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
 
     protected String                       _proxyHost;
     protected int                          _proxyPort;
+    protected String                       _proxyUser;
+    protected String                       _proxyPassword;
 
     protected static int                   _ntlmPreferredEncoding            = NTLM_ENCODING_UNICODE;
 
@@ -412,7 +429,6 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
                                                                                  + " Mozilla/4.0 (compatible; "
                                                                                  + "MSIE 6.0; Windows NT 5.0)";
 
-
     private static class DefaultHostnameVerifier implements HostnameVerifier
     {
         public boolean verify(String hostName, SSLSession session)
@@ -436,7 +452,8 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
         {
             licClass = cl.loadClass("com.oaklandsw.http.HttpLicenseCheck");
             Object licObject = licClass.newInstance();
-            Method licMethod = licClass.getMethod("checkLicense", new Class[] {});
+            Method licMethod = licClass.getMethod("checkLicense",
+                                                  new Class[] {});
             licMethod.invoke(licObject, new Object[] {});
         }
         catch (ClassNotFoundException e)
@@ -452,7 +469,7 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
             // Something else is wrong
             Util.impossible(e);
         }
-        
+
         try
         {
             _connManager = new HttpConnectionManager();
@@ -649,8 +666,8 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
              * throw new RuntimeException( "Invalid value specified for
              * useDnsJava: " + useDnsJavaStr); } }
              */
-            String hostProperty = "http.proxyHost";
-            String portProperty = "http.proxyPort";
+            String hostProperty = PROP_PROXY_HOST;
+            String portProperty = PROP_PROXY_PORT;
             if (System.getProperty("proxySet") != null)
             {
                 hostProperty = "proxyHost";
@@ -839,7 +856,9 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
         _cookieSpec = _defaultCookieSpec;
         _proxyHost = _connManager.getProxyHost();
         _proxyPort = _connManager.getProxyPort();
-
+        _proxyUser = _connManager.getProxyUser();
+        _proxyPassword = _connManager.getProxyPassword();
+        
         if (_isSSLAvailable)
         {
             _sslSocketFactory = _defaultSSLSocketFactory;
@@ -1299,6 +1318,16 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
         }
 
         return _respHeaders.get(position - 1);
+    }
+
+    /**
+     * Returns the number of response headers.
+     */
+    public int getHeadersLength()
+    {
+        checkConnectNoThrow();
+
+        return _respHeaders.length();
     }
 
     /**
@@ -2146,6 +2175,119 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
     public int getConnectionProxyPort()
     {
         return _proxyPort;
+    }
+
+    /**
+     * Sets the user to be used to authenticate with the proxy server. If the
+     * proxy authenticates with NTLM, this value specifies both the domain name
+     * and user name as follows: "domain\\user".
+     * <p>
+     * This is used only if no HTTPUserAgent is provided.
+     * 
+     * @param user
+     *            the name of the user to be used with the proxy server.
+     */
+    public static void setProxyUser(String user)
+    {
+        Log log = LogFactory.getLog(HttpURLConnection.class);
+        log.debug("setProxyUser: " + user);
+        _connManager.setProxyUser(user);
+    }
+
+    /**
+     * Returns the current value of the proxy server user.
+     * 
+     * @return the proxy user.
+     */
+    public static String getProxyUser()
+    {
+        return _connManager.getProxyUser();
+    }
+
+    /**
+     * Sets the user to be used to authenticate with the proxy server.
+     * <p>
+     * This is used only if no HTTPUserAgent is provided.
+     * <p>
+     * This must be called before the connection is connected.
+     * 
+     * @param user
+     *            the name of the host to be used as a proxy server.
+     */
+    public void setConnectionProxyUser(String user)
+    {
+        _log.debug("setConnectionProxyUser: " + user);
+        if (_connection != null)
+            throw new IllegalStateException("Connection has been established");
+        _proxyUser = user;
+    }
+
+    /**
+     * Returns the current value of the proxy user on this connection.
+     * 
+     * @return the proxy user.
+     */
+    public String getConnectionProxyUser()
+    {
+        return _proxyUser;
+    }
+
+    /**
+     * Sets the password to be used to authenticate with the proxy server for
+     * this connection.
+     * <p>
+     * This is used only if no HTTPUserAgent is provided.
+     * <p>
+     * This must be called before the connection is connected.
+     * 
+     * @param password
+     *            the name of the password to be used with the proxy server.
+     */
+    public static void setProxyPassword(String password)
+    {
+        Log log = LogFactory.getLog(HttpURLConnection.class);
+        log.debug("setProxyPassword: " + password);
+        _connManager.setProxyPassword(password);
+    }
+
+    /**
+     * Returns the current value of the proxy server host.
+     * 
+     * @return the proxy host.
+     */
+    public static String getProxyPassword()
+    {
+        return _connManager.getProxyPassword();
+    }
+
+    /**
+     * Sets the password to be used to authenticate with the proxy server for
+     * this connection.
+     * <p>
+     * This is used only if no HTTPUserAgent is provided.
+     * <p>
+     * This must be called before the connection is connected.
+     * 
+     * @param password
+     *            the name of the host to be used as a proxy server.
+     */
+    public void setConnectionProxyPassword(String password)
+    {
+        _log.debug("setConnectionProxyPassword: " + password);
+        if (_connection != null)
+            throw new IllegalStateException("Connection has been established");
+        _proxyPassword = password;
+    }
+
+    /**
+     * Returns the current value of the proxy server password on this
+     * connection.
+     * 
+     * @return the proxy password.
+     */
+    public String getConnectionProxyPassword()
+    {
+        return _proxyPassword;
     }
 
     /**

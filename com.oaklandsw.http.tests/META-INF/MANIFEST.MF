@@ -10,5 +10,7 @@ Require-Bundle: com.oaklandsw.http,
  com.oaklandsw.util,
  com.oaklandsw.util.tests,
  org.junit,
+ com.oaklandsw.http.jars,
  com.oaklandsw.http.tests.jars,
  com.oaklandsw.build
+Bundle-ClassPath: httpNonObf.jar

@@ -59,6 +59,20 @@
 	      </classes>
 	    </war>
 	  </target>
+	
+	
+	  <!-- =================================================================== -->
+	  <!-- HTTP Axis2 test AAR file                                           -->
+	  <!-- =================================================================== -->
+	  <target name="axis2-aar"
+	          depends="init, compile-java">
+	    <jar destfile="TestService.aar" basedir="${src.dir}/com/oaklandsw/http/webservice">
+	    	<fileset dir="${bin.dir}">
+	    		<include name="com/oaklandsw/http/webservice/**"/>
+	    	</fileset>
+	    	</jar>
+	  </target>
+	
 	  <!-- =================================================================== -->
 	  <!-- Junit tests                        -->
 	  <!-- =================================================================== -->

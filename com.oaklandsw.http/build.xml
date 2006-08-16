@@ -127,6 +127,11 @@
 			<fileset dir="${basedir}/../com.oaklandsw.util.jars">
 				<include name="servlet.jar" />
 			</fileset>
+			<fileset dir="${basedir}/../com.oaklandsw.http.jars">
+				<include name="saaj.jar" />
+				<include name="axis*.jar" />
+				<include name="jaxrpc.jar" />
+			</fileset>
 		</path>
 
 		<!--

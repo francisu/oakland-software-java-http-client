@@ -51,10 +51,10 @@ public class TestUserAgent implements HttpUserAgent
                 switch (_type)
                 {
                     case GOOD:
-                        ntlmCred.setUser("francis");
-                        ntlmCred.setPassword("humb1989");
-                        ntlmCred.setDomain("workgroup");
-                        ntlmCred.setHost("repoman");
+                        ntlmCred.setUser(TestEnv.TEST_IIS_USER);
+                        ntlmCred.setPassword(TestEnv.TEST_IIS_PASSWORD);
+                        ntlmCred.setDomain(TestEnv.TEST_IIS_DOMAIN);
+                        ntlmCred.setHost(TestEnv.TEST_IIS_HOST);
                         break;
 
                     case BAD:
@@ -152,15 +152,14 @@ public class TestUserAgent implements HttpUserAgent
                 UserCredential basicCred = new UserCredential();
                 switch (_proxyType)
                 {
-
                     case PROXY:
-                        basicCred.setUser("testProxy");
-                        basicCred.setPassword("test839Proxy");
+                        basicCred.setUser(TestEnv.TEST_AUTH_PROXY_USER);
+                        basicCred.setPassword(TestEnv.TEST_AUTH_PROXY_PASSWORD);
                         break;
 
                     case NETPROXY:
-                        basicCred.setUser("netproxy");
-                        basicCred.setPassword("netproxy");
+                        basicCred.setUser(TestEnv.TEST_AUTH_PROXY_CLOSE_USER);
+                        basicCred.setPassword(TestEnv.TEST_AUTH_PROXY_CLOSE_PASSWORD);
                         break;
 
                     case LOCAL:
