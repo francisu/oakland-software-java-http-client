@@ -452,10 +452,10 @@ public class TestAxis extends TestWebappBase
         Map map = invokeService(TestEnv.TEST_URL_HOST_TOMCAT
             + "axis/EchoHeaders.jws?wsdl", "list", new String[] {});
         assertEquals(1, map.size());
-        
+
         Message m = _messageContext.getResponseMessage();
         MimeHeaders mh = m.getMimeHeaders();
-        
+
         String cookie[] = mh.getHeader("Set-Cookie");
         assertTrue(cookie[0].startsWith("JSESSIONID"));
     }
@@ -471,15 +471,20 @@ public class TestAxis extends TestWebappBase
         assertEquals(1, map.size());
     }
 
+    protected String getIISUrl()
+    {
+        File wFile = new File(TestEnv.getHttpTestRoot()
+            + File.separator
+            + "Service1.wsdl");
+        return FileUtils.fileToUrl(wFile);
+    }
+
     public void testWsIISNtlmOk() throws Exception
     {
         // Use Axis authentication
         _user = TestEnv.TEST_IIS_DOMAIN_USER;
         _password = TestEnv.TEST_IIS_PASSWORD;
-        Map map = invokeService("file://"
-            + TestEnv.getHttpTestRoot()
-            + File.separator
-            + "Service1.wsdl", "HelloWorld", new String[] {});
+        Map map = invokeService(getIISUrl(), "HelloWorld", new String[] {});
         assertEquals(1, map.size());
     }
 
@@ -489,10 +494,7 @@ public class TestAxis extends TestWebappBase
         com.oaklandsw.http.HttpURLConnection
                 .setDefaultUserAgent(new com.oaklandsw.http.TestUserAgent());
         TestUserAgent._type = TestUserAgent.GOOD;
-        Map map = invokeService("file://"
-            + TestEnv.getHttpTestRoot()
-            + File.separator
-            + "Service1.wsdl", "HelloWorld", new String[] {});
+        Map map = invokeService(getIISUrl(), "HelloWorld", new String[] {});
         assertEquals(1, map.size());
     }
 
@@ -527,11 +529,7 @@ public class TestAxis extends TestWebappBase
             _password = null;
             com.oaklandsw.http.HttpURLConnection.setDefaultUserAgent(null);
             com.oaklandsw.http.HttpURLConnection.closeAllPooledConnections();
-            File wFile = new File(TestEnv.getHttpTestRoot()
-                + File.separator
-                + "Service1.wsdl");
-            
-            invokeService(FileUtils.fileToUrl(wFile), "HelloWorld", new String[] {});
+            invokeService(getIISUrl(), "HelloWorld", new String[] {});
             fail("This was supposed to fail due to auth problems");
         }
         catch (AxisFault ex)
