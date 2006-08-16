@@ -130,6 +130,8 @@
 			<fileset dir="${basedir}/../com.oaklandsw.http.jars">
 				<include name="saaj.jar" />
 				<include name="axis*.jar" />
+				<include name="axiom*.jar" />
+				<include name="activation.jar" />
 				<include name="jaxrpc.jar" />
 			</fileset>
 		</path>
