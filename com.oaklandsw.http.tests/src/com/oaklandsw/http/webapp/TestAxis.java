@@ -10,6 +10,7 @@ import com.oaklandsw.http.HttpURLConnection;
 import com.oaklandsw.http.TestEnv;
 import com.oaklandsw.http.TestUserAgent;
 import com.oaklandsw.http.axis.OaklandHTTPSender;
+import com.oaklandsw.util.FileUtils;
 import com.oaklandsw.util.LogUtils;
 
 import org.apache.axis.AxisFault;
@@ -526,10 +527,11 @@ public class TestAxis extends TestWebappBase
             _password = null;
             com.oaklandsw.http.HttpURLConnection.setDefaultUserAgent(null);
             com.oaklandsw.http.HttpURLConnection.closeAllPooledConnections();
-            invokeService("file://"
-                + TestEnv.getHttpTestRoot()
+            File wFile = new File(TestEnv.getHttpTestRoot()
                 + File.separator
-                + "Service1.wsdl", "HelloWorld", new String[] {});
+                + "Service1.wsdl");
+            
+            invokeService(FileUtils.fileToUrl(wFile), "HelloWorld", new String[] {});
             fail("This was supposed to fail due to auth problems");
         }
         catch (AxisFault ex)
