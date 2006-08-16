@@ -38,8 +38,9 @@ public class TestExplicitConnection extends TestWebappBase
         mainRun(suite(), args);
     }
 
-    public void setUp()
+    public void setUp() throws Exception
     {
+        super.setUp();
         _connManager = HttpURLConnection.getConnectionManager();
     }
 
