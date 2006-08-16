@@ -140,7 +140,7 @@
     compile path for all jars that should not be obfuscated, but that should
     be on the classpath.
     -->
-		<pathconvert pathsep=":" property="non.obfuscated.class.path">
+		<pathconvert property="non.obfuscated.class.path">
 			<path refid="non.obfuscated.jars" />
 		</pathconvert>
 
