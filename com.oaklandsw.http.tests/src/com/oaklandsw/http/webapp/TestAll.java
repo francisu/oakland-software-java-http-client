@@ -4,6 +4,7 @@ import junit.framework.Test;
 import junit.framework.TestSuite;
 
 import com.oaklandsw.http.TestBase;
+import com.oaklandsw.util.SystemUtils;
 
 public class TestAll extends TestBase
 {
@@ -18,7 +19,9 @@ public class TestAll extends TestBase
         TestSuite suite = new TestSuite();
         suite.addTest(TestTimeout.suite());
         suite.addTest(TestFailover.suite());
-        suite.addTest(TestAxis.suite());
+        // Axis requires 1.3
+        if (SystemUtils.isJavaVersionAtLeast(1.3f))
+            suite.addTest(TestAxis.suite());
         suite.addTest(TestIIS.suite());
         suite.addTest(TestExplicitConnection.suite());
         suite.addTest(TestMethods.suite());
