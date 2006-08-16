@@ -29,7 +29,13 @@
     <property name="optimize" value="off"/>
     <property name="deprecation" value="off"/>
 
-  </target>
+		<path id="compile.classpath">
+			<fileset dir="${basedir}">
+				<include name="*.jar" />
+			</fileset>
+		</path>
+
+        </target>
 
   <!-- =================================================================== -->
   <!-- short target names                                                  -->
@@ -50,13 +56,12 @@
   <!-- Java compile                                                        -->
   <!-- =================================================================== -->
   <target name="compile-java" depends="prepare-src">
-    <javac srcdir="${java.src.dir}"
-    	   excludes="${java.excludes}"
-           destdir="${classes.dir}"
-           target="${java.target}"
-           optimize="${optimize}"
-           deprecation="${deprecation}">
-    </javac>     
+    <javac srcdir="${java.src.dir}" excludes="${java.excludes}"
+        destdir="${classes.dir}" target="${java.target}" optimize="${optimize}"
+        deprecation="${deprecation}">
+        <classpath refid="compile.classpath"/>
+    </javac>
+    
 		   
   </target>
 
