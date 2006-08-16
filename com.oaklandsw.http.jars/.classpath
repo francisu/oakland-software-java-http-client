@@ -15,5 +15,6 @@
 	<classpathentry exported="true" kind="lib" path="axiom-api-1.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="axiom-dom-1.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="axiom-impl-1.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="activation.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
