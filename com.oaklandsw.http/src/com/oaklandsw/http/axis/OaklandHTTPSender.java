@@ -25,7 +25,6 @@ import org.apache.axis.AxisFault;
 import org.apache.axis.Constants;
 import org.apache.axis.Message;
 import org.apache.axis.MessageContext;
-import org.apache.axis.components.logger.LogFactory;
 import org.apache.axis.components.net.CommonsHTTPClientProperties;
 import org.apache.axis.components.net.CommonsHTTPClientPropertiesFactory;
 import org.apache.axis.handlers.BasicHandler;
@@ -35,6 +34,7 @@ import org.apache.axis.transport.http.HTTPConstants;
 import org.apache.axis.utils.JavaUtils;
 import org.apache.axis.utils.Messages;
 import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import com.oaklandsw.http.Cookie;
 import com.oaklandsw.http.CookieContainer;
@@ -62,8 +62,7 @@ import java.util.zip.GZIPOutputStream;
 public class OaklandHTTPSender extends BasicHandler implements HttpUserAgent
 {
     protected static Log                  _log = LogFactory
-                                                       .getLog(OaklandHTTPSender.class
-                                                               .getName());
+                                                       .getLog(OaklandHTTPSender.class);
 
     protected CommonsHTTPClientProperties _clientProperties;
     boolean                               httpChunkStream;
