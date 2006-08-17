@@ -112,10 +112,8 @@ public class OaklandHTTPSender extends BasicHandler implements HttpUserAgent
     public void invoke(MessageContext msgContext) throws AxisFault
     {
         if (_log.isDebugEnabled())
-        {
-            _log.debug(Messages.getMessage("enter00",
-                                           "OaklandHTTPSender::invoke"));
-        }
+            _log.debug("OaklandHTTPSender::invoke");
+
         try
         {
             URL targetURL = new URL(msgContext
@@ -304,11 +302,8 @@ public class OaklandHTTPSender extends BasicHandler implements HttpUserAgent
             if (_log.isDebugEnabled())
             {
                 if (null == contentLength)
-                {
-                    _log.debug("\n"
-                        + Messages.getMessage("no00", "Content-Length"));
-                }
-                _log.debug("\n" + Messages.getMessage("xmlRecd00"));
+                    _log.debug("\n no Content-Length");
+                _log.debug("\n XML received:");
                 _log.debug("-----------------------------------------------");
                 _log.debug(outMsg.getSOAPPartAsString());
             }
@@ -342,12 +337,6 @@ public class OaklandHTTPSender extends BasicHandler implements HttpUserAgent
         {
             _log.debug(e);
             throw AxisFault.makeFault(e);
-        }
-
-        if (_log.isDebugEnabled())
-        {
-            _log.debug(Messages.getMessage("exit00",
-                                           "CommonsHTTPSender::invoke"));
         }
     }
 
