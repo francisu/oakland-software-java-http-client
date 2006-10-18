@@ -1399,7 +1399,7 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
 
     /**
      * Returns the data associated with the connection in the event of an error.
-     * This returns data only when the respose code is >= 300. This should not
+     * This returns data only when the response code is >= 300. This should not
      * be used if getInputStream() has already been called since that will have
      * read the response.
      * 
@@ -1577,7 +1577,7 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
     /**
      * Set the timeout value associated with this connection. This is the number
      * of milliseconds to wait for a connection to be established or a response
-     * to be recieved. If this is not specified the default timeout value is
+     * to be received. If this is not specified the default timeout value is
      * used. This is the same as calling setConnectTimeout() and
      * setRequestTimeout() with the same value.
      * 
@@ -1609,7 +1609,7 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
      * value is used.
      * 
      * @param ms
-     *            milliseconds to wait for the sockect connection.
+     *            milliseconds to wait for the socket connection.
      */
     public void setConnectionTimeout(int ms)
     {
@@ -1634,7 +1634,7 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
      * sent. If this is not specified the default request timeout value is used.
      * 
      * @param ms
-     *            milliseconds to wait for the respone.
+     *            milliseconds to wait for the response.
      */
     public void setRequestTimeout(int ms)
     {
@@ -1657,7 +1657,7 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
 
     /**
      * Set the default timeout value. This is the number of milliseconds to wait
-     * for a connection to be established or a response to be recieved. Setting
+     * for a connection to be established or a response to be received. Setting
      * the value to 0 means no timeout is used, which is the default value for
      * this property. This is equivalent to setting the
      * <code>com.oaklandsw.http.timeout</code> property. This is the same as
@@ -2297,7 +2297,7 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
      *            a list of hosts separated by the pipe <code>("|")</code>
      *            character. Each host is a regular expression that is matched
      *            against the host being connected to. If the host matches the
-     *            regular expression, it is not proxied.
+     *            regular expression, it is not proxyed.
      */
     public static void setNonProxyHosts(String hosts)
     {
