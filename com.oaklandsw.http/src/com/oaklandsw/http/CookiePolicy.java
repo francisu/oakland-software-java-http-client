@@ -64,7 +64,7 @@ public abstract class CookiePolicy
                                                              .synchronizedMap(new HashMap());
 
     /**
-     * The policy that provides high degree of compatibilty with common cookie
+     * The policy that provides high degree of compatibility with common cookie
      * management of popular HTTP agents.
      * 
      * @since 3.0
