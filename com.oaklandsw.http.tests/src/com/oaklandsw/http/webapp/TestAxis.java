@@ -476,7 +476,7 @@ public class TestAxis extends TestWebappBase
         File wFile = new File(TestEnv.getHttpTestRoot()
             + File.separator
             + "Service1.wsdl");
-        return FileUtils.fileToUrl(wFile);
+        return FileUtils.fileToUriString(wFile);
     }
 
     public void testWsIISNtlmOk() throws Exception
