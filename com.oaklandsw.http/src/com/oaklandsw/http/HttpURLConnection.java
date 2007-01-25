@@ -128,6 +128,13 @@ import com.oaklandsw.util.Util;
  * <code>com.oaklandsw.http.cookiePolicy</code>- specifies the default cookie
  * policy to be used. See CookiePolicy for the possible values.
  * <p>
+ * <code>com.oaklandsw.http.skipEnvironmentInit</code>- specified that all
+ * property settings are to be ignored.  The property settings are normally
+ * read in the static initializer of this class.  If this property is set
+ * none of the properties will be read.  This is used in environments 
+ * where the settings of some system properties might be for other
+ * HTTP client implemementations.
+ * <p>
  * 
  */
 
@@ -248,6 +255,7 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
     static final String                    PROP_PROXY_PORT                   = "http.proxyPort";
     static final String                    PROP_PROXY_USER                   = "http.proxyUser";
     static final String                    PROP_PROXY_PASSWORD               = "http.proxyPassword";
+    static final String                    PROP_SKIP_ENVIRONMENT_INIT        = "com.oaklandsw.http.skipEnvironmentInit";
 
     static final String                    HDR_USER_AGENT                    = "User-Agent";
     static final String                    HDR_CONTENT_LENGTH                = "Content-Length";
@@ -535,185 +543,196 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
             setMethodProperties(WEBDAV_METHOD_UPDATE, webDavProps);
             setMethodProperties(WEBDAV_METHOD_ACL, webDavProps);
 
-            String timeoutStr = System
-                    .getProperty("com.oaklandsw.http.timeout");
-            if (timeoutStr != null)
+            if (System.getProperty(PROP_SKIP_ENVIRONMENT_INIT) == null)
             {
-                try
-                {
-                    _defaultConnectionTimeout = Integer.parseInt(timeoutStr);
-                    _defaultRequestTimeout = _defaultConnectionTimeout;
-                    log.info("Default timeout: " + _defaultConnectionTimeout);
-                }
-                catch (Exception ex)
-                {
-                    throw new RuntimeException("Invalid value specified for timeout: "
-                        + timeoutStr);
-                }
-            }
 
-            timeoutStr = System
-                    .getProperty("com.oaklandsw.http.idleConnectionTimeout");
-            if (timeoutStr != null)
-            {
-                try
-                {
-                    _defaultIdleTimeout = Integer.parseInt(timeoutStr);
-                    log.info("Default idle connection timeout: "
-                        + _defaultIdleTimeout);
-                }
-                catch (Exception ex)
-                {
-                    throw new RuntimeException("Invalid value specified for idleConnectionTimeout: "
-                        + timeoutStr);
-                }
-            }
-
-            timeoutStr = System
-                    .getProperty("com.oaklandsw.http.idleConnectionPing");
-            if (timeoutStr != null)
-            {
-                try
-                {
-                    _defaultIdlePing = Integer.parseInt(timeoutStr);
-                    log.info("Default idle connection ping: "
-                        + _defaultIdlePing);
-                }
-                catch (Exception ex)
-                {
-                    throw new RuntimeException("Invalid value specified for idleConnectionPing: "
-                        + timeoutStr);
-                }
-            }
-
-            String explicitStr = System
-                    .getProperty("com.oaklandsw.http.explicitClose");
-            if (explicitStr != null)
-            {
-                log.info("Require explicit close");
-                _explicitClose = true;
-            }
-
-            String followRedirects = System
-                    .getProperty("com.oaklandsw.http.followRedirects");
-            if (followRedirects != null
-                && followRedirects.equalsIgnoreCase("false"))
-            {
-                log.info("Turning OFF follow redirects");
-                java.net.HttpURLConnection.setFollowRedirects(false);
-            }
-
-            String maxConStr = System
-                    .getProperty("com.oaklandsw.http.maxConnectionsPerHost");
-            if (maxConStr != null)
-            {
-                try
-                {
-                    setMaxConnectionsPerHost(Integer.parseInt(maxConStr));
-                    log.info("Max connections per host: " + maxConStr);
-                }
-                catch (Exception ex)
-                {
-                    throw new RuntimeException("Invalid value specified for maxConnectionsPerHost: "
-                        + maxConStr);
-                }
-            }
-
-            String triesStr = System.getProperty("com.oaklandsw.http.tries");
-            if (triesStr != null)
-            {
-                try
-                {
-                    setTries(Integer.parseInt(triesStr));
-                    log.info("Number of tries: " + triesStr);
-                }
-                catch (Exception ex)
-                {
-                    throw new RuntimeException("Invalid value specified for tries: "
-                        + triesStr);
-                }
-            }
-
-            String retryIntervalStr = System
-                    .getProperty("com.oaklandsw.http.retryInterval");
-            if (retryIntervalStr != null)
-            {
-                try
-                {
-                    setRetryInterval(Integer.parseInt(retryIntervalStr));
-                    log.info("Number of retryInterval: " + retryIntervalStr);
-                }
-                catch (Exception ex)
-                {
-                    throw new RuntimeException("Invalid value specified for retryInterval: "
-                        + retryIntervalStr);
-                }
-            }
-
-            String preemptiveAuth = System
-                    .getProperty("com.oaklandsw.http.preemptiveAuthentication");
-            if (preemptiveAuth != null)
-            {
-                setPreemptiveAuthentication(true);
-            }
-
-            /*
-             * String useDnsJavaStr =
-             * System.getProperty("com.oaklandsw.http.useDnsJava"); if
-             * (useDnsJavaStr != null) { try {
-             * setUseDnsJava(Boolean.valueOf(useDnsJavaStr).booleanValue());
-             * _log.info("useDnsJava: " + useDnsJavaStr); } catch (Exception ex) {
-             * throw new RuntimeException( "Invalid value specified for
-             * useDnsJava: " + useDnsJavaStr); } }
-             */
-            String hostProperty = PROP_PROXY_HOST;
-            String portProperty = PROP_PROXY_PORT;
-            if (System.getProperty("proxySet") != null)
-            {
-                hostProperty = "proxyHost";
-                portProperty = "proxyPort";
-            }
-
-            String proxyHost = System.getProperty(hostProperty);
-            int proxyPort = -1;
-            if (proxyHost != null)
-            {
-                String portStr = System.getProperty(portProperty);
-                if (portStr != null)
+                String timeoutStr = System
+                        .getProperty("com.oaklandsw.http.timeout");
+                if (timeoutStr != null)
                 {
                     try
                     {
-                        proxyPort = Integer.parseInt(portStr);
+                        _defaultConnectionTimeout = Integer
+                                .parseInt(timeoutStr);
+                        _defaultRequestTimeout = _defaultConnectionTimeout;
+                        log.info("Default timeout: "
+                            + _defaultConnectionTimeout);
                     }
                     catch (Exception ex)
                     {
-                        throw new RuntimeException("Invalid value specified for proxyPort: "
-                            + portStr);
+                        throw new RuntimeException("Invalid value specified for timeout: "
+                            + timeoutStr);
                     }
                 }
-                if (proxyPort == 0)
-                    proxyPort = 80;
-                setProxyHost(proxyHost);
-                setProxyPort(proxyPort);
-            }
 
-            if (getProxyHost() != null)
-                log.info("Proxy: " + getProxyHost() + ":" + getProxyPort());
+                timeoutStr = System
+                        .getProperty("com.oaklandsw.http.idleConnectionTimeout");
+                if (timeoutStr != null)
+                {
+                    try
+                    {
+                        _defaultIdleTimeout = Integer.parseInt(timeoutStr);
+                        log.info("Default idle connection timeout: "
+                            + _defaultIdleTimeout);
+                    }
+                    catch (Exception ex)
+                    {
+                        throw new RuntimeException("Invalid value specified for idleConnectionTimeout: "
+                            + timeoutStr);
+                    }
+                }
 
-            setNonProxyHosts(System.getProperty("http.nonProxyHosts"));
-            if (getNonProxyHosts() != null)
-                log.info("Non proxy hosts: " + getNonProxyHosts());
+                timeoutStr = System
+                        .getProperty("com.oaklandsw.http.idleConnectionPing");
+                if (timeoutStr != null)
+                {
+                    try
+                    {
+                        _defaultIdlePing = Integer.parseInt(timeoutStr);
+                        log.info("Default idle connection ping: "
+                            + _defaultIdlePing);
+                    }
+                    catch (Exception ex)
+                    {
+                        throw new RuntimeException("Invalid value specified for idleConnectionPing: "
+                            + timeoutStr);
+                    }
+                }
 
-            USER_AGENT = System.getProperties()
-                    .getProperty("com.oaklandsw.http.userAgent");
+                String explicitStr = System
+                        .getProperty("com.oaklandsw.http.explicitClose");
+                if (explicitStr != null)
+                {
+                    log.info("Require explicit close");
+                    _explicitClose = true;
+                }
 
-            String cookiePolicy = System
-                    .getProperty("com.oaklandsw.http.cookiePolicy");
-            if (cookiePolicy != null)
-            {
-                log.info("Default cookie policy: " + _defaultCookieSpec);
-                // This validates the policy and throws if there is a problem
-                _defaultCookieSpec = CookiePolicy.getCookieSpec(cookiePolicy);
+                String followRedirects = System
+                        .getProperty("com.oaklandsw.http.followRedirects");
+                if (followRedirects != null
+                    && followRedirects.equalsIgnoreCase("false"))
+                {
+                    log.info("Turning OFF follow redirects");
+                    java.net.HttpURLConnection.setFollowRedirects(false);
+                }
+
+                String maxConStr = System
+                        .getProperty("com.oaklandsw.http.maxConnectionsPerHost");
+                if (maxConStr != null)
+                {
+                    try
+                    {
+                        setMaxConnectionsPerHost(Integer.parseInt(maxConStr));
+                        log.info("Max connections per host: " + maxConStr);
+                    }
+                    catch (Exception ex)
+                    {
+                        throw new RuntimeException("Invalid value specified for maxConnectionsPerHost: "
+                            + maxConStr);
+                    }
+                }
+
+                String triesStr = System
+                        .getProperty("com.oaklandsw.http.tries");
+                if (triesStr != null)
+                {
+                    try
+                    {
+                        setTries(Integer.parseInt(triesStr));
+                        log.info("Number of tries: " + triesStr);
+                    }
+                    catch (Exception ex)
+                    {
+                        throw new RuntimeException("Invalid value specified for tries: "
+                            + triesStr);
+                    }
+                }
+
+                String retryIntervalStr = System
+                        .getProperty("com.oaklandsw.http.retryInterval");
+                if (retryIntervalStr != null)
+                {
+                    try
+                    {
+                        setRetryInterval(Integer.parseInt(retryIntervalStr));
+                        log
+                                .info("Number of retryInterval: "
+                                    + retryIntervalStr);
+                    }
+                    catch (Exception ex)
+                    {
+                        throw new RuntimeException("Invalid value specified for retryInterval: "
+                            + retryIntervalStr);
+                    }
+                }
+
+                String preemptiveAuth = System
+                        .getProperty("com.oaklandsw.http.preemptiveAuthentication");
+                if (preemptiveAuth != null)
+                {
+                    setPreemptiveAuthentication(true);
+                }
+
+                /*
+                 * String useDnsJavaStr =
+                 * System.getProperty("com.oaklandsw.http.useDnsJava"); if
+                 * (useDnsJavaStr != null) { try {
+                 * setUseDnsJava(Boolean.valueOf(useDnsJavaStr).booleanValue());
+                 * _log.info("useDnsJava: " + useDnsJavaStr); } catch (Exception
+                 * ex) { throw new RuntimeException( "Invalid value specified
+                 * for useDnsJava: " + useDnsJavaStr); } }
+                 */
+                String hostProperty = PROP_PROXY_HOST;
+                String portProperty = PROP_PROXY_PORT;
+                if (System.getProperty("proxySet") != null)
+                {
+                    hostProperty = "proxyHost";
+                    portProperty = "proxyPort";
+                }
+
+                String proxyHost = System.getProperty(hostProperty);
+                int proxyPort = -1;
+                if (proxyHost != null)
+                {
+                    String portStr = System.getProperty(portProperty);
+                    if (portStr != null)
+                    {
+                        try
+                        {
+                            proxyPort = Integer.parseInt(portStr);
+                        }
+                        catch (Exception ex)
+                        {
+                            throw new RuntimeException("Invalid value specified for proxyPort: "
+                                + portStr);
+                        }
+                    }
+                    if (proxyPort == 0)
+                        proxyPort = 80;
+                    setProxyHost(proxyHost);
+                    setProxyPort(proxyPort);
+                }
+
+                if (getProxyHost() != null)
+                    log.info("Proxy: " + getProxyHost() + ":" + getProxyPort());
+
+                setNonProxyHosts(System.getProperty("http.nonProxyHosts"));
+                if (getNonProxyHosts() != null)
+                    log.info("Non proxy hosts: " + getNonProxyHosts());
+
+                USER_AGENT = System.getProperties()
+                        .getProperty("com.oaklandsw.http.userAgent");
+
+                String cookiePolicy = System
+                        .getProperty("com.oaklandsw.http.cookiePolicy");
+                if (cookiePolicy != null)
+                {
+                    log.info("Default cookie policy: " + _defaultCookieSpec);
+                    // This validates the policy and throws if there is a
+                    // problem
+                    _defaultCookieSpec = CookiePolicy
+                            .getCookieSpec(cookiePolicy);
+                }
             }
 
         }
@@ -858,7 +877,7 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
         _proxyPort = _connManager.getProxyPort();
         _proxyUser = _connManager.getProxyUser();
         _proxyPassword = _connManager.getProxyPassword();
-        
+
         if (_isSSLAvailable)
         {
             _sslSocketFactory = _defaultSSLSocketFactory;

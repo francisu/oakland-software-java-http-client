@@ -45,6 +45,13 @@ public class TestProperties extends TestCase
         System.setProperty("http.proxyPort", Integer.toString(proxyPort));
         System.setProperty("http.nonProxyHosts", nonProxyHosts);
 
+        // Note the only way we can test the functionality of 1767 is to
+        // enable this statement below and run the tests, since the static
+        // initializer is called only once. 
+        
+        // 1767 skipEnvironmentInit
+        System.setProperty("com.oaklandsw.http.skipEnvironmentInit", "true");
+
     }
 
     public void setUp()
@@ -63,21 +70,35 @@ public class TestProperties extends TestCase
 
     public void testProps() throws Exception
     {
-        assertEquals(proxyHost, com.oaklandsw.http.HttpURLConnection
-                .getProxyHost());
-        assertEquals(proxyPort, com.oaklandsw.http.HttpURLConnection
-                .getProxyPort());
-        assertEquals(nonProxyHosts, com.oaklandsw.http.HttpURLConnection
-                .getNonProxyHosts());
+        if (System.getProperty("com.oaklandsw.http.skipEnvironmentInit") == null)
+        {
+
+            assertEquals(proxyHost, com.oaklandsw.http.HttpURLConnection
+                    .getProxyHost());
+            assertEquals(proxyPort, com.oaklandsw.http.HttpURLConnection
+                    .getProxyPort());
+            assertEquals(nonProxyHosts, com.oaklandsw.http.HttpURLConnection
+                    .getNonProxyHosts());
+        }
+        else
+        {
+            assertEquals(null, com.oaklandsw.http.HttpURLConnection
+                    .getProxyHost());
+            assertEquals(-1, com.oaklandsw.http.HttpURLConnection.getProxyPort());
+            assertEquals(null, com.oaklandsw.http.HttpURLConnection
+                    .getNonProxyHosts());
+
+        }
 
     }
 
     // 961 and 966
-    public void testDefaultTimeoutValues()
-    throws Exception
+    public void testDefaultTimeoutValues() throws Exception
     {
-        assertEquals(14000, com.oaklandsw.http.HttpURLConnection.getDefaultIdleConnectionTimeout());
-        assertEquals(0, com.oaklandsw.http.HttpURLConnection.getDefaultIdleConnectionPing());
+        assertEquals(14000, com.oaklandsw.http.HttpURLConnection
+                .getDefaultIdleConnectionTimeout());
+        assertEquals(0, com.oaklandsw.http.HttpURLConnection
+                .getDefaultIdleConnectionPing());
     }
 
 }

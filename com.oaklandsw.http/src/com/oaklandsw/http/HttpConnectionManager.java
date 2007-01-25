@@ -72,6 +72,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.regexp.RE;
 import org.apache.regexp.RESyntaxException;
 
+import com.oaklandsw.util.StringUtils;
 import com.oaklandsw.util.URIUtil;
 
 /**
@@ -220,6 +221,11 @@ public class HttpConnectionManager
             {
                 String host = stringtokenizer.nextToken().toLowerCase().trim();
 
+                // The syntax for a non-proxy host only allows a "*" as wildcard,
+                // so we need to fix it up to be a correct RE.
+                host = StringUtils.replace(host, ".", "\\.");
+                host = StringUtils.replace(host, "*", ".*");
+                
                 RE re;
                 try
                 {

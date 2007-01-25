@@ -69,14 +69,16 @@ public class TestNonProxyHost extends TestBase
         testNPHost("java.sun.com", "java.sun.com", false);
     }
 
+    // bug 1766 align non-proxy host with Java specification
     public void testNPHostWild() throws IOException
     {
-        testNPHost(".*.com", "java.sun.com", false);
+        testNPHost("*.com", "java.sun.com", false);
     }
 
+    // bug 1766 align non-proxy host with Java specification
     public void testNPHostWild2() throws IOException
     {
-        testNPHost("abc|qed|def|a.b.c|.*.com", "java.sun.com", false);
+        testNPHost("abc|qed|def|a.b.c|*.com", "java.sun.com", false);
     }
 
     public void testNPHostWild3() throws IOException
@@ -88,7 +90,7 @@ public class TestNonProxyHost extends TestBase
     {
         try
         {
-            com.oaklandsw.http.HttpURLConnection.setNonProxyHosts("*.com");
+            com.oaklandsw.http.HttpURLConnection.setNonProxyHosts("(**^^.*.com");
             fail("Did not get expected exception");
         }
         catch (RuntimeException ex)
