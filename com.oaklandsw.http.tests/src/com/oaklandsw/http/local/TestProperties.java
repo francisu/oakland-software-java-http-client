@@ -50,7 +50,7 @@ public class TestProperties extends TestCase
         // initializer is called only once. 
         
         // 1767 skipEnvironmentInit
-        System.setProperty("com.oaklandsw.http.skipEnvironmentInit", "true");
+        //System.setProperty("com.oaklandsw.http.skipEnvironmentInit", "true");
 
     }
 
