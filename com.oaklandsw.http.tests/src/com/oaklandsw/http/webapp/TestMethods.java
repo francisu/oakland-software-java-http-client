@@ -3,6 +3,7 @@ package com.oaklandsw.http.webapp;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -254,6 +255,61 @@ public class TestMethods extends TestWebappBase
         is.close();
     }
 
+    public void testBug1796() throws Exception
+    {
+        int tm = 5000;
+        String addr = _urlBase + RequestBodyServlet.NAME;
+
+        String in = "<xmlText></xmlText>";
+
+        HttpURLConnection con = getConnection(addr, "POST", tm);
+        con.setRequestProperty("Content-Type", "text/xml; charset=UTF-8");
+        con.setDoOutput(true);
+        con.connect();
+        final OutputStreamWriter output = new OutputStreamWriter(con
+                .getOutputStream(), "UTF-8");
+        output.write("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
+        output.write(in);
+        output.flush();
+        
+        // Customer did not have the output.close(), and had the two .flush(), .close()
+        // statements after that which were causing the problem.  They worked in the JRE
+        // version however
+        
+        //output.close();
+        //con.getOutputStream().flush();
+        //con.getOutputStream().close();
+        if (con.getResponseCode() != HttpURLConnection.HTTP_OK)
+        {
+            fail("got error: " + con.getResponseCode());
+        }
+
+        InputStream inStr = con.getInputStream();
+        con.getContentLength();
+        assertTrue(Util.getStringFromInputStream(inStr).indexOf("xmlText") > 0);
+    }
+
+    HttpURLConnection getConnection(String addr, String verb, int tout)
+        throws Exception
+    {
+        final URL url = new URL(addr);
+        final HttpURLConnection con = openConnection(url, tout);
+        con.setDoInput(true);
+        con.setRequestMethod(verb);
+        return con;
+    }
+
+    HttpURLConnection openConnection(URL url, int tout) throws Exception
+    {
+        com.oaklandsw.http.HttpURLConnection c = com.oaklandsw.http.HttpURLConnection
+                .openConnection(url);
+        c.setConnectionTimeout(tout);
+        c.setTimeout(tout);
+        c.setRequestTimeout(tout);
+        return c;
+    }
+
+    
     public void testPostAsXMLRPC() throws Exception
     {
         URL url = new URL(_urlBase + RequestBodyServlet.NAME);
