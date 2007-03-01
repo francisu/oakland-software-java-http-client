@@ -86,12 +86,13 @@ import com.oaklandsw.util.Util;
 
 public class HttpConnection
 {
-    public static final String     WIRE_LOG           = "com.oaklandsw.log.http.wireLog";
+    public static final String     WIRE_LOG           = LogUtils.LOG_PREFIX
+                                                          + ".http.wireLog";
 
-    private static final Log             _log               = LogUtils.makeLogger();
+    private static final Log       _log               = LogUtils.makeLogger();
 
     /** Log for any wire messages. */
-    private static final Log             _wireLog           = LogFactory
+    private static final Log       _wireLog           = LogFactory
                                                               .getLog(WIRE_LOG);
 
     private Exception              _openException;
