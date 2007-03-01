@@ -106,7 +106,7 @@ To use the HTTP client support:
 
 
 
-4) Logging is supported using only Apache Log4J version 1.2.x (not version 1.3).  
+4) Logging is supported using only Apache Log4J version 1.2.x or higher.  
    You must provide the log4j jar file
    in the classpath.  This will automatically be detected if present.  If this jar file
    is not present, no logging will occur.
@@ -119,25 +119,25 @@ To use the HTTP client support:
 
    To trace the events on the wire do this:
 
-      log4j.logger.com.oaklandsw.http.wireLog=DEBUG
+      log4j.logger.com.oaklandsw.log.http.wireLog=DEBUG
 
    If you don't want to see any messages at all:
 
-      log4j.logger.com.oaklandsw=OFF
+      log4j.logger.com.oaklandsw.log=OFF
 
    If you want to see everything:
 
-      log4j.logger.com.oaklandsw=DEBUG
+      log4j.logger.com.oaklandsw.log=DEBUG
 
    In general, you can turn logging on for any class in the HTTP
    client.
 
-      log4j.logger.com.oaklandsw.http.HttpConnectionManager=DEBUG
+      log4j.logger.com.oaklandsw.log.http.HttpConnectionManager=DEBUG
 
    To programatically set Log4j logging:
    
         Properties logProps = new Properties();
-        logProps.setProperty("log4j.logger.com.oaklandsw", "DEBUG");
+        logProps.setProperty("log4j.logger.com.oaklandsw.log", "DEBUG");
         PropertyConfigurator.configure(logProps);
    
 

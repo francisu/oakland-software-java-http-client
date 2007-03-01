@@ -5,19 +5,18 @@ import java.net.URL;
 import java.util.ArrayList;
 
 import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
 import com.oaklandsw.http.HttpTimeoutException;
 import com.oaklandsw.http.servlet.TimeoutServlet;
+import com.oaklandsw.util.LogUtils;
 
 public class TestTimeout extends TestWebappBase
 {
 
-    private static final Log _log         = LogFactory
-                                                  .getLog(TestTimeout.class);
+    private static final Log   _log         = LogUtils.makeLogger();
 
     public TestTimeout(String testName)
     {

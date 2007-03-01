@@ -12,7 +12,8 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+
+import com.oaklandsw.util.LogUtils;
 
 /**
  * Releases and closes the connection when the stream is closed.
@@ -20,9 +21,7 @@ import org.apache.commons.logging.LogFactory;
 
 class ReleaseInputStream extends FilterInputStream
 {
-
-    public Log                _log = LogFactory
-                                           .getLog(ReleaseInputStream.class);
+    private static final Log        _log = LogUtils.makeLogger();
 
     private HttpURLConnection _urlCon;
 

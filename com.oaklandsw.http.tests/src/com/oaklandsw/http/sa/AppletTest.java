@@ -8,15 +8,14 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 //import java.net.HttpURLConnection;
 import com.oaklandsw.http.HttpURLConnection;
+import com.oaklandsw.util.LogUtils;
 
 public class AppletTest extends Applet
 {
-    private static final Log          _log                     = LogFactory
-    .getLog(AppletTest.class);
+    private static final Log   _log         = LogUtils.makeLogger();
 
     private Button clear_button;
     

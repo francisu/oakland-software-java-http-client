@@ -8,7 +8,6 @@ import java.net.URL;
 import java.util.Properties;
 
 import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.log4j.PropertyConfigurator;
 
 import com.oaklandsw.http.server.ErrorServer;
@@ -20,7 +19,7 @@ import com.oaklandsw.util.Util;
 public class TestBase extends com.oaklandsw.TestCaseBase
 {
 
-    private static final Log   _log         = LogFactory.getLog(TestBase.class);
+    private static final Log   _log         = LogUtils.makeLogger();
 
     protected static String    _urlBase     = TestEnv.TEST_URL_TOMCAT;
 

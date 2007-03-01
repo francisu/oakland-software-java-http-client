@@ -8,18 +8,17 @@
 package com.oaklandsw.http.ntlm;
 
 import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 import com.oaklandsw.http.HttpException;
 import com.oaklandsw.util.Dump;
 import com.oaklandsw.util.HexString;
+import com.oaklandsw.util.LogUtils;
 import com.oaklandsw.util.Util;
 
 public class Message implements Dump
 {
 
-    private Log                   _log                               = LogFactory
-                                                                             .getLog(Message.class);
+    private static final Log      _log                               = LogUtils.makeLogger();
 
     protected byte[]              _msgBytes;
 

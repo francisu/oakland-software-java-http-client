@@ -64,8 +64,8 @@ import java.io.InputStream;
 import java.io.InterruptedIOException;
 
 import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
+import com.oaklandsw.util.LogUtils;
 import com.oaklandsw.util.Util;
 
 /**
@@ -86,8 +86,7 @@ import com.oaklandsw.util.Util;
 
 public class ChunkedInputStream extends InputStream
 {
-    public Log                     _log     = LogFactory
-                                                    .getLog(ChunkedInputStream.class);
+    private static final Log             _log     = LogUtils.makeLogger();
 
     private InputStream            in;
 
@@ -274,7 +273,7 @@ public class ChunkedInputStream extends InputStream
                             break;
                         case '\"':
                             state = 2;
-                        /* fall through */
+                            /* fall through */
                         default:
                             baos.write(b);
                     }
@@ -302,7 +301,7 @@ public class ChunkedInputStream extends InputStream
                             break;
                         case '\"':
                             state = 0;
-                        /* fall through */
+                            /* fall through */
                         default:
                             baos.write(b);
                     }

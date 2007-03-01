@@ -21,7 +21,7 @@ import org.apache.commons.logging.LogFactory;
 class WireLogOutputStream extends BufferedOutputStream
 {
 
-    private Log          _wireLog = LogFactory.getLog(HttpConnection.WIRE_LOG);
+    private static final Log          _wireLog = LogFactory.getLog(HttpConnection.WIRE_LOG);
 
     private StringBuffer _traceBuff;
 

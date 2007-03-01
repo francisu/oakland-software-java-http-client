@@ -7,7 +7,6 @@ import java.net.URL;
 import java.net.URLEncoder;
 
 import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
@@ -15,11 +14,12 @@ import junit.framework.TestSuite;
 import com.oaklandsw.http.HttpStatus;
 import com.oaklandsw.http.servlet.ParamServlet;
 import com.oaklandsw.http.servlet.RedirectServlet;
+import com.oaklandsw.util.LogUtils;
 
 public class TestRedirect extends TestWebappBase
 {
 
-    private static final Log _log = LogFactory.getLog(TestRedirect.class);
+    private static final Log   _log         = LogUtils.makeLogger();
 
     public TestRedirect(String testName)
     {

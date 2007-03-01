@@ -26,9 +26,9 @@ import javax.net.ssl.SSLSession;
 import javax.net.ssl.SSLSocketFactory;
 
 import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 import com.oaklandsw.http.cookie.CookieSpec;
+import com.oaklandsw.util.LogUtils;
 import com.oaklandsw.util.Util;
 
 /**
@@ -129,11 +129,10 @@ import com.oaklandsw.util.Util;
  * policy to be used. See CookiePolicy for the possible values.
  * <p>
  * <code>com.oaklandsw.http.skipEnvironmentInit</code>- specified that all
- * property settings are to be ignored.  The property settings are normally
- * read in the static initializer of this class.  If this property is set
- * none of the properties will be read.  This is used in environments 
- * where the settings of some system properties might be for other
- * HTTP client implemementations.
+ * property settings are to be ignored. The property settings are normally read
+ * in the static initializer of this class. If this property is set none of the
+ * properties will be read. This is used in environments where the settings of
+ * some system properties might be for other HTTP client implemementations.
  * <p>
  * 
  */
@@ -146,8 +145,8 @@ import com.oaklandsw.util.Util;
 public abstract class HttpURLConnection extends java.net.HttpURLConnection
 {
 
-    protected Log                          _log                              = LogFactory
-                                                                                     .getLog(HttpURLConnection.class);
+    private static final Log                     _log                              = LogUtils
+                                                                                     .makeLogger();
 
     public static final String             HTTP_METHOD_GET                   = "GET";
     public static final String             HTTP_METHOD_POST                  = "POST";
@@ -447,9 +446,7 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
 
     static
     {
-        Log log = LogFactory.getLog(HttpURLConnection.class);
-
-        log.info("Oakland Software HttpURLConnection " + Version.VERSION);
+        _log.info("Oakland Software HttpURLConnection " + Version.VERSION);
 
         // Do the license check dynamically so we don't need to ship
         // the license stuff with the source (and those who build from
@@ -555,7 +552,7 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
                         _defaultConnectionTimeout = Integer
                                 .parseInt(timeoutStr);
                         _defaultRequestTimeout = _defaultConnectionTimeout;
-                        log.info("Default timeout: "
+                        _log.info("Default timeout: "
                             + _defaultConnectionTimeout);
                     }
                     catch (Exception ex)
@@ -572,7 +569,7 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
                     try
                     {
                         _defaultIdleTimeout = Integer.parseInt(timeoutStr);
-                        log.info("Default idle connection timeout: "
+                        _log.info("Default idle connection timeout: "
                             + _defaultIdleTimeout);
                     }
                     catch (Exception ex)
@@ -589,7 +586,7 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
                     try
                     {
                         _defaultIdlePing = Integer.parseInt(timeoutStr);
-                        log.info("Default idle connection ping: "
+                        _log.info("Default idle connection ping: "
                             + _defaultIdlePing);
                     }
                     catch (Exception ex)
@@ -603,7 +600,7 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
                         .getProperty("com.oaklandsw.http.explicitClose");
                 if (explicitStr != null)
                 {
-                    log.info("Require explicit close");
+                    _log.info("Require explicit close");
                     _explicitClose = true;
                 }
 
@@ -612,7 +609,7 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
                 if (followRedirects != null
                     && followRedirects.equalsIgnoreCase("false"))
                 {
-                    log.info("Turning OFF follow redirects");
+                    _log.info("Turning OFF follow redirects");
                     java.net.HttpURLConnection.setFollowRedirects(false);
                 }
 
@@ -623,7 +620,7 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
                     try
                     {
                         setMaxConnectionsPerHost(Integer.parseInt(maxConStr));
-                        log.info("Max connections per host: " + maxConStr);
+                        _log.info("Max connections per host: " + maxConStr);
                     }
                     catch (Exception ex)
                     {
@@ -639,7 +636,7 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
                     try
                     {
                         setTries(Integer.parseInt(triesStr));
-                        log.info("Number of tries: " + triesStr);
+                        _log.info("Number of tries: " + triesStr);
                     }
                     catch (Exception ex)
                     {
@@ -655,7 +652,7 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
                     try
                     {
                         setRetryInterval(Integer.parseInt(retryIntervalStr));
-                        log
+                        _log
                                 .info("Number of retryInterval: "
                                     + retryIntervalStr);
                     }
@@ -714,11 +711,11 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
                 }
 
                 if (getProxyHost() != null)
-                    log.info("Proxy: " + getProxyHost() + ":" + getProxyPort());
+                    _log.info("Proxy: " + getProxyHost() + ":" + getProxyPort());
 
                 setNonProxyHosts(System.getProperty("http.nonProxyHosts"));
                 if (getNonProxyHosts() != null)
-                    log.info("Non proxy hosts: " + getNonProxyHosts());
+                    _log.info("Non proxy hosts: " + getNonProxyHosts());
 
                 USER_AGENT = System.getProperties()
                         .getProperty("com.oaklandsw.http.userAgent");
@@ -727,7 +724,7 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
                         .getProperty("com.oaklandsw.http.cookiePolicy");
                 if (cookiePolicy != null)
                 {
-                    log.info("Default cookie policy: " + _defaultCookieSpec);
+                    _log.info("Default cookie policy: " + _defaultCookieSpec);
                     // This validates the policy and throws if there is a
                     // problem
                     _defaultCookieSpec = CookiePolicy
@@ -738,7 +735,7 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
         }
         catch (SecurityException sex)
         {
-            log.debug("Probably in Applet - properties not used", sex);
+            _log.debug("Probably in Applet - properties not used", sex);
         }
 
         try
@@ -758,14 +755,12 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
 
     private static void initSSL()
     {
-        Log log = LogFactory.getLog(HttpURLConnection.class);
-
-        log.debug("initSSL");
+        _log.debug("initSSL");
         // See if we have SSL at all
         try
         {
             Class.forName("javax.net.ssl.SSLSocketFactory");
-            log.debug("SSL is available");
+            _log.debug("SSL is available");
             _isSSLAvailable = true;
 
             // Ok, we have it, see if we have the 1.4 stuff
@@ -777,7 +772,7 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
                 // Class.forName("javax.net.ssl.HostnameVerifier");
                 // _log.debug("SSL 1.4 HostnameVerifier FOUND");
                 _sslSessionClass = Class.forName("javax.net.ssl.SSLSession");
-                log.debug("SSL 1.4 Session class FOUND");
+                _log.debug("SSL 1.4 Session class FOUND");
                 try
                 {
                     // _hostnameVerifierMethod =
@@ -790,29 +785,29 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
                     _sslGetServerCertMethod = _sslSessionClass
                             .getDeclaredMethod("getPeerCertificates",
                                                new Class[] {});
-                    log.debug("SSL 1.4 cert methods FOUND");
+                    _log.debug("SSL 1.4 cert methods FOUND");
                 }
                 catch (NoSuchMethodException cnf)
                 {
-                    log
+                    _log
                             .debug("NOT FOUND - SSL 1.4 session cert/hostname verify methods",
                                    cnf);
                 }
             }
             catch (ClassNotFoundException cnf)
             {
-                log.debug("SSL 1.4 implementation NOT FOUND", cnf);
+                _log.debug("SSL 1.4 implementation NOT FOUND", cnf);
             }
 
         }
         catch (ClassNotFoundException cnf)
         {
-            log.debug("SSL implementation not found", cnf);
+            _log.debug("SSL implementation not found", cnf);
         }
 
         catch (SecurityException sex)
         {
-            log.debug("Probably in applet: ", sex);
+            _log.debug("Probably in applet: ", sex);
         }
 
         if (_isSSLAvailable)
@@ -1688,8 +1683,7 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
      */
     public static void setDefaultTimeout(int ms)
     {
-        Log log = LogFactory.getLog(HttpURLConnection.class);
-        log.debug("setDefaultTimeout: " + ms);
+        _log.debug("setDefaultTimeout: " + ms);
         _defaultConnectionTimeout = ms;
         _defaultRequestTimeout = ms;
     }
@@ -1715,8 +1709,7 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
      */
     public static void setDefaultConnectionTimeout(int ms)
     {
-        Log log = LogFactory.getLog(HttpURLConnection.class);
-        log.debug("setDefaultConnectionTimeout: " + ms);
+        _log.debug("setDefaultConnectionTimeout: " + ms);
         _defaultConnectionTimeout = ms;
     }
 
@@ -1740,8 +1733,7 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
      */
     public static void setDefaultRequestTimeout(int ms)
     {
-        Log log = LogFactory.getLog(HttpURLConnection.class);
-        log.debug("setDefaultRequestTimeout: " + ms);
+        _log.debug("setDefaultRequestTimeout: " + ms);
         _defaultRequestTimeout = ms;
     }
 
@@ -1796,8 +1788,7 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
      */
     public static void setDefaultIdleConnectionTimeout(int ms)
     {
-        Log log = LogFactory.getLog(HttpURLConnection.class);
-        log.debug("setDefaultIdleConnectionTimeout: " + ms);
+        _log.debug("setDefaultIdleConnectionTimeout: " + ms);
         _defaultIdleTimeout = ms;
     }
 
@@ -1808,8 +1799,7 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
      */
     public static void setDefaultIdleConnectionTimeout()
     {
-        Log log = LogFactory.getLog(HttpURLConnection.class);
-        log.debug("setDefaultIdleConnectionTimeout (Default): "
+        _log.debug("setDefaultIdleConnectionTimeout (Default): "
             + DEFAULT_IDLE_TIMEOUT);
         _defaultIdleTimeout = DEFAULT_IDLE_TIMEOUT;
     }
@@ -1865,8 +1855,7 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
      */
     public static void setDefaultIdleConnectionPing(int ms)
     {
-        Log log = LogFactory.getLog(HttpURLConnection.class);
-        log.debug("setDefaultIdleConnectionPing: " + ms);
+        _log.debug("setDefaultIdleConnectionPing: " + ms);
         _defaultIdlePing = ms;
     }
 
@@ -1877,8 +1866,7 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
      */
     public static void setDefaultIdleConnectionPing()
     {
-        Log log = LogFactory.getLog(HttpURLConnection.class);
-        log.debug("setDefaultIdleConnectionPing (Default): "
+        _log.debug("setDefaultIdleConnectionPing (Default): "
             + DEFAULT_IDLE_PING);
         _defaultIdlePing = DEFAULT_IDLE_PING;
     }
@@ -1926,8 +1914,7 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
      */
     public static void setExplicitClose(boolean explicitClose)
     {
-        Log log = LogFactory.getLog(HttpURLConnection.class);
-        log.debug("setExplicitClose: " + explicitClose);
+        _log.debug("setExplicitClose: " + explicitClose);
         _explicitClose = explicitClose;
     }
 
@@ -1946,8 +1933,7 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
      */
     public static void setMaxConnectionsPerHost(int maxConnections)
     {
-        Log log = LogFactory.getLog(HttpURLConnection.class);
-        log.debug("setMaxConnectionsPerHost: " + maxConnections);
+        _log.debug("setMaxConnectionsPerHost: " + maxConnections);
         _connManager.setMaxConnectionsPerHost(maxConnections);
     }
 
@@ -1995,8 +1981,7 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
      */
     public static void setTries(int tries) throws IllegalArgumentException
     {
-        Log log = LogFactory.getLog(HttpURLConnection.class);
-        log.debug("setTries: " + tries);
+        _log.debug("setTries: " + tries);
         if (tries < 1)
             throw new IllegalArgumentException("You must allow at least one try");
         _tries = tries;
@@ -2021,8 +2006,7 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
      */
     public static void setRetryInterval(int ms)
     {
-        Log log = LogFactory.getLog(HttpURLConnection.class);
-        log.debug("setRetryInterval: " + ms);
+        _log.debug("setRetryInterval: " + ms);
         _retryInterval = ms;
     }
 
@@ -2044,8 +2028,7 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
      */
     public static void setPreemptiveAuthentication(boolean enabled)
     {
-        Log log = LogFactory.getLog(HttpURLConnection.class);
-        log.debug("setPreemptiveAuthentication: " + enabled);
+        _log.debug("setPreemptiveAuthentication: " + enabled);
         _preemptiveAuthentication = enabled;
     }
 
@@ -2103,8 +2086,7 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
      */
     public static void setProxyHost(String host)
     {
-        Log log = LogFactory.getLog(HttpURLConnection.class);
-        log.debug("setProxyHost: " + host);
+        _log.debug("setProxyHost: " + host);
         _connManager.setProxyHost(host);
     }
 
@@ -2155,8 +2137,7 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
      */
     public static void setProxyPort(int port)
     {
-        Log log = LogFactory.getLog(HttpURLConnection.class);
-        log.debug("setProxyPort: " + port);
+        _log.debug("setProxyPort: " + port);
         _connManager.setProxyPort(port);
     }
 
@@ -2208,8 +2189,7 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
      */
     public static void setProxyUser(String user)
     {
-        Log log = LogFactory.getLog(HttpURLConnection.class);
-        log.debug("setProxyUser: " + user);
+        _log.debug("setProxyUser: " + user);
         _connManager.setProxyUser(user);
     }
 
@@ -2264,8 +2244,7 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
      */
     public static void setProxyPassword(String password)
     {
-        Log log = LogFactory.getLog(HttpURLConnection.class);
-        log.debug("setProxyPassword: " + password);
+        _log.debug("setProxyPassword: " + password);
         _connManager.setProxyPassword(password);
     }
 
@@ -2321,8 +2300,7 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
     public static void setNonProxyHosts(String hosts)
     {
         // It is validated by the connection manager
-        Log log = LogFactory.getLog(HttpURLConnection.class);
-        log.debug("setNonProxyHosts: " + hosts);
+        _log.debug("setNonProxyHosts: " + hosts);
         _connManager.setNonProxyHosts(hosts);
     }
 

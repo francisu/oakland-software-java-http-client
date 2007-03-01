@@ -68,10 +68,10 @@ import java.util.Map;
 import java.util.StringTokenizer;
 
 import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.regexp.RE;
 import org.apache.regexp.RESyntaxException;
 
+import com.oaklandsw.util.LogUtils;
 import com.oaklandsw.util.StringUtils;
 import com.oaklandsw.util.URIUtil;
 
@@ -83,8 +83,8 @@ import com.oaklandsw.util.URIUtil;
  */
 public class HttpConnectionManager
 {
-    private Log                   _log                    = LogFactory
-                                                                  .getLog(HttpConnectionManager.class);
+    private static final Log            _log                    = LogUtils
+                                                                  .makeLogger();
 
     // RFC 2616 sec 8.1.4
     public static int             DEFAULT_MAX_CONNECTIONS = 2;
@@ -221,11 +221,12 @@ public class HttpConnectionManager
             {
                 String host = stringtokenizer.nextToken().toLowerCase().trim();
 
-                // The syntax for a non-proxy host only allows a "*" as wildcard,
+                // The syntax for a non-proxy host only allows a "*" as
+                // wildcard,
                 // so we need to fix it up to be a correct RE.
                 host = StringUtils.replace(host, ".", "\\.");
                 host = StringUtils.replace(host, "*", ".*");
-                
+
                 RE re;
                 try
                 {

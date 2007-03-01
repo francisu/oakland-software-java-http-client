@@ -29,12 +29,12 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 import com.oaklandsw.http.cookie.CookieSpec;
 import com.oaklandsw.http.cookie.CookieSpecBase;
 import com.oaklandsw.http.cookie.NetscapeDraftSpec;
 import com.oaklandsw.http.cookie.RFC2109Spec;
+import com.oaklandsw.util.LogUtils;
 
 /**
  * Cookie management policy class. The cookie policy provides corresponding
@@ -59,6 +59,7 @@ import com.oaklandsw.http.cookie.RFC2109Spec;
  */
 public abstract class CookiePolicy
 {
+    private static final Log                _log                  = LogUtils.makeLogger();
 
     private static Map         SPECS                 = Collections
                                                              .synchronizedMap(new HashMap());
@@ -188,8 +189,7 @@ public abstract class CookiePolicy
             }
             catch (Exception e)
             {
-                Log log = LogFactory.getLog(CookiePolicy.class);
-                log.error("Error initializing cookie spec: " + id, e);
+                _log.error("Error initializing cookie spec: " + id, e);
                 throw new IllegalStateException(id
                     + " cookie spec implemented by "
                     + clazz.getName()
@@ -217,8 +217,7 @@ public abstract class CookiePolicy
         }
         catch (IllegalStateException e)
         {
-            Log log = LogFactory.getLog(CookiePolicy.class);
-            log.warn("Default cookie policy is not registered");
+            _log.warn("Default cookie policy is not registered");
             return new RFC2109Spec();
         }
     }

@@ -60,8 +60,8 @@ import java.io.IOException;
 import java.io.OutputStream;
 
 import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
+import com.oaklandsw.util.LogUtils;
 
 /**
  * <p>
@@ -78,6 +78,7 @@ import org.apache.commons.logging.LogFactory;
  */
 public class RequestOutputStream extends OutputStream
 {
+    private static final Log _log = LogUtils.makeLogger();
 
     // ----------------------------------------------------------- Constructors
 
@@ -111,11 +112,6 @@ public class RequestOutputStream extends OutputStream
         this.stream = str;
         this.useChunking = useCh;
     }
-
-    // ------------------------------------------------------- Static Variables
-
-    private Log  log          = LogFactory
-                                                   .getLog(RequestOutputStream.class);
 
     // ----------------------------------------------------- Instance Variables
 
@@ -180,7 +176,7 @@ public class RequestOutputStream extends OutputStream
      */
     public void print(String s) throws IOException
     {
-        log.trace("enter RequestOutputStream.print(String)");
+        _log.trace("enter RequestOutputStream.print(String)");
 
         if (s == null)
         {
@@ -260,7 +256,7 @@ public class RequestOutputStream extends OutputStream
      */
     public void write(byte[] b, int off, int len) throws IOException
     {
-        log.trace("enter RequestOutputStream.write(byte[], int, int)");
+        _log.trace("enter RequestOutputStream.write(byte[], int, int)");
 
         if (useChunking)
         {
@@ -284,7 +280,7 @@ public class RequestOutputStream extends OutputStream
      */
     public void close() throws IOException
     {
-        log.trace("enter RequestOutputStream.close()");
+        _log.trace("enter RequestOutputStream.close()");
 
         if (!closed)
         {
@@ -300,7 +296,7 @@ public class RequestOutputStream extends OutputStream
             }
             catch (IOException ioe)
             {
-                log.debug("Unexpected exception caught when closing output "
+                _log.debug("Unexpected exception caught when closing output "
                     + " stream", ioe);
                 throw ioe;
             }

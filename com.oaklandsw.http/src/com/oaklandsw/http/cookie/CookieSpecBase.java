@@ -32,13 +32,13 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 import com.oaklandsw.http.Cookie;
 import com.oaklandsw.http.HeaderElement;
 import com.oaklandsw.http.NameValuePair;
 import com.oaklandsw.util.DateParseException;
 import com.oaklandsw.util.DateUtil;
+import com.oaklandsw.util.LogUtils;
 
 /**
  * 
@@ -59,14 +59,12 @@ import com.oaklandsw.util.DateUtil;
  */
 public class CookieSpecBase implements CookieSpec
 {
-
-    /** Log object */
-    protected Log      LOG          = LogFactory.getLog(CookieSpec.class);
+    private static final Log _log         = LogUtils.makeLogger();
 
     /** Valid date patterns */
-    private Collection datepatterns = null;
+    private Collection       datepatterns = null;
 
-    protected String   _policyName;
+    protected String         _policyName;
 
     /** Default constructor */
     public CookieSpecBase()
@@ -126,7 +124,7 @@ public class CookieSpecBase implements CookieSpec
                           final String header) throws MalformedCookieException
     {
 
-        LOG.trace("enter CookieSpecBase.parse("
+        _log.trace("enter CookieSpecBase.parse("
             + "String, port, path, boolean, Header)");
 
         if (host == null)
@@ -341,16 +339,16 @@ public class CookieSpecBase implements CookieSpec
             }
             catch (DateParseException dpe)
             {
-                LOG.debug("Error parsing cookie date", dpe);
+                _log.debug("Error parsing cookie date", dpe);
                 throw new MalformedCookieException("Unable to parse expiration date parameter: "
                     + paramValue);
             }
         }
         else
         {
-            if (LOG.isDebugEnabled())
+            if (_log.isDebugEnabled())
             {
-                LOG.debug("Unrecognized cookie attribute: "
+                _log.debug("Unrecognized cookie attribute: "
                     + attribute.toString());
             }
         }
@@ -391,7 +389,7 @@ public class CookieSpecBase implements CookieSpec
                          final Cookie cookie) throws MalformedCookieException
     {
 
-        LOG.trace("enter CookieSpecBase.validate("
+        _log.trace("enter CookieSpecBase.validate("
             + "String, port, path, boolean, Cookie)");
         if (host == null)
         {
@@ -501,7 +499,7 @@ public class CookieSpecBase implements CookieSpec
                          final Cookie cookie)
     {
 
-        LOG.trace("enter CookieSpecBase.match("
+        _log.trace("enter CookieSpecBase.match("
             + "String, int, String, boolean, Cookie");
 
         if (host == null)
@@ -531,12 +529,12 @@ public class CookieSpecBase implements CookieSpec
         host = host.toLowerCase();
         if (cookie.getDomain() == null)
         {
-            LOG.warn("Invalid cookie state: domain not specified");
+            _log.warn("Invalid cookie state: domain not specified");
             return false;
         }
         if (cookie.getPath() == null)
         {
-            LOG.warn("Invalid cookie state: path not specified");
+            _log.warn("Invalid cookie state: path not specified");
             return false;
         }
 
@@ -624,7 +622,7 @@ public class CookieSpecBase implements CookieSpec
                           final Cookie cookies[])
     {
 
-        LOG.trace("enter CookieSpecBase.match("
+        _log.trace("enter CookieSpecBase.match("
             + "String, int, String, boolean, Cookie[])");
 
         if (cookies == null)
@@ -677,7 +675,7 @@ public class CookieSpecBase implements CookieSpec
      */
     public String formatCookie(Cookie cookie)
     {
-        LOG.trace("enter CookieSpecBase.formatCookie(Cookie)");
+        _log.trace("enter CookieSpecBase.formatCookie(Cookie)");
         if (cookie == null)
         {
             throw new IllegalArgumentException("Cookie may not be null");
@@ -707,7 +705,7 @@ public class CookieSpecBase implements CookieSpec
     public String formatCookies(Cookie[] cookies)
         throws IllegalArgumentException
     {
-        LOG.trace("enter CookieSpecBase.formatCookies(Cookie[])");
+        _log.trace("enter CookieSpecBase.formatCookies(Cookie[])");
         if (cookies == null)
         {
             throw new IllegalArgumentException("Cookie array may not be null");

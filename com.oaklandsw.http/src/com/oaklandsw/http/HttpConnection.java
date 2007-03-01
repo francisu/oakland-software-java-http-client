@@ -81,12 +81,18 @@ import javax.security.cert.X509Certificate;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import com.oaklandsw.util.LogUtils;
 import com.oaklandsw.util.Util;
 
 public class HttpConnection
 {
+    public static final String     WIRE_LOG           = "com.oaklandsw.log.http.wireLog";
 
-    public static final String     WIRE_LOG           = "com.oaklandsw.http.wireLog";
+    private static final Log             _log               = LogUtils.makeLogger();
+
+    /** Log for any wire messages. */
+    private static final Log             _wireLog           = LogFactory
+                                                              .getLog(WIRE_LOG);
 
     private Exception              _openException;
 
@@ -95,14 +101,6 @@ public class HttpConnection
     private int                    _proxyIncarnation;
 
     private static final int       STREAM_BUFFER_SIZE = 65000;
-
-    /** Log object for this class. */
-    public Log                     _log               = LogFactory
-                                                              .getLog(HttpConnection.class);
-
-    /** Log for any wire messages. */
-    private Log                    _wireLog           = LogFactory
-                                                              .getLog(WIRE_LOG);
 
     /** My host. */
     private String                 _host              = null;
@@ -201,8 +199,6 @@ public class HttpConnection
 
     static
     {
-        Log log = LogFactory.getLog(HttpConnection.class);
-
         try
         {
             Class inetSocketAddressClass = Class
@@ -215,24 +211,24 @@ public class HttpConnection
                                                             new Class[] {
         socketAddressClass, Integer.TYPE                   });
 
-            log.debug("1.4 connect method found");
+            _log.debug("1.4 connect method found");
 
             _inetSocketAddressCons = inetSocketAddressClass
                     .getConstructor(new Class[] { String.class, Integer.TYPE });
-            log.debug("1.4 InetSocketAddress constructor method found");
+            _log.debug("1.4 InetSocketAddress constructor method found");
 
         }
         catch (NoSuchMethodException nsm)
         {
-            log.debug("1.4 method/constructor NOT found", nsm);
+            _log.debug("1.4 method/constructor NOT found", nsm);
         }
         catch (ClassNotFoundException cnf)
         {
-            log.debug("1.4 InetSocketAddress class NOT found", cnf);
+            _log.debug("1.4 InetSocketAddress class NOT found", cnf);
         }
         catch (SecurityException sex)
         {
-            log.debug("1.4 InetSocketAddress class (probably in applet)", sex);
+            _log.debug("1.4 InetSocketAddress class (probably in applet)", sex);
         }
 
     }

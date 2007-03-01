@@ -24,9 +24,12 @@
 
 package com.oaklandsw.http.cookie;
 
+import org.apache.commons.logging.Log;
+
 import com.oaklandsw.http.Cookie;
 import com.oaklandsw.http.NameValuePair;
 import com.oaklandsw.http.ParameterFormatter;
+import com.oaklandsw.util.LogUtils;
 
 /**
  * <p>
@@ -48,6 +51,7 @@ import com.oaklandsw.http.ParameterFormatter;
 
 public class RFC2109Spec extends CookieSpecBase
 {
+    private static final Log         _log = LogUtils.makeLogger();
 
     private final ParameterFormatter formatter;
 
@@ -148,7 +152,7 @@ public class RFC2109Spec extends CookieSpecBase
                          final Cookie cookie) throws MalformedCookieException
     {
 
-        LOG.trace("enter RFC2109Spec.validate(String, int, String, "
+        _log.trace("enter RFC2109Spec.validate(String, int, String, "
             + "boolean, Cookie)");
 
         // Perform generic validation
@@ -301,7 +305,7 @@ public class RFC2109Spec extends CookieSpecBase
      */
     public String formatCookie(Cookie cookie)
     {
-        LOG.trace("enter RFC2109Spec.formatCookie(Cookie)");
+        _log.trace("enter RFC2109Spec.formatCookie(Cookie)");
         if (cookie == null)
         {
             throw new IllegalArgumentException("Cookie may not be null");
@@ -327,7 +331,7 @@ public class RFC2109Spec extends CookieSpecBase
      */
     public String formatCookies(Cookie[] cookies)
     {
-        LOG.trace("enter RFC2109Spec.formatCookieHeader(Cookie[])");
+        _log.trace("enter RFC2109Spec.formatCookieHeader(Cookie[])");
         int version = Integer.MAX_VALUE;
         // Pick the lowerest common denominator
         for (int i = 0; i < cookies.length; i++)

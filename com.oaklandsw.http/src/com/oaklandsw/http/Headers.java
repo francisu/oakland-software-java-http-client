@@ -17,8 +17,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
+import com.oaklandsw.util.LogUtils;
 import com.oaklandsw.util.Util;
 
 /**
@@ -26,9 +26,7 @@ import com.oaklandsw.util.Util;
  */
 public class Headers
 {
-
-    private Log                      _log      = LogFactory
-                                                       .getLog(Headers.class);
+    private static final Log               _log      = LogUtils.makeLogger();
 
     private static final int         INIT_SIZE = 10;
 
@@ -268,7 +266,7 @@ public class Headers
                     }
 
                     state = VALUE;
-                // Fall through to VALUE
+                    // Fall through to VALUE
 
                 case VALUE:
                     if (ch == '\r' || ch == '\n')

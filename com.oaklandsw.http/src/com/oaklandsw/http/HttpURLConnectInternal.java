@@ -19,6 +19,7 @@ import java.util.Map;
 import org.apache.commons.logging.Log;
 
 import com.oaklandsw.http.cookie.MalformedCookieException;
+import com.oaklandsw.util.LogUtils;
 import com.oaklandsw.util.URIUtil;
 import com.oaklandsw.util.Util;
 
@@ -29,6 +30,7 @@ public class HttpURLConnectInternal
     extends
         com.oaklandsw.http.HttpURLConnection
 {
+    private static final Log           _log            = LogUtils.makeLogger();
 
     /**
      * @see java.net.HttpURLConnection#HttpURLConnection(URL)

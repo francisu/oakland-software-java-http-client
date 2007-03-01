@@ -75,7 +75,7 @@ import org.apache.commons.logging.LogFactory;
 class WireLogInputStream extends BufferedInputStream
 {
 
-    private Log          _wireLog = LogFactory.getLog(HttpConnection.WIRE_LOG);
+    private static final Log          _wireLog = LogFactory.getLog(HttpConnection.WIRE_LOG);
 
     private StringBuffer _traceBuff;
 

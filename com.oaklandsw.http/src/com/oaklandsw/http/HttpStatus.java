@@ -61,7 +61,8 @@ package com.oaklandsw.http;
 import java.util.Hashtable;
 
 import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+
+import com.oaklandsw.util.LogUtils;
 
 /**
  * <p>
@@ -75,6 +76,7 @@ import org.apache.commons.logging.LogFactory;
  */
 public class HttpStatus
 {
+    private static final Log       _log           = LogUtils.makeLogger();
 
     // -------------------------------------------------------- Class Variables
 
@@ -94,8 +96,7 @@ public class HttpStatus
         Integer intKey = new Integer(nHttpStatusCode);
         if (!mapStatusCodes.containsKey(intKey))
         {
-            Log log = LogFactory.getLog(HttpStatus.class);
-            log.warn("No status text available for status code "
+            _log.warn("No status text available for status code "
                 + nHttpStatusCode);
             return null;
 

@@ -37,16 +37,16 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+
+import com.oaklandsw.util.LogUtils;
 
 /**
  * Holds a set of cookies.
  */
 public class CookieContainer implements Collection
 {
-    private List _cookies = new ArrayList();
-
-    private Log  _log     = LogFactory.getLog(CookieContainer.class);
+    private static final Log _log     = LogUtils.makeLogger();
+    private List       _cookies = new ArrayList();
 
     public CookieContainer()
     {

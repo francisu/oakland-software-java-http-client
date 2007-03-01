@@ -6,15 +6,15 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 
 import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 import com.oaklandsw.http.TestEnv;
+import com.oaklandsw.util.LogUtils;
 import com.oaklandsw.util.Util;
 
 public class HttpGet
 {
 
-    private static final Log _log = LogFactory.getLog(HttpGet.class);
+    private static final Log   _log         = LogUtils.makeLogger();
 
     public HttpGet()
     {

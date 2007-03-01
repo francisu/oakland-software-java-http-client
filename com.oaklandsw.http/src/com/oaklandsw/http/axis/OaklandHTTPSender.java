@@ -34,7 +34,6 @@ import org.apache.axis.transport.http.HTTPConstants;
 import org.apache.axis.utils.JavaUtils;
 import org.apache.axis.utils.Messages;
 import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 import com.oaklandsw.http.Cookie;
 import com.oaklandsw.http.CookieContainer;
@@ -43,6 +42,7 @@ import com.oaklandsw.http.Credential;
 import com.oaklandsw.http.HttpURLConnection;
 import com.oaklandsw.http.HttpUserAgent;
 import com.oaklandsw.http.UserCredential;
+import com.oaklandsw.util.LogUtils;
 import com.oaklandsw.util.Util;
 
 import javax.xml.soap.MimeHeader;
@@ -61,8 +61,7 @@ import java.util.zip.GZIPOutputStream;
 
 public class OaklandHTTPSender extends BasicHandler implements HttpUserAgent
 {
-    protected static Log                  _log = LogFactory
-                                                       .getLog(OaklandHTTPSender.class);
+    private static final Log              _log = LogUtils.makeLogger();
 
     protected CommonsHTTPClientProperties _clientProperties;
     boolean                               httpChunkStream;

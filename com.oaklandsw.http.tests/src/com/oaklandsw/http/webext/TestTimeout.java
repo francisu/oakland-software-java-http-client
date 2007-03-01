@@ -4,7 +4,6 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 
 import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
@@ -12,11 +11,12 @@ import junit.framework.TestSuite;
 import com.oaklandsw.http.HttpTimeoutException;
 import com.oaklandsw.http.TestBase;
 import com.oaklandsw.http.TestEnv;
+import com.oaklandsw.util.LogUtils;
 
 public class TestTimeout extends TestBase
 {
 
-    private static final Log _log = LogFactory.getLog(TestTimeout.class);
+    private static final Log _log = LogUtils.makeLogger();
 
     static
     {
@@ -40,7 +40,6 @@ public class TestTimeout extends TestBase
         mainRun(suite(), args);
     }
 
-    
     public void testConnectTimeout(int type) throws Exception
     {
         // Make it really small - so we timeout while waiting
@@ -81,10 +80,10 @@ public class TestTimeout extends TestBase
 
     // This does not actually work since the connection does not timeout
     // in time
-//    public void testConnectTimeoutDefConnect() throws Exception
-//    {
-//        testConnectTimeout(DEF_CONNECT);
-//    }
+    // public void testConnectTimeoutDefConnect() throws Exception
+    // {
+    // testConnectTimeout(DEF_CONNECT);
+    // }
 
     public void testConnectTimeoutConn() throws Exception
     {
@@ -92,17 +91,17 @@ public class TestTimeout extends TestBase
     }
 
     // This test does not work since the connection does not timeout
-//    public void testConnectTimeoutConnConnect() throws Exception
-//    {
-//        testConnectTimeout(CONN_CONNECT);
-//    }
+    // public void testConnectTimeoutConnConnect() throws Exception
+    // {
+    // testConnectTimeout(CONN_CONNECT);
+    // }
 
     public void allTestMethods() throws Exception
     {
         testConnectTimeoutDef();
-        //testConnectTimeoutDefConnect();
+        // testConnectTimeoutDefConnect();
         testConnectTimeoutConn();
-        //testConnectTimeoutConnConnect();
+        // testConnectTimeoutConnConnect();
     }
 
 }

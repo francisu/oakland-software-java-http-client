@@ -8,15 +8,15 @@
 package com.oaklandsw.http;
 
 import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+
+import com.oaklandsw.util.LogUtils;
 
 /**
  * Handles the connection timeout mechanism.
  */
 public class HttpConnectionTimeout
 {
-    private Log                   _log          = LogFactory
-                                                        .getLog(HttpConnectionTimeout.class);
+    private static final Log            _log          = LogUtils.makeLogger();
 
     private TimeoutThread         _timeoutThread;
 

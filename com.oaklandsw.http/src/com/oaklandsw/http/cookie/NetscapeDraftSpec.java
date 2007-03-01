@@ -31,9 +31,12 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.text.ParseException;
 
+import org.apache.commons.logging.Log;
+
 import com.oaklandsw.http.Cookie;
 import com.oaklandsw.http.HeaderElement;
 import com.oaklandsw.http.NameValuePair;
+import com.oaklandsw.util.LogUtils;
 
 /**
  * <P>
@@ -55,6 +58,7 @@ import com.oaklandsw.http.NameValuePair;
 
 public class NetscapeDraftSpec extends CookieSpecBase
 {
+    private static final Log _log = LogUtils.makeLogger();
 
     /** Default constructor */
     public NetscapeDraftSpec()
@@ -118,7 +122,7 @@ public class NetscapeDraftSpec extends CookieSpecBase
                           final String header) throws MalformedCookieException
     {
 
-        LOG
+        _log
                 .trace("enter NetscapeDraftSpec.parse(String, port, path, boolean, Header)");
 
         if (host == null)
@@ -268,7 +272,7 @@ public class NetscapeDraftSpec extends CookieSpecBase
                          final Cookie cookie) throws MalformedCookieException
     {
 
-        LOG.trace("enterNetscapeDraftCookieProcessor "
+        _log.trace("enterNetscapeDraftCookieProcessor "
             + "RCF2109CookieProcessor.validate(Cookie)");
         // Perform generic validation
         super.validate(host, port, path, secure, cookie);

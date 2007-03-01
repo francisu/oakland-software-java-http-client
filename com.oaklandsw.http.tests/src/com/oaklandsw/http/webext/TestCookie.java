@@ -3,7 +3,6 @@ package com.oaklandsw.http.webext;
 import java.net.URL;
 
 import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
@@ -11,11 +10,12 @@ import junit.framework.TestSuite;
 import com.oaklandsw.http.CookieContainer;
 import com.oaklandsw.http.HttpURLConnection;
 import com.oaklandsw.http.TestBase;
+import com.oaklandsw.util.LogUtils;
 
 public class TestCookie extends TestBase
 {
 
-    private static final Log _log = LogFactory.getLog(TestCookie.class);
+    private static final Log   _log         = LogUtils.makeLogger();
 
     public TestCookie(String testName)
     {

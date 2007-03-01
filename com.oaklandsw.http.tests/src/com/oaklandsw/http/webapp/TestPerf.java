@@ -5,16 +5,16 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 
 import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 import com.oaklandsw.http.TestEnv;
 import com.oaklandsw.http.servlet.HeaderServlet;
+import com.oaklandsw.util.LogUtils;
 import com.oaklandsw.util.Util;
 
 public class TestPerf
 {
 
-    private static final Log _log = LogFactory.getLog(TestPerf.class);
+    private static final Log   _log         = LogUtils.makeLogger();
 
     public TestPerf()
     {

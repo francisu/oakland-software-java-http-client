@@ -63,7 +63,10 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.Vector;
 
+import org.apache.commons.logging.Log;
+
 import com.oaklandsw.http.HttpConnection;
+import com.oaklandsw.util.LogUtils;
 
 /**
  * For test-nohost testing purposes only.
@@ -72,6 +75,8 @@ import com.oaklandsw.http.HttpConnection;
  */
 public class SimpleHttpConnection extends HttpConnection
 {
+    private static final Log    _log            = LogUtils.makeLogger();
+
     int                   hits            = 0;
 
     Vector                bodies          = new Vector();
@@ -107,9 +112,8 @@ public class SimpleHttpConnection extends HttpConnection
         }
         catch (ArrayIndexOutOfBoundsException aiofbe)
         {
-            throw new IOException(
-                "SimpleHttpConnection has been opened more times "
-                    + "than it has responses.  You might need to call addResponse().");
+            throw new IOException("SimpleHttpConnection has been opened more times "
+                + "than it has responses.  You might need to call addResponse().");
         }
     }
 

@@ -4,7 +4,6 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 
 import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
@@ -13,11 +12,12 @@ import com.oaklandsw.http.HttpConnection;
 import com.oaklandsw.http.HttpTimeoutException;
 import com.oaklandsw.http.TestBase;
 import com.oaklandsw.http.TestEnv;
+import com.oaklandsw.util.LogUtils;
 
 public class TestTimeout extends TestBase
 {
 
-    private static final Log _log = LogFactory.getLog(TestTimeout.class);
+    private static final Log _log = LogUtils.makeLogger();
 
     public TestTimeout(String testName)
     {
@@ -71,7 +71,8 @@ public class TestTimeout extends TestBase
         if (!TestEnv.SIMULATED_TIMEOUT_ENABLED)
             return;
 
-        setupConnTimeout((com.oaklandsw.http.HttpURLConnection)urlCon, type,
+        setupConnTimeout((com.oaklandsw.http.HttpURLConnection)urlCon,
+                         type,
                          _timeoutVal);
 
         long startTime = System.currentTimeMillis();
@@ -132,7 +133,8 @@ public class TestTimeout extends TestBase
 
         HttpURLConnection urlCon = (HttpURLConnection)url.openConnection();
 
-        setupConnTimeout((com.oaklandsw.http.HttpURLConnection)urlCon, type,
+        setupConnTimeout((com.oaklandsw.http.HttpURLConnection)urlCon,
+                         type,
                          _timeoutVal);
 
         try
@@ -210,5 +212,4 @@ public class TestTimeout extends TestBase
         testRepeatConnectTimeout(CONN_CONNECT);
     }
 
-    
 }

@@ -63,7 +63,8 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+
+import com.oaklandsw.util.LogUtils;
 
 /**
  * Closes a HttpConnection as soon as the end of the stream is reached.
@@ -75,8 +76,7 @@ import org.apache.commons.logging.LogFactory;
 
 class AutoCloseInputStream extends FilterInputStream
 {
-    public Log                _log = LogFactory
-                                           .getLog(AutoCloseInputStream.class);
+    private static final Log        _log = LogUtils.makeLogger();
 
     private HttpURLConnection _urlCon;
 

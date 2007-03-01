@@ -7,19 +7,19 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
 import com.oaklandsw.http.TestEnv;
 import com.oaklandsw.http.servlet.HeaderServlet;
+import com.oaklandsw.util.LogUtils;
 import com.oaklandsw.util.NetUtils;
 
 public class TestHeaders extends TestWebappBase
 {
 
-    private static final Log _log = LogFactory.getLog(TestHeaders.class);
+    private static final Log   _log         = LogUtils.makeLogger();
 
     public TestHeaders(String testName)
     {

@@ -6,19 +6,18 @@ import java.net.URL;
 import java.net.UnknownHostException;
 
 import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
 import com.oaklandsw.http.TestEnv;
 import com.oaklandsw.http.servlet.TimeoutServlet;
+import com.oaklandsw.util.LogUtils;
 
 public class TestFailover extends TestWebappBase
 {
 
-    private static final Log _log         = LogFactory
-                                                  .getLog(TestFailover.class);
+    private static final Log   _log         = LogUtils.makeLogger();
 
     public TestFailover(String testName)
     {
