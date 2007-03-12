@@ -43,6 +43,7 @@ import com.oaklandsw.http.HttpURLConnection;
 import com.oaklandsw.http.HttpUserAgent;
 import com.oaklandsw.http.UserCredential;
 import com.oaklandsw.util.LogUtils;
+import com.oaklandsw.util.URIUtil;
 import com.oaklandsw.util.Util;
 
 import javax.xml.soap.MimeHeader;
@@ -115,8 +116,9 @@ public class OaklandHTTPSender extends BasicHandler implements HttpUserAgent
 
         try
         {
-            URL targetURL = new URL(msgContext
-                    .getStrProp(MessageContext.TRANS_URL));
+            String targetURLString = msgContext
+                    .getStrProp(MessageContext.TRANS_URL);
+            URL targetURL = new URL(targetURLString);
 
             HttpURLConnection urlCon = HttpURLConnection
                     .openConnection(targetURL);
@@ -172,7 +174,9 @@ public class OaklandHTTPSender extends BasicHandler implements HttpUserAgent
                 urlCon.setCookieSupport(cc, CookiePolicy.BROWSER_COMPATIBILITY);
 
                 String host = targetURL.getHost();
-                String path = targetURL.getPath();
+                // JDK12 - switch to this when we drop JDK 12
+                // String path = targetURL.getPath();
+                String path = URIUtil.getPath(targetURLString);
                 boolean secure = targetURL.getProtocol()
                         .equalsIgnoreCase("https");
                 fillHeaders(msgContext,
@@ -470,6 +474,8 @@ public class OaklandHTTPSender extends BasicHandler implements HttpUserAgent
                                 MessageContext msgContext,
                                 URL tmpURL) throws Exception
     {
+        // JDK12 - see below
+        String tmpURLString = tmpURL.toString();
 
         // optionally set a timeout for the request
         if (msgContext.getTimeout() != 0)
@@ -503,19 +509,22 @@ public class OaklandHTTPSender extends BasicHandler implements HttpUserAgent
 
         // if UserID is not part of the context, but is in the URL, use
         // the one in the URL.
-        if ((userID == null) && (tmpURL.getUserInfo() != null))
-        {
-            String info = tmpURL.getUserInfo();
-            int sep = info.indexOf(':');
+        // JDK12
+        //String userInfo = tmpURL.getUserInfo();
+        String userInfo = URIUtil.getUserInfo(tmpURLString);
 
-            if ((sep >= 0) && (sep + 1 < info.length()))
+        if ((userID == null) && (userInfo != null))
+        {
+            int sep = userInfo.indexOf(':');
+
+            if ((sep >= 0) && (sep + 1 < userInfo.length()))
             {
-                userID = info.substring(0, sep);
-                passwd = info.substring(sep + 1);
+                userID = userInfo.substring(0, sep);
+                passwd = userInfo.substring(sep + 1);
             }
             else
             {
-                userID = info;
+                userID = userInfo;
             }
         }
 

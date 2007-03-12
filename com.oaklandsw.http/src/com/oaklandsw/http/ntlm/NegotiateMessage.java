@@ -85,6 +85,7 @@ public class NegotiateMessage extends Message
     {
         int domainLen = _domain.length();
         int hostLen = _host.length();
+        
         _msgLength = NEGOTIATE_HEADER_LEN + hostLen + domainLen;
 
         _type = MSG_NEGOTIATE;
@@ -109,6 +110,8 @@ public class NegotiateMessage extends Message
 
         if (domainLen == 0)
             domainOffset = 0;
+        if (hostLen == 0)
+            hostOffset = 0;
 
         index = Util.toByteLittle(_flags, 4, _msgBytes, index);
 
@@ -120,7 +123,8 @@ public class NegotiateMessage extends Message
         index = Util.toByteLittle(hostLen, 2, _msgBytes, index);
         index = Util.toByteLittle(hostOffset, 4, _msgBytes, index);
 
-        index = Util.toByteAscii(_host.toUpperCase(), _msgBytes, index);
+        if (hostLen != 0)
+            index = Util.toByteAscii(_host.toUpperCase(), _msgBytes, index);
 
         if (domainLen != 0)
             index = Util.toByteAscii(_domain.toUpperCase(), _msgBytes, index);

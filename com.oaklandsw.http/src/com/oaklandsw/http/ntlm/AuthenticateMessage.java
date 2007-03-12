@@ -523,7 +523,8 @@ public class AuthenticateMessage extends Message
 
                 if (false && (_challenge.getFlags() & NEGOTIATE_NTLM2) != 0)
                 {
-                    // NTLM2 Session response
+                    // NTLM2 Session response - this does not appear
+                    // to be used for anything
                     _ntResponse = getNTLM2SessionResponse(_password,
                                                           _nonce,
                                                           clientChallenge);
@@ -538,6 +539,7 @@ public class AuthenticateMessage extends Message
                                                     _challenge.getTargetBlock(),
                                                     _nonce,
                                                     clientChallenge);
+                    _flags |= NEGOTIATE_NTLM2;
                 }
             }
             else

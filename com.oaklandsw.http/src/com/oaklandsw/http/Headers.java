@@ -11,7 +11,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -26,7 +25,7 @@ import com.oaklandsw.util.Util;
  */
 public class Headers
 {
-    private static final Log               _log      = LogUtils.makeLogger();
+    private static final Log         _log      = LogUtils.makeLogger();
 
     private static final int         INIT_SIZE = 10;
 
@@ -252,8 +251,6 @@ public class Headers
                         state = AFTER_HEADER;
                         continue;
                     }
-
-                    // Fall through - save character
                     break;
 
                 case AFTER_HEADER:
@@ -373,7 +370,10 @@ public class Headers
     public Map getMap()
     {
         if (_currentIndex == 0)
-            return Collections.EMPTY_MAP;
+            // Change to this when we drop support for JDK 1.2
+            // JDK12
+            // return Collections.EMPTY_MAP;
+            return Util.EMPTY_MAP;
         Map map = new HashMap(_currentIndex);
         for (int i = 0; i < _currentIndex; i++)
         {

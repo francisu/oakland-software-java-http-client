@@ -7,10 +7,11 @@
 	<!-- =================================================================== -->
 	<target name="init" depends="common-init">
 
-<!--		<property name="build.compiler" value="jikes" />-->
-
 		<property name="command.file" value="${basedir}/lictool.scr" />
-		
+
+		<!-- this is the 1.2 compiler -->
+		<property name="build.compiler" value="jikes"/>
+	
 		<!-- see License -->
 		<property name="licensetype" value="1" />
 		<!-- see ConstantsOaklandsw -->
@@ -30,6 +31,7 @@
 				<include name="*.jar" />
 			</fileset>
 			<dirset dir="${basedir}/../com.oaklandsw.util/bin" />
+			<pathelement path="${compile.classpath12}"/>
 		</path>
 
 	</target>
@@ -67,7 +69,7 @@
 		</echo>
 		
 		<java classpath="${lictool.classpath}" classname="${lictool.class}" fork="yes">
-			<arg value="-file" />
+			<arg value="-commandfile" />
 			<arg value="${command.file}" />
 		</java>
 		<!-- put this where it can be read as a resource, in the eval version this

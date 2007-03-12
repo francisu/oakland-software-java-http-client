@@ -817,6 +817,17 @@ public class HttpConnection
             throw e;
         }
     }
+    
+    // This is here because the Socket() constructor is protected in JDK 1.2
+    // When JDK 1.2 support is dropped, remove this
+    // JDK12
+    class Socket14 extends Socket
+    {
+        public Socket14()
+        {
+            super();
+        }
+    }
 
     void openSocket() throws IOException
     {
@@ -830,7 +841,7 @@ public class HttpConnection
         {
             if (_log.isDebugEnabled())
                 _log.debug("using 1.4+ connect method with timeout");
-            _socket = new Socket();
+            _socket = new Socket14();
             try
             {
                 Object sa = _inetSocketAddressCons.newInstance(new Object[] {
@@ -1383,6 +1394,8 @@ public class HttpConnection
         // return "Conn: " + _hostPort;
         return "Conn: "
             + _hostPort
+            + (_proxyHost != null ? " proxyHost: " + _proxyHost : "")
+            + (_proxyPort != -1 ? " proxyPort: " + _proxyPort : "")
             + ((_socket != null) ? " local: "
                 + Integer.toString(_socket.getLocalPort()) : "")
             + " ("
