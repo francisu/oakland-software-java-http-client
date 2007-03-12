@@ -4,7 +4,7 @@ import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
-import com.oaklandsw.http.TestEnv;
+import com.oaklandsw.http.HttpTestEnv;
 
 public class TestProperties extends TestCase
 {
@@ -57,7 +57,7 @@ public class TestProperties extends TestCase
     public void setUp()
     {
         setProperties();
-        TestEnv.setUp();
+        HttpTestEnv.setUp();
     }
 
     public void tearDown()

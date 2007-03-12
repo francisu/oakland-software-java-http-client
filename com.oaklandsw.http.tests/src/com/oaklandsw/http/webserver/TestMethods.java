@@ -63,8 +63,8 @@ import java.net.URL;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
-import com.oaklandsw.http.TestBase;
-import com.oaklandsw.http.TestEnv;
+import com.oaklandsw.http.HttpTestBase;
+import com.oaklandsw.http.HttpTestEnv;
 
 /**
  * Simple tests for the HTTP client hitting a local webserver.
@@ -78,12 +78,12 @@ import com.oaklandsw.http.TestEnv;
  * @author Rodney Waldhoff
  * @version $Id: TestMethods.java,v 1.3 2002/02/04 15:26:43 dion Exp $
  */
-public class TestMethods extends TestBase
+public class TestMethods extends HttpTestBase
 {
 
-    private static String _host = TestEnv.TEST_WEBSERVER_HOST;
+    private static String _host = HttpTestEnv.TEST_WEBSERVER_HOST;
 
-    private static int    _port = TestEnv.TEST_WEBSERVER_PORT;
+    private static int    _port = HttpTestEnv.TEST_WEBSERVER_PORT;
 
     public TestMethods(String testName)
     {
@@ -139,10 +139,10 @@ public class TestMethods extends TestBase
         response = urlCon.getResponseCode();
         assertEquals(200, response);
 
-        String data = TestBase.getReply(urlCon);
+        String data = HttpTestBase.getReply(urlCon);
         assertTrue("No data returned.", (data.length() > 0));
 
-        url = new URL("http://" + _host + ":" + _port + "/index.html");
+        url = new URL("http://" + _host + ":" + _port + HttpTestEnv.TEST_WEBSERVER_PAGE);
 
         urlCon = (HttpURLConnection)url.openConnection();
         urlCon.setRequestMethod("GET");
@@ -150,7 +150,7 @@ public class TestMethods extends TestBase
         response = urlCon.getResponseCode();
         assertEquals(200, response);
 
-        data = TestBase.getReply(urlCon);
+        data = HttpTestBase.getReply(urlCon);
         assertTrue("No data returned.", (data.length() > 0));
 
         checkNoActiveConns(url);
@@ -168,7 +168,7 @@ public class TestMethods extends TestBase
         response = urlCon.getResponseCode();
         assertEquals(200, response);
 
-        url = new URL("http://" + _host + ":" + _port + "/index.html");
+        url = new URL("http://" + _host + ":" + _port + HttpTestEnv.TEST_WEBSERVER_PAGE);
 
         urlCon = (HttpURLConnection)url.openConnection();
         urlCon.setRequestMethod("HEAD");

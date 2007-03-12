@@ -59,7 +59,8 @@ import java.net.URL;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
-import com.oaklandsw.http.TestBase;
+import com.oaklandsw.http.HttpTestBase;
+import com.oaklandsw.http.HttpTestEnv;
 
 /**
  * Simple tests for the HTTP client hitting an external webserver.
@@ -72,21 +73,8 @@ import com.oaklandsw.http.TestBase;
  * @author Ortwin Gl�ck
  * @version $Id: TestMethods.java,v 1.5 2002/09/23 13:48:49 jericho Exp $
  */
-public class TestMethods extends TestBase
+public class TestMethods extends HttpTestBase
 {
-
-    // -------------------------------------------------------------- Constants
-
-    private static final String externalHost = "java.sun.com";
-
-    // private final String PROXY_HOST =
-    // System.getProperty("httpclient.test.proxyHost");
-    // private final String PROXY_PORT =
-    // System.getProperty("httpclient.test.proxyPort");
-    // private final String PROXY_USER =
-    // System.getProperty("httpclient.test.proxyUser");
-    // private final String PROXY_PASS =
-    // System.getProperty("httpclient.test.proxyPass");
 
     public TestMethods(String testName)
     {
@@ -105,7 +93,8 @@ public class TestMethods extends TestBase
 
     public void testMethodsOptionsExternal() throws IOException
     {
-        URL url = new URL("http://" + externalHost);
+        URL url = new URL("http://"
+            + HttpTestEnv.TEST_WEBEXT_EXTERNAL_OPTIONS_HOST);
         int response = 0;
 
         HttpURLConnection urlCon = (HttpURLConnection)url.openConnection();
@@ -120,16 +109,17 @@ public class TestMethods extends TestBase
 
     public void testMethodsGetExternal() throws Exception
     {
-        HttpURLConnection urlCon = TestBase.doGetLikeMethod("http://"
-            + externalHost, "GET", null, false);
+        HttpURLConnection urlCon = HttpTestBase.doGetLikeMethod("http://"
+            + HttpTestEnv.TEST_WEBEXT_EXTERNAL_HOST, "GET", null, false);
 
-        String data = TestBase.getReply(urlCon);
+        String data = HttpTestBase.getReply(urlCon);
         assertTrue("No data returned.", (data.length() > 0));
     }
 
     public void testMethodsHeadExternal() throws Exception
     {
-        TestBase.doGetLikeMethod("http://" + externalHost, "HEAD", null, false);
+        HttpTestBase.doGetLikeMethod("http://"
+            + HttpTestEnv.TEST_WEBEXT_EXTERNAL_HOST, "HEAD", null, false);
 
     }
 

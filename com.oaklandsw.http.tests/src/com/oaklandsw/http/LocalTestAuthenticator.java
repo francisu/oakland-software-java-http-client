@@ -99,7 +99,7 @@ public class LocalTestAuthenticator extends TestCase
     // We assume the web server is running
     protected void setUp()
     {
-        TestEnv.setUp();
+        HttpTestEnv.setUp();
         // Get local credentials
         TestUserAgent._type = TestUserAgent.LOCAL;
         TestUserAgent._proxyType = TestUserAgent.LOCAL;

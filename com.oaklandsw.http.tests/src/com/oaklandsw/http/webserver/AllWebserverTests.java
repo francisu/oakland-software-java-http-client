@@ -1,9 +1,13 @@
 /*
+ * $Header:
+ * /home/cvspublic/jakarta-commons/httpclient/src/test/org/apache/commons/httpclient/TestLocalHost.java,v
+ * 1.4 2002/09/03 01:24:52 sullis Exp $ $Revision: 1.4 $ $Date: 2002/09/03
+ * 01:24:52 $
  * ====================================================================
  * 
  * The Apache Software License, Version 1.1
  * 
- * Copyright (c) 1999-2002 The Apache Software Foundation. All rights reserved.
+ * Copyright (c) 1999 The Apache Software Foundation. All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -50,44 +54,44 @@
  * 
  */
 
-package com.oaklandsw.http;
+package com.oaklandsw.http.webserver;
 
 import junit.framework.Test;
-import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
-public class TestAll extends TestCase
+import com.oaklandsw.TestCaseBase;
+import com.oaklandsw.http.WebserverTestHttpConnectionManager;
+
+/**
+ * A suite composed of only those tests which require the local webserver and
+ * test web application.
+ * 
+ * @author Rodney Waldhoff
+ * @version $Id: TestAll.java,v 1.4 2002/09/03 01:24:52 sullis Exp $
+ */
+public class AllWebserverTests extends TestCaseBase
 {
 
-    public TestAll(String testName)
+    public AllWebserverTests(String testName)
     {
         super(testName);
     }
 
     public static Test suite()
     {
-        TestSuite suite = new TestSuite();
-
-        // Make sure they are setup before the HttpURLConnection
-        // initializer is called
-        com.oaklandsw.http.local.TestProperties.setProperties();
-
-        // Local tests must run first
-        suite.addTest(com.oaklandsw.http.local.TestAll.suite());
-
-        suite.addTest(TestLicense.suite());
-
-        suite.addTest(com.oaklandsw.http.cookie.TestCookieAll.suite());
-        suite.addTest(com.oaklandsw.http.errorsvr.TestAll.suite());
-        suite.addTest(com.oaklandsw.http.webapp.TestAll.suite());
-        suite.addTest(com.oaklandsw.http.webserver.TestAll.suite());
-        suite.addTest(com.oaklandsw.http.webext.TestAll.suite());
+        TestSuite suite = new TestSuite(AllWebserverTests.class.getName());
+        suite.addTest(WebserverTestHttpConnectionManager.suite());
+        suite.addTest(TestMethods.suite());
+        suite.addTest(TestWebDavMethods.suite());
+        suite.addTest(TestGetMethod.suite());
+        suite.addTest(TestTraceMethod.suite());
+        suite.addTest(Test292.suite());
         return suite;
     }
 
     public static void main(String args[])
     {
-        String[] testCaseName = { TestAll.class.getName() };
-        junit.textui.TestRunner.main(testCaseName);
+        mainRun(suite(), args);
     }
+
 }

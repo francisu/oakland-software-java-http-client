@@ -10,7 +10,7 @@ import org.apache.commons.logging.Log;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
-import com.oaklandsw.http.TestEnv;
+import com.oaklandsw.http.HttpTestEnv;
 import com.oaklandsw.http.servlet.TimeoutServlet;
 import com.oaklandsw.util.LogUtils;
 
@@ -77,7 +77,7 @@ public class TestFailover extends TestWebappBase
             return;
 
         com.oaklandsw.http.HttpURLConnection ngUrlCon = (com.oaklandsw.http.HttpURLConnection)urlCon;
-        ngUrlCon.setConnectionProxyHost(TestEnv.HOST);
+        ngUrlCon.setConnectionProxyHost(HttpTestEnv.TOMCAT_HOST);
         ngUrlCon.setConnectionProxyPort(1);
 
         try
@@ -112,11 +112,11 @@ public class TestFailover extends TestWebappBase
         assertEquals(ngUrlCon.getConnectionProxyHost(), null);
         assertEquals(ngUrlCon.getConnectionProxyPort(), -1);
 
-        ngUrlCon.setConnectionProxyHost(TestEnv.TEST_PROXY_HOST);
-        ngUrlCon.setConnectionProxyPort(TestEnv.TEST_PROXY_PORT);
+        ngUrlCon.setConnectionProxyHost(HttpTestEnv.TEST_PROXY_HOST);
+        ngUrlCon.setConnectionProxyPort(HttpTestEnv.TEST_PROXY_PORT);
 
-        assertEquals(ngUrlCon.getConnectionProxyHost(), TestEnv.TEST_PROXY_HOST);
-        assertEquals(ngUrlCon.getConnectionProxyPort(), TestEnv.TEST_PROXY_PORT);
+        assertEquals(ngUrlCon.getConnectionProxyHost(), HttpTestEnv.TEST_PROXY_HOST);
+        assertEquals(ngUrlCon.getConnectionProxyPort(), HttpTestEnv.TEST_PROXY_PORT);
 
         urlCon.setRequestMethod("GET");
         urlCon.connect();

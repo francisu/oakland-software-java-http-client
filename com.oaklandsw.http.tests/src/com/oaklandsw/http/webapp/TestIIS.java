@@ -11,12 +11,12 @@ import java.net.URL;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
-import com.oaklandsw.http.TestBase;
-import com.oaklandsw.http.TestEnv;
+import com.oaklandsw.http.HttpTestBase;
+import com.oaklandsw.http.HttpTestEnv;
 import com.oaklandsw.http.TestUserAgent;
 import com.oaklandsw.http.ntlm.NegotiateMessage;
 
-public class TestIIS extends TestBase
+public class TestIIS extends HttpTestBase
 {
 
     HttpURLConnection _urlCon;
@@ -46,7 +46,7 @@ public class TestIIS extends TestBase
     {
         super.tearDown();
     }
-    
+
     public static Test suite()
     {
         return new TestSuite(TestIIS.class);
@@ -54,33 +54,33 @@ public class TestIIS extends TestBase
 
     public void iisCheckReply(String reply)
     {
-        assertTrue("Incorrect reply", reply.indexOf("ABCDEndOfFormWXYZ") >= 0);
         assertTrue("Incorrect reply",
-                   reply.indexOf("ABCDMiddleOfFormWXYZ") >= 0);
-        assertTrue("Incorrect reply", reply.indexOf("ABCDStartOfFormWXYZ") >= 0);
+                   reply.indexOf("This sample is provided") >= 0);
+        assertTrue("Incorrect reply", reply.indexOf("This page will take") >= 0);
+        assertTrue("Incorrect reply", reply.indexOf("</HTML>") >= 0);
     }
 
     public void test100Post() throws MalformedURLException, IOException
     {
-        URL url = new URL(TestEnv._protocol
-            + TestEnv.TEST_URL_IIS
-            + "TestForm1.asp");
+        URL url = new URL(HttpTestEnv.TEST_URL_IIS
+            + HttpTestEnv.TEST_URL_APP_IIS_FORM);
         int response = 0;
 
-        //setLogging(true);
+        // setLogging(true);
         _urlCon = (HttpURLConnection)url.openConnection();
 
         _urlCon.setRequestMethod("POST");
         _urlCon.setDoOutput(true);
         OutputStream outStr = _urlCon.getOutputStream();
-        outStr.write("lname=lastName&fname=firstName".getBytes("ASCII"));
+        outStr.write("lname=lastName123&fname=firstName123".getBytes("ASCII"));
         outStr.close();
         response = _urlCon.getResponseCode();
         assertEquals(200, response);
 
         String reply = getReply(_urlCon);
+        assertTrue("Incorrect reply", reply.indexOf("firstName123") >= 0);
+        assertTrue("Incorrect reply", reply.indexOf("lastName123") >= 0);
         iisCheckReply(reply);
-        //setLogging(false);
     }
 
     public void test110PostClose() throws MalformedURLException, IOException
@@ -102,7 +102,8 @@ public class TestIIS extends TestBase
 
     public void test200Get() throws MalformedURLException, IOException
     {
-        URL url = new URL(TestEnv._protocol + TestEnv.TEST_URL_IIS + _getForm);
+        URL url = new URL(HttpTestEnv.TEST_URL_IIS
+            + HttpTestEnv.TEST_URL_APP_IIS_FORM);
         int response = 0;
 
         _urlCon = (HttpURLConnection)url.openConnection();
@@ -125,9 +126,8 @@ public class TestIIS extends TestBase
     {
         TestUserAgent._type = TestUserAgent.BAD;
 
-        URL url = new URL(TestEnv._protocol
-            + TestEnv.TEST_URL_IIS
-            + "TestForm3.asp");
+        URL url = new URL(HttpTestEnv.TEST_URL_IIS
+            + HttpTestEnv.TEST_URL_APP_IIS_FORM);
         int response = 0;
 
         _urlCon = (HttpURLConnection)url.openConnection();
@@ -153,9 +153,8 @@ public class TestIIS extends TestBase
     {
         TestUserAgent._type = TestUserAgent.NULL;
 
-        URL url = new URL(TestEnv._protocol
-            + TestEnv.TEST_URL_IIS
-            + "TestForm3.asp");
+        URL url = new URL(HttpTestEnv.TEST_URL_IIS
+            + HttpTestEnv.TEST_URL_APP_IIS_FORM);
         int response = 0;
 
         _urlCon = (HttpURLConnection)url.openConnection();
@@ -201,7 +200,6 @@ public class TestIIS extends TestBase
         {
 
         }
-
     }
 
     // Test everything with NTLM OEM response forced
@@ -214,13 +212,16 @@ public class TestIIS extends TestBase
                 .setNtlmPreferredEncoding(com.oaklandsw.http.HttpURLConnection.NTLM_ENCODING_UNICODE);
     }
 
-
-    // Test test force NTLM V1
+    // Test test force NTLM V1 - this test will not pass if the NTLMv2 is set
     public void testForceNtlmV1() throws Exception
     {
-        NegotiateMessage._testForceV1 = true;
-        allTestMethods();
-        NegotiateMessage._testForceV1 = false;
+        // Don't do this if only NTLM v2 is available
+        if (HttpTestEnv.REQUIRE_NTLMV2 == null)
+        {
+            NegotiateMessage._testForceV1 = true;
+            allTestMethods();
+            NegotiateMessage._testForceV1 = false;
+        }
     }
 
 }

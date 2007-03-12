@@ -11,13 +11,13 @@ import junit.framework.Test;
 import junit.framework.TestSuite;
 
 import com.oaklandsw.http.HttpURLConnection;
-import com.oaklandsw.http.TestBase;
+import com.oaklandsw.http.HttpTestBase;
 import com.oaklandsw.util.LogUtils;
 
 /**
  * Tests for default values
  */
-public class TestDefaults extends TestBase
+public class TestDefaults extends HttpTestBase
 {
     
     private static final Log   _log         = LogUtils.makeLogger();

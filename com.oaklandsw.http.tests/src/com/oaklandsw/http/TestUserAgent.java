@@ -24,6 +24,7 @@ public class TestUserAgent implements HttpUserAgent
     public static final int  LOCAL    = 4;
     public static final int  PROXY    = 5;
     public static final int  NETPROXY = 6;
+    public static final int  OFFICESHARE     = 7;
 
     public Credential getCredential(String realm, String url, int scheme)
     {
@@ -51,10 +52,10 @@ public class TestUserAgent implements HttpUserAgent
                 switch (_type)
                 {
                     case GOOD:
-                        ntlmCred.setUser(TestEnv.TEST_IIS_USER);
-                        ntlmCred.setPassword(TestEnv.TEST_IIS_PASSWORD);
-                        ntlmCred.setDomain(TestEnv.TEST_IIS_DOMAIN);
-                        ntlmCred.setHost(TestEnv.TEST_IIS_HOST);
+                        ntlmCred.setUser(HttpTestEnv.TEST_IIS_USER);
+                        ntlmCred.setPassword(HttpTestEnv.TEST_IIS_PASSWORD);
+                        ntlmCred.setDomain(HttpTestEnv.TEST_IIS_DOMAIN);
+                        ntlmCred.setHost(HttpTestEnv.TEST_IIS_HOST);
                         break;
 
                     case BAD:
@@ -70,6 +71,13 @@ public class TestUserAgent implements HttpUserAgent
                         ntlmCred.setDomain("domain");
                         ntlmCred.setHost("host");
                         break;
+                    case OFFICESHARE:
+                        ntlmCred.setUser("test");
+                        ntlmCred.setPassword("Xsolive2007");
+                        ntlmCred.setDomain("demo");
+                        ntlmCred.setHost("host");
+                        break;
+
                 }
                 cred = ntlmCred;
                 break;
@@ -153,13 +161,13 @@ public class TestUserAgent implements HttpUserAgent
                 switch (_proxyType)
                 {
                     case PROXY:
-                        basicCred.setUser(TestEnv.TEST_AUTH_PROXY_USER);
-                        basicCred.setPassword(TestEnv.TEST_AUTH_PROXY_PASSWORD);
+                        basicCred.setUser(HttpTestEnv.TEST_AUTH_PROXY_USER);
+                        basicCred.setPassword(HttpTestEnv.TEST_AUTH_PROXY_PASSWORD);
                         break;
 
                     case NETPROXY:
-                        basicCred.setUser(TestEnv.TEST_AUTH_PROXY_CLOSE_USER);
-                        basicCred.setPassword(TestEnv.TEST_AUTH_PROXY_CLOSE_PASSWORD);
+                        basicCred.setUser(HttpTestEnv.TEST_AUTH_PROXY_CLOSE_USER);
+                        basicCred.setPassword(HttpTestEnv.TEST_AUTH_PROXY_CLOSE_PASSWORD);
                         break;
 
                     case LOCAL:

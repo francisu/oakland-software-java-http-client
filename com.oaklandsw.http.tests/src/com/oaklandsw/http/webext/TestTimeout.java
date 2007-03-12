@@ -9,18 +9,18 @@ import junit.framework.Test;
 import junit.framework.TestSuite;
 
 import com.oaklandsw.http.HttpTimeoutException;
-import com.oaklandsw.http.TestBase;
-import com.oaklandsw.http.TestEnv;
+import com.oaklandsw.http.HttpTestBase;
+import com.oaklandsw.http.HttpTestEnv;
 import com.oaklandsw.util.LogUtils;
 
-public class TestTimeout extends TestBase
+public class TestTimeout extends HttpTestBase
 {
 
     private static final Log _log = LogUtils.makeLogger();
 
     static
     {
-        TestEnv.setUp();
+        HttpTestEnv.setUp();
     }
 
     public TestTimeout(String testName)

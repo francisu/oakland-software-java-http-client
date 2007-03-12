@@ -6,10 +6,10 @@ import java.net.URL;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
-import com.oaklandsw.http.TestBase;
-import com.oaklandsw.http.TestEnv;
+import com.oaklandsw.http.HttpTestBase;
+import com.oaklandsw.http.HttpTestEnv;
 
-public class Test292 extends TestBase
+public class Test292 extends HttpTestBase
 {
 
     public Test292(String testName)
@@ -50,7 +50,7 @@ public class Test292 extends TestBase
         com.oaklandsw.http.HttpURLConnection.setExplicitClose(true);
         com.oaklandsw.http.HttpURLConnection.setMaxConnectionsPerHost(1);
 
-        final URL url = new URL(TestEnv.TEST_URL_WEBSERVER);
+        final URL url = new URL(HttpTestEnv.TEST_URL_WEBSERVER);
 
         simpleGet(url);
 

@@ -8,7 +8,7 @@ import junit.framework.Test;
 import junit.framework.TestSuite;
 
 import com.oaklandsw.http.HttpURLConnection;
-import com.oaklandsw.http.TestEnv;
+import com.oaklandsw.http.HttpTestEnv;
 import com.oaklandsw.http.servlet.HeaderServlet;
 import com.oaklandsw.util.LogUtils;
 
@@ -98,8 +98,8 @@ public class TestHttp10 extends TestWebappBase
     // Don't include this in allTestMethods() it's only used for the 1.0 proxy
     public void test10ProxyKeepAlive() throws Exception
     {
-        HttpURLConnection.setProxyHost(TestEnv.TEST_10_PROXY_HOST);
-        HttpURLConnection.setProxyPort(TestEnv.TEST_10_PROXY_PORT);
+        HttpURLConnection.setProxyHost(HttpTestEnv.TEST_10_PROXY_HOST);
+        HttpURLConnection.setProxyPort(HttpTestEnv.TEST_10_PROXY_PORT);
 
         URL url = new URL(_urlBase + HeaderServlet.NAME);
 
@@ -128,8 +128,8 @@ public class TestHttp10 extends TestWebappBase
     // Don't include this in allTestMethods() it's only used for the 1.0 proxy
     public void test10ProxyNoKeepAlive() throws Exception
     {
-        HttpURLConnection.setProxyHost(TestEnv.TEST_10_PROXY_HOST);
-        HttpURLConnection.setProxyPort(TestEnv.TEST_10_PROXY_PORT);
+        HttpURLConnection.setProxyHost(HttpTestEnv.TEST_10_PROXY_HOST);
+        HttpURLConnection.setProxyPort(HttpTestEnv.TEST_10_PROXY_PORT);
 
         com.oaklandsw.http.HttpURLConnection.setUse10KeepAlive(false);
 

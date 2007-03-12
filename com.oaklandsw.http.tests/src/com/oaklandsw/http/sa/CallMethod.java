@@ -5,7 +5,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 
 import com.oaklandsw.util.Util;
-import com.oaklandsw.http.TestEnv;
+import com.oaklandsw.http.HttpTestEnv;
 
 public class CallMethod 
 {
@@ -13,7 +13,7 @@ public class CallMethod
     public static void main(String args[])
     throws Exception
     {
-        TestEnv.setUp();
+        HttpTestEnv.setUp();
 
         URL url = new URL("http://localhost:8085/oaklandsw/params");
 

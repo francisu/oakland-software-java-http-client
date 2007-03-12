@@ -6,7 +6,7 @@ import junit.framework.Test;
 import junit.framework.TestSuite;
 
 import com.oaklandsw.http.HttpURLConnection;
-import com.oaklandsw.http.TestEnv;
+import com.oaklandsw.http.HttpTestEnv;
 import com.oaklandsw.http.TestUserAgent;
 import com.oaklandsw.http.axis.OaklandHTTPSender;
 import com.oaklandsw.util.FileUtils;
@@ -59,7 +59,7 @@ import java.util.Vector;
 public class TestAxis extends TestWebappBase
 {
 
-    private static final Log   _log         = LogUtils.makeLogger();
+    private static final Log _log = LogUtils.makeLogger();
 
     private String           _user;
     private String           _password;
@@ -119,10 +119,14 @@ public class TestAxis extends TestWebappBase
         String portName = null;
         try
         {
-            portName = operationName.substring(operationName.indexOf("(") + 1,
-                                               operationName.indexOf(")"));
-            operationName = operationName.substring(0, operationName
-                    .indexOf("("));
+            if (operationName.indexOf("(") > 0)
+            {
+                portName = operationName
+                        .substring(operationName.indexOf("(") + 1,
+                                   operationName.indexOf(")"));
+                operationName = operationName.substring(0, operationName
+                        .indexOf("("));
+            }
         }
         catch (Exception ignored)
         {
@@ -441,14 +445,14 @@ public class TestAxis extends TestWebappBase
 
     public void testWsWebappVersion() throws Exception
     {
-        Map map = invokeService(TestEnv.TEST_URL_HOST_TOMCAT
+        Map map = invokeService(HttpTestEnv.TEST_URL_HOST_WEBAPP
             + "axis/services/Version?wsdl", "getVersion", new String[] {});
         assertEquals(1, map.size());
     }
 
     public void testWsWebappList() throws Exception
     {
-        Map map = invokeService(TestEnv.TEST_URL_HOST_TOMCAT
+        Map map = invokeService(HttpTestEnv.TEST_URL_HOST_WEBAPP
             + "axis/EchoHeaders.jws?wsdl", "list", new String[] {});
         assertEquals(1, map.size());
 
@@ -472,18 +476,27 @@ public class TestAxis extends TestWebappBase
 
     protected String getIISUrl()
     {
-        File wFile = new File(TestEnv.getHttpTestRoot()
+        File wFile = new File(HttpTestEnv.getHttpTestRoot()
             + File.separator
-            + "Service1.wsdl");
+            + "iiswebservice"
+            + File.separator
+            + "HelloWorld.wsdl");
         return FileUtils.fileToUriString(wFile);
+    }
+
+    protected Map invokeWindowsService() throws Exception
+    {
+        return invokeService(getIISUrl(),
+                             "sayHello",
+                             new String[] { "Francis" });
     }
 
     public void testWsIISNtlmOk() throws Exception
     {
         // Use Axis authentication
-        _user = TestEnv.TEST_IIS_DOMAIN_USER;
-        _password = TestEnv.TEST_IIS_PASSWORD;
-        Map map = invokeService(getIISUrl(), "HelloWorld", new String[] {});
+        _user = HttpTestEnv.TEST_IIS_DOMAIN_USER;
+        _password = HttpTestEnv.TEST_IIS_PASSWORD;
+        Map map = invokeWindowsService();
         assertEquals(1, map.size());
     }
 
@@ -493,7 +506,7 @@ public class TestAxis extends TestWebappBase
         com.oaklandsw.http.HttpURLConnection
                 .setDefaultUserAgent(new com.oaklandsw.http.TestUserAgent());
         TestUserAgent._type = TestUserAgent.GOOD;
-        Map map = invokeService(getIISUrl(), "HelloWorld", new String[] {});
+        Map map = invokeWindowsService();
         assertEquals(1, map.size());
     }
 
@@ -529,7 +542,7 @@ public class TestAxis extends TestWebappBase
             _password = null;
             com.oaklandsw.http.HttpURLConnection.setDefaultUserAgent(null);
             com.oaklandsw.http.HttpURLConnection.closeAllPooledConnections();
-            invokeService(getIISUrl(), "HelloWorld", new String[] {});
+            invokeWindowsService();
             fail("This was supposed to fail due to auth problems");
         }
         catch (AxisFault ex)
@@ -541,11 +554,12 @@ public class TestAxis extends TestWebappBase
     public void allTestMethods() throws Exception
     {
         testWsBasic();
-        //testWsGoogle();
+        // testWsGoogle();
 
         // NTLM does not work over HTTP 1.0
         String proxyHost = com.oaklandsw.http.HttpURLConnection.getProxyHost();
-        if (proxyHost == null || !proxyHost.equals(TestEnv.TEST_10_PROXY_HOST))
+        if (proxyHost == null
+            || !proxyHost.equals(HttpTestEnv.TEST_10_PROXY_HOST))
         {
             testWsIISNtlmOk();
             testWsIISNtlmFail();

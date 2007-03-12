@@ -2,10 +2,10 @@ package com.oaklandsw.http.webapp;
 
 import org.apache.commons.logging.Log;
 
-import com.oaklandsw.http.TestBase;
+import com.oaklandsw.http.HttpTestBase;
 import com.oaklandsw.util.LogUtils;
 
-public class TestWebappBase extends TestBase
+public class TestWebappBase extends HttpTestBase
 {
 
     private static final Log   _log         = LogUtils.makeLogger();

@@ -3,7 +3,7 @@
  * 
  * The Apache Software License, Version 1.1
  * 
- * Copyright (c) 1999-2002 The Apache Software Foundation. All rights reserved.
+ * Copyright (c) 1999 The Apache Software Foundation. All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -50,55 +50,47 @@
  * 
  */
 
-package com.oaklandsw.http.local;
+package com.oaklandsw.http.webext;
+
+import com.oaklandsw.TestCaseBase;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
-import com.oaklandsw.http.LocalTestAuthenticator;
-import com.oaklandsw.http.LocalTestHttpConnectionManager;
-import com.oaklandsw.http.TestBase;
-
 /**
- * Tests that don't require any external host. I.e., that run entirely within
- * this JVM.
+ * A suite composed of only those tests which require an external Internet
+ * connection.
  * 
- * (True unit tests, by some definitions.)
+ * Optionally this test can be run using a proxy. If the proxy is not
+ * authenticating do not set user / password.
+ * 
+ * System properties: httpclient.test.proxyHost - proxy host name
+ * httpclient.test.proxyPort - proxy port httpclient.test.proxyUser - proxy auth
+ * username httpclient.test.proxyPass - proxy auth password
  * 
  * @author Rodney Waldhoff
- * @author <a href="mailto:jsdever@apache.org">Jeff Dever </a>
- * @version $Revision: 1.12 $ $Date: 2002/09/05 00:21:57 $
+ * @author Ortwin Gl�ck
+ * @version $Id: TestAll.java,v 1.3 2002/07/23 14:39:14 dion Exp $
  */
-public class TestAll extends TestBase
+public class AllWebextTests extends TestCaseBase
 {
 
-    public TestAll(String testName)
+    public AllWebextTests(String testName)
     {
         super(testName);
     }
 
     public static Test suite()
     {
-        TestSuite suite = new TestSuite();
-
-        // Must be called before the HttpURLConnection static init
-        com.oaklandsw.http.local.TestProperties.setProperties();
-
-        // This test must run first
-        suite.addTest(TestProperties.suite());
-
-        suite.addTest(TestHttpStatus.suite());
-        suite.addTest(TestDefaults.suite());
-        suite.addTest(TestHeaders.suite());
-        suite.addTest(LocalTestAuthenticator.suite());
-        suite.addTest(LocalTestHttpConnectionManager.suite());
-        suite.addTest(TestURIUtil.suite());
-        suite.addTest(TestMethodsNoHost.suite());
-        suite.addTest(TestResponseHeaders.suite());
-        suite.addTest(TestRequestHeaders.suite());
-        suite.addTest(TestStreams.suite());
-        suite.addTest(TestNtlmMessages.suite());
+        TestSuite suite = new TestSuite(AllWebextTests.class.getName());
+        suite.addTest(TestBugs.suite());
+        suite.addTest(TestCookie.suite());
+        suite.addTest(TestSSL.suite());
+        suite.addTest(TestHttps.suite());
+        suite.addTest(TestMethods.suite());
         suite.addTest(TestTimeout.suite());
+        suite.addTest(TestProxyHost.suite());
+        suite.addTest(TestNonProxyHost.suite());
         return suite;
     }
 

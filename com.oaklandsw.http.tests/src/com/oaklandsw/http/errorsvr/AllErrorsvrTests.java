@@ -1,20 +1,21 @@
 package com.oaklandsw.http.errorsvr;
 
+import com.oaklandsw.TestCaseBase;
+
 import junit.framework.Test;
-import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
-public class TestAll extends TestCase
+public class AllErrorsvrTests extends TestCaseBase
 {
 
-    public TestAll(String testName)
+    public AllErrorsvrTests(String testName)
     {
         super(testName);
     }
 
     public static Test suite()
     {
-        TestSuite suite = new TestSuite();
+        TestSuite suite = new TestSuite(AllErrorsvrTests.class.getName());
         suite.addTest(TestIdleTimeouts.suite());
         suite.addTest(TestError.suite());
         suite.addTest(TestDisconnect.suite());
@@ -26,8 +27,7 @@ public class TestAll extends TestCase
 
     public static void main(String args[])
     {
-        String[] testCaseName = { TestAll.class.getName() };
-        junit.textui.TestRunner.main(testCaseName);
+        mainRun(suite(), args);
     }
 
 }

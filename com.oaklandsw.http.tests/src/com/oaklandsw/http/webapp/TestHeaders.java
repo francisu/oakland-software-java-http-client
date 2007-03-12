@@ -11,7 +11,7 @@ import org.apache.commons.logging.Log;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
-import com.oaklandsw.http.TestEnv;
+import com.oaklandsw.http.HttpTestEnv;
 import com.oaklandsw.http.servlet.HeaderServlet;
 import com.oaklandsw.util.LogUtils;
 import com.oaklandsw.util.NetUtils;
@@ -128,14 +128,14 @@ public class TestHeaders extends TestWebappBase
 
     public void testHostRequestHeaderIp() throws Exception
     {
-        InetAddress addr = InetAddress.getByName(host);
+        InetAddress addr = InetAddress.getByName(HttpTestEnv.TOMCAT_HOST);
         String ip = addr.getHostAddress();
         hostRequestHeader(ip);
     }
 
     public void testHostRequestHeaderName() throws Exception
     {
-        InetAddress addr = InetAddress.getByName(host);
+        InetAddress addr = InetAddress.getByName(HttpTestEnv.TOMCAT_HOST);
         String hostname = addr.getHostName();
         hostRequestHeader(hostname);
     }
@@ -189,8 +189,8 @@ public class TestHeaders extends TestWebappBase
         URL url = new URL("http://"
             + connectAddr
             + ":"
-            + port
-            + TestEnv.TEST_URL_APP
+            + HttpTestEnv.TEST_WEBAPP_PORT
+            + HttpTestEnv.TEST_URL_APP
             + HeaderServlet.NAME);
         int response = 0;
 
@@ -202,7 +202,7 @@ public class TestHeaders extends TestWebappBase
 
         _log.debug(NetUtils.dumpHeaders(urlCon));
 
-        if (port == 80)
+        if (HttpTestEnv.TEST_WEBAPP_PORT == 80)
         {
             checkReply(urlCon, "name=\"host\";value=\""
                 + connectAddr
@@ -213,7 +213,7 @@ public class TestHeaders extends TestWebappBase
             checkReply(urlCon, "name=\"host\";value=\""
                 + connectAddr
                 + ":"
-                + port
+                + HttpTestEnv.TEST_WEBAPP_PORT
                 + "\"<br>");
         }
         if (com.oaklandsw.http.HttpURLConnection.getExplicitClose())

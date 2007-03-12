@@ -10,11 +10,11 @@ import junit.framework.TestSuite;
 
 import com.oaklandsw.http.HttpConnection;
 import com.oaklandsw.http.HttpTimeoutException;
-import com.oaklandsw.http.TestBase;
-import com.oaklandsw.http.TestEnv;
+import com.oaklandsw.http.HttpTestBase;
+import com.oaklandsw.http.HttpTestEnv;
 import com.oaklandsw.util.LogUtils;
 
-public class TestTimeout extends TestBase
+public class TestTimeout extends HttpTestBase
 {
 
     private static final Log _log = LogUtils.makeLogger();
@@ -68,7 +68,7 @@ public class TestTimeout extends TestBase
             return;
 
         // Simulated timeout stuff does not work on 1.4 or higher
-        if (!TestEnv.SIMULATED_TIMEOUT_ENABLED)
+        if (!HttpTestEnv.SIMULATED_TIMEOUT_ENABLED)
             return;
 
         setupConnTimeout((com.oaklandsw.http.HttpURLConnection)urlCon,
@@ -177,7 +177,7 @@ public class TestTimeout extends TestBase
             return;
 
         // Simulated timeout stuff does not work on 1.4 or higher
-        if (!TestEnv.SIMULATED_TIMEOUT_ENABLED)
+        if (!HttpTestEnv.SIMULATED_TIMEOUT_ENABLED)
             return;
 
         // Waits this long when establishing a connection

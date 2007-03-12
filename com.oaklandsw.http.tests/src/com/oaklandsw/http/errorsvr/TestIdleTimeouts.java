@@ -9,15 +9,15 @@ import junit.framework.Test;
 import junit.framework.TestSuite;
 
 import com.oaklandsw.http.HttpURLConnection;
-import com.oaklandsw.http.TestBase;
-import com.oaklandsw.http.TestEnv;
+import com.oaklandsw.http.HttpTestBase;
+import com.oaklandsw.http.HttpTestEnv;
 import com.oaklandsw.http.server.ErrorServer;
 import com.oaklandsw.util.LogUtils;
 
 /**
  * Test the idle connection timeouts and idle connection ping.
  */
-public class TestIdleTimeouts extends TestBase
+public class TestIdleTimeouts extends HttpTestBase
 {
     private static final Log   _log         = LogUtils.makeLogger();
 
@@ -46,7 +46,7 @@ public class TestIdleTimeouts extends TestBase
         if (timeout == 0)
             timeoutStr = "";
 
-        return new URL(TestEnv.TEST_URL_HOST_ERROR
+        return new URL(HttpTestEnv.TEST_URL_HOST_ERRORSVR
             + "?"
             + ErrorServer.ERROR_KEEP_ALIVE
             + timeoutStr);
@@ -54,7 +54,7 @@ public class TestIdleTimeouts extends TestBase
 
     protected URL getNormalUrl() throws Exception
     {
-        return new URL(TestEnv.TEST_URL_HOST_ERROR);
+        return new URL(HttpTestEnv.TEST_URL_HOST_ERRORSVR);
     }
 
     // server timesout idle connection and we hit it
@@ -116,7 +116,7 @@ public class TestIdleTimeouts extends TestBase
 
         // Should work since it's on a new connection, because the ping
         // killed the previous connection
-        url = new URL(TestEnv.TEST_URL_HOST_ERROR
+        url = new URL(HttpTestEnv.TEST_URL_HOST_ERRORSVR
             + "?"
             + ErrorServer.POST_NO_DATA);
         urlCon = (HttpURLConnection)url.openConnection();

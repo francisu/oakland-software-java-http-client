@@ -3,7 +3,7 @@
  * 
  * The Apache Software License, Version 1.1
  * 
- * Copyright (c) 1999 The Apache Software Foundation. All rights reserved.
+ * Copyright (c) 1999-2002 The Apache Software Foundation. All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -50,46 +50,45 @@
  * 
  */
 
-package com.oaklandsw.http.webext;
+package com.oaklandsw.http;
 
-import com.oaklandsw.http.TestBase;
+import com.oaklandsw.TestCaseBase;
+import com.oaklandsw.http.cookie.AllCookieTests;
+import com.oaklandsw.http.errorsvr.AllErrorsvrTests;
+import com.oaklandsw.http.local.AllLocalTests;
+import com.oaklandsw.http.webapp.AllWebappTests;
+import com.oaklandsw.http.webext.AllWebextTests;
+import com.oaklandsw.http.webserver.AllWebserverTests;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
-/**
- * A suite composed of only those tests which require an external Internet
- * connection.
- * 
- * Optionally this test can be run using a proxy. If the proxy is not
- * authenticating do not set user / password.
- * 
- * System properties: httpclient.test.proxyHost - proxy host name
- * httpclient.test.proxyPort - proxy port httpclient.test.proxyUser - proxy auth
- * username httpclient.test.proxyPass - proxy auth password
- * 
- * @author Rodney Waldhoff
- * @author Ortwin Gl�ck
- * @version $Id: TestAll.java,v 1.3 2002/07/23 14:39:14 dion Exp $
- */
-public class TestAll extends TestBase
+public class AllHttpTests extends TestCaseBase
 {
 
-    public TestAll(String testName)
+    public AllHttpTests(String testName)
     {
         super(testName);
     }
 
     public static Test suite()
     {
-        TestSuite suite = new TestSuite();
-        suite.addTest(TestCookie.suite());
-        suite.addTest(TestSSL.suite());
-        suite.addTest(TestHttps.suite());
-        suite.addTest(TestMethods.suite());
-        suite.addTest(TestTimeout.suite());
-        suite.addTest(TestProxyHost.suite());
-        suite.addTest(TestNonProxyHost.suite());
+        TestSuite suite = new TestSuite(AllHttpTests.class.getName());
+
+        // Make sure they are setup before the HttpURLConnection
+        // initializer is called
+        com.oaklandsw.http.local.TestProperties.setProperties();
+
+        // Local tests must run first
+        suite.addTest(AllLocalTests.suite());
+
+        suite.addTest(TestLicense.suite());
+
+        suite.addTest(AllCookieTests.suite());
+        suite.addTest(AllErrorsvrTests.suite());
+        suite.addTest(AllWebappTests.suite());
+        suite.addTest(AllWebserverTests.suite());
+        suite.addTest(AllWebextTests.suite());
         return suite;
     }
 
@@ -97,5 +96,4 @@ public class TestAll extends TestBase
     {
         mainRun(suite(), args);
     }
-
 }

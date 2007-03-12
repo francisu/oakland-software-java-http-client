@@ -3,20 +3,20 @@ package com.oaklandsw.http.webapp;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
-import com.oaklandsw.http.TestBase;
+import com.oaklandsw.TestCaseBase;
 import com.oaklandsw.util.SystemUtils;
 
-public class TestAll extends TestBase
+public class AllWebappTests extends TestCaseBase
 {
 
-    public TestAll(String testName)
+    public AllWebappTests(String testName)
     {
         super(testName);
     }
 
     public static Test suite()
     {
-        TestSuite suite = new TestSuite();
+        TestSuite suite = new TestSuite(AllWebappTests.class.getName());
         suite.addTest(TestTimeout.suite());
         suite.addTest(TestFailover.suite());
         // Axis requires 1.3

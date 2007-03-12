@@ -180,6 +180,8 @@ public class HttpGetSample implements com.oaklandsw.http.HttpUserAgent
         // Tells the oaklandsw implementation the object that will
         // resolve the credentials when requested by IIS/NTLM
         com.oaklandsw.http.HttpURLConnection.setDefaultUserAgent(userAgent);
+        
+        System.out.println(System.getProperty("user.dir"));
 
         String urlStr;
         if (args.length == 0)

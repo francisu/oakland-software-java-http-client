@@ -9,7 +9,7 @@ import org.apache.commons.logging.Log;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
-import com.oaklandsw.http.TestEnv;
+import com.oaklandsw.http.HttpTestEnv;
 import com.oaklandsw.http.servlet.ParamServlet;
 import com.oaklandsw.util.LogUtils;
 
@@ -275,7 +275,7 @@ public class TestParameters extends TestWebappBase
     // Bug 973
     public void testGetMethodNoSlashParameters() throws Exception
     {
-        URL url = new URL("http://" + TestEnv.HOST + "?foo=one");
+        URL url = new URL("http://" + HttpTestEnv.TOMCAT_HOST + "?foo=one");
         int response = 0;
 
         HttpURLConnection urlCon = (HttpURLConnection)url.openConnection();
@@ -287,7 +287,7 @@ public class TestParameters extends TestWebappBase
 
     public void testGetMethodSlashParameters() throws Exception
     {
-        URL url = new URL("http://" + TestEnv.HOST + "/?foo=one");
+        URL url = new URL("http://" + HttpTestEnv.TOMCAT_HOST + "/?foo=one");
         int response = 0;
 
         HttpURLConnection urlCon = (HttpURLConnection)url.openConnection();

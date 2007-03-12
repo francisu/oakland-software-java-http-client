@@ -8,18 +8,18 @@ import java.net.URL;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
-import com.oaklandsw.http.TestBase;
-import com.oaklandsw.http.TestEnv;
+import com.oaklandsw.http.HttpTestBase;
+import com.oaklandsw.http.HttpTestEnv;
 
 /**
  * Test webdav methods
  */
-public class TestWebDavMethods extends TestBase
+public class TestWebDavMethods extends HttpTestBase
 {
 
-    private static String _host = TestEnv.TEST_WEBDAV_HOST;
+    private static String _host = HttpTestEnv.TEST_WEBDAV_HOST;
 
-    private static int    _port = TestEnv.TEST_WEBDAV_PORT;
+    private static int    _port = HttpTestEnv.TEST_WEBDAV_PORT;
 
     public TestWebDavMethods(String testName)
     {
@@ -79,7 +79,7 @@ public class TestWebDavMethods extends TestBase
         response = urlCon.getResponseCode();
         assertEquals(201, response);
 
-        data = TestBase.getReply(urlCon);
+        data = HttpTestBase.getReply(urlCon);
         assertTrue("No data returned.", (data.length() > 0));
         assertTrue((data.indexOf("created") > 0));
 
@@ -94,7 +94,7 @@ public class TestWebDavMethods extends TestBase
         response = urlCon.getResponseCode();
         assertEquals(201, response);
 
-        data = TestBase.getReply(urlCon);
+        data = HttpTestBase.getReply(urlCon);
         assertTrue("No data returned.", (data.length() > 0));
         assertTrue((data.indexOf("created") > 0));
 
@@ -118,7 +118,7 @@ public class TestWebDavMethods extends TestBase
         response = urlCon.getResponseCode();
         assertEquals(207, response);
 
-        data = TestBase.getReply(urlCon);
+        data = HttpTestBase.getReply(urlCon);
         assertTrue("No data returned.", (data.length() > 0));
         assertTrue((data.indexOf("200 OK") >= 0));
 
@@ -138,7 +138,7 @@ public class TestWebDavMethods extends TestBase
         response = urlCon.getResponseCode();
         assertEquals(207, response);
 
-        data = TestBase.getReply(urlCon);
+        data = HttpTestBase.getReply(urlCon);
         assertTrue("No data returned.", (data.length() > 0));
         assertTrue((data.indexOf("Jim Whitehead") >= 0));
 
@@ -149,7 +149,7 @@ public class TestWebDavMethods extends TestBase
         response = urlCon.getResponseCode();
         assertEquals(201, response);
 
-        data = TestBase.getReply(urlCon);
+        data = HttpTestBase.getReply(urlCon);
         assertTrue("No data returned.", (data.length() > 0));
 
         // Lock the moved resource
@@ -169,7 +169,7 @@ public class TestWebDavMethods extends TestBase
         response = urlCon.getResponseCode();
         assertEquals(200, response);
         lockToken = urlCon.getHeaderField("Lock-Token");
-        data = TestBase.getReply(urlCon);
+        data = HttpTestBase.getReply(urlCon);
         assertTrue("No data returned.", (data.length() > 0));
 
         // Get the moved resource
@@ -178,7 +178,7 @@ public class TestWebDavMethods extends TestBase
         response = urlCon.getResponseCode();
         assertEquals(200, response);
 
-        data = TestBase.getReply(urlCon);
+        data = HttpTestBase.getReply(urlCon);
         assertTrue("No data returned.", (data.length() > 0));
         assertTrue((data.indexOf(resourceContent) >= 0));
 
@@ -189,7 +189,7 @@ public class TestWebDavMethods extends TestBase
         response = urlCon.getResponseCode();
         assertEquals(204, response);
 
-        data = TestBase.getReply(urlCon);
+        data = HttpTestBase.getReply(urlCon);
         assertTrue("Data returned.", (data.length() == 0));
 
         // Get the original resource - should not be found
@@ -198,7 +198,7 @@ public class TestWebDavMethods extends TestBase
         response = urlCon.getResponseCode();
         assertEquals(404, response);
 
-        data = TestBase.getReply(urlCon);
+        data = HttpTestBase.getReply(urlCon);
         assertTrue("No data returned.", (data.length() > 0));
 
         // Copy back to original
@@ -208,7 +208,7 @@ public class TestWebDavMethods extends TestBase
         response = urlCon.getResponseCode();
         assertEquals(201, response);
 
-        data = TestBase.getReply(urlCon);
+        data = HttpTestBase.getReply(urlCon);
         assertTrue("No data returned.", (data.length() > 0));
 
         // Get the original resource - should be there
@@ -217,7 +217,7 @@ public class TestWebDavMethods extends TestBase
         response = urlCon.getResponseCode();
         assertEquals(200, response);
 
-        data = TestBase.getReply(urlCon);
+        data = HttpTestBase.getReply(urlCon);
         assertTrue("No data returned.", (data.length() > 0));
         assertTrue((data.indexOf(resourceContent) >= 0));
 
@@ -228,7 +228,7 @@ public class TestWebDavMethods extends TestBase
         response = urlCon.getResponseCode();
         assertEquals(204, response);
 
-        data = TestBase.getReply(urlCon);
+        data = HttpTestBase.getReply(urlCon);
         assertTrue("Unexpected data returned.", (data.length() == 0));
 
         checkNoActiveConns(collectionUrl);
@@ -256,7 +256,7 @@ public class TestWebDavMethods extends TestBase
         response = urlCon.getResponseCode();
         assertEquals(207, response);
 
-        String data = TestBase.getReply(urlCon);
+        String data = HttpTestBase.getReply(urlCon);
         assertTrue("No data returned.", (data.length() > 0));
         assertTrue((data.indexOf("multistatus") > 0));
 

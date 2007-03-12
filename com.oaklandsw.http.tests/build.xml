@@ -7,6 +7,9 @@
   <!-- =================================================================== -->
   <target name="init" depends="common-init">
 
+	<!-- this is the 1.2 compiler -->
+	<property name="build.compiler" value="jikes"/>
+
   	<path id="compile.classpath">
       <fileset dir="${basedir}/../com.oaklandsw.http.jars">
         <include name="*.jar" />

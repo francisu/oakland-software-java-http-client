@@ -9,16 +9,16 @@ import junit.framework.Test;
 import junit.framework.TestSuite;
 
 import com.oaklandsw.http.HttpException;
-import com.oaklandsw.http.TestBase;
-import com.oaklandsw.http.TestEnv;
+import com.oaklandsw.http.HttpTestBase;
+import com.oaklandsw.http.HttpTestEnv;
 import com.oaklandsw.util.LogUtils;
 
-public class TestError extends TestBase
+public class TestError extends HttpTestBase
 {
 
     private static final Log   _log         = LogUtils.makeLogger();
 
-    protected static String  _errorUrl = TestEnv.TEST_URL_HOST_ERROR;
+    protected static String  _errorUrl = HttpTestEnv.TEST_URL_HOST_ERRORSVR;
 
     public TestError(String testName)
     {

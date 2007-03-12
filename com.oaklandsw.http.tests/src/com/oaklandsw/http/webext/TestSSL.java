@@ -11,10 +11,10 @@ import javax.net.ssl.SSLSocketFactory;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
-import com.oaklandsw.http.TestBase;
-import com.oaklandsw.http.TestEnv;
+import com.oaklandsw.http.HttpTestBase;
+import com.oaklandsw.http.HttpTestEnv;
 
-public class TestSSL extends TestBase
+public class TestSSL extends HttpTestBase
 {
 
     public TestSSL(String testName)
@@ -52,14 +52,14 @@ public class TestSSL extends TestBase
         urlCon.connect();
         assertEquals(200, urlCon.getResponseCode());
 
-        String data = TestBase.getReply(urlCon);
+        String data = HttpTestBase.getReply(urlCon);
         assertTrue("No data returned.", (data.length() > 0));
         checkNoActiveConns(url);
     }
 
     public void testHttpsGetNothing() throws Exception
     {
-        testHttpsGet(new URL(TestEnv.TEST_WEBEXT_SSL_URL));
+        testHttpsGet(new URL(HttpTestEnv.TEST_WEBEXT_SSL_URL));
     }
 
     public void testHttpsGetSetDefault() throws Exception
@@ -67,7 +67,7 @@ public class TestSSL extends TestBase
         TestSSLSocketFactory sf = new TestSSLSocketFactory();
 
         com.oaklandsw.http.HttpURLConnection.setDefaultSSLSocketFactory(sf);
-        testHttpsGet(new URL(TestEnv.TEST_WEBEXT_SSL_URL));
+        testHttpsGet(new URL(HttpTestEnv.TEST_WEBEXT_SSL_URL));
 
         if (com.oaklandsw.http.HttpURLConnection.getDefaultSSLSocketFactory() != sf)
             fail("Socket factory mismatch");
@@ -83,7 +83,7 @@ public class TestSSL extends TestBase
         com.oaklandsw.http.HttpURLConnection.setDefaultSSLSocketFactory(sf);
         try
         {
-            testHttpsGet(new URL(TestEnv.TEST_WEBEXT_SSL_URL));
+            testHttpsGet(new URL(HttpTestEnv.TEST_WEBEXT_SSL_URL));
             fail("Did not get expected exception");
         }
         catch (IOException ex)
@@ -97,7 +97,7 @@ public class TestSSL extends TestBase
         TestSSLSocketFactory sf = new TestSSLSocketFactory();
 
         com.oaklandsw.http.HttpURLConnection.setDefaultSSLSocketFactory(sf);
-        URL url = new URL(TestEnv.TEST_WEBEXT_SSL_URL);
+        URL url = new URL(HttpTestEnv.TEST_WEBEXT_SSL_URL);
         HttpURLConnection urlCon = (HttpURLConnection)url.openConnection();
 
         if (((com.oaklandsw.http.HttpURLConnection)urlCon).getSSLSocketFactory() != sf)
@@ -113,7 +113,7 @@ public class TestSSL extends TestBase
     {
         TestSSLSocketFactory sf = new TestSSLSocketFactory();
 
-        URL url = new URL(TestEnv.TEST_WEBEXT_SSL_URL);
+        URL url = new URL(HttpTestEnv.TEST_WEBEXT_SSL_URL);
         HttpURLConnection urlCon = (HttpURLConnection)url.openConnection();
         ((com.oaklandsw.http.HttpURLConnection)urlCon).setSSLSocketFactory(sf);
 
@@ -144,7 +144,7 @@ public class TestSSL extends TestBase
         com.oaklandsw.http.HttpConnection._testNonMatchHost = true;
         try
         {
-            testHttpsGet(new URL(TestEnv.TEST_WEBEXT_SSL_URL));
+            testHttpsGet(new URL(HttpTestEnv.TEST_WEBEXT_SSL_URL));
             fail("did not get expected exception");
         }
         catch (IOException ex)
@@ -160,7 +160,7 @@ public class TestSSL extends TestBase
         ver._shouldPass = true;
         com.oaklandsw.http.HttpURLConnection.setDefaultHostnameVerifier(ver);
         com.oaklandsw.http.HttpConnection._testNonMatchHost = true;
-        testHttpsGet(new URL(TestEnv.TEST_WEBEXT_SSL_URL));
+        testHttpsGet(new URL(HttpTestEnv.TEST_WEBEXT_SSL_URL));
 
         if (com.oaklandsw.http.HttpURLConnection.getDefaultHostnameVerifier() != ver)
             fail("Verifier factory mismatch");
@@ -180,7 +180,7 @@ public class TestSSL extends TestBase
 
         try
         {
-            testHttpsGet(new URL(TestEnv.TEST_WEBEXT_SSL_URL));
+            testHttpsGet(new URL(HttpTestEnv.TEST_WEBEXT_SSL_URL));
             fail("did not get expected exception");
         }
         catch (IOException ex)
@@ -198,7 +198,7 @@ public class TestSSL extends TestBase
         com.oaklandsw.http.HttpConnection._testNonMatchHost = true;
         try
         {
-            testHttpsGet(new URL(TestEnv.TEST_WEBEXT_SSL_URL));
+            testHttpsGet(new URL(HttpTestEnv.TEST_WEBEXT_SSL_URL));
             fail("did not get expected exception");
         }
         catch (IOException ex)
@@ -212,7 +212,7 @@ public class TestSSL extends TestBase
         TestHostnameVerifier ver = new TestHostnameVerifier();
 
         com.oaklandsw.http.HttpURLConnection.setDefaultHostnameVerifier(ver);
-        testHttpsGet(new URL(TestEnv.TEST_WEBEXT_SSL_URL));
+        testHttpsGet(new URL(HttpTestEnv.TEST_WEBEXT_SSL_URL));
 
         if (com.oaklandsw.http.HttpURLConnection.getDefaultHostnameVerifier() != ver)
             fail("Verifier factory mismatch");
@@ -226,7 +226,7 @@ public class TestSSL extends TestBase
     {
         TestHostnameVerifier ver = new TestHostnameVerifier();
 
-        URL url = new URL(TestEnv.TEST_WEBEXT_SSL_URL);
+        URL url = new URL(HttpTestEnv.TEST_WEBEXT_SSL_URL);
         HttpURLConnection urlCon = (HttpURLConnection)url.openConnection();
         ((com.oaklandsw.http.HttpURLConnection)urlCon).setHostnameVerifier(ver);
         urlCon.setRequestMethod("GET");
@@ -246,7 +246,7 @@ public class TestSSL extends TestBase
     {
         TestHostnameVerifier ver = new TestHostnameVerifier();
 
-        URL url = new URL(TestEnv.TEST_WEBEXT_SSL_URL);
+        URL url = new URL(HttpTestEnv.TEST_WEBEXT_SSL_URL);
         HttpURLConnection urlCon = (HttpURLConnection)url.openConnection();
         urlCon.setRequestMethod("GET");
         urlCon.connect();
@@ -266,10 +266,10 @@ public class TestSSL extends TestBase
 
     public void testHttpsGetLocalCert() throws Exception
     {
-        if (!TestEnv.GETSERVERCERT_ENABLED)
+        if (!HttpTestEnv.GETSERVERCERT_ENABLED)
             return;
 
-        URL url = new URL(TestEnv.TEST_WEBEXT_SSL_URL);
+        URL url = new URL(HttpTestEnv.TEST_WEBEXT_SSL_URL);
         HttpURLConnection urlCon = (HttpURLConnection)url.openConnection();
 
         urlCon.setRequestMethod("GET");
@@ -284,10 +284,10 @@ public class TestSSL extends TestBase
 
     public void testHttpsGetServerCert() throws Exception
     {
-        if (!TestEnv.GETSERVERCERT_ENABLED)
+        if (!HttpTestEnv.GETSERVERCERT_ENABLED)
             return;
 
-        URL url = new URL(TestEnv.TEST_WEBEXT_SSL_URL);
+        URL url = new URL(HttpTestEnv.TEST_WEBEXT_SSL_URL);
         HttpURLConnection urlCon = (HttpURLConnection)url.openConnection();
 
         urlCon.setRequestMethod("GET");
@@ -302,7 +302,7 @@ public class TestSSL extends TestBase
 
     public void testHttpsGetCipherSuite() throws Exception
     {
-        URL url = new URL(TestEnv.TEST_WEBEXT_SSL_URL);
+        URL url = new URL(HttpTestEnv.TEST_WEBEXT_SSL_URL);
         HttpURLConnection urlCon = (HttpURLConnection)url.openConnection();
 
         urlCon.setRequestMethod("GET");

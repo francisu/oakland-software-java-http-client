@@ -12,6 +12,7 @@ import junit.framework.Test;
 import junit.framework.TestSuite;
 
 import com.oaklandsw.http.HttpStatus;
+import com.oaklandsw.http.HttpTestEnv;
 import com.oaklandsw.http.servlet.ParamServlet;
 import com.oaklandsw.http.servlet.RedirectServlet;
 import com.oaklandsw.util.LogUtils;
@@ -47,9 +48,9 @@ public class TestRedirect extends TestWebappBase
         }
         qs += "to="
             + URLEncoder.encode("http://"
-                + host
+                + HttpTestEnv.TOMCAT_HOST
                 + ":"
-                + port
+                + HttpTestEnv.TEST_WEBAPP_PORT
                 + "/"
                 + context
                 + ParamServlet.NAME);
@@ -164,8 +165,8 @@ public class TestRedirect extends TestWebappBase
             {
                 if (urlCon.usingProxy())
                 {
-                    // Squid sends a 503
-                    if (response != 502 && response != 503)
+                    // Squid sends a 503, apache 2.x gives 404
+                    if (response != 502 && response != 503 && response != 404)
                         fail("Proxy and not correct response");
                 }
                 else
@@ -190,17 +191,17 @@ public class TestRedirect extends TestWebappBase
 
     public void testRedirectHost() throws Exception
     {
-        testRedirectHostPort("badhostxxx", port, FAIL);
+        testRedirectHostPort("badhostxxx", HttpTestEnv.TEST_WEBAPP_PORT, FAIL);
     }
 
     public void testRedirectPort() throws Exception
     {
-        testRedirectHostPort(host, 9999, FAIL);
+        testRedirectHostPort(HttpTestEnv.TOMCAT_HOST, 9999, FAIL);
     }
 
     public void testRedirectHostPort() throws Exception
     {
-        testRedirectHostPort(getServletIpAddress(), port, !FAIL);
+        testRedirectHostPort(getServletIpAddress(), HttpTestEnv.TEST_WEBAPP_PORT, !FAIL);
     }
 
     public void testNoRedirect() throws Exception
@@ -211,9 +212,9 @@ public class TestRedirect extends TestWebappBase
             + RedirectServlet.NAME
             + "?to="
             + URLEncoder.encode("http://"
-                + host
+                + HttpTestEnv.TOMCAT_HOST
                 + ":"
-                + port
+                + HttpTestEnv.TEST_WEBAPP_PORT
                 + "/"
                 + context
                 + ParamServlet.NAME));
@@ -255,9 +256,9 @@ public class TestRedirect extends TestWebappBase
     public void testRedirectWithQueryString() throws Exception
     {
         String qs = URLEncoder.encode("http://"
-            + host
+            + HttpTestEnv.TOMCAT_HOST
             + ":"
-            + port
+            + HttpTestEnv.TEST_WEBAPP_PORT
             + "/"
             + context
             + "/params?foo=bar&bar=foo");
@@ -283,9 +284,9 @@ public class TestRedirect extends TestWebappBase
     {
         String qs = "to="
             + URLEncoder.encode("http://"
-                + host
+                + HttpTestEnv.TOMCAT_HOST
                 + ":"
-                + port
+                + HttpTestEnv.TEST_WEBAPP_PORT
                 + "/"
                 + context
                 + "/params?foo=bar");
@@ -293,9 +294,9 @@ public class TestRedirect extends TestWebappBase
         {
             qs = "to="
                 + URLEncoder.encode("http://"
-                    + host
+                    + HttpTestEnv.TOMCAT_HOST
                     + ":"
-                    + port
+                    + HttpTestEnv.TEST_WEBAPP_PORT
                     + "/"
                     + context
                     + "/redirect?"
@@ -322,9 +323,9 @@ public class TestRedirect extends TestWebappBase
     {
         String qs = "to="
             + URLEncoder.encode("http://"
-                + host
+                + HttpTestEnv.TOMCAT_HOST
                 + ":"
-                + port
+                + HttpTestEnv.TEST_WEBAPP_PORT
                 + "/"
                 + context
                 + "/params?foo=bar&bar=foo");

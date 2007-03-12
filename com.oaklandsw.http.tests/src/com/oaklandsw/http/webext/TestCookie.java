@@ -9,10 +9,10 @@ import junit.framework.TestSuite;
 
 import com.oaklandsw.http.CookieContainer;
 import com.oaklandsw.http.HttpURLConnection;
-import com.oaklandsw.http.TestBase;
+import com.oaklandsw.http.HttpTestBase;
 import com.oaklandsw.util.LogUtils;
 
-public class TestCookie extends TestBase
+public class TestCookie extends HttpTestBase
 {
 
     private static final Log   _log         = LogUtils.makeLogger();

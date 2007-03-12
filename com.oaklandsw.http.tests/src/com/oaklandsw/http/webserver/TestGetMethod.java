@@ -63,8 +63,8 @@ import java.net.URL;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
-import com.oaklandsw.http.TestBase;
-import com.oaklandsw.http.TestEnv;
+import com.oaklandsw.http.HttpTestBase;
+import com.oaklandsw.http.HttpTestEnv;
 
 /**
  * Simple tests of {@link GetMethod}hitting a local webserver.
@@ -80,12 +80,12 @@ import com.oaklandsw.http.TestEnv;
  * @author Rodney Waldhoff
  * @version $Id: TestGetMethod.java,v 1.3 2002/02/04 15:26:43 dion Exp $
  */
-public class TestGetMethod extends TestBase
+public class TestGetMethod extends HttpTestBase
 {
 
-    String _host = TestEnv.TEST_WEBSERVER_HOST;
+    String _host = HttpTestEnv.TEST_WEBSERVER_HOST;
 
-    int    _port = TestEnv.TEST_WEBSERVER_PORT;
+    int    _port = HttpTestEnv.TEST_WEBSERVER_PORT;
 
     public TestGetMethod(String testName)
     {
@@ -108,6 +108,7 @@ public class TestGetMethod extends TestBase
 
     public void testGetSlashWithoutDisk() throws IOException
     {
+        //LogUtils.logAll();
         URL url = new URL("http://" + _host + ":" + _port + "/");
         int response = 0;
 
@@ -116,7 +117,7 @@ public class TestGetMethod extends TestBase
         response = urlCon.getResponseCode();
         assertEquals(200, response);
 
-        String data = TestBase.getReply(urlCon);
+        String data = HttpTestBase.getReply(urlCon);
         assertTrue("No data returned.", (data.length() > 0));
     }
 

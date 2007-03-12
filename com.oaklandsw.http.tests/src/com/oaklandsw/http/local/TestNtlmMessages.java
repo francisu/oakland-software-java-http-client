@@ -9,7 +9,7 @@ import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
-import com.oaklandsw.http.TestEnv;
+import com.oaklandsw.http.HttpTestEnv;
 import com.oaklandsw.http.ntlm.AuthenticateMessage;
 import com.oaklandsw.http.ntlm.ChallengeMessage;
 import com.oaklandsw.http.ntlm.NegotiateMessage;
@@ -30,7 +30,7 @@ public class TestNtlmMessages extends TestCase
     // We assume the web server is running
     protected void setUp()
     {
-        TestEnv.setUp();
+        HttpTestEnv.setUp();
     }
 
     public static Test suite()

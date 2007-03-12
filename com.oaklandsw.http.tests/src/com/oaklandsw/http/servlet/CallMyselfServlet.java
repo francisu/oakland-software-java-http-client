@@ -11,8 +11,8 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.oaklandsw.http.TestBase;
-import com.oaklandsw.http.TestEnv;
+import com.oaklandsw.http.HttpTestBase;
+import com.oaklandsw.http.HttpTestEnv;
 
 public class CallMyselfServlet extends MultiMethodServlet
 {
@@ -57,7 +57,7 @@ public class CallMyselfServlet extends MultiMethodServlet
         if (methodToCall == null)
             methodToCall = "GET";
 
-        URL url = new URL(TestEnv.TEST_URL_TOMCAT
+        URL url = new URL(HttpTestEnv.TEST_URL_WEBAPP
             + servletToCall
             + "?method="
             + methodToCall);
@@ -76,7 +76,7 @@ public class CallMyselfServlet extends MultiMethodServlet
 
         out.println("<p>Response code: " + urlCon.getResponseCode() + "</p>");
         out.println("<p>Reply from call</p>");
-        out.println(TestBase.getReply(urlCon));
+        out.println(HttpTestBase.getReply(urlCon));
         out.println("<p>End of Reply from call</p>");
 
         out.println("</body>");

@@ -8,13 +8,13 @@ import java.net.URL;
 import java.net.URLStreamHandler;
 import java.net.URLStreamHandlerFactory;
 
-import com.oaklandsw.http.TestBase;
+import com.oaklandsw.http.HttpTestBase;
 import com.oaklandsw.http.URLStreamHandlerFactoryImpl;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
-public class TestStreamHandlers extends TestBase
+public class TestStreamHandlers extends HttpTestBase
 {
     public TestStreamHandlers(String testName)
     {

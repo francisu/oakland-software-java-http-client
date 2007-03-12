@@ -59,10 +59,10 @@ import java.net.URL;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
-import com.oaklandsw.http.TestBase;
-import com.oaklandsw.http.TestEnv;
+import com.oaklandsw.http.HttpTestBase;
+import com.oaklandsw.http.HttpTestEnv;
 
-public class TestHttps extends TestBase
+public class TestHttps extends HttpTestBase
 {
 
     public TestHttps(String testName)
@@ -97,29 +97,26 @@ public class TestHttps extends TestBase
         response = urlCon.getResponseCode();
         assertEquals(200, response);
 
-        String data = TestBase.getReply(urlCon);
+        String data = HttpTestBase.getReply(urlCon);
         assertTrue("No data returned.", (data.length() > 0));
         checkNoActiveConns(url);
     }
 
     public void testHttpsGet() throws Exception
     {
-        testHttpsGet(new URL(TestEnv.TEST_WEBEXT_SSL_URL_PORT));
+        testHttpsGet(new URL(HttpTestEnv.TEST_WEBEXT_SSL_URL_PORT));
     }
 
     public void testHttpsGetMulti() throws Exception
     {
         for (int i = 0; i < 10; i++)
-            testHttpsGet(new URL(TestEnv.TEST_WEBEXT_SSL_URL_PORT));
+            testHttpsGet(new URL(HttpTestEnv.TEST_WEBEXT_SSL_URL_PORT));
     }
 
     public void testHttpsGetNoPort() throws Exception
     {
-        testHttpsGet(new URL(TestEnv.TEST_WEBEXT_SSL_URL));
+        testHttpsGet(new URL(HttpTestEnv.TEST_WEBEXT_SSL_URL));
     }
-
-    // Note as of 9 May 04, the testAuthCloseProxy and testExplicitClose
-    // are failing. Perhaps it's time to move to my own SSL server
 
     public void allTestMethods() throws Exception
     {

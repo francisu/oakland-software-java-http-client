@@ -8,7 +8,7 @@ import org.apache.commons.logging.Log;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
-import com.oaklandsw.http.TestEnv;
+import com.oaklandsw.http.HttpTestEnv;
 import com.oaklandsw.http.servlet.RequestBodyServlet;
 import com.oaklandsw.util.LogUtils;
 
@@ -17,7 +17,7 @@ public class TestData extends TestWebappBase
 
     private static final Log   _log         = LogUtils.makeLogger();
 
-    protected static String  _errorUrl = TestEnv.TEST_URL_HOST_ERROR;
+    protected static String  _errorUrl = HttpTestEnv.TEST_URL_HOST_ERRORSVR;
 
     public TestData(String testName)
     {

@@ -6,7 +6,7 @@ import java.net.URL;
 
 import org.apache.commons.logging.Log;
 
-import com.oaklandsw.http.TestEnv;
+import com.oaklandsw.http.HttpTestEnv;
 import com.oaklandsw.http.servlet.HeaderServlet;
 import com.oaklandsw.util.LogUtils;
 import com.oaklandsw.util.Util;
@@ -33,7 +33,7 @@ public class TestPerf
 
     private static boolean   _doClose;
 
-    private static String    _urlBase   = TestEnv.TEST_URL_TOMCAT;
+    private static String    _urlBase   = HttpTestEnv.TEST_URL_WEBAPP;
     private static String    _url       = _urlBase + HeaderServlet.NAME;
 
     public static void main(String args[]) throws Exception
@@ -74,7 +74,7 @@ public class TestPerf
             }
             else if (args[i].equalsIgnoreCase("-webserver"))
             {
-                _url = TestEnv.TEST_URL_WEBSERVER + "/";
+                _url = HttpTestEnv.TEST_URL_WEBSERVER + "/";
             }
             else if (args[i].equalsIgnoreCase("-explicit"))
             {

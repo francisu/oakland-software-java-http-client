@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wsdl:definitions xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:tm="http://microsoft.com/wsdl/mime/textMatching/" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:tns="urn:Example1" xmlns:s="http://www.w3.org/2001/XMLSchema" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" targetNamespace="urn:Example1" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+  <wsdl:types>
+    <s:schema elementFormDefault="qualified" targetNamespace="urn:Example1">
+      <s:element name="sayHello">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="name" type="s:string"/>
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="sayHelloResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="sayHelloResult" type="s:string"/>
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+    </s:schema>
+  </wsdl:types>
+  <wsdl:message name="sayHelloSoapIn">
+    <wsdl:part name="parameters" element="tns:sayHello"/>
+  </wsdl:message>
+  <wsdl:message name="sayHelloSoapOut">
+    <wsdl:part name="parameters" element="tns:sayHelloResponse"/>
+  </wsdl:message>
+  <wsdl:portType name="Example1Soap">
+    <wsdl:operation name="sayHello">
+      <wsdl:input message="tns:sayHelloSoapIn"/>
+      <wsdl:output message="tns:sayHelloSoapOut"/>
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="Example1Soap" type="tns:Example1Soap">
+    <soap:binding transport="http://schemas.xmlsoap.org/soap/http"/>
+    <wsdl:operation name="sayHello">
+      <soap:operation soapAction="urn:Example1/sayHello" style="document"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:binding name="Example1Soap12" type="tns:Example1Soap">
+    <soap12:binding transport="http://schemas.xmlsoap.org/soap/http"/>
+    <wsdl:operation name="sayHello">
+      <soap12:operation soapAction="urn:Example1/sayHello" style="document"/>
+      <wsdl:input>
+        <soap12:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="Example1">
+    <wsdl:port name="Example1Soap" binding="tns:Example1Soap">
+      <soap:address location="http://repoman/HelloWorld.asmx"/>
+    </wsdl:port>
+    <wsdl:port name="Example1Soap12" binding="tns:Example1Soap12">
+      <soap12:address location="http://repoman/HelloWorld.asmx"/>
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>

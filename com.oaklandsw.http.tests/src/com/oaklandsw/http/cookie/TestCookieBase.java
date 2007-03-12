@@ -29,7 +29,7 @@
 package com.oaklandsw.http.cookie;
 
 import com.oaklandsw.http.Cookie;
-import com.oaklandsw.http.TestBase;
+import com.oaklandsw.http.HttpTestBase;
 
 /**
  * Test cases for Cookie
@@ -37,7 +37,7 @@ import com.oaklandsw.http.TestBase;
  * @author <a href="mailto:oleg@ural.ru">Oleg Kalnichevski</a>
  * @version $Revision: 155418 $
  */
-public class TestCookieBase extends TestBase {
+public class TestCookieBase extends HttpTestBase {
 
     // ------------------------------------------------------------ Constructor
 

@@ -5,10 +5,10 @@ import java.net.URL;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
-import com.oaklandsw.http.TestBase;
-import com.oaklandsw.http.TestEnv;
+import com.oaklandsw.http.HttpTestBase;
+import com.oaklandsw.http.HttpTestEnv;
 
-public class TestProxyHost extends TestBase
+public class TestProxyHost extends HttpTestBase
 {
 
     public TestProxyHost(String testName)
@@ -29,8 +29,8 @@ public class TestProxyHost extends TestBase
     public void setUp() throws Exception
     {
         super.setUp();
-        com.oaklandsw.http.HttpURLConnection.setProxyHost(TestEnv.TEST_PROXY_HOST);
-        com.oaklandsw.http.HttpURLConnection.setProxyPort(TestEnv.TEST_PROXY_PORT);
+        com.oaklandsw.http.HttpURLConnection.setProxyHost(HttpTestEnv.TEST_PROXY_HOST);
+        com.oaklandsw.http.HttpURLConnection.setProxyPort(HttpTestEnv.TEST_PROXY_PORT);
     }
 
     public void tearDown() throws Exception

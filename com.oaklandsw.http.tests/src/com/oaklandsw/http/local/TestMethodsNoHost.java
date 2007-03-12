@@ -63,14 +63,14 @@ import junit.framework.TestSuite;
 
 import com.oaklandsw.http.HttpURLConnection;
 import com.oaklandsw.http.SimpleHttpMethod;
-import com.oaklandsw.http.TestBase;
+import com.oaklandsw.http.HttpTestBase;
 
 /**
  * @author Rodney Waldhoff
  * @author <a href="mailto:jsdever@apache.org">Jeff Dever </a>
  * @version $Revision: 1.7 $ $Date: 2002/08/06 15:15:32 $
  */
-public class TestMethodsNoHost extends TestBase
+public class TestMethodsNoHost extends HttpTestBase
 {
 
     public TestMethodsNoHost(String testName)

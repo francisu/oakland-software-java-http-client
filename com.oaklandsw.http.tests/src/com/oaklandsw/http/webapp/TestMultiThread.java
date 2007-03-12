@@ -11,6 +11,7 @@ import org.apache.commons.logging.Log;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
+import com.oaklandsw.http.HttpTestEnv;
 import com.oaklandsw.http.servlet.HeaderServlet;
 import com.oaklandsw.http.servlet.ParamServlet;
 import com.oaklandsw.http.servlet.RedirectServlet;
@@ -194,9 +195,9 @@ public class TestMultiThread extends TestWebappBase
                                      RedirectServlet.NAME
                                          + "?to="
                                          + URLEncoder.encode("http://"
-                                             + host
+                                             + HttpTestEnv.TOMCAT_HOST
                                              + ":"
-                                             + port
+                                             + HttpTestEnv.TEST_WEBAPP_PORT
                                              + "/"
                                              + context
                                              + ParamServlet.NAME), "Param",

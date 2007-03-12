@@ -60,8 +60,8 @@ import java.net.URL;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
-import com.oaklandsw.http.TestBase;
-import com.oaklandsw.http.TestEnv;
+import com.oaklandsw.http.HttpTestBase;
+import com.oaklandsw.http.HttpTestEnv;
 
 /**
  * 
@@ -80,12 +80,12 @@ import com.oaklandsw.http.TestEnv;
  * @version $Id: TestGetMethod.java,v 1.3 2002/02/04 15:26:43 dion Exp $
  * 
  */
-public class TestTraceMethod extends TestBase
+public class TestTraceMethod extends HttpTestBase
 {
 
-    private static String _host = TestEnv.TEST_WEBSERVER_HOST;
+    private static String _host = HttpTestEnv.TEST_WEBSERVER_HOST;
 
-    private static int    _port = TestEnv.TEST_WEBSERVER_PORT;
+    private static int    _port = HttpTestEnv.TEST_WEBSERVER_PORT;
 
     public TestTraceMethod(String testName)
     {
@@ -129,7 +129,7 @@ public class TestTraceMethod extends TestBase
         // because some HTTP servers send a response body that contains
         // lower request headers
         //
-        final String strResponseBody_lowercase = TestBase.getReply(urlCon)
+        final String strResponseBody_lowercase = HttpTestBase.getReply(urlCon)
                 .toLowerCase();
         assertNotNull(strResponseBody_lowercase);
         assertTrue(strResponseBody_lowercase.length() > 0);

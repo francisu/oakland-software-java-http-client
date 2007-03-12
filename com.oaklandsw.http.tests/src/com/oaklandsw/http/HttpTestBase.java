@@ -16,12 +16,12 @@ import com.oaklandsw.http.servlet.TimeoutServlet;
 import com.oaklandsw.util.LogUtils;
 import com.oaklandsw.util.Util;
 
-public class TestBase extends com.oaklandsw.TestCaseBase
+public class HttpTestBase extends com.oaklandsw.TestCaseBase
 {
 
     private static final Log   _log         = LogUtils.makeLogger();
 
-    protected static String    _urlBase     = TestEnv.TEST_URL_TOMCAT;
+    protected static String    _urlBase     = HttpTestEnv.TEST_URL_WEBAPP;
 
     // Enables the https protocol test for all of the test methods
     // defined in allTestMethods()
@@ -104,7 +104,7 @@ public class TestBase extends com.oaklandsw.TestCaseBase
     public void setUp() throws Exception
     {
         super.setUp();
-        TestEnv.setUp();
+        HttpTestEnv.setUp();
     }
 
     public void tearDown() throws Exception
@@ -199,17 +199,17 @@ public class TestBase extends com.oaklandsw.TestCaseBase
             _errorDebug = "&debug=true";
     }
 
-    public TestBase(String testName)
+    public HttpTestBase(String testName)
     {
         super(testName);
     }
 
     protected static final String context = System
                                                   .getProperty("httpclient.test.webappContext",
-                                                               TestEnv.TEST_URL_APP_TOMCAT);
+                                                               HttpTestEnv.TEST_URL_APP_TOMCAT);
 
-    protected static String       host    = TestEnv.HOST;
-    protected static int          port    = TestEnv.PORT;
+    // protected static String host = TestEnv.HOST;
+    // protected static int port = TestEnv.PORT;
 
     public static void setLogging(boolean on)
     {
@@ -352,16 +352,30 @@ public class TestBase extends com.oaklandsw.TestCaseBase
                 .getTotalConnectionCount(url.toString());
     }
 
-    // Test everything through a proxy server
+    protected void resetProxyParams()
+    {
+        com.oaklandsw.http.HttpURLConnection.setProxyHost(null);
+        com.oaklandsw.http.HttpURLConnection.setProxyPort(-1);
+        com.oaklandsw.http.HttpURLConnection.setProxyUser(null);
+        com.oaklandsw.http.HttpURLConnection.setProxyPassword(null);
+    }
+
+    // Test everything as SSL
     public void testHttps() throws Exception
     {
         if (!_doHttps)
             return;
 
         System.out.println("https test");
-        TestEnv._protocol = "https:";
-        allTestMethods();
-        TestEnv._protocol = "http:";
+        HttpTestEnv.HTTP_PROTOCOL = "https:";
+        try
+        {
+            allTestMethods();
+        }
+        finally
+        {
+            HttpTestEnv.HTTP_PROTOCOL = "http:";
+        }
     }
 
     // Test everything through a proxy server
@@ -371,21 +385,27 @@ public class TestBase extends com.oaklandsw.TestCaseBase
             return;
 
         com.oaklandsw.http.HttpURLConnection
-                .setProxyHost(TestEnv.TEST_PROXY_HOST);
+                .setProxyHost(HttpTestEnv.TEST_PROXY_HOST);
         com.oaklandsw.http.HttpURLConnection
-                .setProxyPort(TestEnv.TEST_PROXY_PORT);
+                .setProxyPort(HttpTestEnv.TEST_PROXY_PORT);
 
         // Bug 954 setProxyHost/setProxyPort had no effect
         URL url = new URL(_urlBase);
         com.oaklandsw.http.HttpURLConnection urlCon = (com.oaklandsw.http.HttpURLConnection)url
                 .openConnection();
-        assertEquals(TestEnv.TEST_PROXY_HOST, urlCon.getConnectionProxyHost());
-        assertEquals(TestEnv.TEST_PROXY_PORT, urlCon.getConnectionProxyPort());
+        assertEquals(HttpTestEnv.TEST_PROXY_HOST, urlCon
+                .getConnectionProxyHost());
+        assertEquals(HttpTestEnv.TEST_PROXY_PORT, urlCon
+                .getConnectionProxyPort());
 
-        allTestMethods();
-        com.oaklandsw.http.HttpURLConnection.setProxyHost(null);
-        com.oaklandsw.http.HttpURLConnection.setProxyPort(-1);
-
+        try
+        {
+            allTestMethods();
+        }
+        finally
+        {
+            resetProxyParams();
+        }
     }
 
     // Test everything through a HTTP 1.0 proxy server
@@ -395,13 +415,17 @@ public class TestBase extends com.oaklandsw.TestCaseBase
             return;
 
         com.oaklandsw.http.HttpURLConnection
-                .setProxyHost(TestEnv.TEST_10_PROXY_HOST);
+                .setProxyHost(HttpTestEnv.TEST_10_PROXY_HOST);
         com.oaklandsw.http.HttpURLConnection
-                .setProxyPort(TestEnv.TEST_10_PROXY_PORT);
-        allTestMethods();
-        com.oaklandsw.http.HttpURLConnection.setProxyHost(null);
-        com.oaklandsw.http.HttpURLConnection.setProxyPort(-1);
-
+                .setProxyPort(HttpTestEnv.TEST_10_PROXY_PORT);
+        try
+        {
+            allTestMethods();
+        }
+        finally
+        {
+            resetProxyParams();
+        }
     }
 
     // Test everything through a proxy server
@@ -411,21 +435,24 @@ public class TestBase extends com.oaklandsw.TestCaseBase
             return;
 
         com.oaklandsw.http.HttpURLConnection
-                .setProxyHost(TestEnv.TEST_AUTH_PROXY_HOST);
+                .setProxyHost(HttpTestEnv.TEST_AUTH_PROXY_HOST);
         com.oaklandsw.http.HttpURLConnection
-                .setProxyPort(TestEnv.TEST_AUTH_PROXY_PORT);
+                .setProxyPort(HttpTestEnv.TEST_AUTH_PROXY_PORT);
         com.oaklandsw.http.HttpURLConnection
-                .setProxyUser(TestEnv.TEST_AUTH_PROXY_USER);
+                .setProxyUser(HttpTestEnv.TEST_AUTH_PROXY_USER);
         com.oaklandsw.http.HttpURLConnection
-                .setProxyPassword(TestEnv.TEST_AUTH_PROXY_PASSWORD);
+                .setProxyPassword(HttpTestEnv.TEST_AUTH_PROXY_PASSWORD);
         // Proxy type is used only for auth
         TestUserAgent._proxyType = TestUserAgent.PROXY;
-        allTestMethods();
-        com.oaklandsw.http.HttpURLConnection.setProxyHost(null);
-        com.oaklandsw.http.HttpURLConnection.setProxyPort(-1);
-        com.oaklandsw.http.HttpURLConnection.setProxyUser(null);
-        com.oaklandsw.http.HttpURLConnection.setProxyPassword(null);
 
+        try
+        {
+            allTestMethods();
+        }
+        finally
+        {
+            resetProxyParams();
+        }
     }
 
     // Test everything through a proxy server
@@ -433,23 +460,26 @@ public class TestBase extends com.oaklandsw.TestCaseBase
     {
         if (!_doAuthCloseProxyTest)
             return;
-
+        
         com.oaklandsw.http.HttpURLConnection
-                .setProxyHost(TestEnv.TEST_AUTH_PROXY_CLOSE_HOST);
+                .setProxyHost(HttpTestEnv.TEST_AUTH_PROXY_CLOSE_HOST);
         com.oaklandsw.http.HttpURLConnection
-                .setProxyPort(TestEnv.TEST_AUTH_PROXY_CLOSE_PORT);
+                .setProxyPort(HttpTestEnv.TEST_AUTH_PROXY_CLOSE_PORT);
         com.oaklandsw.http.HttpURLConnection
-                .setProxyUser(TestEnv.TEST_AUTH_PROXY_CLOSE_USER);
+                .setProxyUser(HttpTestEnv.TEST_AUTH_PROXY_CLOSE_USER);
         com.oaklandsw.http.HttpURLConnection
-                .setProxyPassword(TestEnv.TEST_AUTH_PROXY_CLOSE_PASSWORD);
+                .setProxyPassword(HttpTestEnv.TEST_AUTH_PROXY_CLOSE_PASSWORD);
         // Proxy type is used only for auth
         TestUserAgent._proxyType = TestUserAgent.NETPROXY;
-        allTestMethods();
-        com.oaklandsw.http.HttpURLConnection.setProxyHost(null);
-        com.oaklandsw.http.HttpURLConnection.setProxyPort(-1);
-        com.oaklandsw.http.HttpURLConnection.setProxyUser(null);
-        com.oaklandsw.http.HttpURLConnection.setProxyPassword(null);
+        try
+        {
+            allTestMethods();
+        }
+        finally
+        {
+            resetProxyParams();
 
+        }
     }
 
     public void testExplicitClose() throws Exception
@@ -462,13 +492,18 @@ public class TestBase extends com.oaklandsw.TestCaseBase
         int maxCon = com.oaklandsw.http.HttpURLConnection
                 .getMaxConnectionsPerHost();
 
-        // Make sure we don't hang
-        for (int i = 0; i < maxCon + 5; i++)
+        try
         {
-            allTestMethods();
+            // Make sure we don't hang
+            for (int i = 0; i < maxCon + 5; i++)
+            {
+                allTestMethods();
+            }
         }
-
-        com.oaklandsw.http.HttpURLConnection.setExplicitClose(false);
+        finally
+        {
+            com.oaklandsw.http.HttpURLConnection.setExplicitClose(false);
+        }
 
     }
 

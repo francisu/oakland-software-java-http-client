@@ -18,7 +18,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.StringTokenizer;
 
-import com.oaklandsw.http.TestEnv;
+import com.oaklandsw.http.HttpTestEnv;
 import com.oaklandsw.util.URIUtil;
 
 //
@@ -47,7 +47,7 @@ import com.oaklandsw.util.URIUtil;
 
 public class ErrorServer extends Thread
 {
-    public static final int    PORT_NUMBER          = TestEnv.TEST_ERRORSVR_PORT;
+    public static final int    PORT_NUMBER          = HttpTestEnv.TEST_ERRORSVR_PORT;
 
     public static final int    CONTENT_LENGTH       = 8104;
     public static final int    CONTENT_LOOPS        = 100;

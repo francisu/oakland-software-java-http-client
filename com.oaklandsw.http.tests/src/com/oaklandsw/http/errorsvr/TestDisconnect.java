@@ -12,17 +12,17 @@ import org.apache.commons.logging.Log;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
-import com.oaklandsw.http.TestBase;
-import com.oaklandsw.http.TestEnv;
+import com.oaklandsw.http.HttpTestBase;
+import com.oaklandsw.http.HttpTestEnv;
 import com.oaklandsw.http.server.ErrorServer;
 import com.oaklandsw.util.LogUtils;
 import com.oaklandsw.util.Util;
 
-public class TestDisconnect extends TestBase
+public class TestDisconnect extends HttpTestBase
 {
     private static final Log   _log         = LogUtils.makeLogger();
 
-    protected static String  _errorUrl = TestEnv.TEST_URL_HOST_ERROR;
+    protected static String  _errorUrl = HttpTestEnv.TEST_URL_HOST_ERRORSVR;
 
     public TestDisconnect(String testName)
     {
