@@ -79,6 +79,14 @@ expects to find a fully qualified hostname.
 Also, add the line "no_cache deny all" somewhere after the acl definitions.  This
 turns off caching, which is essential for things like DAV
 
+Finally, allow access to anything in our network:
+
+# Example rule allowing access from your local networks. Adapt
+# to list your (internal) IP networks from where browsing should
+# be allowed
+acl our_networks src 192.168.1.0/24 192.168.2.0/24
+http_access allow our_networks
+
 Start Squid by using /etc/rc.d/rc4.d/K25squid
 
 
