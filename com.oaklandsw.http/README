@@ -119,25 +119,25 @@ To use the HTTP client support:
 
    To trace the events on the wire do this:
 
-      log4j.logger.com.oaklandsw.log.http.wireLog=DEBUG
+      log4j.logger.com.oaklandsw.http.wireLog=DEBUG
 
    If you don't want to see any messages at all:
 
-      log4j.logger.com.oaklandsw.log=OFF
+      log4j.logger.com.oaklandsw=OFF
 
    If you want to see everything:
 
-      log4j.logger.com.oaklandsw.log=DEBUG
+      log4j.logger.com.oaklandsw=DEBUG
 
    In general, you can turn logging on for any class in the HTTP
    client.
 
-      log4j.logger.com.oaklandsw.log.http.HttpConnectionManager=DEBUG
+      log4j.logger.com.oaklandsw.http.HttpConnectionManager=DEBUG
 
    To programatically set Log4j logging:
    
         Properties logProps = new Properties();
-        logProps.setProperty("log4j.logger.com.oaklandsw.log", "DEBUG");
+        logProps.setProperty("log4j.logger.com.oaklandsw", "DEBUG");
         PropertyConfigurator.configure(logProps);
    
 
