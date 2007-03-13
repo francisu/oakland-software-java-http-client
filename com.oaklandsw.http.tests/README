@@ -1,8 +1,14 @@
 Building and Running the tests
 
+0) turn off automatic build in eclipse to make sure it does not interfere
+   with the build script
 1) run the build.sh script in com.oaklandsw.http using JDK 1.4 (or higher) on Linux
 2) test with JDK 1.4, 1.5, and 1.6 using run.sh com.oaklandsw.http.tests
-2) test with JDK 1.2 on windows using runw.sh
+3) test with JDK 1.2 on windows using runw.sh
+4) test the source build by unziping it and running 'ant', then the runsrcsample.sh script
+5) test the runtime build by unzipping it and running the com.oaklandsw.http.tests/runlocalsample.sh
+6) as above, but with eval build, make sure it shows eval message (delete ~/.xmlfuoshc file first)
+7) see the release checklist for finishing the release (website, swreg, pad, etc)
 
 
 Manual IIS Tests
