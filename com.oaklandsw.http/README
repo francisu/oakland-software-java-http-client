@@ -6,6 +6,10 @@ See http://www.oaklandsoftware.com/support.html for current known problems.
 
 Configuration Instructions
 ------------------------------------------------
+If you are using this with Apache Axis, you must change the Axis configuration
+to point to the Oakland Software HTTP Transport.  The configuration page linked
+to below has the details for how to do this.
+
 See http://www.oaklandsoftware.com/product_http/config.html
 
 
