@@ -20,7 +20,6 @@ public class TestBugs extends HttpTestBase
     public TestBugs(String testName)
     {
         super(testName);
-        TestUserAgent._type = TestUserAgent.OFFICESHARE;
     }
 
     public static Test suite()
@@ -39,9 +38,14 @@ public class TestBugs extends HttpTestBase
     }
 
     // Connect to public test sharepoint server
-    public void DISABVLEDtestBug1816() throws MalformedURLException, IOException
+    public void testBug1816()
+        throws MalformedURLException,
+            IOException
     {
-        URL url = new URL("http://www.xsolive.com/_layouts/Authenticate.aspx?Source=%2Fdefault%2Easpx");
+        TestUserAgent._type = TestUserAgent.OFFICESHARE_ICEWEB;
+        // URL url = new
+        // URL("http://www.xsolive.com/_layouts/Authenticate.aspx?Source=%2Fdefault%2Easpx");
+        URL url = new URL("http://sharepoint.iceweb.com/sites/demo/default.aspx");
         int response = 0;
 
         _urlCon = (HttpURLConnection)url.openConnection();

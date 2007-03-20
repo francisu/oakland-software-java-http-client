@@ -12,19 +12,20 @@ import com.oaklandsw.util.LogUtils;
 
 public class TestUserAgent implements HttpUserAgent
 {
-    private static final Log   _log         = LogUtils.makeLogger();
+    private static final Log _log               = LogUtils.makeLogger();
 
     public static int        _type;
 
     public static int        _proxyType;
 
-    public static final int  GOOD     = 1;
-    public static final int  BAD      = 2;
-    public static final int  NULL     = 3;
-    public static final int  LOCAL    = 4;
-    public static final int  PROXY    = 5;
-    public static final int  NETPROXY = 6;
-    public static final int  OFFICESHARE     = 7;
+    public static final int  GOOD               = 1;
+    public static final int  BAD                = 2;
+    public static final int  NULL               = 3;
+    public static final int  LOCAL              = 4;
+    public static final int  PROXY              = 5;
+    public static final int  NETPROXY           = 6;
+    public static final int  OFFICESHARE_XSO    = 7;
+    public static final int  OFFICESHARE_ICEWEB = 8;
 
     public Credential getCredential(String realm, String url, int scheme)
     {
@@ -71,10 +72,16 @@ public class TestUserAgent implements HttpUserAgent
                         ntlmCred.setDomain("domain");
                         ntlmCred.setHost("host");
                         break;
-                    case OFFICESHARE:
+                    case OFFICESHARE_XSO:
                         ntlmCred.setUser("test");
                         ntlmCred.setPassword("Xsolive2007");
                         ntlmCred.setDomain("demo");
+                        ntlmCred.setHost("host");
+                        break;
+                    case OFFICESHARE_ICEWEB:
+                        ntlmCred.setUser("demo");
+                        ntlmCred.setPassword("demo");
+                        ntlmCred.setDomain("icemail");
                         ntlmCred.setHost("host");
                         break;
 
@@ -162,12 +169,15 @@ public class TestUserAgent implements HttpUserAgent
                 {
                     case PROXY:
                         basicCred.setUser(HttpTestEnv.TEST_AUTH_PROXY_USER);
-                        basicCred.setPassword(HttpTestEnv.TEST_AUTH_PROXY_PASSWORD);
+                        basicCred
+                                .setPassword(HttpTestEnv.TEST_AUTH_PROXY_PASSWORD);
                         break;
 
                     case NETPROXY:
-                        basicCred.setUser(HttpTestEnv.TEST_AUTH_PROXY_CLOSE_USER);
-                        basicCred.setPassword(HttpTestEnv.TEST_AUTH_PROXY_CLOSE_PASSWORD);
+                        basicCred
+                                .setUser(HttpTestEnv.TEST_AUTH_PROXY_CLOSE_USER);
+                        basicCred
+                                .setPassword(HttpTestEnv.TEST_AUTH_PROXY_CLOSE_PASSWORD);
                         break;
 
                     case LOCAL:
