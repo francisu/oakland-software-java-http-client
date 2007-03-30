@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Jars Plug-in
 Bundle-SymbolicName: com.oaklandsw.http.tests.jars
-Bundle-Version: 2.6.0
+Bundle-Version: 2.6.1
 Bundle-ClassPath: javax.servlet.jar,
  wsdl4j-1.5.1.jar,
  commons-discovery-0.2.jar
