@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Jars Plug-in
 Bundle-SymbolicName: com.oaklandsw.http.jars
-Bundle-Version: 2.6.4
+Bundle-Version: 2.6.5
 Bundle-ClassPath: jakarta-regexp-1.3.jar,
  axis.jar,
  saaj.jar,
