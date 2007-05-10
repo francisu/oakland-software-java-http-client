@@ -116,14 +116,17 @@ This is installed in /usr/local/apache-tomcat.  Port 8080 is the default tomcat 
 
 Test deployment to the tomcat server.
 
-The com.oaklandsw.http.servlet package in the tests gets built into the oaklandsw.war by the 
-http-war ant target.
+The com.oaklandsw.http.servlet package in the tests gets built into the 
+oaklandsw-http.war by the http-war ant target.
+
+This also contains a copy of the http client (http.jar, httptests.jar, log4j.jar)
+in order to test Java web start.
 
 Put this in the webapp directory of the tomcat installation (typically
-on repoman) and restart the cat.  Make sure you delete the oaklandsw directory
+on repoman) and restart the cat.  Make sure you delete the oaklandsw-http directory
 before you restart the cat.
 
-The oaklandsw.war file is checked in to make things easier.
+The oaklandsw-http.war file is checked in to make things easier.
 
 
 Axis

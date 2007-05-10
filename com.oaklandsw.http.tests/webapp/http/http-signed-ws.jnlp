@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+   <jnlp codebase="$$codebase">
+     <information>
+         <title>Signed HTTP Test</title>
+         <vendor>Oakland Software</vendor>
+         <description>Signed HTTP Test Application</description>
+	     <offline-allowed/>
+     </information>
+     <resources>
+       <j2se version="1.2+" />
+       <jar href="httptests-signed.jar"/>
+       <jar href="http-signed.jar"/>
+     </resources>
+     <security>
+	   <all-permissions/>
+	 </security>
+     <application-desc main-class="com.oaklandsw.http.webstart.WebStartProgram">
+       <argument>http://www.oaklandsoftware.com</argument>
+     </application-desc>
+   </jnlp>
+

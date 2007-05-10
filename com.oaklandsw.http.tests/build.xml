@@ -1,99 +1,124 @@
 <project default="package-java" basedir=".">
 
-  <import file="../com.oaklandsw.build/build.common.xml"/>
+	<import file="../com.oaklandsw.build/build.common.xml" />
 
-  <!-- =================================================================== -->
-  <!-- Initialization target                                               -->
-  <!-- =================================================================== -->
-  <target name="init" depends="common-init">
+	<!-- =================================================================== -->
+	<!-- Initialization target                                               -->
+	<!-- =================================================================== -->
+	<target name="init" depends="common-init">
 
-	<!-- this is the 1.2 compiler -->
-	<property name="build.compiler" value="jikes"/>
+		<if>
+			<equals arg1="${target.java.version}" arg2="1.2">
+			</equals>
+			<then>
+				<echo message="Compiling with 1.2 compiler"/>
+				<!-- this is the 1.2 compiler -->
+				<property name="build.compiler" value="jikes" />
 
-  	<path id="compile.classpath">
-      <fileset dir="${basedir}/../com.oaklandsw.http.jars">
-        <include name="*.jar" />
-      </fileset>
-      <fileset dir="${basedir}/../com.oaklandsw.http.tests.jars">
-        <include name="*.jar" />
-      </fileset>
-        <fileset dir="${basedir}/../com.oaklandsw.util.jars">
-          <include name="*.jar" />
-        </fileset>
-  	  <fileset file="../com.oaklandsw.build/junit.jar"/>	
-     	  <dirset dir="${basedir}/../com.oaklandsw.http/bin"/>
-     	  <dirset dir="${basedir}/../com.oaklandsw.http.tests/bin"/>
-     	  <dirset dir="${basedir}/../com.oaklandsw.util/bin"/>
-     	  <dirset dir="${basedir}/../com.oaklandsw.build/bin"/>
-    </path>
+				<path id="compile.classpath">
+					<fileset dir="${basedir}/../com.oaklandsw.http.jars">
+						<include name="*.jar" />
+					</fileset>
+					<fileset dir="${basedir}/../com.oaklandsw.http.tests.jars">
+						<include name="*.jar" />
+					</fileset>
+					<fileset dir="${basedir}/../com.oaklandsw.util.jars">
+						<include name="*.jar" />
+					</fileset>
+					<fileset file="../com.oaklandsw.build/junit.jar" />
+					<dirset dir="${basedir}/../com.oaklandsw.http/bin" />
+					<dirset dir="${basedir}/../com.oaklandsw.http.tests/bin" />
+					<dirset dir="${basedir}/../com.oaklandsw.util/bin" />
+					<dirset dir="${basedir}/../com.oaklandsw.build/bin" />
+					<path refid="compile.classpath12" />
+				</path>
+			</then>
+		</if>
 
-  </target>
+	</target>
 
-	  <!-- =================================================================== -->
-	  <!-- Creates the package - overrides common                        -->
-	  <!-- =================================================================== -->
-	  <target name="package-java" depends="compile-java">
-	    <jar jarfile="${package.name}tests.jar">
-	      <fileset dir="${bin.dir}"/>
-          <fileset dir="../com.oaklandsw.build/bin"/>
-	    </jar>
+	<!-- =================================================================== -->
+	<!-- Creates the package - overrides common                        -->
+	<!-- =================================================================== -->
+	<target name="package-java" depends="compile-java">
+		<jar jarfile="${package.name}tests.jar">
+			<manifest>
+				<attribute name="Main-Class" value="HttpGetSample" />
+			</manifest>
+			<fileset dir="${bin.dir}" />
+			<fileset dir="../com.oaklandsw.build/bin" />
+		</jar>
 
-	  </target>
+	</target>
 
-	<target name="create-versions"/>
+	<target name="create-versions" />
 
-	
-	  <!-- =================================================================== -->
-	  <!-- HTTP Tomcat test WAR file                                           -->
-	  <!-- =================================================================== -->
-	  <target name="http-war"
-	          depends="init, compile-java"
-	          description="Build all the files and package them into a WAR file">
-	    <war warfile="oaklandsw.war"
-	         webxml="webapp/http/conf/web.xml">
-	      <webinf dir="webapp/http/conf">
-	        <include name="**"/>
-	        <exclude name="web.xml"/>
-	        <exclude name="classes/**"/>
-	        <exclude name="lib/**"/>
-	      </webinf>
-	      <classes dir="bin">
-	        <include name="**"/>
-	      </classes>
-	    </war>
-	  </target>
-	
-	
-	  <!-- =================================================================== -->
-	  <!-- HTTP Axis2 test AAR file                                           -->
-	  <!-- =================================================================== -->
-	  <target name="axis2-aar"
-	          depends="init, compile-java">
-	    <jar destfile="TestService.aar" basedir="${src.dir}/com/oaklandsw/http/webservice">
-	    	<fileset dir="${bin.dir}">
-	    		<include name="com/oaklandsw/http/webservice/**"/>
-	    	</fileset>
-	    	</jar>
-	  </target>
-	
-	  <!-- =================================================================== -->
-	  <!-- Junit tests                        -->
-	  <!-- =================================================================== -->
-		<target name="junit" depends="compile-java">
-			<junit printsummary="on" fork="on">
-				<jvmarg value="-Dlog4j.configuration=../com.oaklandsw.build/src/logprops/ljp.none"/>
-				<jvmarg value="-Djava.util.logging.config.file=../com.oaklandsw.build/src/logprops/ljp.none"/>
-				<sysproperty key="OAKLANDSW_ROOT" value=".."/>
-				<sysproperty key="oaklandsw.localhost" value="repoman"/>
-				<sysproperty key="oaklandsw.errorhost" value="berlioz"/>
-				<sysproperty key="java.net.preferIPv4Stack" value="true"/>
-				<classpath refid="compile.classpath"/>
-				<formatter type="plain" usefile="false"/>
-				<!--batchtest>
+
+	<!-- =================================================================== -->
+	<!-- HTTP Tomcat test WAR file                                           -->
+	<!-- =================================================================== -->
+	<!-- WARNING - make sure you build http, util, and httptests with ant
+	     before building this, as this depends on those jar files -->
+	<target name="http-war" depends="init, compile-java" description="Build all the files and package them into a WAR file">
+		<signjar jar="${basedir}/../com.oaklandsw.http/http.jar" signedjar="${basedir}/../com.oaklandsw.http/http-signed.jar" alias="oaklandsw" keystore="keystore" storepass="oaklandsw" />
+		<signjar jar="${basedir}/../com.oaklandsw.http.tests/httptests.jar" signedjar="${basedir}/../com.oaklandsw.http.tests/httptests-signed.jar" alias="oaklandsw" keystore="keystore" storepass="oaklandsw" />
+		<war destfile="oaklandsw-http.war" webxml="webapp/http/conf/web.xml">
+			<webinf dir="webapp/http/conf">
+				<include name="**" />
+				<exclude name="web.xml" />
+			</webinf>
+			<lib dir="webapp/http/lib">
+				<include name="**" />
+			</lib>
+			<fileset dir="${basedir}/../com.oaklandsw.http">
+				<include name="http.jar" />
+				<include name="http-signed.jar" />
+			</fileset>
+			<fileset dir="${basedir}/../com.oaklandsw.http.tests">
+				<include name="httptests.jar" />
+				<include name="httptests-signed.jar" />
+			</fileset>
+			<fileset dir="webapp/http">
+				<include name="**" />
+				<exclude name="conf/**" />
+				<exclude name="lib/**" />
+			</fileset>
+			<classes dir="bin">
+				<include name="**" />
+			</classes>
+		</war>
+	</target>
+
+
+	<!-- =================================================================== -->
+	<!-- HTTP Axis2 test AAR file                                           -->
+	<!-- =================================================================== -->
+	<target name="axis2-aar" depends="init, compile-java">
+		<jar destfile="TestService.aar" basedir="${src.dir}/com/oaklandsw/http/webservice">
+			<fileset dir="${bin.dir}">
+				<include name="com/oaklandsw/http/webservice/**" />
+			</fileset>
+		</jar>
+	</target>
+
+	<!-- =================================================================== -->
+	<!-- Junit tests                        -->
+	<!-- =================================================================== -->
+	<target name="junit" depends="compile-java">
+		<junit printsummary="on" fork="on">
+			<jvmarg value="-Dlog4j.configuration=../com.oaklandsw.build/src/logprops/ljp.none" />
+			<jvmarg value="-Djava.util.logging.config.file=../com.oaklandsw.build/src/logprops/ljp.none" />
+			<sysproperty key="OAKLANDSW_ROOT" value=".." />
+			<sysproperty key="oaklandsw.localhost" value="repoman" />
+			<sysproperty key="oaklandsw.errorhost" value="berlioz" />
+			<sysproperty key="java.net.preferIPv4Stack" value="true" />
+			<classpath refid="compile.classpath" />
+			<formatter type="plain" usefile="false" />
+			<!--batchtest>
 					<fileset dir="bin/com/oaklandsw/http" includes="webapp/Test*.class"/>
 				</batchtest-->
-				<!--test name="com.oaklandsw.http.TestAll"/-->
-				<test name="com.oaklandsw.http.TestAll"/>
-			</junit>
-		</target>
+			<!--test name="com.oaklandsw.http.TestAll"/-->
+			<test name="com.oaklandsw.http.TestAll" />
+		</junit>
+	</target>
 </project>

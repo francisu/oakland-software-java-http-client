@@ -100,8 +100,8 @@ public class HttpTestEnv
     // Netproxy (windows)
     public static int          TEST_AUTH_PROXY_CLOSE_PORT        = 8088;
 
-    public static String       TEST_URL_APP                      = "/oaklandsw";
-    public static String       TEST_URL_APP_TOMCAT               = "oaklandsw";
+    public static String       TEST_URL_APP                      = "/oaklandsw-http";
+    public static String       TEST_URL_APP_TOMCAT               = "oaklandsw-http";
 
     // For anything on the IIS machine, including NTLM
     public static String       TEST_IIS_USER                     = "httptest";

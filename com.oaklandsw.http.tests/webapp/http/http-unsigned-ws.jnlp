@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+   <jnlp codebase="$$codebase">
+     <information>
+         <title>Unsigned HTTP Test</title>
+         <vendor>Oakland Software</vendor>
+         <description>Unsigned HTTP Test Application</description>
+	     <offline-allowed/>
+     </information>
+     <resources>
+       <j2se version="1.2+" />
+       <jar href="httptests.jar"/>
+       <jar href="http.jar"/>
+     </resources>
+     <application-desc main-class="com.oaklandsw.http.webstart.WebStartProgram">
+       <argument>http://www.oaklandsoftware.com</argument>
+       <argument>-ddskipsetprop</argument>
+       <argument>-nooutput</argument>
+     </application-desc>
+   </jnlp>
+

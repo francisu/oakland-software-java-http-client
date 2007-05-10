@@ -1,3 +1,5 @@
+package com.oaklandsw.http.webstart;
+
 import java.io.InputStream;
 import java.net.URL;
 
@@ -27,10 +29,10 @@ import com.oaklandsw.http.HttpURLConnection;
  * 
  ******************************************************************************/
 
-public class HttpGetSample implements com.oaklandsw.http.HttpUserAgent
+public class WebStartProgram implements com.oaklandsw.http.HttpUserAgent
 {
 
-    public HttpGetSample()
+    public WebStartProgram()
     {
     }
 
@@ -43,6 +45,8 @@ public class HttpGetSample implements com.oaklandsw.http.HttpUserAgent
     private static int                              _proxyPort;
 
     private static boolean                          _useConnectionProxy;
+
+    private static boolean                          _skipSetProp;
 
     public static com.oaklandsw.http.NtlmCredential _normalCredential;
     public static com.oaklandsw.http.NtlmCredential _proxyCredential;
@@ -68,15 +72,19 @@ public class HttpGetSample implements com.oaklandsw.http.HttpUserAgent
                                                        int scheme)
     {
 
-        System.out.println("getGred: "
-            + realm
-            + " url: "
-            + url
-            + " scheme: "
-            + scheme);
+        if (!_nooutput)
+        {
+            System.out.println("getGred: "
+                + realm
+                + " url: "
+                + url
+                + " scheme: "
+                + scheme);
+        }
 
         com.oaklandsw.http.NtlmCredential cred = _normalCredential;
-        System.out.println("Returning normal cred: " + cred.getUser());
+        if (!_nooutput)
+            System.out.println("Returning normal cred: " + cred.getUser());
         return cred;
     }
 
@@ -85,15 +93,19 @@ public class HttpGetSample implements com.oaklandsw.http.HttpUserAgent
                                                             String url,
                                                             int scheme)
     {
-        System.out.println("getProxyGred: "
-            + realm
-            + " url: "
-            + url
-            + " scheme: "
-            + scheme);
+        if (!_nooutput)
+        {
+            System.out.println("getProxyGred: "
+                + realm
+                + " url: "
+                + url
+                + " scheme: "
+                + scheme);
+        }
 
         com.oaklandsw.http.NtlmCredential cred = _proxyCredential;
-        System.out.println("Returning proxy cred: " + cred.getUser());
+        if (!_nooutput)
+            System.out.println("Returning proxy cred: " + cred.getUser());
         return cred;
     }
 
@@ -121,15 +133,11 @@ public class HttpGetSample implements com.oaklandsw.http.HttpUserAgent
 
     public static final void main(String[] args) throws Exception
     {
-        HttpGetSample userAgent = new HttpGetSample();
-
-        // To turn on logging for log4j
-        // Properties logProps = new Properties();
-        // logProps.setProperty("log4j.logger.com.oaklandsw", "DEBUG");
-        // PropertyConfigurator.configure(logProps);
+        WebStartProgram userAgent = new WebStartProgram();
 
         _loopCount = 1;
 
+        // Skip the first arg which is the URL
         int index = 1;
         while (index < args.length)
         {
@@ -154,6 +162,8 @@ public class HttpGetSample implements com.oaklandsw.http.HttpUserAgent
                 _interactive = true;
             else if (args[index].equalsIgnoreCase("-nooutput"))
                 _nooutput = true;
+            else if (args[index].equalsIgnoreCase("-skipsetprop"))
+                _skipSetProp = true;
             else if (args[index].equalsIgnoreCase("-loop"))
                 _loopCount = Integer.parseInt(args[++index]);
             else if (args[index].equalsIgnoreCase("-proxy"))
@@ -166,8 +176,12 @@ public class HttpGetSample implements com.oaklandsw.http.HttpUserAgent
         // SSL - Uncomment this if you are < JDK 1.4
         // Security.addProvider(new com.sun.net.ssl.internal.ssl.Provider());
 
-        // Tell Java to use the oaklandsw implementation
-        System.setProperty("java.protocol.handler.pkgs", "com.oaklandsw");
+        // Skipping this is for testing unsigned JWS application
+        if (!_skipSetProp)
+        {
+            // Tell Java to use the oaklandsw implementation
+            System.setProperty("java.protocol.handler.pkgs", "com.oaklandsw");
+        }
 
         if (_proxyHost != null && !_useConnectionProxy)
         {
@@ -180,8 +194,6 @@ public class HttpGetSample implements com.oaklandsw.http.HttpUserAgent
         // Tells the oaklandsw implementation the object that will
         // resolve the credentials when requested by IIS/NTLM
         com.oaklandsw.http.HttpURLConnection.setDefaultUserAgent(userAgent);
-        
-        System.out.println(System.getProperty("user.dir"));
 
         String urlStr;
         if (args.length == 0)

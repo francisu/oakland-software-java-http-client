@@ -30,6 +30,7 @@ import org.apache.commons.logging.Log;
 import com.oaklandsw.http.cookie.CookieSpec;
 import com.oaklandsw.util.LogUtils;
 import com.oaklandsw.util.Util;
+import com.oaklandsw.util.Util14Controller;
 
 /**
  * A URLConnection with support for HTTP-specific features.
@@ -144,8 +145,14 @@ import com.oaklandsw.util.Util;
  */
 public abstract class HttpURLConnection extends java.net.HttpURLConnection
 {
+    static
+    {
+        // Avoid attempting to load the 1.4 support since this must run
+        // on 1.2 systems
+        Util14Controller._dontLoad14 = true;
+    }
 
-    private static final Log                     _log                              = LogUtils
+    private static final Log               _log                              = LogUtils
                                                                                      .makeLogger();
 
     public static final String             HTTP_METHOD_GET                   = "GET";
@@ -425,6 +432,8 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
     /** Whether or not I should use the HTTP/1.1 protocol. */
     protected boolean                      _http11                           = true;
 
+    private static boolean _inLicenseCheck;
+    
     // Used only for testing purposes
     private static URL                     _testURL;
 
@@ -444,36 +453,9 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
         }
     }
 
-    static
+    private static void init()
     {
         _log.info("Oakland Software HttpURLConnection " + Version.VERSION);
-
-        // Do the license check dynamically so we don't need to ship
-        // the license stuff with the source (and those who build from
-        // the source do not have to deal with license issues)
-        ClassLoader cl = HttpURLConnection.class.getClassLoader();
-        Class licClass = null;
-        try
-        {
-            licClass = cl.loadClass("com.oaklandsw.http.HttpLicenseCheck");
-            Object licObject = licClass.newInstance();
-            Method licMethod = licClass.getMethod("checkLicense",
-                                                  new Class[] {});
-            licMethod.invoke(licObject, new Object[] {});
-        }
-        catch (ClassNotFoundException e)
-        {
-            // Ignored, means there is no license check required
-        }
-        catch (RuntimeException e)
-        {
-            throw new RuntimeException();
-        }
-        catch (Exception e)
-        {
-            // Something else is wrong
-            Util.impossible(e);
-        }
 
         try
         {
@@ -652,9 +634,8 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
                     try
                     {
                         setRetryInterval(Integer.parseInt(retryIntervalStr));
-                        _log
-                                .info("Number of retryInterval: "
-                                    + retryIntervalStr);
+                        _log.info("Number of retryInterval: "
+                            + retryIntervalStr);
                     }
                     catch (Exception ex)
                     {
@@ -711,7 +692,11 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
                 }
 
                 if (getProxyHost() != null)
-                    _log.info("Proxy: " + getProxyHost() + ":" + getProxyPort());
+                    _log
+                            .info("Proxy: "
+                                + getProxyHost()
+                                + ":"
+                                + getProxyPort());
 
                 setNonProxyHosts(System.getProperty("http.nonProxyHosts"));
                 if (getNonProxyHosts() != null)
@@ -751,6 +736,48 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
             USER_AGENT = DEFAULT_USER_AGENT;
 
         initSSL();
+
+        // Do the license check last to make sure we are fully up, because
+        // the license check can cause a use of the HTTP client (in the
+        // case where it needs to get a resource) which we must
+        // allow.
+        if (_inLicenseCheck)
+            return;
+        
+        // Do the license check dynamically so we don't need to ship
+        // the license stuff with the source (and those who build from
+        // the source do not have to deal with license issues)
+        ClassLoader cl = HttpURLConnection.class.getClassLoader();
+        Class licClass = null;
+        try
+        {
+            _inLicenseCheck = true;
+            licClass = cl.loadClass("com.oaklandsw.http.HttpLicenseCheck");
+            Object licObject = licClass.newInstance();
+            Method licMethod = licClass.getMethod("checkLicense",
+                                                  new Class[] {});
+            licMethod.invoke(licObject, new Object[] {});
+        }
+        catch (ClassNotFoundException e)
+        {
+            // Ignored, means there is no license check required
+        }
+        catch (RuntimeException e)
+        {
+            // This is a failure in the license check
+            System.err.println(e);
+            e.printStackTrace(System.err);
+            throw new RuntimeException();
+        }
+        catch (Exception e)
+        {
+            // Something else is wrong
+            Util.impossible(e);
+        }
+        finally
+        {
+            _inLicenseCheck = false;
+        }
     }
 
     private static void initSSL()
@@ -817,6 +844,11 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
             setDefaultHostnameVerifier(new DefaultHostnameVerifier());
         }
 
+    }
+
+    static
+    {
+        init();
     }
 
     public HttpURLConnection()
@@ -2249,9 +2281,9 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
     }
 
     /**
-     * Returns the current value of the proxy server host.
+     * Returns the current value of the proxy password.
      * 
-     * @return the proxy host.
+     * @return the proxy password.
      */
     public static String getProxyPassword()
     {

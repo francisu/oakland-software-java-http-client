@@ -4,8 +4,6 @@ import java.applet.Applet;
 import java.awt.Button;
 import java.awt.Event;
 import java.net.URL;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.apache.commons.logging.Log;
 
@@ -24,7 +22,8 @@ public class AppletTest extends Applet
 
         clear_button = new Button("Send message");
         this.add(clear_button);
-        Logger.getAnonymousLogger().setLevel(Level.ALL);
+        // Does not compile with 1.2
+        //Logger.getAnonymousLogger().setLevel(Level.ALL);
     }
     
 

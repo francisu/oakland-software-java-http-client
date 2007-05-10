@@ -1,8 +1,11 @@
-# First arg is the VM command
+# Run the tests using the 12 vm which requires a different way of executing
 
 # tests with non-obfuscated version since many internal
 # methods/classes are used
-$1 -DOAKLANDSW_ROOT=$HOME/d  \
+export LD_PRELOAD=/usr/java/jdk122waithack/libcwait.so
+
+/usr/java/jdk1.2.2/jre/bin/i386/native_threads/java  \
+-DOAKLANDSW_ROOT=$HOME/d  \
 -Djava.net.preferIPv4Stack=true \
 -cp "$HOME/d/com.oaklandsw.http.tests/httptests.jar\
 :$HOME/d/com.oaklandsw.http.tests.jars/junit.jar\

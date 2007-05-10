@@ -33,6 +33,7 @@ public class AllWebappTests extends TestCaseBase
         suite.addTest(TestCookie.suite());
         suite.addTest(TestNoData.suite());
         suite.addTest(TestDisconnect.suite());
+        suite.addTest(TestWebStart.suite());
         return suite;
     }
 

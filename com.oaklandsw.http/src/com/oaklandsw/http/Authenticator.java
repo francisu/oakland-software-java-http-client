@@ -87,7 +87,7 @@ import com.oaklandsw.http.ntlm.Ntlm;
  * </blockquote>
  * </p>
  */
-class Authenticator
+public class Authenticator
 {
     // ~ Static variables/initializers
     // ������������������������������������������
