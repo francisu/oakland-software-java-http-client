@@ -66,7 +66,6 @@ public class TestIIS extends HttpTestBase
             + HttpTestEnv.TEST_URL_APP_IIS_FORM);
         int response = 0;
 
-        // setLogging(true);
         _urlCon = (HttpURLConnection)url.openConnection();
 
         _urlCon.setRequestMethod("POST");
@@ -120,6 +119,29 @@ public class TestIIS extends HttpTestBase
         test200Get();
         test200Get();
         test200Get();
+    }
+
+    public void test210ConnectionReuse()
+        throws MalformedURLException,
+            IOException
+    {
+        URL url = new URL(HttpTestEnv.TEST_URL_IIS
+            + HttpTestEnv.TEST_URL_APP_IIS_FORM);
+        int response = 0;
+
+        _urlCon = (HttpURLConnection)url.openConnection();
+        response = _urlCon.getResponseCode();
+        assertEquals(200, response);
+
+        String reply = getReply(_urlCon);
+        iisCheckReply(reply);
+
+        // Try again with a different user, should not reuse the
+        // same connection
+        TestUserAgent._type = TestUserAgent.BAD;
+        _urlCon = (HttpURLConnection)url.openConnection();
+        response = _urlCon.getResponseCode();
+        assertEquals(401, response);
     }
 
     public void test300GetBadCred() throws MalformedURLException, IOException

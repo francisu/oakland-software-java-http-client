@@ -30,7 +30,7 @@ public class HttpURLConnectInternal
     extends
         com.oaklandsw.http.HttpURLConnection
 {
-    private static final Log           _log            = LogUtils.makeLogger();
+    private static final Log _log = LogUtils.makeLogger();
 
     /**
      * @see java.net.HttpURLConnection#HttpURLConnection(URL)
@@ -50,15 +50,6 @@ public class HttpURLConnectInternal
 
     /** Whether or not the request body has been sent. */
     private boolean     _bodySent;
-
-    /**
-     * The credential that was most recently sent to try to authenticate this
-     * request. If we get another request for authentication and we had
-     * previously sent a credential, then it's the wrong credential.
-     */
-    private Credential  _credentialSent;
-
-    private Credential  _proxyCredentialSent;
 
     /**
      * The host/port to be sent on this if this is a connect request.
@@ -106,6 +97,18 @@ public class HttpURLConnectInternal
 
     protected boolean   _singleEolChar;
 
+    // The credentials that were sent in the authentication. We have
+    // to have them both here and in the HTTPConnection. They are here
+    // because NTLM authentication closes the connection during
+    // authentication and we thus have no where to get the credential
+    // information that was sent.
+    UserCredential      _credential;
+    UserCredential      _proxyCredential;
+
+    // The authentication protocol associated with the above credential
+    int                 _authProtocol;
+    int                 _proxyAuthProtocol;
+
     /**
      * Maximum number of redirects to forward through.
      */
@@ -115,10 +118,50 @@ public class HttpURLConnectInternal
     {
         return _log;
     }
-    
+
     public final String getName()
     {
         return method;
+    }
+
+    void resetSentCredentials()
+    {
+        _credential = null;
+        _proxyCredential = null;
+    }
+
+    Credential getCredentialSent(boolean proxy)
+    {
+        if (proxy)
+            return _proxyCredential;
+        return _credential;
+    }
+
+    void setCredentialSent(int authType, boolean proxy, UserCredential cred)
+    {
+        if (_log.isDebugEnabled())
+        {
+            _log.debug("Credential sent authType: "
+                + authType
+                + " cred: "
+                + cred
+                + " proxy: "
+                + proxy);
+        }
+
+        if (proxy)
+        {
+            _proxyCredential = cred;
+            _proxyAuthProtocol = authType;
+        }
+        else
+        {
+            _credential = cred;
+            _authProtocol = authType;
+        }
+        
+        if (_connection != null)
+            _connection.setCredentialSent(authType, proxy, cred);
     }
 
     public final void setRequestBody(byte[] bodydata)
@@ -174,32 +217,6 @@ public class HttpURLConnectInternal
         if (_respFooters == null)
             _respFooters = new Headers();
         _respFooters.add(key, value);
-    }
-
-    private final void resetSentCredentials()
-    {
-        _credentialSent = null;
-        _proxyCredentialSent = null;
-    }
-
-    public final Credential getCredentialSent(boolean proxy)
-    {
-        if (proxy)
-            return _proxyCredentialSent;
-        return _credentialSent;
-    }
-
-    public final void setCredentialSent(boolean proxy, Credential cred)
-    {
-        if (_log.isDebugEnabled())
-        {
-            _log.debug("Credential sent: " + cred + " proxy: " + proxy);
-        }
-
-        if (proxy)
-            _proxyCredentialSent = cred;
-        else
-            _credentialSent = cred;
     }
 
     protected final void addRequestHeaders() throws IOException
@@ -1323,6 +1340,22 @@ public class HttpURLConnectInternal
             // For HTTP/1.0, leave this connection open
             if (_ntlmAuth)
                 _connection.setNtlmLeaveOpen(true);
+
+            // Set these in the connection so it can support connection-based
+            // authentication. They are set in this object during the
+            // authentication process
+            if (_connection._authProtocol != 0)
+            {
+                _connection._authProtocol = _authProtocol;
+                _connection._credential = _credential;
+            }
+
+            if (_connection._proxyAuthProtocol != 0)
+            {
+                _connection._proxyAuthProtocol = _proxyAuthProtocol;
+                _connection._proxyCredential = _proxyCredential;
+            }
+
             if (_log.isDebugEnabled())
             {
                 _log.debug("setConn: NTLMLeaveOpen: "

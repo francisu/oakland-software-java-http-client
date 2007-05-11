@@ -98,6 +98,32 @@ public class UserCredential implements Credential
         return cred;
     }
 
+    // The part of the credential that needs to be compared to determine
+    // if the associated session matches
+    String getKey()
+    {
+        return _user;
+    }
+
+    // Does this auth type support session (connection) level authentication?
+    // Only NTLM does for now.
+    static boolean useConnectionAuthentication(int authType)
+    {
+        switch (authType)
+        {
+            // Zero is valid here because there is no auth for this connection
+            case 0:
+            case AUTH_BASIC:
+            case AUTH_DIGEST:
+                return false;
+            case AUTH_NTLM:
+                return true;
+            default:
+                Util.impossible("Invalid auth type: " + authType);
+                return false;
+        }
+    }
+
     public String toString()
     {
         return "User: " + _user + " Password: " + _password;

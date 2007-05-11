@@ -24,6 +24,7 @@ public class TestWebStart extends TestWebappBase
     public TestWebStart(String testName)
     {
         super(testName);
+        _doExplicitTest = false;
     }
 
     public static Test suite()

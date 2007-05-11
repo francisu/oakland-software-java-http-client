@@ -346,7 +346,7 @@ public class Authenticator
                 + "\'");
         }
         String authString = cred.getUser() + ":" + cred.getPassword();
-        method.setCredentialSent(proxy, cred);
+        method.setCredentialSent(Credential.AUTH_BASIC, proxy, cred);
         return "Basic " + new String(Base64.encode(authString.getBytes()));
     }
 
@@ -404,7 +404,7 @@ public class Authenticator
             {
                 log.debug("Replying to challenge with: " + resp);
             }
-            method.setCredentialSent(proxy, cred);
+            method.setCredentialSent(Credential.AUTH_NTLM, proxy, cred);
             return resp;
         }
         catch (HttpException he)
@@ -424,6 +424,17 @@ public class Authenticator
                                        String respHeader) throws HttpException
     {
         boolean proxy = PROXY_AUTH_RESP.equalsIgnoreCase(respHeader);
+
+        // We previously sent an response message and got back a 401/407,
+        // this means we are not going to authenticate
+        Credential sentCred = method.getCredentialSent(proxy);
+        if (sentCred != null)
+        {
+            throw new HttpException("Basic Authentication failed; "
+                + "with credential "
+                + sentCred);
+        }
+
         UserCredential cred = null;
 
         try
@@ -453,6 +464,7 @@ public class Authenticator
                                      cred.getPassword(),
                                      headers);
 
+        method.setCredentialSent(Credential.AUTH_DIGEST, proxy, cred);
         return "Digest " + createDigestHeader(cred.getUser(), headers, digest);
     }
 
@@ -683,6 +695,8 @@ public class Authenticator
 
     public static final int schemeToInt(String scheme)
     {
+        if (scheme == null)
+            return -1;
         if (scheme.equalsIgnoreCase(BASIC))
             return Credential.AUTH_BASIC;
         else if (scheme.equalsIgnoreCase(DIGEST))
@@ -692,11 +706,34 @@ public class Authenticator
         return -1;
     }
 
+    public static Credential getCredentialForConnectionKey(boolean proxy,
+                                                           final HttpURLConnectInternal urlCon)
+    {
+        return getCredentialInternal(null, proxy, null, urlCon);
+    }
+
     private static Credential getCredentials(String realm,
                                              boolean proxy,
                                              String scheme,
                                              final HttpURLConnectInternal urlCon)
         throws HttpException
+    {
+        Credential cred = getCredentialInternal(realm, proxy, scheme, urlCon);
+        if (cred == null)
+        {
+            throw new HttpException("No HttpUserAgent set - "
+                + "can't get credential for "
+                + scheme
+                + ": "
+                + realm);
+        }
+        return cred;
+    }
+
+    private static Credential getCredentialInternal(String realm,
+                                                    boolean proxy,
+                                                    String scheme,
+                                                    final HttpURLConnectInternal urlCon)
     {
 
         HttpUserAgent userAgent = urlCon.getUserAgent();
@@ -729,13 +766,7 @@ public class Authenticator
         }
 
         if (userAgent == null)
-        {
-            throw new HttpException("No HttpUserAgent set - "
-                + "can't get credential for "
-                + scheme
-                + ": "
-                + realm);
-        }
+            return null;
 
         int iScheme = schemeToInt(scheme);
         if (proxy)

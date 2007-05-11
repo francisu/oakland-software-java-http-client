@@ -432,8 +432,8 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
     /** Whether or not I should use the HTTP/1.1 protocol. */
     protected boolean                      _http11                           = true;
 
-    private static boolean _inLicenseCheck;
-    
+    private static boolean                 _inLicenseCheck;
+
     // Used only for testing purposes
     private static URL                     _testURL;
 
@@ -743,7 +743,7 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
         // allow.
         if (_inLicenseCheck)
             return;
-        
+
         // Do the license check dynamically so we don't need to ship
         // the license stuff with the source (and those who build from
         // the source do not have to deal with license issues)
@@ -1167,12 +1167,7 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
 
         try
         {
-            setConnection(_connManager.getConnection(_urlString,
-                                                     _connectionTimeout,
-                                                     _idleTimeout,
-                                                     _idlePing,
-                                                     _proxyHost,
-                                                     _proxyPort), RELEASE);
+            setConnection(_connManager.getConnection(this), RELEASE);
         }
         catch (MalformedURLException ex)
         {
@@ -1225,6 +1220,15 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
         setConnection(conn, !RELEASE);
     }
 
+    /**
+     * Returns the connection associated with this object, if any.
+     * @return the connection associated with this object.
+     */
+    public HttpConnection getConnection()
+    {
+        return _connection;
+    }
+    
     static final boolean RELEASE = true;
 
     void setConnection(HttpConnection conn, boolean release) throws IOException
@@ -2550,6 +2554,11 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
         if (propVal == null)
             return METHOD_PROP_UNKNOWN_METHOD;
         return propVal.intValue();
+    }
+
+    String getUrlString()
+    {
+        return _urlString;
     }
 
     protected abstract void execute() throws HttpException, IOException;

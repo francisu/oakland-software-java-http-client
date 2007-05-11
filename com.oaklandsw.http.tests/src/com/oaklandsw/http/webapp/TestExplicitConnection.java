@@ -45,15 +45,24 @@ public class TestExplicitConnection extends TestWebappBase
 
     public void testConnect() throws Exception
     {
-        HttpConnection conn = _connManager.getConnection(_urlBase);
+        URL url;
+        HttpURLConnection urlCon;
 
-        URL url = new URL(_urlBase + RequestBodyServlet.NAME);
+        // 
+        url = new URL(_urlBase);
+        urlCon = HttpURLConnection.openConnection(url);
+
+        // Create a connection to _urlBase
+        HttpConnection conn = _connManager.getConnection(urlCon);
+
+        url = new URL(_urlBase + RequestBodyServlet.NAME);
 
         assertEquals(1, getActiveConns(url));
         assertEquals(1, getTotalConns(url));
 
         // Once
-        HttpURLConnection urlCon = (HttpURLConnection)url.openConnection();
+        urlCon = (HttpURLConnection)url.openConnection();
+        // use the connection
         urlCon.setConnection(conn);
         urlCon.getResponseCode();
 
@@ -62,6 +71,7 @@ public class TestExplicitConnection extends TestWebappBase
 
         // Twice
         urlCon = (HttpURLConnection)url.openConnection();
+        // use it again
         urlCon.setConnection(conn);
         urlCon.getResponseCode();
 
@@ -78,16 +88,22 @@ public class TestExplicitConnection extends TestWebappBase
 
     public void testConnect2Conns() throws Exception
     {
-        HttpConnection conn = _connManager.getConnection(_urlBase);
-        HttpConnection conn2 = _connManager.getConnection(_urlBase);
+        URL url;
+        HttpURLConnection urlCon;
 
-        URL url = new URL(_urlBase + ParamServlet.NAME);
+        url = new URL(_urlBase);
+        urlCon = HttpURLConnection.openConnection(url);
+
+        HttpConnection conn = _connManager.getConnection(urlCon);
+        HttpConnection conn2 = _connManager.getConnection(urlCon);
+
+        url = new URL(_urlBase + ParamServlet.NAME);
 
         assertEquals(2, getActiveConns(url));
         assertEquals(2, getTotalConns(url));
 
         // Once
-        HttpURLConnection urlCon = (HttpURLConnection)url.openConnection();
+        urlCon = (HttpURLConnection)url.openConnection();
         HttpURLConnection urlCon2 = (HttpURLConnection)url.openConnection();
         urlCon = (HttpURLConnection)url.openConnection();
         urlCon2 = (HttpURLConnection)url.openConnection();
@@ -112,12 +128,18 @@ public class TestExplicitConnection extends TestWebappBase
 
     public void testConnectBadState() throws Exception
     {
-        HttpConnection conn = _connManager.getConnection(_urlBase);
+        URL url;
+        HttpURLConnection urlCon;
 
-        URL url = new URL(_urlBase + RequestBodyServlet.NAME);
+        url = new URL(_urlBase);
+        urlCon = HttpURLConnection.openConnection(url);
+
+        HttpConnection conn = _connManager.getConnection(urlCon);
+
+        url = new URL(_urlBase + RequestBodyServlet.NAME);
 
         // Once
-        HttpURLConnection urlCon = (HttpURLConnection)url.openConnection();
+        urlCon = (HttpURLConnection)url.openConnection();
         urlCon.connect();
         try
         {

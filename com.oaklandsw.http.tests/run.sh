@@ -6,6 +6,7 @@ $1 -DOAKLANDSW_ROOT=$HOME/d  \
 -Djava.net.preferIPv4Stack=true \
 -cp "$HOME/d/com.oaklandsw.http.tests/httptests.jar\
 :$HOME/d/com.oaklandsw.http.tests.jars/junit.jar\
+:$HOME/d/com.oaklandsw.http.tests.jars/netx.jar\
 :$HOME/d/com.oaklandsw.http.jars/axis.jar\
 :$HOME/d/com.oaklandsw.http.jars/wsdl4j-1.5.1.jar\
 :$HOME/d/com.oaklandsw.http.jars/saaj.jar\

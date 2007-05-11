@@ -48,18 +48,20 @@
  * 
  * [Additional notices, if required by prior licensing conditions]
  * 
+ * Portions of this copyright 2005-2007, Oakland Software Incorporated
+ * 
  */
 
-package com.oaklandsw.http;
+package com.oaklandsw.http.local;
 
-import java.net.MalformedURLException;
+import java.net.URL;
 
 import com.oaklandsw.http.HttpConnection;
 import com.oaklandsw.http.HttpConnectionManager;
-import com.oaklandsw.http.HttpException;
+import com.oaklandsw.http.HttpTestBase;
+import com.oaklandsw.http.HttpURLConnection;
 
 import junit.framework.Test;
-import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
 /**
@@ -69,26 +71,25 @@ import junit.framework.TestSuite;
  * 
  * @author Marc A. Saegesser
  */
-public class LocalTestHttpConnectionManager extends TestCase
+public class TestConnectionManagerLocal extends HttpTestBase
 {
 
     HttpConnectionManager _connManager;
 
-    public LocalTestHttpConnectionManager(String testName)
+    public TestConnectionManagerLocal(String testName)
     {
         super(testName);
     }
 
     public static void main(String args[])
     {
-        String[] testCaseName = { LocalTestHttpConnectionManager.class
-                .getName() };
+        String[] testCaseName = { TestConnectionManagerLocal.class.getName() };
         junit.textui.TestRunner.main(testCaseName);
     }
 
     public static Test suite()
     {
-        return new TestSuite(LocalTestHttpConnectionManager.class);
+        return new TestSuite(TestConnectionManagerLocal.class);
     }
 
     public void setUp()
@@ -129,48 +130,41 @@ public class LocalTestHttpConnectionManager extends TestCase
                 .getMaxConnectionsPerHost());
     }
 
-    public void testGetConnection()
+    public void testGetConnection() throws Exception
     {
-        try
-        {
-            // Create a new connection
-            HttpConnection conn = _connManager
-                    .getConnection("http://www.nosuchserver.com/path/path?query=string");
-            // Validate the connection properties
-            assertEquals("Host", "www.nosuchserver.com", conn.getHost());
-            assertEquals("Port", 80, conn.getPort());
-            // Release the connection
-            _connManager.releaseConnection(conn);
+        URL url;
+        HttpURLConnection urlCon;
 
-            // Create a new connection
-            conn = _connManager
-                    .getConnection("https://www.nosuchserver.com/path/path?query=string");
-            // Validate the connection properties
-            assertEquals("Host", "www.nosuchserver.com", conn.getHost());
-            assertEquals("Port", 443, conn.getPort());
-            // Release the connection
-            _connManager.releaseConnection(conn);
+        // Create a new connection
+        url = new URL("http://www.nosuchserver.com/path/path?query=string");
+        urlCon = HttpURLConnection.openConnection(url);
 
-            // Create a new connection
-            conn = _connManager
-                    .getConnection("http://www.nowhere.org:8080/path/path?query=string");
-            // Validate the connection properties
-            assertEquals("Host", "www.nowhere.org", conn.getHost());
-            assertEquals("Port", 8080, conn.getPort());
-            // Release the connection
-            _connManager.releaseConnection(conn);
+        HttpConnection conn = _connManager.getConnection(urlCon);
+        // Validate the connection properties
+        assertEquals("Host", "www.nosuchserver.com", conn.getHost());
+        assertEquals("Port", 80, conn.getPort());
+        // Release the connection
+        _connManager.releaseConnection(conn);
 
-        }
-        catch (MalformedURLException e)
-        {
-            fail("Caught unexpected MalformedURLException ("
-                + e.toString()
-                + ")");
-        }
-        catch (HttpException e)
-        {
-            fail("Caught unexpected HttpException (" + e.toString() + ")");
-        }
+        // Create a new connection
+        url = new URL("https://www.nosuchserver.com/path/path?query=string");
+        urlCon = HttpURLConnection.openConnection(url);
+        conn = _connManager.getConnection(urlCon);
+        // Validate the connection properties
+        assertEquals("Host", "www.nosuchserver.com", conn.getHost());
+        assertEquals("Port", 443, conn.getPort());
+        // Release the connection
+        _connManager.releaseConnection(conn);
+
+        // Create a new connection
+        url = new URL("http://www.nowhere.org:8080/path/path?query=string");
+        urlCon = HttpURLConnection.openConnection(url);
+        conn = _connManager.getConnection(urlCon);
+        // Validate the connection properties
+        assertEquals("Host", "www.nowhere.org", conn.getHost());
+        assertEquals("Port", 8080, conn.getPort());
+        // Release the connection
+        _connManager.releaseConnection(conn);
     }
 
 }

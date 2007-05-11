@@ -26,13 +26,15 @@ public class TestUserAgent implements HttpUserAgent
     public static final int  NETPROXY           = 6;
     public static final int  OFFICESHARE_XSO    = 7;
     public static final int  OFFICESHARE_ICEWEB = 8;
+    public static final int  WEBSERVER_BASIC    = 9;
+    public static final int  WEBSERVER_DIGEST   = 10;
 
     public Credential getCredential(String realm, String url, int scheme)
     {
 
         _log.debug("getGred: " + realm + " url: " + url + " scheme: " + scheme);
 
-        if (!url.startsWith("http://"))
+        if (!url.startsWith("http"))
         {
             throw new RuntimeException("Invalid URL String: " + url);
         }
@@ -97,6 +99,16 @@ public class TestUserAgent implements HttpUserAgent
                     case GOOD:
                         basicCred.setUser("jakarta");
                         basicCred.setPassword("commons");
+                        break;
+
+                    case WEBSERVER_BASIC:
+                        basicCred.setUser("basic");
+                        basicCred.setPassword("basic");
+                        break;
+
+                    case WEBSERVER_DIGEST:
+                        basicCred.setUser("digest");
+                        basicCred.setPassword("digest");
                         break;
 
                     case BAD:

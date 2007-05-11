@@ -73,6 +73,13 @@ public class NtlmCredential extends UserCredential implements Credential
         _domain = argDomain;
     }
 
+    String getKey()
+    {
+        if (_domain == null)
+            return super.getKey();
+        return _domain + super.getKey();
+    }
+
     public String toString()
     {
         return "Host: "

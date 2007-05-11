@@ -83,7 +83,7 @@ import com.oaklandsw.util.URIUtil;
  */
 public class HttpConnectionManager
 {
-    private static final Log            _log                    = LogUtils
+    private static final Log      _log                    = LogUtils
                                                                   .makeLogger();
 
     // RFC 2616 sec 8.1.4
@@ -117,21 +117,86 @@ public class HttpConnectionManager
         // If the proxy was not specified on a per-connection basis,
         // it is not included here; the proxy incarnation mechanism
         // is used to deal with that.
-        public String     _connectionKey;
+        String     _connectionKey;
 
         // The number that is incremented whenever the global
         // proxy state changes (ie, all connections are reset)
         // This is used to make sure that older connections opened
         // before the reset are closed.
-        public int        _proxyIncarnation;
+        int        _proxyIncarnation;
 
         // The total number of connections that have been created,
         // this includes any that are presently assigned, and any
         // that are in the pool
-        public int        _count;
+        int        _count;
 
         // List of connections that are presently not assigned
-        public LinkedList _connections;
+        LinkedList _connections;
+
+        // Returns a connection that can be used for this URL connection,
+        // delinks the returned connection
+        HttpConnection getMatchingConnection(HttpURLConnection urlCon)
+        {
+            int len = _connections.size();
+            if (len == 0)
+                return null;
+            // Fast path
+            HttpConnection conn = (HttpConnection)_connections.getFirst();
+            if (checkMatch(conn, urlCon))
+                return (HttpConnection)_connections.removeFirst();
+
+            // Slow patch, check them all (we already checked the first)
+            for (int i = 1; i < len; i++)
+            {
+                conn = (HttpConnection)_connections.get(i);
+                if (checkMatch(conn, urlCon))
+                    return (HttpConnection)_connections.remove(i);
+            }
+            return null;
+        }
+
+        // See if this connection has a matching credential if required
+        private boolean checkMatch(HttpConnection conn, HttpURLConnection urlCon)
+        {
+            if (conn._credential == null && conn._proxyCredential == null)
+                return true;
+
+            if (!UserCredential.useConnectionAuthentication(conn._authProtocol)
+                && !UserCredential
+                        .useConnectionAuthentication(conn._proxyAuthProtocol))
+            {
+                return true;
+            }
+            
+            HttpUserAgent ua = urlCon.getUserAgent();
+            if (ua == null)
+                return false;
+
+            if (conn._credential != null)
+            {
+                UserCredential cred = (UserCredential)ua
+                        .getCredential(null,
+                                       urlCon.getUrlString(),
+                                       conn._authProtocol);
+                if (cred == null)
+                    return false;
+                if (!cred.getKey().equals(conn._credential.getKey()))
+                    return false;
+            }
+
+            if (conn._proxyCredential != null)
+            {
+                UserCredential cred = (UserCredential)ua
+                        .getProxyCredential(null,
+                                            urlCon.getUrlString(),
+                                            conn._proxyAuthProtocol);
+                if (cred == null)
+                    return false;
+                if (!cred.getKey().equals(conn._proxyCredential.getKey()))
+                    return false;
+            }
+            return true;
+        }
     }
 
     // Object only for synchronization
@@ -154,7 +219,7 @@ public class HttpConnectionManager
      * @param proxyHost -
      *            the proxy host name
      */
-    void setProxyHost(String proxyHost)
+    public void setProxyHost(String proxyHost)
     {
         _proxyHost = proxyHost;
         // Get rid of all current connections as they are not
@@ -167,7 +232,7 @@ public class HttpConnectionManager
      * 
      * @return the proxy host name
      */
-    String getProxyHost()
+    public String getProxyHost()
     {
         return _proxyHost;
     }
@@ -263,7 +328,7 @@ public class HttpConnectionManager
      * @param proxyPort -
      *            the proxy port number
      */
-    void setProxyPort(int proxyPort)
+    public void setProxyPort(int proxyPort)
     {
         // Get rid of all current connections as they are not
         // going to the right place.
@@ -276,7 +341,7 @@ public class HttpConnectionManager
      * 
      * @return the proxy port number
      */
-    int getProxyPort()
+    public int getProxyPort()
     {
         return _proxyPort;
     }
@@ -288,7 +353,7 @@ public class HttpConnectionManager
      * @param maxConnections -
      *            number of connections allowed for each host:port
      */
-    void setMaxConnectionsPerHost(int maxConnections)
+    public void setMaxConnectionsPerHost(int maxConnections)
     {
         _maxConns = maxConnections;
     }
@@ -298,7 +363,7 @@ public class HttpConnectionManager
      * 
      * @return The maximum number of connections allowed for a given host:port.
      */
-    int getMaxConnectionsPerHost()
+    public int getMaxConnectionsPerHost()
     {
         return _maxConns;
     }
@@ -336,7 +401,7 @@ public class HttpConnectionManager
     /**
      * Returns the proxy host for the specified host.
      */
-    String getProxyHost(String host)
+    public String getProxyHost(String host)
     {
         // This should be OK, as we never lock the connection
         // info while we have the lock on this.
@@ -370,25 +435,6 @@ public class HttpConnectionManager
      * Get an HttpConnection for a given URL. The URL must be fully specified
      * (i.e. contain a protocol and a host (and optional port number). If the
      * maximum number of connections for the host has been reached, this method
-     * will block forever until a connection becomes available.
-     * 
-     * @param url -
-     *            a fully specified URL.
-     * @return an HttpConnection for the given host:port
-     * @exception java.net.MalformedURLException
-     * @exception com.oaklandsw.http.HttpException
-     */
-    public HttpConnection getConnection(String url)
-        throws HttpException,
-            MalformedURLException
-    {
-        return getConnection(url, 0, 0, 0, null, 0);
-    }
-
-    /**
-     * Get an HttpConnection for a given URL. The URL must be fully specified
-     * (i.e. contain a protocol and a host (and optional port number). If the
-     * maximum number of connections for the host has been reached, this method
      * will block for <code>connectionTimeout</code> milliseconds or until a
      * connection becomes available. If no connection becomes available before
      * the timeout expires an HttpException will be thrown.
@@ -414,15 +460,17 @@ public class HttpConnectionManager
      *                If no connection becomes available before the timeout
      *                expires
      */
-    public HttpConnection getConnection(String url,
-                                        long connectionTimeout,
-                                        long idleTimeout,
-                                        long idlePing,
-                                        String proxyHost,
-                                        int proxyPort)
+    public HttpConnection getConnection(HttpURLConnection urlCon)
         throws HttpException,
             MalformedURLException
     {
+
+        long connectionTimeout = urlCon.getConnectionTimeout();
+        String url = urlCon.getUrlString();
+        long idleTimeout = urlCon.getIdleConnectionTimeout();
+        long idlePing = urlCon.getIdleConnectionPing();
+        String proxyHost = urlCon.getConnectionProxyHost();
+        int proxyPort = urlCon.getConnectionProxyPort();
 
         // Get the protocol and port (use default port if not specified)
         final String protocol = URIUtil.getProtocol(url);
@@ -446,7 +494,7 @@ public class HttpConnectionManager
             // -1 in _maxConns is unlimited
             while (ci._count >= _maxConns
                 && _maxConns >= 0
-                && ci._connections.size() == 0)
+                && (conn = ci.getMatchingConnection(urlCon)) == null)
             {
                 try
                 {
@@ -479,10 +527,14 @@ public class HttpConnectionManager
                 }
             }
 
-            if (ci._connections.size() > 0)
+            // We have the capacity to get a connection, and we did not get
+            // one in the above loop, see if there is one available
+            if (conn == null)
+                conn = ci.getMatchingConnection(urlCon);
+
+            if (conn != null)
             {
                 _log.debug("Using existing connection");
-                conn = (HttpConnection)ci._connections.removeFirst();
                 conn.assertOpen();
             }
             else
@@ -548,26 +600,21 @@ public class HttpConnectionManager
                                     String proxyHost,
                                     int proxyPort)
     {
-        String connectionKey = hostAndPort;
+        // No proxy information
+        if (proxyHost == null && proxyPort > 0)
+            return hostAndPort;
+
+        // Have to build the key
+        StringBuffer buf = new StringBuffer(200);
+        buf.append(hostAndPort);
 
         // If the proxy is per-connection, add that to the connection
         // key so we get the connection going to the right place
-        if (proxyHost != null || proxyPort > 0)
-        {
-            // Start with enough space for the port
-            int bufLen = 20;
-            if (proxyHost != null)
-                bufLen = proxyHost.length();
-            StringBuffer buf = new StringBuffer(bufLen);
-            buf.append(hostAndPort);
-            if (proxyHost != null)
-                buf.append(proxyHost);
-            if (proxyPort > 0)
-                buf.append(Integer.toString(proxyPort));
-            connectionKey = buf.toString();
-        }
-
-        return connectionKey;
+        if (proxyHost != null)
+            buf.append(proxyHost);
+        if (proxyPort > 0)
+            buf.append(Integer.toString(proxyPort));
+        return buf.toString();
     }
 
     /**
@@ -609,7 +656,7 @@ public class HttpConnectionManager
      * @param conn -
      *            The HttpConnection to make available.
      */
-    void releaseConnection(HttpConnection conn)
+    public void releaseConnection(HttpConnection conn)
     {
         if (_log.isDebugEnabled())
         {
@@ -626,6 +673,13 @@ public class HttpConnectionManager
             // because the connection was created before a reset.
             if (ci._proxyIncarnation != conn.getProxyIncarnation())
             {
+                _log
+                        .debug("Closed connection due to non-equal proxyIncarnation: "
+                            + conn
+                            + " ci._proxyInc: "
+                            + ci._proxyIncarnation
+                            + " conn inc: "
+                            + conn.getProxyIncarnation());
                 conn.close();
                 return;
             }
@@ -688,6 +742,7 @@ public class HttpConnectionManager
 
     /**
      * Returns the ConnectionInfo for the URL using the current proxy settings.
+     * This is used only by the tests
      */
     private ConnectionInfo getConnectionInfoFromUrl(String url)
     {
@@ -707,7 +762,7 @@ public class HttpConnectionManager
      * Returns the number of connections currently in use for the specified
      * host/port.
      */
-    public int getActiveConnectionCount(String url)
+    int getActiveConnectionCount(String url)
     {
         synchronized (_lock)
         {
@@ -722,7 +777,7 @@ public class HttpConnectionManager
      * Returns the number of connections currently in use for the specified
      * host/port.
      */
-    public int getTotalConnectionCount(String url)
+    int getTotalConnectionCount(String url)
     {
         synchronized (_lock)
         {

@@ -184,6 +184,15 @@ public class HttpConnection
 
     private static Class           _socketTimeoutException;
 
+    // Credential associated with this connection if the authentication
+    // is session-based.
+    UserCredential                 _credential;
+    UserCredential                 _proxyCredential;
+
+    // The authentication protocol associated with the above credential
+    int                            _authProtocol;
+    int                            _proxyAuthProtocol;
+
     /**
      * Indicates that NTLM authentication is being used on this connection. This
      * is used by HTTP 1.0 connections to avoid closing the connection since it
@@ -548,6 +557,30 @@ public class HttpConnection
         return c;
     }
 
+    void setCredentialSent(int authType, boolean proxy, UserCredential cred)
+    {
+        if (_log.isDebugEnabled())
+        {
+            _log.debug("Credential sent authType: "
+                + authType
+                + " cred: "
+                + cred
+                + " proxy: "
+                + proxy);
+        }
+
+        if (proxy)
+        {
+            _proxyCredential = cred;
+            _proxyAuthProtocol = authType;
+        }
+        else
+        {
+            _credential = cred;
+            _authProtocol = authType;
+        }
+    }
+
     /**
      * Pings the connection
      */
@@ -817,7 +850,7 @@ public class HttpConnection
             throw e;
         }
     }
-    
+
     // This is here because the Socket() constructor is protected in JDK 1.2
     // When JDK 1.2 support is dropped, remove this
     // JDK12

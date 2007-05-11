@@ -5,10 +5,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.Properties;
 
 import org.apache.commons.logging.Log;
-import org.apache.log4j.PropertyConfigurator;
 
 import com.oaklandsw.http.server.ErrorServer;
 import com.oaklandsw.http.servlet.ParamServlet;
@@ -213,12 +211,10 @@ public class HttpTestBase extends com.oaklandsw.TestCaseBase
 
     public static void setLogging(boolean on)
     {
-        Properties logProps = new Properties();
         if (on)
-            logProps.setProperty("log4j.logger.com.oaklandsw", "DEBUG");
+            LogUtils.logAll();
         else
-            logProps.setProperty("log4j.logger.com.oaklandsw", "FATAL");
-        PropertyConfigurator.configure(logProps);
+            LogUtils.logNone();
     }
 
     public static String getReply(HttpURLConnection urlCon)
@@ -460,7 +456,7 @@ public class HttpTestBase extends com.oaklandsw.TestCaseBase
     {
         if (!_doAuthCloseProxyTest)
             return;
-        
+
         com.oaklandsw.http.HttpURLConnection
                 .setProxyHost(HttpTestEnv.TEST_AUTH_PROXY_CLOSE_HOST);
         com.oaklandsw.http.HttpURLConnection

@@ -57,7 +57,6 @@ import junit.framework.TestSuite;
 
 import com.oaklandsw.TestCaseBase;
 import com.oaklandsw.http.LocalTestAuthenticator;
-import com.oaklandsw.http.LocalTestHttpConnectionManager;
 
 /**
  * Tests that don't require any external host. I.e., that run entirely within
@@ -91,7 +90,7 @@ public class AllLocalTests extends TestCaseBase
         suite.addTest(TestDefaults.suite());
         suite.addTest(TestHeaders.suite());
         suite.addTest(LocalTestAuthenticator.suite());
-        suite.addTest(LocalTestHttpConnectionManager.suite());
+        suite.addTest(TestConnectionManagerLocal.suite());
         suite.addTest(TestURIUtil.suite());
         suite.addTest(TestMethodsNoHost.suite());
         suite.addTest(TestResponseHeaders.suite());

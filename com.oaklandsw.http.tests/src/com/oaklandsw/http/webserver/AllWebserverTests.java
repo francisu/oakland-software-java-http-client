@@ -60,7 +60,6 @@ import junit.framework.Test;
 import junit.framework.TestSuite;
 
 import com.oaklandsw.TestCaseBase;
-import com.oaklandsw.http.WebserverTestHttpConnectionManager;
 
 /**
  * A suite composed of only those tests which require the local webserver and
@@ -80,7 +79,8 @@ public class AllWebserverTests extends TestCaseBase
     public static Test suite()
     {
         TestSuite suite = new TestSuite(AllWebserverTests.class.getName());
-        suite.addTest(WebserverTestHttpConnectionManager.suite());
+        suite.addTest(TestConnectionManagerWebserver.suite());
+        suite.addTest(TestBasicAndDigestAuth.suite());
         suite.addTest(TestMethods.suite());
         suite.addTest(TestWebDavMethods.suite());
         suite.addTest(TestGetMethod.suite());

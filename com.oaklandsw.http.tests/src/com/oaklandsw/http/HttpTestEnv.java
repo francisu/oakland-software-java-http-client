@@ -37,7 +37,7 @@ public class HttpTestEnv
                                                              .getProperty("oaklandsw.squidhost",
                                                                           LINUX_HOST);
 
-    public static final String APACHE_PROXY_HOST     = System
+    public static final String APACHE_HOST           = System
                                                              .getProperty("oaklandsw.apachehost",
                                                                           LINUX_HOST);
 
@@ -121,7 +121,7 @@ public class HttpTestEnv
     public static final String TEST_WEBEXT_EXTERNAL_OPTIONS_HOST = EXTERNAL_OPTIONS_HOST;
 
     // This is Apache as proxy server
-    public static String       TEST_PROXY_HOST                   = APACHE_PROXY_HOST;
+    public static String       TEST_PROXY_HOST                   = APACHE_HOST;
 
     // This is Squid as it uses HTTP 1.0
     public static String       TEST_10_PROXY_HOST                = SQUID_HOST;
@@ -141,7 +141,7 @@ public class HttpTestEnv
     public static String       TEST_AUTH_PROXY_PASSWORD          = "test839Proxy";
 
     // Standard Apache
-    public static String       TEST_WEBSERVER_HOST               = APACHE_PROXY_HOST;
+    public static String       TEST_WEBSERVER_HOST               = APACHE_HOST;
 
     // WebDav server
     public static String       TEST_WEBDAV_HOST                  = WEBDAV_HOST;
@@ -151,6 +151,13 @@ public class HttpTestEnv
                                                                      + TEST_WEBSERVER_HOST
                                                                      + ":"
                                                                      + TEST_WEBSERVER_PORT;
+
+    // We expect these to be protected by the user names "basic" and "digest"
+    // with the password the same as the username
+    public static String       TEST_URL_AUTH_BASIC               = TEST_URL_WEBSERVER
+                                                                     + "/httptest/basic/index.html";
+    public static String       TEST_URL_AUTH_DIGEST              = TEST_URL_WEBSERVER
+                                                                     + "/httptest/digest/index.html";
 
     public static String       TEST_WEBEXT_SSL_URL               = HTTPS_PROTOCOL
                                                                      + "//"

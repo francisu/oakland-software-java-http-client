@@ -110,23 +110,22 @@ public class TestMethods extends HttpTestBase
      */
 
     // Options does not seem to be allowed now with apache 2.0.50
-    
-//    public void testMethodsOptions() throws IOException
-//    {
-//        URL url = new URL("http://" + host + ":" + port + "/");
-//        int response = 0;
-//
-//        HttpURLConnection urlCon = (HttpURLConnection)url.openConnection();
-//        urlCon.setRequestMethod("OPTIONS");
-//        urlCon.connect();
-//        response = urlCon.getResponseCode();
-//        assertEquals(200, response);
-//
-//        String data = urlCon.getHeaderField("allow");
-//        assertTrue("No data returned.", (data.length() > 0));
-//
-//        checkNoActiveConns(url);
-//    }
+    public void NORUNtestMethodsOptions() throws IOException
+    {
+        URL url = new URL("http://" + _host + ":" + _port + "/");
+        int response = 0;
+
+        HttpURLConnection urlCon = (HttpURLConnection)url.openConnection();
+        urlCon.setRequestMethod("OPTIONS");
+        urlCon.connect();
+        response = urlCon.getResponseCode();
+        assertEquals(200, response);
+
+        String data = urlCon.getHeaderField("allow");
+        assertTrue("No data returned.", (data.length() > 0));
+
+        checkNoActiveConns(url);
+    }
 
     public void testMethodsGet() throws IOException
     {
@@ -142,7 +141,11 @@ public class TestMethods extends HttpTestBase
         String data = HttpTestBase.getReply(urlCon);
         assertTrue("No data returned.", (data.length() > 0));
 
-        url = new URL("http://" + _host + ":" + _port + HttpTestEnv.TEST_WEBSERVER_PAGE);
+        url = new URL("http://"
+            + _host
+            + ":"
+            + _port
+            + HttpTestEnv.TEST_WEBSERVER_PAGE);
 
         urlCon = (HttpURLConnection)url.openConnection();
         urlCon.setRequestMethod("GET");
@@ -168,7 +171,11 @@ public class TestMethods extends HttpTestBase
         response = urlCon.getResponseCode();
         assertEquals(200, response);
 
-        url = new URL("http://" + _host + ":" + _port + HttpTestEnv.TEST_WEBSERVER_PAGE);
+        url = new URL("http://"
+            + _host
+            + ":"
+            + _port
+            + HttpTestEnv.TEST_WEBSERVER_PAGE);
 
         urlCon = (HttpURLConnection)url.openConnection();
         urlCon.setRequestMethod("HEAD");
