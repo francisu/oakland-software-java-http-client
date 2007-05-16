@@ -31,11 +31,6 @@ import java.lang.reflect.Method;
 
 /**
  * Signals that an HTTP or HttpClient exception has occurred.
- * 
- * @author Laura Werner
- * 
- * @version $Revision: 155418 $ $Date: 2005-02-26 05:01:52 -0800 (Sat, 26 Feb
- *          2005) $
  */
 public class HttpException extends IOException
 {

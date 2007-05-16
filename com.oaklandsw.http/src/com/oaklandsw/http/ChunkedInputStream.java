@@ -86,7 +86,7 @@ import com.oaklandsw.util.Util;
 
 public class ChunkedInputStream extends InputStream
 {
-    private static final Log             _log     = LogUtils.makeLogger();
+    private static final Log       _log     = LogUtils.makeLogger();
 
     private InputStream            in;
 
@@ -116,10 +116,6 @@ public class ChunkedInputStream extends InputStream
         if (null == inStr)
         {
             throw new NullPointerException("InputStream parameter");
-        }
-        if (null == methodParam)
-        {
-            throw new NullPointerException("HttpURLConnectInternal parameter");
         }
         this.in = inStr;
         this.method = methodParam;
@@ -342,7 +338,8 @@ public class ChunkedInputStream extends InputStream
             {
                 String key = line.substring(0, colonPos).trim();
                 String val = line.substring(colonPos + 1).trim();
-                method.addResponseFooter(key, val);
+                if (method != null)
+                    method.addResponseFooter(key, val);
             }
             line = readLine();
         }
@@ -388,7 +385,8 @@ public class ChunkedInputStream extends InputStream
         if (closeConn)
         {
             _log.debug("Closing underlying connection due to error on read");
-            method.releaseConnection(HttpURLConnection.CLOSE);
+            if (method != null)
+                method.releaseConnection(HttpURLConnection.CLOSE);
             return;
         }
 
@@ -400,10 +398,12 @@ public class ChunkedInputStream extends InputStream
         {
             // The stream must have been closed, or something went
             // wrong, so do close it
-            method.releaseConnection(HttpURLConnection.CLOSE);
+            if (method != null)
+                method.releaseConnection(HttpURLConnection.CLOSE);
             return;
         }
 
-        method.releaseConnection(!HttpURLConnection.CLOSE);
+        if (method != null)
+            method.releaseConnection(!HttpURLConnection.CLOSE);
     }
 }

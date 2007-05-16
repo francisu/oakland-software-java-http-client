@@ -159,7 +159,7 @@ public class HttpURLConnectInternal
             _credential = cred;
             _authProtocol = authType;
         }
-        
+
         if (_connection != null)
             _connection.setCredentialSent(authType, proxy, cred);
     }
@@ -277,24 +277,33 @@ public class HttpURLConnectInternal
                 + _reqHeaders.get(HDR_CONTENT_LENGTH));
         }
 
-        // add content length or chunking
-        int len = 0;
-        if (null != _requestBytes)
+        if (_streamingChunked)
         {
-            len = _requestBytes.length;
+            if (_reqHeaders.get(HDR_TRANSFER_ENCODING) == null)
+                _reqHeaders.add(HDR_TRANSFER_ENCODING, HDR_VALUE_CHUNKED);
         }
-        else if (_contentLength >= 0)
+        else
         {
-            len = _contentLength;
-        }
-
-        if (!_hasContentLengthHeader)
-        {
-            if ((_methodProperties & METHOD_PROP_ADD_CL_HEADER) != 0)
+            if (!_hasContentLengthHeader)
             {
-                _reqHeaders.add(HDR_CONTENT_LENGTH, String.valueOf(len));
-                _hasContentLengthHeader = true;
+                if ((_methodProperties & METHOD_PROP_ADD_CL_HEADER) != 0)
+                {
+                    // add content length
+                    int len = 0;
+                    if (null != _requestBytes)
+                    {
+                        len = _requestBytes.length;
+                    }
+                    else if (_contentLength >= 0)
+                    {
+                        len = _contentLength;
+                    }
+
+                    _reqHeaders.add(HDR_CONTENT_LENGTH, String.valueOf(len));
+                    _hasContentLengthHeader = true;
+                }
             }
+
         }
 
         // Add headers for HTTP 1.0 support
@@ -718,6 +727,16 @@ public class HttpURLConnectInternal
             writeRequestHeaders();
             _conOutStream.write(Util.CRLF_BYTES);
             _conOutStream.flush();
+
+            // We don't write the body in streaming mode, the user does
+            // that
+            if (isStreaming())
+            {
+                _log.trace("writeRequest - streaming request header sent");
+                _streamingRequestSent = true;
+                return;
+            }
+
             _bodySent = writeRequestBody();
         }
         catch (HttpException ex)
@@ -869,6 +888,31 @@ public class HttpURLConnectInternal
         }
     }
 
+    protected void processResponse() throws IOException
+    {
+        // Loop to read any informational responses, they
+        // don't have any bodies and we are supposed to
+        // ignore them, except for 100 which means we can
+        // write the remainder of the request body
+        do
+        {
+            readResponse();
+
+            // Make sure we have read the entire response before the
+            // connection is released. This also ensures a retry if
+            // there is a problem getting the response
+            if (_responseCode >= 200)
+            {
+                if (isReleasedAfterExecute())
+                    readEntireResponse();
+            }
+
+            // if SC_CONTINUE write the request body
+            writeRemainingRequestBody();
+        }
+        while (_responseCode < 200);
+    }
+
     private final void processRequest() throws IOException
     {
         int maxTries = _tries;
@@ -900,40 +944,33 @@ public class HttpURLConnectInternal
 
             try
             {
-                connect();
-
-                // No retry allowed (POST)
-                if ((_methodProperties & METHOD_PROP_RETRY) == 0)
+                // Bypass this when we have already done it in the
+                // streaming case
+                if (!_streamingRequestSent)
                 {
-                    _connection.checkConnection();
-                    // Don't allow any retries beyond this point
-                    // for a POST as its not idempotent.
-                    maxTries = 0;
-                }
+                    connect();
 
-                writeRequest();
-
-                // Loop to read any informational responses, they
-                // don't have any bodies and we are supposed to
-                // ignore them, except for 100 which means we can
-                // write the remainder of the request body
-                do
-                {
-                    readResponse();
-
-                    // Make sure we have read the entire response before the
-                    // connection is released. This also ensures a retry if
-                    // there is a problem getting the response
-                    if (_responseCode >= 200)
+                    // No retry allowed (POST)
+                    if ((_methodProperties & METHOD_PROP_RETRY) == 0)
                     {
-                        if (isReleasedAfterExecute())
-                            readEntireResponse();
+                        _connection.checkConnection();
+                        // Don't allow any retries beyond this point
+                        // for a POST as its not idempotent.
+                        maxTries = 0;
                     }
 
-                    // if SC_CONTINUE write the request body
-                    writeRemainingRequestBody();
+                    writeRequest();
+
+                    // The user writes the request in streaming mode
+                    if (isStreaming())
+                    {
+                        _log.debug("processRequest - "
+                            + "streaming exiting for user to write to stream");
+                        return;
+                    }
                 }
-                while (_responseCode < 200);
+
+                processResponse();
 
                 break;
             }
@@ -1086,6 +1123,24 @@ public class HttpURLConnectInternal
             // write the request and read the response, will retry
             processRequest();
 
+            // We let the user send the bytes if streaming
+            if (isStreaming())
+            {
+                // Either a redirection or error, we can't continue
+                if (_responseCode > 300)
+                {
+                    HttpRetryException rte = new HttpRetryException(new String(_responseText,
+                                                                               0,
+                                                                               _responseTextLength),
+                                                                    _responseCode);
+                    rte._location = _hdrLocation;
+                    _log.debug("Streaming non-OK response, throwing", rte);
+                    throw rte;
+                }
+                _log.debug("Streaming - returning to user");
+                return;
+            }
+
             switch (_responseCode)
             {
                 case HttpStatus.SC_UNAUTHORIZED:
@@ -1095,13 +1150,14 @@ public class HttpURLConnectInternal
                     {
                         // Process authentication response
                         // If the authentication is successful,
-                        // return the statusCode
-                        // otherwise, drop through the switch and try again.
+                        // return the statusCode otherwise, drop through the
+                        // switch and try again.
                         if (processAuthenticationResponse(_responseCode))
                             return;
                     }
                     else
-                    { // let the client handle the authenticaiton
+                    {
+                        // let the client handle the authenticaiton
                         return;
                     }
                     break;
@@ -1220,7 +1276,9 @@ public class HttpURLConnectInternal
 
     }
 
-    protected final void execute() throws IOException
+    // Called by execute() and also called in getOutputStream() in the streaming
+    // case, this starts the request and leaves it executing.
+    protected final void executeStart() throws IOException
     {
         if (_log.isTraceEnabled())
         {
@@ -1238,26 +1296,6 @@ public class HttpURLConnectInternal
         {
             _log.debug("Method not specified, setting to GET");
             setRequestMethodInternal(HTTP_METHOD_GET);
-        }
-
-        // Handle the methods that allow data
-        if (_outStream != null
-            && ((_methodProperties & METHOD_PROP_CALCULATE_CONTENT_LEN) != 0))
-        {
-            byte[] outBytes = _outStream.toByteArray();
-            setRequestBody(outBytes);
-            if (_contentLength == UNINIT_CONTENT_LENGTH)
-                _contentLength = outBytes.length;
-
-            // To be compatible with the JDK
-            if ((_methodProperties & METHOD_PROP_SEND_CONTENT_TYPE) != 0)
-            {
-                if (_reqHeaders.get(HDR_CONTENT_TYPE) == null)
-                {
-                    _reqHeaders.set(HDR_CONTENT_TYPE,
-                                    "application/x-www-form-urlencoded");
-                }
-            }
         }
 
         // Get me a connection, if there is a problem here, it just throws
@@ -1318,6 +1356,52 @@ public class HttpURLConnectInternal
             _dead = true;
             throw e;
         }
+
+    }
+
+    // Executes the entire HTTP request and response, used for the
+    // non-streaming case
+    protected final void execute() throws IOException
+    {
+        boolean streaming = isStreaming();
+
+        // Handle the methods that allow data
+        if (!streaming
+            && _outStream != null
+            && ((_methodProperties & METHOD_PROP_CALCULATE_CONTENT_LEN) != 0))
+        {
+            byte[] outBytes = ((ByteArrayOutputStream)_outStream).toByteArray();
+            setRequestBody(outBytes);
+            if (_contentLength == UNINIT_CONTENT_LENGTH)
+                _contentLength = outBytes.length;
+
+            // TODO - in JRE 1.5 they removed this default, look this up
+            // to see what to do about this, removing this breaks the IIS
+            // tests for example
+            if ((_methodProperties & METHOD_PROP_SEND_CONTENT_TYPE) != 0)
+            {
+                if (_reqHeaders.get(HDR_CONTENT_TYPE) == null)
+                {
+                    _reqHeaders.set(HDR_CONTENT_TYPE,
+                                    "application/x-www-form-urlencoded");
+                }
+            }
+        }
+
+        try
+        {
+            if (streaming && !_streamingWritingFinished)
+            {
+                streamWriteFinished(!OK);
+                String msg = "Cannot execute the HTTP request "
+                    + "until the output stream is closed.";
+                IllegalStateException ex = new IllegalStateException(msg);
+                _log.debug("execute: ", ex);
+                throw ex;
+            }
+
+            executeStart();
+        }
         finally
         {
             _executing = false;
@@ -1329,6 +1413,27 @@ public class HttpURLConnectInternal
                 releaseConnection(!CLOSE);
         }
 
+    }
+
+    // Called when the streaming I/O is either done or if there
+    // was a problem.
+
+    static final boolean OK = true;
+
+    void streamWriteFinished(boolean ok)
+    {
+        if (ok)
+        {
+            _log.debug("streaming write finished");
+            _streamingWritingFinished = true;
+        }
+        else
+        {
+            _log.debug("streaming write failed");
+            // Release and close the connection since there is something wrong
+            releaseConnection(CLOSE);
+            _dead = true;
+        }
     }
 
     void setConnection(HttpConnection conn, boolean release) throws IOException
@@ -1400,19 +1505,19 @@ public class HttpURLConnectInternal
             }
         }
 
-        if (_http11)
+        if ((null != _hdrConnection && HDR_VALUE_CLOSE
+                .equalsIgnoreCase(_hdrConnection))
+            || (_hdrProxyConnection != null && HDR_VALUE_CLOSE
+                    .equalsIgnoreCase(_hdrProxyConnection)))
         {
-            if (null != _hdrConnection
-                && HDR_VALUE_CLOSE.equalsIgnoreCase(_hdrConnection))
-            {
-                _log.debug("HTTP/1.1 - Will CLOSE - "
-                    + "\"Connection: close\" header found.");
-                result = true;
-            }
+            _log.debug("Will CLOSE - "
+                + "\"[Proxy-]Connection: close\" header found.");
+            result = true;
         }
-        else
+
+        // Still might stay open and this is HTTP 1.0
+        if (!result && !_http11)
         {
-            // HTTP 1.0
             if (null != _hdrConnection
                 && HDR_VALUE_KEEP_ALIVE.equalsIgnoreCase(_hdrConnection))
             {

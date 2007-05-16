@@ -276,6 +276,7 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
 
     static final String                    HDR_VALUE_KEEP_ALIVE              = "keep-alive";
     static final String                    HDR_VALUE_CLOSE                   = "close";
+    static final String                    HDR_VALUE_CHUNKED                 = "chunked";
 
     public static final int                NTLM_ENCODING_UNICODE             = 1;
     public static final int                NTLM_ENCODING_OEM                 = 2;
@@ -301,8 +302,10 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
 
     protected String                       _urlString;
 
-    // The output stream contains the data to be submitted on the HTTP request
-    protected ByteArrayOutputStream        _outStream;
+    // The output stream contains the data to be submitted on the HTTP request,
+    // this could be a ByteArrayOutputStream, or for the streaming case
+    // one of the Streaming* streams
+    protected OutputStream                 _outStream;
 
     protected HttpConnection               _connection;
 
@@ -343,6 +346,15 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
     protected static HttpUserAgent         _defaultUserAgent;
     protected HttpUserAgent                _userAgent;
 
+    // The request has been sent, but we have not done the read for the reply.
+    // This is the state we are in when streaming and the user just
+    // called getOutputStream(). This is used only for streaming mode
+    protected boolean                      _streamingRequestSent;
+
+    // The user has completed their streaming writing and closed the
+    // output stream
+    protected boolean                      _streamingWritingFinished;
+
     // The request has been sent and the reply received
     protected boolean                      _executed;
 
@@ -360,6 +372,15 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
     protected int                          _contentLength;
 
     protected boolean                      _hasContentLengthHeader;
+
+    protected static final int             DEFAULT_CHUNK_LEN                 = 4096;
+
+    // Enables streaming (no buffering) the request with chunked encoding. -1 if
+    // this is disabled.
+    protected boolean                      _streamingChunked;
+
+    // Enables streaming the request in one fixed block
+    protected int                          _streamingFixedLen                = -1;
 
     // If the "Expect" request header is present
     protected boolean                      _expectContinue;
@@ -1072,24 +1093,47 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
             throw new ProtocolException("The reply to this URLConnection has already been received");
         }
 
+        // Return the same output stream so the user can just do stuff
+        // calling getOutputStream().whatever
+        if (_outStream != null)
+            return _outStream;
+
         // Switch to post method - be compatible with JDK
         if ((_methodProperties & (METHOD_PROP_SWITCH_TO_POST | METHOD_PROP_UNSPECIFIED_METHOD)) != 0)
         {
             setRequestMethodInternal(HTTP_METHOD_POST);
         }
 
-        // Be compatible with JDK
-        // FIXME - not https?
-        /***********************************************************************
-         * if (!HTTP_METHOD_POST.equals(method) &&
-         * !HTTP_METHOD_GET.equals(method) &&
-         * "http".equalsIgnoreCase(url.getProtocol())) { throw new
-         * ProtocolException("HTTP method " + method + " doesn't support
-         * output"); }
-         **********************************************************************/
+        if (isStreaming())
+        {
+            _log.debug("getOutputStream - streaming start");
 
+            // Return the right kind of stream so the user can complete the
+            // request. The requested is finished in the normal manner
+            if (_streamingChunked)
+            {
+                executeStart();
+                _log.debug("getOutputStream - "
+                    + "returning StreamingChunkedOutputStream");
+                _outStream = new StreamingChunkedOutputStream(this, _connection
+                        .getOutputStream());
+                return _outStream;
+            }
+
+            _contentLength = _streamingFixedLen;
+            executeStart();
+            _log.debug("getOutputStream - "
+                + "returning StreamingFixedOutputStream");
+            _outStream = new StreamingFixedOutputStream(this, _connection
+                    .getOutputStream(), _streamingFixedLen);
+            return _outStream;
+        }
+
+        _log
+                .debug("getOutputStream - returning ByteArrayOutputStream (non streaming)");
         _outStream = new ByteArrayOutputStream();
         return _outStream;
+
     }
 
     /**
@@ -1222,13 +1266,14 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
 
     /**
      * Returns the connection associated with this object, if any.
+     * 
      * @return the connection associated with this object.
      */
     public HttpConnection getConnection()
     {
         return _connection;
     }
-    
+
     static final boolean RELEASE = true;
 
     void setConnection(HttpConnection conn, boolean release) throws IOException
@@ -1303,6 +1348,90 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
             throw _ioException;
         execute();
         return new String(_responseText, 0, _responseTextLength);
+    }
+
+    /**
+     * Used to allow data to be sent on with the HTTP request using chunked
+     * encoding. The size of each chunk is determined by the size of the write()
+     * calls to the OutputStream.
+     * <p>
+     * This uses the HTTP chunked transfer encoding mode, which is an optional
+     * feature not supported by all HTTP servers.
+     * <p>
+     * Use this if:
+     * <ul>
+     * <li>you don't know the total size of the data you are sending,
+     * <li>you are sure the server supports chunked transfer encoding,
+     * <li>you don't want to tie up the full amount of memory of the data prior
+     * to sending the request; and
+     * <li>the request will not require authentication or redirection
+     * </ul>
+     * 
+     * <p>
+     * Use of this method avoids double-copying of the data.
+     * 
+     * <p>
+     * When using this method, you may not call write(int) method on the
+     * returned stream. If you must use single byte writes, then wrap the
+     * returned stream in a BufferedOutputStream(). The chunk size will then be
+     * the size of that buffere.
+     * 
+     * <p>
+     * This is used to improve performance sending by not first buffering the
+     * data associated with the request. If the request requires authentication
+     * or redirection, this will not work as the data will have been sent. In
+     * this case, you will get an HttpRetryException
+     * 
+     * @param chunkLen -
+     *            This is ignored and exists for compatibility with the Java
+     *            HttpURLConnection API. The size of each chunk is based on the
+     *            size of each write to the stream.
+     * @throws IllegalStateException -
+     *             If the connection is already connected or a different
+     *             streaming mode has been set.
+     */
+    public void setChunkedStreamingMode(int chunkLen)
+    {
+        // Note, don't use the superclass for this because that only exists
+        // on 1.5 and higher and we need to support this for all versions
+        if (connected || _streamingFixedLen >= 0)
+            throw new IllegalStateException();
+
+        _streamingChunked = true;
+    }
+
+    /**
+     * Used to allow data to be sent on with the HTTP request without buffering
+     * and when the length of the data <i>is known</i> in advance.
+     * <p>
+     * Use of this method avoids double-copying of the data.
+     * <p>
+     * This is used to improve performance sending by not first buffering the
+     * data associated with the request. If the request requires authentication
+     * or redirection, this will not work as the data will have been sent. In
+     * this case, you will get an HttpRetryException
+     * 
+     * @param fixedLen -
+     *            The size of the data being sent (the Content-Length)
+     * @throws IllegalStateException -
+     *             If the connection is already connected or a different
+     *             streaming mode has been set.
+     */
+    public void setFixedLengthStreamingMode(int fixedLen)
+    {
+        // Note, don't use the superclass for this because that only exists
+        // on 1.5 and higher and we need to support this for all versions
+        if (connected || _streamingChunked)
+            throw new IllegalStateException();
+        if (fixedLen < 0)
+            throw new IllegalArgumentException("fixedLen must be greater than or equal to zero");
+        _streamingFixedLen = fixedLen;
+    }
+
+    protected boolean isStreaming()
+    {
+        // -1 means these are not used
+        return _streamingChunked || _streamingFixedLen >= 0;
     }
 
     /**
@@ -2562,6 +2691,10 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
     }
 
     protected abstract void execute() throws HttpException, IOException;
+
+    protected abstract void executeStart() throws HttpException, IOException;
+
+    abstract void streamWriteFinished(boolean ok);
 
     protected abstract void setUrl(String urlParam)
         throws MalformedURLException;
