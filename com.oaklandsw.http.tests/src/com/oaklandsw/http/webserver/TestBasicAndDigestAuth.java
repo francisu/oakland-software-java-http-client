@@ -1,6 +1,5 @@
 package com.oaklandsw.http.webserver;
 
-import java.net.HttpURLConnection;
 import java.net.URL;
 
 import org.apache.commons.logging.Log;
@@ -10,6 +9,7 @@ import junit.framework.TestSuite;
 
 import com.oaklandsw.http.HttpTestBase;
 import com.oaklandsw.http.HttpTestEnv;
+import com.oaklandsw.http.HttpURLConnection;
 import com.oaklandsw.http.TestUserAgent;
 import com.oaklandsw.util.LogUtils;
 

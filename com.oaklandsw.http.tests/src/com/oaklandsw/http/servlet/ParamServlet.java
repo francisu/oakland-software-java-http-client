@@ -64,11 +64,16 @@ import javax.servlet.http.HttpServletResponse;
 public class ParamServlet extends MultiMethodServlet
 {
 
+    // The sequence number parameter that is sent back in a header
+    // used for diagnostics
+    public static final String SEQUENCE        = "Sequence";
+
     public static final String HOST_IP_ADDRESS = "HostIPAddress";
     public static final String HOST_CHECK      = "HostCheck";
 
     // The part of the URL where this servlet is installed
     public static final String NAME            = "/params";
+    public static final String NAME_NTLM       = "/ntlmparams";
 
     protected void genericService(HttpServletRequest request,
                                   HttpServletResponse response)
@@ -78,6 +83,8 @@ public class ParamServlet extends MultiMethodServlet
 
         try
         {
+            int sequence = -1;
+
             String hostCheck = request.getHeader(HOST_CHECK);
             String foundHost = request.getHeader("Host");
             // Get rid of the port if it's there
@@ -103,10 +110,10 @@ public class ParamServlet extends MultiMethodServlet
             response.setContentType("text/html");
 
             PrintWriter out = response.getWriter();
-                    out.println("hostcheck - found: "
-                        + foundHost
-                        + " expected: "
-                        + hostCheck);
+            out.println("hostcheck - found: "
+                + foundHost
+                + " expected: "
+                + hostCheck);
 
             out.println("<html>");
             out.println("<head><title>Param Servlet: "
@@ -139,6 +146,8 @@ public class ParamServlet extends MultiMethodServlet
             {
                 String name = (String)(e.nextElement());
                 String[] values = request.getParameterValues(name);
+                if (name.equals(SEQUENCE))
+                    sequence = Integer.parseInt(values[0]);
                 if (null == values || values.length < 1)
                 {
                     out.println("name=\"" + name + "\";value=null<br>");
@@ -183,8 +192,13 @@ public class ParamServlet extends MultiMethodServlet
             // Return the IP address if requested
             if (request.getHeader(HOST_IP_ADDRESS) != null)
             {
-                response.setHeader(HOST_IP_ADDRESS, InetAddress.
-                                   getLocalHost().getHostAddress());
+                response.setHeader(HOST_IP_ADDRESS, InetAddress.getLocalHost()
+                        .getHostAddress());
+            }
+
+            if (sequence != -1)
+            {
+                response.setHeader(SEQUENCE, Integer.toString(sequence));
             }
 
         }

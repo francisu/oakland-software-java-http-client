@@ -117,6 +117,9 @@ public class TestCookie extends TestWebappBase
 
     public void testSetCookiePut() throws Exception
     {
+        if (_inAuthCloseProxyTest)
+            return;
+
         testSetCookie("PUT");
     }
 
@@ -170,6 +173,8 @@ public class TestCookie extends TestWebappBase
 
     public void testSetMultiCookiePut() throws Exception
     {
+        if (_inAuthCloseProxyTest)
+            return;
         testSetMultiCookie("PUT");
     }
 
@@ -210,6 +215,8 @@ public class TestCookie extends TestWebappBase
 
     public void testSetExpiredCookiePut() throws Exception
     {
+        if (_inAuthCloseProxyTest)
+            return;
         testSetExpiredCookie("PUT");
     }
 

@@ -113,6 +113,7 @@ public class HttpTestEnv
                                                                      + TEST_IIS_USER;
     public static String       TEST_URL_APP_IIS                  = "";
     public static String       TEST_URL_APP_IIS_FORM             = "Form_JScript.asp";
+    public static String       TEST_URL_APP_IIS_QUERY_STRING     = "QueryString_JScript.asp";
 
     // Page on local webserver
     public static String       TEST_WEBSERVER_PAGE               = "/int/index.html";

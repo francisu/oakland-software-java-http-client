@@ -76,7 +76,7 @@ import com.oaklandsw.util.LogUtils;
  */
 public class HttpStatus
 {
-    private static final Log       _log           = LogUtils.makeLogger();
+    private static final Log _log           = LogUtils.makeLogger();
 
     // -------------------------------------------------------- Class Variables
 
@@ -158,6 +158,8 @@ public class HttpStatus
     public static final int SC_MULTI_STATUS                    = 207;
 
     // --- 3xx Redirection ---
+
+    public static final int SC_REDIRECTION                     = 300;
 
     /** <tt>300 Mutliple Choices</tt> (HTTP/1.1 - RFC 2616) */
     public static final int SC_MULTIPLE_CHOICES                = 300;

@@ -75,15 +75,15 @@ import com.oaklandsw.util.LogUtils;
  */
 public class SimpleHttpConnection extends HttpConnection
 {
-    private static final Log    _log            = LogUtils.makeLogger();
+    private static final Log _log            = LogUtils.makeLogger();
 
-    int                   hits            = 0;
+    int                      hits            = 0;
 
-    Vector                bodies          = new Vector();
+    Vector                   bodies          = new Vector();
 
-    ByteArrayInputStream  bodyInputStream = null;
+    ByteArrayInputStream     bodyInputStream = null;
 
-    ByteArrayOutputStream _bitBucket      = new ByteArrayOutputStream();
+    ByteArrayOutputStream    _bitBucket      = new ByteArrayOutputStream();
 
     public void addResponse(String body)
     {
@@ -94,15 +94,22 @@ public class SimpleHttpConnection extends HttpConnection
     public SimpleHttpConnection()
     {
         super(null, -1, "localhost", 80, false, 0, "none");
+        _connectionInfo = new ConnectionInfo(new HttpConnectionManager(),
+                                             "localhost",
+                                             1);
     }
 
     public SimpleHttpConnection(String host, int port, boolean isSecure)
     {
         super(null, -1, host, port, isSecure, 0, "none");
+        _connectionInfo = new ConnectionInfo(new HttpConnectionManager(),
+                                             host,
+                                             1);
     }
 
     public void open() throws IOException
     {
+        _state = CS_OPEN;
         _log.trace("open");
         try
         {

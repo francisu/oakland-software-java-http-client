@@ -14,7 +14,7 @@ public class TestWebappBase extends HttpTestBase
     {
         super(testName);
         _doAuthProxyTest = true;
-        // _doAuthCloseProxyTest = true;
+        _doAuthCloseProxyTest = true;
         _doProxyTest = true;
         _do10ProxyTest = true;
         _doExplicitTest = true;

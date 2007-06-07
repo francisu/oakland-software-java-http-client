@@ -1,6 +1,5 @@
 package com.oaklandsw.http.webapp;
 
-import java.net.HttpURLConnection;
 import java.net.InetAddress;
 import java.net.URL;
 import java.util.List;
@@ -12,6 +11,7 @@ import junit.framework.Test;
 import junit.framework.TestSuite;
 
 import com.oaklandsw.http.HttpTestEnv;
+import com.oaklandsw.http.HttpURLConnection;
 import com.oaklandsw.http.servlet.HeaderServlet;
 import com.oaklandsw.util.LogUtils;
 import com.oaklandsw.util.NetUtils;
@@ -19,7 +19,7 @@ import com.oaklandsw.util.NetUtils;
 public class TestHeaders extends TestWebappBase
 {
 
-    private static final Log   _log         = LogUtils.makeLogger();
+    private static final Log _log = LogUtils.makeLogger();
 
     public TestHeaders(String testName)
     {
@@ -44,21 +44,24 @@ public class TestHeaders extends TestWebappBase
 
         HttpURLConnection urlCon = (HttpURLConnection)url.openConnection();
         urlCon.setRequestMethod("GET");
-        // method.setRequestHeader(new
-        // Header("addRequestHeader(Header)","True"));
         urlCon.setRequestProperty("addRequestHeader", "Also True");
-        ;
         urlCon.connect();
         response = urlCon.getResponseCode();
         assertEquals(200, response);
 
-        // Tomcat 4 at least converts the header name to lower case
-        // checkReply("name=\"addrequestheader(header)\";value=\"True\"<br>");
-        checkReply(urlCon, "name=\"addrequestheader"
-            + "\";value=\"Also True\"<br>");
-
-        if (com.oaklandsw.http.HttpURLConnection.getExplicitClose())
-            urlCon.getInputStream().close();
+        // Netproxy seems to strip the header
+        if (!_inAuthCloseProxyTest)
+        {
+            // Tomcat 4 at least converts the header name to lower case
+            checkReply(urlCon, "name=\"addrequestheader"
+                + "\";value=\"Also True\"<br>");
+        }
+        else
+        {
+            // checkReply - above gets the InputStream
+            if (com.oaklandsw.http.HttpURLConnection.getExplicitClose())
+                urlCon.getInputStream().close();
+        }
         checkNoActiveConns(url);
     }
 
@@ -97,7 +100,9 @@ public class TestHeaders extends TestWebappBase
         response = urlCon.getResponseCode();
         assertEquals(200, response);
 
-        checkReply(urlCon, "name=\"xxx-a-header\";value=\"two\"<br>");
+        // Netproxy seems to strip the header
+        if (!_inAuthCloseProxyTest)
+            checkReply(urlCon, "name=\"xxx-a-header\";value=\"two\"<br>");
         checkNoActiveConns(url);
     }
 
@@ -116,7 +121,7 @@ public class TestHeaders extends TestWebappBase
         // Bug 1440 getHeaderFields() not implemented
         // Need to cast this since getHeaderFields() is not provided prior
         // to JDK14
-        Map headerMap = ((com.oaklandsw.http.HttpURLConnection)urlCon)
+        Map headerMap = urlCon
                 .getHeaderFields();
         List headerField = (List)headerMap.get("HeaderSetByServlet");
         assertEquals("Yes", headerField.get(0));
@@ -128,6 +133,15 @@ public class TestHeaders extends TestWebappBase
 
     public void testHostRequestHeaderIp() throws Exception
     {
+        // This only works if we are proxying through something on this
+        // machine
+        if (com.oaklandsw.http.HttpURLConnection.getProxyHost() != null
+            && !com.oaklandsw.http.HttpURLConnection.getProxyHost()
+                    .equals(InetAddress.getLocalHost().getHostName()))
+        {
+            return;
+        }
+
         InetAddress addr = InetAddress.getByName(HttpTestEnv.TOMCAT_HOST);
         String ip = addr.getHostAddress();
         hostRequestHeader(ip);
@@ -156,8 +170,7 @@ public class TestHeaders extends TestWebappBase
         checkReply(urlCon, "name=\"user-agent"
             + "\";value=\"TestUserAgent\"<br>");
 
-        if (com.oaklandsw.http.HttpURLConnection.getExplicitClose())
-            urlCon.getInputStream().close();
+        // checkReply closes the connection
         checkNoActiveConns(url);
     }
 
@@ -178,8 +191,7 @@ public class TestHeaders extends TestWebappBase
             + com.oaklandsw.http.HttpURLConnection.DEFAULT_USER_AGENT
             + "\"<br>");
 
-        if (com.oaklandsw.http.HttpURLConnection.getExplicitClose())
-            urlCon.getInputStream().close();
+        // checkReply closes the connection
         checkNoActiveConns(url);
     }
 
@@ -216,8 +228,8 @@ public class TestHeaders extends TestWebappBase
                 + HttpTestEnv.TEST_WEBAPP_PORT
                 + "\"<br>");
         }
-        if (com.oaklandsw.http.HttpURLConnection.getExplicitClose())
-            urlCon.getInputStream().close();
+
+        // checkReply closes the connection
         checkNoActiveConns(url);
     }
 

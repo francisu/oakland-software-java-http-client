@@ -106,8 +106,8 @@ public class TestResponseHeaders extends TestCase
             + "Server: UserLand Frontier/7.0-WinNT\r\n";
         SimpleHttpMethod method = new SimpleHttpMethod();
         SimpleHttpConnection conn = new SimpleHttpConnection();
-        conn.addResponse(headers + "\r\n" + body);
         method.setState(conn);
+        conn.addResponse(headers + "\r\n" + body);
         method.getResponseCode();
         assertEquals("close", method.getHeaderField("Connection"));
         assertEquals(body.length(), Integer.parseInt(method
@@ -129,8 +129,8 @@ public class TestResponseHeaders extends TestCase
             + "\r\n";
         SimpleHttpMethod method = new SimpleHttpMethod();
         SimpleHttpConnection conn = new SimpleHttpConnection();
-        conn.addResponse(headers + "\r\n" + body);
         method.setState(conn);
+        conn.addResponse(headers + "\r\n" + body);
         method.getResponseCode();
         assertEquals(null, method.getHeaderField(null));
         assertEquals(null, method.getHeaderField("bogus"));
@@ -151,8 +151,8 @@ public class TestResponseHeaders extends TestCase
             + "Server: UserLand Frontier/7.0-WinNT\r\n";
         SimpleHttpMethod method = new SimpleHttpMethod();
         SimpleHttpConnection conn = new SimpleHttpConnection();
-        conn.addResponse(headers + "\r\n" + body);
         method.setState(conn);
+        conn.addResponse(headers + "\r\n" + body);
         method.getResponseCode();
         assertEquals("close", method.getHeaderField("Connection"));
         assertEquals(body.length(), Integer.parseInt(method

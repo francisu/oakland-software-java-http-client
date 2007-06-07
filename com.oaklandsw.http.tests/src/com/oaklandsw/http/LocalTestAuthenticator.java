@@ -57,14 +57,17 @@
 package com.oaklandsw.http;
 
 import java.util.Hashtable;
+import java.util.Map;
 import java.util.StringTokenizer;
 
+import org.apache.commons.logging.Log;
 import org.bouncycastle.util.encoders.Base64;
 
 import com.oaklandsw.http.Authenticator;
 import com.oaklandsw.http.Credential;
 import com.oaklandsw.http.HttpException;
 import com.oaklandsw.http.UserCredential;
+import com.oaklandsw.util.LogUtils;
 
 import junit.framework.Test;
 import junit.framework.TestCase;
@@ -80,6 +83,38 @@ import junit.framework.TestSuite;
  */
 public class LocalTestAuthenticator extends TestCase
 {
+    private static final Log _log = LogUtils.makeLogger();
+
+    // Used only for the regression tests
+    public static final boolean authenticateForTests(HttpURLConnectInternal method,
+                                                     String authReq,
+                                                     int normalOrProxy)
+        throws HttpException
+    {
+        Headers h = new Headers();
+        if (authReq != null)
+        {
+            h.add(Authenticator.REQ_HEADERS[HttpURLConnection.AUTH_NORMAL],
+                  authReq);
+        }
+        else
+        {
+            h = null;
+        }
+
+        // parse the authenticate header
+        Map challengeMap = Authenticator
+                .parseAuthenticateHeader(h,
+                                         Authenticator.REQ_HEADERS[HttpURLConnection.AUTH_NORMAL],
+                                         method);
+
+        return Authenticator
+                .authenticate(method,
+                              h,
+                              Authenticator.REQ_HEADERS[HttpURLConnection.AUTH_NORMAL],
+                              challengeMap,
+                              normalOrProxy);
+    }
 
     // ------------------------------------------------------------ Constructor
     public LocalTestAuthenticator(String testName)
@@ -145,7 +180,9 @@ public class LocalTestAuthenticator extends TestCase
     {
         SimpleHttpMethod method = new SimpleHttpMethod();
 
-        assertFalse(Authenticator.authenticate(method, null, null));
+        assertFalse(authenticateForTests(method,
+                                         null,
+                                         HttpURLConnection.AUTH_NORMAL));
     }
 
     // ---------------------------------- Test Methods for Basic Authentication
@@ -156,8 +193,9 @@ public class LocalTestAuthenticator extends TestCase
         try
         {
             TestUserAgent._type = TestUserAgent.NULL;
-            Authenticator.authenticate(method, "Basic realm=\"realm1\"",
-                                       Authenticator.WWW_AUTH_RESP);
+            authenticateForTests(method,
+                                 "Basic realm=\"realm1\"",
+                                 HttpURLConnection.AUTH_NORMAL);
             fail("Should have thrown HttpException");
         }
         catch (HttpException e)
@@ -171,8 +209,7 @@ public class LocalTestAuthenticator extends TestCase
         SimpleHttpMethod method = new SimpleHttpMethod();
         try
         {
-            Authenticator.authenticate(method, "Basic",
-                                       Authenticator.WWW_AUTH_RESP);
+            authenticateForTests(method, "Basic", HttpURLConnection.AUTH_NORMAL);
             fail("Should have thrown HttpException");
         }
         catch (HttpException e)
@@ -186,8 +223,7 @@ public class LocalTestAuthenticator extends TestCase
         SimpleHttpMethod method = new SimpleHttpMethod();
         try
         {
-            Authenticator.authenticate(method, "Basic",
-                                       Authenticator.WWW_AUTH_RESP);
+            authenticateForTests(method, "Basic", HttpURLConnection.AUTH_NORMAL);
             fail("Should have thrown HttpException");
         }
         catch (HttpException e)
@@ -201,9 +237,9 @@ public class LocalTestAuthenticator extends TestCase
         SimpleHttpMethod method = new SimpleHttpMethod();
         try
         {
-            assertTrue(Authenticator.authenticate(method,
-                                                  "invalid realm=\"realm1\"",
-                                                  Authenticator.WWW_AUTH_RESP));
+            assertTrue(authenticateForTests(method,
+                                            "invalid realm=\"realm1\"",
+                                            HttpURLConnection.AUTH_NORMAL));
             fail("Should have thrown UnsupportedOperationException");
         }
         catch (HttpException uoe)
@@ -215,8 +251,9 @@ public class LocalTestAuthenticator extends TestCase
     public void testBasicAuthenticationCaseInsensitivity() throws Exception
     {
         SimpleHttpMethod method = new SimpleHttpMethod();
-        assertTrue(Authenticator.authenticate(method, "bAsIc ReAlM=\"realm1\"",
-                                              Authenticator.WWW_AUTH_RESP));
+        assertTrue(authenticateForTests(method,
+                                        "bAsIc ReAlM=\"realm1\"",
+                                        HttpURLConnection.AUTH_NORMAL));
         assertTrue(null != method.getRequestProperty("Authorization"));
         String expected = "Basic "
             + new String(Base64.encode("username:password".getBytes()));
@@ -226,8 +263,9 @@ public class LocalTestAuthenticator extends TestCase
     public void testBasicAuthenticationWithDefaultCreds() throws Exception
     {
         SimpleHttpMethod method = new SimpleHttpMethod();
-        assertTrue(Authenticator.authenticate(method, "Basic realm=\"realm1\"",
-                                              Authenticator.WWW_AUTH_RESP));
+        assertTrue(authenticateForTests(method,
+                                        "Basic realm=\"realm1\"",
+                                        HttpURLConnection.AUTH_NORMAL));
         assertTrue(null != method.getRequestProperty("Authorization"));
         String expected = "Basic "
             + new String(Base64.encode("username:password".getBytes()));
@@ -237,8 +275,9 @@ public class LocalTestAuthenticator extends TestCase
     public void testBasicAuthentication() throws Exception
     {
         SimpleHttpMethod method = new SimpleHttpMethod();
-        assertTrue(Authenticator.authenticate(method, "Basic realm=\"realm1\"",
-                                              Authenticator.WWW_AUTH_RESP));
+        assertTrue(authenticateForTests(method,
+                                        "Basic realm=\"realm1\"",
+                                        HttpURLConnection.AUTH_NORMAL));
         assertTrue(null != method.getRequestProperty("Authorization"));
         String expected = "Basic "
             + new String(Base64.encode("username:password".getBytes()));
@@ -249,9 +288,9 @@ public class LocalTestAuthenticator extends TestCase
     {
         {
             SimpleHttpMethod method = new SimpleHttpMethod();
-            assertTrue(Authenticator.authenticate(method,
-                                                  "Basic realm=\"realm1\"",
-                                                  Authenticator.WWW_AUTH_RESP));
+            assertTrue(authenticateForTests(method,
+                                            "Basic realm=\"realm1\"",
+                                            HttpURLConnection.AUTH_NORMAL));
             assertTrue(null != method.getRequestProperty("Authorization"));
             String expected = "Basic "
                 + new String(Base64.encode("username:password".getBytes()));
@@ -259,9 +298,9 @@ public class LocalTestAuthenticator extends TestCase
         }
         {
             SimpleHttpMethod method = new SimpleHttpMethod();
-            assertTrue(Authenticator.authenticate(method,
-                                                  "Basic realm=\"realm2\"",
-                                                  Authenticator.WWW_AUTH_RESP));
+            assertTrue(authenticateForTests(method,
+                                            "Basic realm=\"realm2\"",
+                                            HttpURLConnection.AUTH_NORMAL));
             assertTrue(null != method.getRequestProperty("Authorization"));
             String expected = "Basic "
                 + new String(Base64.encode("uname2:password2".getBytes()));
@@ -275,7 +314,9 @@ public class LocalTestAuthenticator extends TestCase
 
         HttpURLConnection.setPreemptiveAuthentication(true);
         TestUserAgent._type = TestUserAgent.NULL;
-        assertFalse(Authenticator.authenticate(method, null, null));
+        assertFalse(authenticateForTests(method,
+                                         null,
+                                         HttpURLConnection.AUTH_NORMAL));
     }
 
     public void testPreemptiveAuthorizationTrueWithCreds() throws Exception
@@ -283,8 +324,9 @@ public class LocalTestAuthenticator extends TestCase
         SimpleHttpMethod method = new SimpleHttpMethod();
 
         HttpURLConnection.setPreemptiveAuthentication(true);
-        assertTrue(Authenticator.authenticate(method, null,
-                                              Authenticator.WWW_AUTH_RESP));
+        assertTrue(authenticateForTests(method,
+                                        null,
+                                        HttpURLConnection.AUTH_NORMAL));
         assertTrue(null != method.getRequestProperty("Authorization"));
         String expected = "Basic "
             + new String(Base64.encode("username:password".getBytes()));
@@ -296,7 +338,9 @@ public class LocalTestAuthenticator extends TestCase
         SimpleHttpMethod method = new SimpleHttpMethod();
 
         HttpURLConnection.setPreemptiveAuthentication(false);
-        assertTrue(!Authenticator.authenticate(method, null, null));
+        assertTrue(!authenticateForTests(method,
+                                         null,
+                                         HttpURLConnection.AUTH_NORMAL));
         assertTrue(null == method.getRequestProperty("Authorization"));
     }
 
@@ -308,8 +352,9 @@ public class LocalTestAuthenticator extends TestCase
         try
         {
             TestUserAgent._type = TestUserAgent.NULL;
-            Authenticator.authenticate(method, "Digest realm=\"realm1\"",
-                                       Authenticator.WWW_AUTH_RESP);
+            authenticateForTests(method,
+                                 "Digest realm=\"realm1\"",
+                                 HttpURLConnection.AUTH_NORMAL);
             fail("Should have thrown HttpException");
         }
         catch (HttpException e)
@@ -323,8 +368,9 @@ public class LocalTestAuthenticator extends TestCase
         SimpleHttpMethod method = new SimpleHttpMethod();
         try
         {
-            Authenticator.authenticate(method, "Digest",
-                                       Authenticator.WWW_AUTH_RESP);
+            authenticateForTests(method,
+                                 "Digest",
+                                 HttpURLConnection.AUTH_NORMAL);
             fail("Should have thrown HttpException");
         }
         catch (HttpException e)
@@ -338,8 +384,9 @@ public class LocalTestAuthenticator extends TestCase
         SimpleHttpMethod method = new SimpleHttpMethod();
         try
         {
-            Authenticator.authenticate(method, "Digest",
-                                       Authenticator.WWW_AUTH_RESP);
+            authenticateForTests(method,
+                                 "Digest",
+                                 HttpURLConnection.AUTH_NORMAL);
             fail("Should have thrown HttpException");
         }
         catch (HttpException e)
@@ -351,18 +398,18 @@ public class LocalTestAuthenticator extends TestCase
     public void testDigestAuthenticationCaseInsensitivity() throws Exception
     {
         SimpleHttpMethod method = new SimpleHttpMethod();
-        assertTrue(Authenticator.authenticate(method,
-                                              "dIgEsT ReAlM=\"realm1\"",
-                                              Authenticator.WWW_AUTH_RESP));
+        assertTrue(authenticateForTests(method,
+                                        "dIgEsT ReAlM=\"realm1\"",
+                                        HttpURLConnection.AUTH_NORMAL));
         assertTrue(null != method.getRequestProperty("Authorization"));
     }
 
     public void testDigestAuthenticationWithDefaultCreds() throws Exception
     {
         SimpleHttpMethod method = new SimpleHttpMethod();
-        assertTrue(Authenticator.authenticate(method,
-                                              "Digest realm=\"realm1\"",
-                                              Authenticator.WWW_AUTH_RESP));
+        assertTrue(authenticateForTests(method,
+                                        "Digest realm=\"realm1\"",
+                                        HttpURLConnection.AUTH_NORMAL));
         assertTrue(null != method.getRequestProperty("Authorization"));
         checkAuthorization("realm1", method.getName(), method
                 .getRequestProperty("Authorization"));
@@ -371,9 +418,9 @@ public class LocalTestAuthenticator extends TestCase
     public void testDigestAuthentication() throws Exception
     {
         SimpleHttpMethod method = new SimpleHttpMethod();
-        assertTrue(Authenticator.authenticate(method,
-                                              "Digest realm=\"realm1\"",
-                                              Authenticator.WWW_AUTH_RESP));
+        assertTrue(authenticateForTests(method,
+                                        "Digest realm=\"realm1\"",
+                                        HttpURLConnection.AUTH_NORMAL));
         assertTrue(null != method.getRequestProperty("Authorization"));
         checkAuthorization("realm1", method.getName(), method
                 .getRequestProperty("Authorization"));
@@ -383,18 +430,18 @@ public class LocalTestAuthenticator extends TestCase
     {
         {
             SimpleHttpMethod method = new SimpleHttpMethod();
-            assertTrue(Authenticator.authenticate(method,
-                                                  "Digest realm=\"realm1\"",
-                                                  Authenticator.WWW_AUTH_RESP));
+            assertTrue(authenticateForTests(method,
+                                            "Digest realm=\"realm1\"",
+                                            HttpURLConnection.AUTH_NORMAL));
             assertTrue(null != method.getRequestProperty("Authorization"));
             checkAuthorization("realm1", method.getName(), method
                     .getRequestProperty("Authorization"));
         }
         {
             SimpleHttpMethod method = new SimpleHttpMethod();
-            assertTrue(Authenticator.authenticate(method,
-                                                  "Digest realm=\"realm2\"",
-                                                  Authenticator.WWW_AUTH_RESP));
+            assertTrue(authenticateForTests(method,
+                                            "Digest realm=\"realm2\"",
+                                            HttpURLConnection.AUTH_NORMAL));
             assertTrue(null != method.getRequestProperty("Authorization"));
             checkAuthorization("realm2", method.getName(), method
                     .getRequestProperty("Authorization"));
@@ -409,8 +456,7 @@ public class LocalTestAuthenticator extends TestCase
         try
         {
             TestUserAgent._type = TestUserAgent.NULL;
-            Authenticator.authenticate(method, "NTLM",
-                                       Authenticator.WWW_AUTH_RESP);
+            authenticateForTests(method, "NTLM", HttpURLConnection.AUTH_NORMAL);
             fail("Should have thrown HttpException");
         }
         catch (HttpException e)
@@ -422,8 +468,9 @@ public class LocalTestAuthenticator extends TestCase
     public void testNTLMAuthenticationCaseInsensitivity() throws Exception
     {
         SimpleHttpMethod method = new SimpleHttpMethod();
-        assertTrue(Authenticator.authenticate(method, "nTLM",
-                                              Authenticator.WWW_AUTH_RESP));
+        assertTrue(authenticateForTests(method,
+                                        "nTLM",
+                                        HttpURLConnection.AUTH_NORMAL));
         assertTrue(null != method.getRequestProperty("Authorization"));
     }
 

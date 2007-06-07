@@ -83,9 +83,18 @@ public class NegotiateMessage extends Message
 
     public int encode()
     {
-        int domainLen = _domain.length();
-        int hostLen = _host.length();
-        
+        int domainLen;
+        if (_domain != null)
+            domainLen = _domain.length();
+        else
+            domainLen = 0;
+
+        int hostLen;
+        if (_host != null)
+            hostLen = _host.length();
+        else
+            hostLen = 0;
+
         _msgLength = NEGOTIATE_HEADER_LEN + hostLen + domainLen;
 
         _type = MSG_NEGOTIATE;

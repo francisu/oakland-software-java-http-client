@@ -5,7 +5,8 @@ Bundle-SymbolicName: com.oaklandsw.http.tests.jars
 Bundle-Version: 2.6.5
 Bundle-ClassPath: javax.servlet.jar,
  wsdl4j-1.5.1.jar,
- commons-discovery-0.2.jar
+ commons-discovery-0.2.jar,
+ netx.jar
 Bundle-Localization: plugin
 Export-Package: com.ibm.wsdl,
  com.ibm.wsdl.extensions,

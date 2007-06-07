@@ -1,7 +1,6 @@
 package com.oaklandsw.http.webapp;
 
 import java.io.OutputStream;
-import java.net.HttpURLConnection;
 import java.net.URL;
 
 import org.apache.commons.logging.Log;
@@ -9,6 +8,7 @@ import org.apache.commons.logging.Log;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
+import com.oaklandsw.http.HttpURLConnection;
 import com.oaklandsw.http.TestUserAgent;
 import com.oaklandsw.http.servlet.BasicAuthServlet;
 import com.oaklandsw.util.LogUtils;
@@ -36,7 +36,6 @@ public class TestBasicAuth extends TestWebappBase
 
     public void testSimpleAuthGet() throws Exception
     {
-
         TestUserAgent._type = TestUserAgent.GOOD;
         URL url = new URL(_urlBase + BasicAuthServlet.NAME);
         int response = 0;
@@ -99,6 +98,8 @@ public class TestBasicAuth extends TestWebappBase
 
     public void testSimpleAuthPut() throws Exception
     {
+        if (_inAuthCloseProxyTest)
+            return;
 
         TestUserAgent._type = TestUserAgent.GOOD;
         URL url = new URL(_urlBase + BasicAuthServlet.NAME);

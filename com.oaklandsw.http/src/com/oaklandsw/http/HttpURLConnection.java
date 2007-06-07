@@ -10,15 +10,16 @@ import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.FilterInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.reflect.Method;
 import java.net.MalformedURLException;
-import java.net.ProtocolException;
 import java.net.URL;
 import java.security.cert.Certificate;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.net.ssl.SSLPeerUnverifiedException;
@@ -111,15 +112,26 @@ import com.oaklandsw.util.Util14Controller;
  * to wait before retrying an idempotent request. The default is 50ms. See
  * setRetryInterval().
  * <p>
+ * <code>com.oaklandsw.http.pipelining</code>- set to any value to enable
+ * pipelining requests. The default is not set. See setDefaultPipelining().
+ * <p>
  * <code>com.oaklandsw.http.preemptiveAuthentication</code>- set to any value
  * to enable preemtive authentication. The default is not set. See
  * setPreemptiveAuthentication().
  * <p>
+ * <code>com.oaklandsw.http.authenticationType</code>- used to indicate a
+ * preferred authentication mode for pipelining or streaming. Set to one of
+ * "basic", "digest", or "ntlm". The default is not set. See
+ * setDefaultAuthenticationType().
+ * <p>
+ * <code>com.oaklandsw.http.proxyAuthenticationType</code>- used to indicate
+ * a preferred authentication mode for pipelining or streaming. Set to one of
+ * "basic", "digest", or "ntlm". The default is not set. See
+ * setDefaultProxyAuthenticationType().
+ * <p>
  * <code>com.oaklandsw.http.userAgent</code>- set to specify an alternate
- * value for the User-Agent HTTP header. This should be used with caution as the
- * DEFAULT_USER_AGENT value contains values known to work correctly with
- * NTLM/IIS. The default is that the User-Agent header is set to
- * DEFAULT_USER_AGENT.
+ * value for the User-Agent HTTP header. The default is that the User-Agent
+ * header is set to DEFAULT_USER_AGENT.
  * <p>
  * <code>com.oaklandsw.http.followRedirectsPost</code>- specifies that
  * redirect response codes are followed for a POST request. see
@@ -317,8 +329,13 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
     // not the case for a CONNECT request
     protected boolean                      _releaseConnection;
 
-    // The actual count of tries
+    // The actual count of tries, per destination, this is reset
+    // on a redirect or when authentication is required
     protected int                          _tryCount;
+
+    // The number of times this request has been retried due
+    // to redirection or authentication
+    protected int                          _forwardAuthCount;
 
     // This is the stream from which the resonse is read
     protected InputStream                  _responseStream;
@@ -348,8 +365,12 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
 
     // The request has been sent, but we have not done the read for the reply.
     // This is the state we are in when streaming and the user just
-    // called getOutputStream(). This is used only for streaming mode
-    protected boolean                      _streamingRequestSent;
+    // called getOutputStream(). This is used only for streaming mode and
+    // pipelined mode
+    protected boolean                      _requestSent;
+
+    // The response headers have been read and can be processed
+    protected boolean                      _responseHeadersRead;
 
     // The user has completed their streaming writing and closed the
     // output stream
@@ -388,8 +409,19 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
     protected static int                   _defaultConnectionTimeout;
     protected static int                   _defaultRequestTimeout;
 
+    private static boolean                 DEFAULT_PIPELINING                = false;
+    protected static boolean               _defaultPipelining                = DEFAULT_PIPELINING;
+
+    protected static Callback              _defaultCallback;
+    protected Callback                     _callback;
+
     protected int                          _connectionTimeout;
     protected int                          _requestTimeout;
+    protected boolean                      _pipelining;
+
+    // Used for pipelined connections, the order in which they were received
+    // to make sure they are read in order
+    protected int                          _pipelineSequenceNumber;
 
     protected String                       _proxyHost;
     protected int                          _proxyPort;
@@ -418,13 +450,22 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
      * IOException.
      */
     public static int                      MAX_TRIES                         = 3;
-    protected static int                   _tries                            = MAX_TRIES;
+    protected static int                   _defaultMaxTries                  = MAX_TRIES;
+
+    // For the connection
+    protected int                          _maxTries;
 
     private static int                     DEFAULT_RETRY_INTERVAL            = 50;
     protected static int                   _retryInterval                    = DEFAULT_RETRY_INTERVAL;
 
     private static boolean                 DEFAULT_PREEMPTIVE_AUTHENTICATION = false;
     protected static boolean               _preemptiveAuthentication         = DEFAULT_PREEMPTIVE_AUTHENTICATION;
+
+    private static int                     DEFAULT_AUTHENTICATION_TYPE       = 0;
+    protected static int                   _defaultAuthenticationType;
+    protected static int                   _defaultProxyAuthenticationType;
+
+    protected int[]                        _authenticationType               = new int[AUTH_PROXY + 1];
 
     // Indicates some form of the SSL libraries are available
     public static boolean                  _isSSLAvailable;
@@ -457,6 +498,10 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
 
     // Used only for testing purposes
     private static URL                     _testURL;
+
+    // Indexes into the arrays that distinguish normal or proxy
+    static final int                       AUTH_NORMAL                       = 0;
+    static final int                       AUTH_PROXY                        = 1;
 
     protected static String                USER_AGENT;
 
@@ -638,7 +683,7 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
                 {
                     try
                     {
-                        setTries(Integer.parseInt(triesStr));
+                        setDefaultMaxTries(Integer.parseInt(triesStr));
                         _log.info("Number of tries: " + triesStr);
                     }
                     catch (Exception ex)
@@ -672,15 +717,48 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
                     setPreemptiveAuthentication(true);
                 }
 
-                /*
-                 * String useDnsJavaStr =
-                 * System.getProperty("com.oaklandsw.http.useDnsJava"); if
-                 * (useDnsJavaStr != null) { try {
-                 * setUseDnsJava(Boolean.valueOf(useDnsJavaStr).booleanValue());
-                 * _log.info("useDnsJava: " + useDnsJavaStr); } catch (Exception
-                 * ex) { throw new RuntimeException( "Invalid value specified
-                 * for useDnsJava: " + useDnsJavaStr); } }
-                 */
+                String authType = System
+                        .getProperty("com.oaklandsw.http.authenticationType");
+                if (authType != null)
+                {
+                    setDefaultAuthenticationType(Authenticator
+                            .schemeToInt(authType));
+                }
+
+                authType = System
+                        .getProperty("com.oaklandsw.http.proxyAuthenticationType");
+                if (authType != null)
+                {
+                    setDefaultProxyAuthenticationType(Authenticator
+                            .schemeToInt(authType));
+                }
+
+                String pipelining = System
+                        .getProperty("com.oaklandsw.http.pipelining");
+                if (pipelining != null)
+                {
+                    setDefaultPipelining(true);
+                }
+
+                if (false)
+                {
+                    String useDnsJavaStr = System
+                            .getProperty("com.oaklandsw.http.useDnsJava");
+                    if (useDnsJavaStr != null)
+                    {
+                        try
+                        {
+                            // setUseDnsJava(Boolean.valueOf(useDnsJavaStr).booleanValue());
+                            _log.info("useDnsJava: " + useDnsJavaStr);
+                        }
+                        catch (Exception ex)
+                        {
+                            throw new RuntimeException("Invalid value specified for useDnsJava: "
+                                + useDnsJavaStr);
+                        }
+                    }
+                }
+
                 String hostProperty = PROP_PROXY_HOST;
                 String portProperty = PROP_PROXY_PORT;
                 if (System.getProperty("proxySet") != null)
@@ -741,7 +819,8 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
         }
         catch (SecurityException sex)
         {
-            _log.debug("Probably in Applet - properties not used", sex);
+            if (_log.isDebugEnabled())
+                _log.debug("Probably in Applet - properties not used", sex);
         }
 
         try
@@ -919,8 +998,15 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
         _requestTimeout = _defaultRequestTimeout;
         _idleTimeout = _defaultIdleTimeout;
         _idlePing = _defaultIdlePing;
+        _maxTries = _defaultMaxTries;
         _cookieContainer = _defaultCookieContainer;
         _cookieSpec = _defaultCookieSpec;
+        // Don't use direct assignment because there is other
+        // processing in this call
+        setPipelining(_defaultPipelining);
+        _callback = _defaultCallback;
+        _authenticationType[AUTH_NORMAL] = _defaultAuthenticationType;
+        _authenticationType[AUTH_PROXY] = _defaultProxyAuthenticationType;
         _proxyHost = _connManager.getProxyHost();
         _proxyPort = _connManager.getProxyPort();
         _proxyUser = _connManager.getProxyUser();
@@ -931,6 +1017,9 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
             _sslSocketFactory = _defaultSSLSocketFactory;
             _hostnameVerifier = _defaultHostnameVerifier;
         }
+
+        _connManager.recordCount(HttpConnectionManager.COUNT_ATTEMPTED);
+
     }
 
     /**
@@ -965,23 +1054,17 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
     /**
      * @see java.net.HttpURLConnection#setRequestMethod(String)
      */
-    public void setRequestMethod(String meth) throws ProtocolException
+    public void setRequestMethod(String meth)
     {
         if (connected)
         {
-            throw new ProtocolException("Can't reset method: already connected");
-        }
-
-        if (_connection != null)
-        {
-            throw new ProtocolException("getOutputStream() cannot be called "
-                + " before setRequestMethod()");
+            throw new IllegalStateException("Can't reset method: already connected");
         }
 
         setRequestMethodInternal(meth);
     }
 
-    void setRequestMethodInternal(String meth) throws ProtocolException
+    void setRequestMethodInternal(String meth)
     {
         // This validates the method
         // Do not call the superclass, as it checks the method name and
@@ -1084,13 +1167,13 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
     {
         if (!doOutput)
         {
-            throw new ProtocolException("cannot write to a URLConnection if doOutput=false "
+            throw new IllegalStateException("cannot write to a URLConnection if doOutput=false "
                 + "- call setDoOutput(true)");
         }
 
         if (_executed)
         {
-            throw new ProtocolException("The reply to this URLConnection has already been received");
+            throw new IllegalStateException("The reply to this URLConnection has already been received");
         }
 
         // Return the same output stream so the user can just do stuff
@@ -1129,8 +1212,16 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
             return _outStream;
         }
 
-        _log
-                .debug("getOutputStream - returning ByteArrayOutputStream (non streaming)");
+        if (_pipelining)
+        {
+            throw new IllegalStateException("You cannot use the pipelining feature for "
+                + "sending output unless the connection is streaming.  "
+                + "Call set[Chunked|FixedLength]StreamingMode() "
+                + "to turn on streaming.");
+        }
+
+        _log.debug("getOutputStream - returning "
+            + "ByteArrayOutputStream (non streaming)");
         _outStream = new ByteArrayOutputStream();
         return _outStream;
 
@@ -1146,49 +1237,94 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
         return false;
     }
 
-    protected static final boolean CLOSE = true;
+    protected static final int NORMAL  = 0;
 
-    void releaseConnection(boolean close)
+    // The connection needs to be closed
+    protected static final int CLOSE   = 1;
+
+    // The connection was released from reading (as opposed to writing)
+    protected static final int READING = 2;
+
+    static String relTypeToString(int type)
     {
-        // _log.trace("releaseConnection");
-        if (_connection != null)
+        switch (type)
         {
-            if (_releaseConnection)
+            case 0:
+                return "NORMAL";
+            case 1:
+                return "CLOSE";
+            case 2:
+                return "READING";
+            default:
+                Util.impossible("Invalid type: " + type);
+                return null;
+        }
+    }
+
+    void releaseConnection(int type)
+    {
+        // Need to synchronize for updating the connection state because
+        // multiple thread access is possible
+        synchronized (this)
+        {
+            if (_log.isDebugEnabled())
+                _log.debug("releaseConnection: " + relTypeToString(type));
+
+            if (connected)
             {
-                if (close || shouldCloseConnection())
+                if (_releaseConnection)
                 {
-                    _log.debug("releaseConnection - closing the connection.");
-                    _connection.close();
-                }
-                _connManager.releaseConnection(_connection);
-                _connection = null;
-                _conInStream = null;
-                _conOutStream = null;
-                connected = false;
-            }
-            else
-            {
-                _log.debug("releaseConnection - no _release (CONNECT case).");
-                // This happens on a CONNECT request when
-                // the connection has already been closed,
-                // just re-open the same connection using
-                // the low-level interface
-                // This also happens when the connection
-                // was explicitly allocated
-                if (close)
-                {
-                    try
+                    boolean closed = false;
+                    if (type == CLOSE || shouldCloseConnection())
                     {
-                        _log.debug("releaseConnection - reopening after CLOSE");
+                        _log.debug("releaseConnection: "
+                            + "closing the connection.");
                         _connection.close();
-                        _connection.openSocket();
-                        setStreams();
-                        _log.debug("releaseConnection - WORKED");
+                        closed = true;
                     }
-                    catch (IOException ex)
+
+                    // When reading and piplining the connection is not owned
+                    // from the connection manager point of view
+                    if (closed || type != READING || !_pipelining)
+                        _connManager.releaseConnection(_connection);
+
+                    // Never reset these because the connection might be in
+                    // use in another thread (with this same urlcon)
+                    // _connection = null;
+                    // _conInStream = null;
+                    // _conOutStream = null;
+
+                    if (_log.isDebugEnabled())
+                        _log.debug("releaseConnection: now connected = FALSE");
+                    connected = false;
+                }
+                else
+                {
+                    _log.debug("releaseConnection: "
+                        + "no _release (CONNECT case).");
+
+                    // This happens on a CONNECT request when
+                    // the connection has already been closed,
+                    // just re-open the same connection using
+                    // the low-level interface
+                    // This also happens when the connection
+                    // was explicitly allocated
+                    if (type == CLOSE)
                     {
-                        _log.warn("Exception re-opening "
-                            + "closed socket for CONNECT: ", ex);
+                        try
+                        {
+                            _log.debug("releaseConnection: "
+                                + "reopening after CLOSE");
+                            _connection.close();
+                            _connection.openSocket();
+                            setStreams();
+                            _log.debug("releaseConnection:  WORKED");
+                        }
+                        catch (IOException ex)
+                        {
+                            _log.warn("Exception re-opening "
+                                + "closed socket for CONNECT: ", ex);
+                        }
                     }
                 }
             }
@@ -1202,11 +1338,7 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
     {
         // _log.trace("connect");
 
-        // To be compatible with the Sun implementation
         if (connected)
-            return;
-
-        if (_connection != null)
             return;
 
         try
@@ -1258,7 +1390,7 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
      */
     public void setConnection(HttpConnection conn) throws IOException
     {
-        if (_connection != null)
+        if (connected)
             throw new IllegalStateException("Connection already associated");
 
         setConnection(conn, !RELEASE);
@@ -1278,22 +1410,38 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
 
     void setConnection(HttpConnection conn, boolean release) throws IOException
     {
-        _connection = conn;
-        _releaseConnection = release;
-
-        _connection.setSoTimeout(_requestTimeout);
-        _connection.setConnectTimeout(_connectionTimeout);
-
-        if (!_connection.isOpen())
+        // Need to serialize the connection state because mutiple
+        // threads can access this (consider a read immediately as the
+        // write is finishing)
+        synchronized (this)
         {
-            _log.debug("Opening the connection.");
-            _connection.setSSLSocketFactory(_sslSocketFactory);
-            _connection.setHostnameVerifier(_hostnameVerifier);
-            _connection.open();
-        }
+            // Set connected early, this is how we tell if there is an actual
+            // HttpConnection associated with this, even if the open fails
+            if (_log.isDebugEnabled())
+                _log.debug("setConnection: to: " + conn);
+            connected = true;
+            _connection = conn;
 
-        setStreams();
-        connected = true;
+            if (_pipelining)
+                _connection.adjustPipelinedUrlConCount(1);
+            _connection._totalReqUrlConCount++;
+            // System.out.println("setConn:" + this + " count: " +
+            // _connection._totalUrlConCount);
+            _releaseConnection = release;
+
+            _connection.setSoTimeout(_requestTimeout);
+            _connection.setConnectTimeout(_connectionTimeout);
+
+            if (!_connection.isOpen())
+            {
+                _log.debug("Opening the connection.");
+                _connection.setSSLSocketFactory(_sslSocketFactory);
+                _connection.setHostnameVerifier(_hostnameVerifier);
+                _connection.open();
+            }
+
+            setStreams();
+        }
     }
 
     private void setStreams() throws IOException
@@ -1524,7 +1672,7 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
      */
     public void setCookieSupport(CookieContainer container, String policy)
     {
-        if (isConnected())
+        if (connected)
             throw new IllegalStateException("Connection has been established");
         _cookieContainer = container;
         _cookieSpec = CookiePolicy.getCookieSpec(policy);
@@ -1567,13 +1715,9 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
      */
     public InputStream getInputStream() throws IOException
     {
-        if (_executed)
-            return getResponseStream();
-
-        execute();
-
-        InputStream is = getResponseStream();
-        return is;
+        if (!_executed)
+            execute();
+        return getResponseStream();
     }
 
     /**
@@ -1631,7 +1775,64 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
         if (_responseBytes == null)
         {
             if (_responseStream != null)
-                is = _responseStream;
+            {
+                // This is a stream that directly reads from the
+                // connection, make sure the connection is still open
+                if (!connected)
+                {
+                    throw new IOException("No longer connected when "
+                        + "attempting to read response data");
+                }
+                if (!_connection.isOpen())
+                {
+                    throw new IOException("Connection "
+                        + _connection
+                        + " found closed when attempting to read response data");
+                }
+                if (_pipelining)
+                {
+                    // If there is trouble reading due to a close, this will be
+                    // retried
+                    is = new FilterInputStream(_responseStream)
+                    {
+                        public int read() throws IOException
+                        {
+                            try
+                            {
+                                return super.read();
+                            }
+                            catch (IOException ex)
+                            {
+                                _ioException = new AutomaticHttpRetryException(ex
+                                        .getMessage());
+                                _ioException.initCause(ex);
+                                throw _ioException;
+                            }
+                        }
+
+                        public int read(byte b[], int off, int len)
+                            throws IOException
+                        {
+                            try
+                            {
+                                return super.read(b, off, len);
+                            }
+                            catch (IOException ex)
+                            {
+                                _ioException = new AutomaticHttpRetryException(ex
+                                        .getMessage());
+                                _ioException.initCause(ex);
+                                throw _ioException;
+                            }
+                        }
+
+                    };
+                }
+                else
+                {
+                    is = _responseStream;
+                }
+            }
             else
                 is = new ByteArrayInputStream(new byte[0]);
         }
@@ -1666,7 +1867,7 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
 
         // We could have been connected and the connection
         // released, like after we do a getInputStream()
-        if (_connection != null)
+        if (connected)
         {
             // Here we make sure and return the connection
             // to get the counts adjusted
@@ -1737,7 +1938,8 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
      */
     public void setDoAuthentication(boolean doAuthentication)
     {
-        _log.debug("setDoAuthentication: " + doAuthentication);
+        if (_log.isDebugEnabled())
+            _log.debug("setDoAuthentication: " + doAuthentication);
         _doAuthentication = doAuthentication;
     }
 
@@ -1848,7 +2050,8 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
      */
     public static void setDefaultTimeout(int ms)
     {
-        _log.debug("setDefaultTimeout: " + ms);
+        if (_log.isDebugEnabled())
+            _log.debug("setDefaultTimeout: " + ms);
         _defaultConnectionTimeout = ms;
         _defaultRequestTimeout = ms;
     }
@@ -1874,7 +2077,8 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
      */
     public static void setDefaultConnectionTimeout(int ms)
     {
-        _log.debug("setDefaultConnectionTimeout: " + ms);
+        if (_log.isDebugEnabled())
+            _log.debug("setDefaultConnectionTimeout: " + ms);
         _defaultConnectionTimeout = ms;
     }
 
@@ -1898,7 +2102,8 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
      */
     public static void setDefaultRequestTimeout(int ms)
     {
-        _log.debug("setDefaultRequestTimeout: " + ms);
+        if (_log.isDebugEnabled())
+            _log.debug("setDefaultRequestTimeout: " + ms);
         _defaultRequestTimeout = ms;
     }
 
@@ -1953,7 +2158,8 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
      */
     public static void setDefaultIdleConnectionTimeout(int ms)
     {
-        _log.debug("setDefaultIdleConnectionTimeout: " + ms);
+        if (_log.isDebugEnabled())
+            _log.debug("setDefaultIdleConnectionTimeout: " + ms);
         _defaultIdleTimeout = ms;
     }
 
@@ -1964,8 +2170,11 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
      */
     public static void setDefaultIdleConnectionTimeout()
     {
-        _log.debug("setDefaultIdleConnectionTimeout (Default): "
-            + DEFAULT_IDLE_TIMEOUT);
+        if (_log.isDebugEnabled())
+        {
+            _log.debug("setDefaultIdleConnectionTimeout (Default): "
+                + DEFAULT_IDLE_TIMEOUT);
+        }
         _defaultIdleTimeout = DEFAULT_IDLE_TIMEOUT;
     }
 
@@ -2020,7 +2229,8 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
      */
     public static void setDefaultIdleConnectionPing(int ms)
     {
-        _log.debug("setDefaultIdleConnectionPing: " + ms);
+        if (_log.isDebugEnabled())
+            _log.debug("setDefaultIdleConnectionPing: " + ms);
         _defaultIdlePing = ms;
     }
 
@@ -2031,8 +2241,11 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
      */
     public static void setDefaultIdleConnectionPing()
     {
-        _log.debug("setDefaultIdleConnectionPing (Default): "
-            + DEFAULT_IDLE_PING);
+        if (_log.isDebugEnabled())
+        {
+            _log.debug("setDefaultIdleConnectionPing (Default): "
+                + DEFAULT_IDLE_PING);
+        }
         _defaultIdlePing = DEFAULT_IDLE_PING;
     }
 
@@ -2047,6 +2260,9 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
     }
 
     /**
+     * Used to allow you to directly read the result from the socket, avoiding
+     * buffering.
+     * <p>
      * Sets all connections to require the InputStream to be obtained using a
      * call to getInputStream(), and for that stream to be closed. If this is
      * specified, this can result in better performance as the data associated
@@ -2079,7 +2295,8 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
      */
     public static void setExplicitClose(boolean explicitClose)
     {
-        _log.debug("setExplicitClose: " + explicitClose);
+        if (_log.isDebugEnabled())
+            _log.debug("setExplicitClose: " + explicitClose);
         _explicitClose = explicitClose;
     }
 
@@ -2098,7 +2315,8 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
      */
     public static void setMaxConnectionsPerHost(int maxConnections)
     {
-        _log.debug("setMaxConnectionsPerHost: " + maxConnections);
+        if (_log.isDebugEnabled())
+            _log.debug("setMaxConnectionsPerHost: " + maxConnections);
         _connManager.setMaxConnectionsPerHost(maxConnections);
     }
 
@@ -2141,15 +2359,43 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
      * the number of times a ping message is set after failure when the
      * idleConnectionPing is enabled. See setIdleConnectionPing().
      * 
+     * @deprecated please use setDefaultMaxTries()
      * @param tries
      *            the number of times to try the request.
      */
-    public static void setTries(int tries) throws IllegalArgumentException
+    public static void setTries(int tries)
     {
-        _log.debug("setTries: " + tries);
+        setDefaultMaxTries(tries);
+    }
+
+    /**
+     * Set the number of times an idempotent request is to be tried before
+     * considering it a failure. This value defaults to 3. This also controls
+     * the number of times a ping message is set after failure when the
+     * idleConnectionPing is enabled. See setIdleConnectionPing().
+     * 
+     * @param tries
+     *            the number of times to try the request.
+     */
+    public static void setDefaultMaxTries(int tries)
+        throws IllegalArgumentException
+    {
+        if (_log.isDebugEnabled())
+            _log.debug("setDefaultMaxTries: " + tries);
         if (tries < 1)
             throw new IllegalArgumentException("You must allow at least one try");
-        _tries = tries;
+        _defaultMaxTries = tries;
+    }
+
+    /**
+     * Get the number of times an idempotent request is tried.
+     * 
+     * @deprecated please use getDefaultMaxTries()
+     * @return The number of times to try the request.
+     */
+    public static int getTries()
+    {
+        return getDefaultMaxTries();
     }
 
     /**
@@ -2157,9 +2403,9 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
      * 
      * @return The number of times to try the request.
      */
-    public static int getTries()
+    public static int getDefaultMaxTries()
     {
-        return _tries;
+        return _defaultMaxTries;
     }
 
     /**
@@ -2171,7 +2417,8 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
      */
     public static void setRetryInterval(int ms)
     {
-        _log.debug("setRetryInterval: " + ms);
+        if (_log.isDebugEnabled())
+            _log.debug("setRetryInterval: " + ms);
         _retryInterval = ms;
     }
 
@@ -2186,14 +2433,20 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
     }
 
     /**
-     * Enable preemptive authentication. This is by default disabled.
+     * Enable preemptive authentication. Preemptive authentication is used with
+     * basic and digest authentication modes to send the authentication
+     * credentials on an HTTP request without being prompted for them by the
+     * server. Doing this saves an extra round-trip to the server.
+     * <p>
+     * This is by default disabled.
      * 
      * @param enabled
      *            true if enabled
      */
     public static void setPreemptiveAuthentication(boolean enabled)
     {
-        _log.debug("setPreemptiveAuthentication: " + enabled);
+        if (_log.isDebugEnabled())
+            _log.debug("setPreemptiveAuthentication: " + enabled);
         _preemptiveAuthentication = enabled;
     }
 
@@ -2205,6 +2458,315 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
     public static boolean getPreemptiveAuthentication()
     {
         return _preemptiveAuthentication;
+    }
+
+    protected static void checkAuthenticationType(int type)
+    {
+        if (type < 0 || type > Credential.AUTH_NTLM)
+        {
+            throw new IllegalArgumentException("Invalid authentication type specified: "
+                + type
+                + " see the Credential class for value values");
+        }
+    }
+
+    /**
+     * Sets the default authentication type.
+     * <p>
+     * The value of the authentication type is one of the values in the
+     * Credential class (NTLM, BASIC, DIGEST).
+     * 
+     * @param type
+     *            an integer, the default authentication type.
+     * @see #setAuthenticationType
+     */
+    public static void setDefaultAuthenticationType(int type)
+    {
+        if (_log.isDebugEnabled())
+            _log.debug("setDefaultAuthenticationType: " + type);
+        checkAuthenticationType(type);
+        _defaultAuthenticationType = type;
+    }
+
+    /**
+     * Gets the default authentication type.
+     * 
+     * @return an integer, the default authentication type.
+     * @see #getAuthenticationType()
+     */
+    public static int getDefaultAuthenticationType()
+    {
+        return _defaultAuthenticationType;
+    }
+
+    /**
+     * Returns the authentication type associated with this connection.
+     * 
+     * @return an integer, the authentication type
+     * @see #setAuthenticationType(int)
+     */
+    public int getAuthenticationType()
+    {
+        return _authenticationType[AUTH_NORMAL];
+    }
+
+    int getAuthenticationType(int normalOrProxy)
+    {
+        return _authenticationType[normalOrProxy];
+    }
+
+    /**
+     * Sets the authentication type for this connection used for pipelining or
+     * streaming.
+     * <p>
+     * When using pipelining with authentication, you must specify an
+     * authentication type. When using streaming with authentication, you may
+     * specify the authentication type to aviod a HttpRetryException. In either
+     * case, specifying an authentication type forces the authentication process
+     * to complete for the request (Basic or Digest) or connection (NTLM) before
+     * the pipelining or streaming starts.
+     * 
+     * <p>
+     * Authentication behaves as follows:
+     * 
+     * <ul>
+     * <li>Basic - If you specify Credential.AUTH_BASIC, each request will be
+     * preemptively authenticated with Basic Authentication (this is the same as
+     * calling setPreemptiveAuthentication(true). This allows pipelining and
+     * streaming to perform effectively.
+     * <li>Digest - If you specify Credential.AUTH_DIGEST, each request must be
+     * authenticated before pipelining may continue. This effectively removes
+     * the advantage of pipelining, since each request has the unavoidable
+     * digest round-trip, but can be used effectively with streaming.
+     * <li>NTLM - If you specify Credential.AUTH_NTLM, authentication takes
+     * place on only the first request for underlying socket connection (since
+     * NTLM authentication is good for the life of the socket connection). Once
+     * authentication is complete, streaming or pipelining can continue
+     * effectively.
+     * </ul>
+     * 
+     * @param authenticationType
+     * @see #setPipelining()
+     * @see #setChunkedStreamingMode()
+     * @see #setFixedStreamingMode()
+     */
+    public void setAuthenticationType(int authenticationType)
+    {
+        checkAuthenticationType(authenticationType);
+        _authenticationType[AUTH_NORMAL] = authenticationType;
+    }
+
+    /**
+     * Sets the default proxy authentication type.
+     * <p>
+     * The value of the authentication type is one of the values in the
+     * Credential class (NTLM, BASIC, DIGEST).
+     * 
+     * @param type
+     *            an integer, the default proxy authentication type.
+     * @see #setProxyAuthenticationType
+     */
+    public static void setDefaultProxyAuthenticationType(int type)
+    {
+        if (_log.isDebugEnabled())
+            _log.debug("setDefaultProxyAuthenticationType: " + type);
+        checkAuthenticationType(type);
+        _defaultProxyAuthenticationType = type;
+    }
+
+    /**
+     * Gets the default proxy authentication type.
+     * 
+     * @return an integer, the default proxy authentication type.
+     * @see #getProxyAuthenticationType()
+     */
+    public static int getDefaultProxyAuthenticationType()
+    {
+        return _defaultProxyAuthenticationType;
+    }
+
+    /**
+     * Returns the proxy authentication type associated with this connection.
+     * 
+     * @return an integer, the proxy authentication type
+     * @see #setProxyAuthenticationType(int)
+     */
+    public int getProxyAuthenticationType()
+    {
+        return _authenticationType[AUTH_PROXY];
+    }
+
+    /**
+     * Sets the proxy authentication type for this connection.
+     * <p>
+     * Same as setAuthenticationType, except for a proxy.
+     * 
+     * @param authenticationType
+     * @see #setAuthenticationType()
+     */
+    public void setProxyAuthenticationType(int authenticationType)
+    {
+        checkAuthenticationType(authenticationType);
+        _authenticationType[AUTH_PROXY] = authenticationType;
+    }
+
+    /**
+     * Enable pipelining for all connections. Pipelining allows multiple HTTP
+     * requests to be sent in a single underlying socket connection before a
+     * response is received. This can have a substantial performance benefit if
+     * you are fetching multiple objects from the same server.
+     * 
+     * <p>
+     * This is by default disabled.
+     * 
+     * @param enabled
+     *            true if enabled
+     */
+    public static void setDefaultPipelining(boolean enabled)
+    {
+        if (_log.isDebugEnabled())
+            _log.debug("setDefaultPipelining: " + enabled);
+        _defaultPipelining = enabled;
+    }
+
+    /**
+     * Get the value of pipelining enablement for all connections.
+     * 
+     * @return true if pipelining is enabled.
+     */
+    public static boolean isDefaultPipelining()
+    {
+        return _defaultPipelining;
+    }
+
+    /**
+     * Enable pipelining for this connection. Pipelining allows multiple HTTP
+     * requests to be sent in a single underlying socket connection before a
+     * response is received. This can have a substantial performance benefit if
+     * you are fetching multiple objects from the same server.
+     * 
+     * @param enabled
+     *            true if enabled for this connection
+     */
+    public void setPipelining(boolean enabled)
+    {
+        if (_log.isDebugEnabled())
+            _log.debug("setPipelining: " + enabled);
+
+        // We keep track of pipelined connections in the connection manger
+        // because that is how they get executed
+        if (_pipelining && !enabled)
+            _connManager.removeUrlConToExecute(this);
+        if (enabled)
+            _connManager.addUrlConToExecute(this);
+        _pipelining = enabled;
+    }
+
+    /**
+     * Get the value of pipelining enablement for this connection.
+     * 
+     * @return true if pipelining is enabled.
+     */
+    public boolean isPipelining()
+    {
+        return _pipelining;
+    }
+
+    /**
+     * Sets the Callback object for all connections. The specified Callback
+     * object will be used for any connection opened after this is set.
+     * <p>
+     * Callback objects are used to handle notifications related to pipelining
+     * or non-blocking I/O.
+     * 
+     * @param cb
+     *            a Callback object.
+     */
+    public static void setDefaultCallback(Callback cb)
+    {
+        _defaultCallback = cb;
+    }
+
+    /**
+     * Returns the default Callback object.
+     * 
+     * @return a callback object
+     */
+    public static Callback getDefaultCallback()
+    {
+        return _defaultCallback;
+    }
+
+    /**
+     * Sets the Callback object associated with this connection.
+     * <p>
+     * Callback objects are used to handle notifications related to pipelining
+     * or non-blocking I/O.
+     * 
+     * @param cb
+     */
+    public void setCallback(Callback cb)
+    {
+        _callback = cb;
+    }
+
+    /**
+     * Gets the Callback object associated with this connection.
+     * 
+     * @return a Callback object
+     */
+    public Callback getCallback()
+    {
+        return _callback;
+    }
+
+    /**
+     * Executes all of the pipelined connections associated with this thread and
+     * blocks until they are complete.
+     */
+    public static void executeAndBlock() throws InterruptedException
+    {
+        // This gets a copy of the list of pipelined connections created
+        // on this thread, this is synchronized in the connection manager
+        // associated with the Callback, this is synchronized in the
+        // connection manager
+        List urlCons = _connManager.getUrlConsToExecute();
+        if (urlCons == null || urlCons.size() == 0)
+        {
+            if (_log.isDebugEnabled())
+            {
+                _log.debug("executeAndBlock: no connections "
+                    + "found for Thread - exiting");
+            }
+            return;
+        }
+
+        if (_log.isDebugEnabled())
+        {
+            _log.debug("executeAndBlock: processing "
+                + urlCons.size()
+                + " connections");
+        }
+
+        int seq = 0;
+
+        int len = urlCons.size();
+        for (int i = 0; i < len; i++)
+        {
+            HttpURLConnection urlCon = (HttpURLConnection)urlCons.get(i);
+            if (urlCon._callback == null)
+            {
+                throw new IllegalStateException("A pipelined HttpURLConnection does not have a Callback set: "
+                    + urlCon);
+            }
+            urlCon._pipelineSequenceNumber = seq++;
+            if (_log.isDebugEnabled())
+                _log.debug("addUrlConToRead (start): " + urlCon);
+            _connManager.addUrlConToRead(Thread.currentThread());
+            urlCon.processPipelinedWrite();
+        }
+
+        _connManager.blockForUrlCons();
     }
 
     // /**
@@ -2251,7 +2813,8 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
      */
     public static void setProxyHost(String host)
     {
-        _log.debug("setProxyHost: " + host);
+        if (_log.isDebugEnabled())
+            _log.debug("setProxyHost: " + host);
         _connManager.setProxyHost(host);
     }
 
@@ -2275,8 +2838,9 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
      */
     public void setConnectionProxyHost(String host)
     {
-        _log.debug("setConnectionProxyHost: " + host);
-        if (_connection != null)
+        if (_log.isDebugEnabled())
+            _log.debug("setConnectionProxyHost: " + host);
+        if (connected)
             throw new IllegalStateException("Connection has been established");
         _proxyHost = host;
     }
@@ -2302,7 +2866,8 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
      */
     public static void setProxyPort(int port)
     {
-        _log.debug("setProxyPort: " + port);
+        if (_log.isDebugEnabled())
+            _log.debug("setProxyPort: " + port);
         _connManager.setProxyPort(port);
     }
 
@@ -2326,8 +2891,9 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
      */
     public void setConnectionProxyPort(int port)
     {
-        _log.debug("setConnectionProxyPort: " + port);
-        if (_connection != null)
+        if (_log.isDebugEnabled())
+            _log.debug("setConnectionProxyPort: " + port);
+        if (connected)
             throw new IllegalStateException("Connection has been established");
         _proxyPort = port;
     }
@@ -2354,7 +2920,8 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
      */
     public static void setProxyUser(String user)
     {
-        _log.debug("setProxyUser: " + user);
+        if (_log.isDebugEnabled())
+            _log.debug("setProxyUser: " + user);
         _connManager.setProxyUser(user);
     }
 
@@ -2380,8 +2947,9 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
      */
     public void setConnectionProxyUser(String user)
     {
-        _log.debug("setConnectionProxyUser: " + user);
-        if (_connection != null)
+        if (_log.isDebugEnabled())
+            _log.debug("setConnectionProxyUser: " + user);
+        if (connected)
             throw new IllegalStateException("Connection has been established");
         _proxyUser = user;
     }
@@ -2409,7 +2977,8 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
      */
     public static void setProxyPassword(String password)
     {
-        _log.debug("setProxyPassword: " + password);
+        if (_log.isDebugEnabled())
+            _log.debug("setProxyPassword: " + password);
         _connManager.setProxyPassword(password);
     }
 
@@ -2436,8 +3005,9 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
      */
     public void setConnectionProxyPassword(String password)
     {
-        _log.debug("setConnectionProxyPassword: " + password);
-        if (_connection != null)
+        if (_log.isDebugEnabled())
+            _log.debug("setConnectionProxyPassword: " + password);
+        if (connected)
             throw new IllegalStateException("Connection has been established");
         _proxyPassword = password;
     }
@@ -2465,7 +3035,8 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
     public static void setNonProxyHosts(String hosts)
     {
         // It is validated by the connection manager
-        _log.debug("setNonProxyHosts: " + hosts);
+        if (_log.isDebugEnabled())
+            _log.debug("setNonProxyHosts: " + hosts);
         _connManager.setNonProxyHosts(hosts);
     }
 
@@ -2497,6 +3068,20 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
     }
 
     /**
+     * Returns various statistics in printed form
+     */
+    public static String getStatistics()
+    {
+        return _connManager.getStatistics();
+    }
+
+    public static void dumpAll()
+    {
+        dumpConnectionPool();
+        System.out.println(getStatistics());
+    }
+
+    /**
      * Return the number of the try for this request.
      */
     int getActualTries()
@@ -2511,7 +3096,7 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
      */
     public String getCipherSuite()
     {
-        if (_connection == null)
+        if (!connected)
             throw new IllegalStateException("Connection has not been established");
         return _connection.getCipherSuite();
     }
@@ -2529,7 +3114,7 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
      */
     public Certificate[] getLocalCertificates()
     {
-        if (_connection == null)
+        if (!connected)
             throw new IllegalStateException("Connection has not been established");
         if (_sslGetLocalCertMethod == null)
             throw new IllegalStateException(_sslmethmsg);
@@ -2548,7 +3133,7 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
     public Certificate[] getServerCertificates()
         throws SSLPeerUnverifiedException
     {
-        if (_connection == null)
+        if (!connected)
             throw new IllegalStateException("Connection has not been established");
         if (_sslGetServerCertMethod == null)
             throw new IllegalStateException(_sslmethmsg);
@@ -2590,7 +3175,7 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
      */
     public void setHostnameVerifier(HostnameVerifier verifier)
     {
-        if (verifier != null && _connection != null)
+        if (verifier != null && connected)
             throw new IllegalStateException("Connection has been established");
         _hostnameVerifier = verifier;
     }
@@ -2690,9 +3275,26 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
         return _urlString;
     }
 
+    public String toString()
+    {
+        // Add the Util.id for better diagnostics if desired
+        return /*Util.id(this) + " " + */ _urlString;
+    }
+
+    static String normalOrProxyToString(int normalOrProxy)
+    {
+        if (normalOrProxy == AUTH_NORMAL)
+            return "AUTH_NORMAL";
+        return "AUTH_PROXY";
+    }
+
     protected abstract void execute() throws HttpException, IOException;
 
     protected abstract void executeStart() throws HttpException, IOException;
+
+    protected abstract void processPipelinedWrite() throws InterruptedException;
+
+    protected abstract void processPipelinedRead() throws InterruptedException;
 
     abstract void streamWriteFinished(boolean ok);
 

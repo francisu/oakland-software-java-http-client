@@ -1,12 +1,11 @@
 package com.oaklandsw.http.local;
 
 import junit.framework.Test;
-import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
-import com.oaklandsw.http.HttpTestEnv;
+import com.oaklandsw.http.HttpTestBase;
 
-public class TestProperties extends TestCase
+public class TestProperties extends HttpTestBase
 {
 
     static final String proxyHost     = "testproxyhost";
@@ -45,25 +44,29 @@ public class TestProperties extends TestCase
         System.setProperty("http.proxyPort", Integer.toString(proxyPort));
         System.setProperty("http.nonProxyHosts", nonProxyHosts);
 
+        System.setProperty("com.oaklandsw.http.pipelining", "true");
+
         // Note the only way we can test the functionality of 1767 is to
         // enable this statement below and run the tests, since the static
-        // initializer is called only once. 
-        
+        // initializer is called only once.
+
         // 1767 skipEnvironmentInit
-        //System.setProperty("com.oaklandsw.http.skipEnvironmentInit", "true");
+        // System.setProperty("com.oaklandsw.http.skipEnvironmentInit", "true");
 
     }
 
-    public void setUp()
+    public void setUp() throws Exception
     {
         setProperties();
-        HttpTestEnv.setUp();
+        super.setUp();
     }
 
-    public void tearDown()
+    public void tearDown() throws Exception
     {
+        super.tearDown();
+
         // Reset everything
-        com.oaklandsw.http.HttpURLConnection.setProxyPort(0);
+        com.oaklandsw.http.HttpURLConnection.setProxyPort(-1);
         com.oaklandsw.http.HttpURLConnection.setProxyHost(null);
         com.oaklandsw.http.HttpURLConnection.setNonProxyHosts(null);
     }
@@ -72,19 +75,21 @@ public class TestProperties extends TestCase
     {
         if (System.getProperty("com.oaklandsw.http.skipEnvironmentInit") == null)
         {
-
             assertEquals(proxyHost, com.oaklandsw.http.HttpURLConnection
                     .getProxyHost());
             assertEquals(proxyPort, com.oaklandsw.http.HttpURLConnection
                     .getProxyPort());
             assertEquals(nonProxyHosts, com.oaklandsw.http.HttpURLConnection
                     .getNonProxyHosts());
+            assertEquals(true, com.oaklandsw.http.HttpURLConnection
+                         .isDefaultPipelining());
         }
         else
         {
             assertEquals(null, com.oaklandsw.http.HttpURLConnection
                     .getProxyHost());
-            assertEquals(-1, com.oaklandsw.http.HttpURLConnection.getProxyPort());
+            assertEquals(-1, com.oaklandsw.http.HttpURLConnection
+                    .getProxyPort());
             assertEquals(null, com.oaklandsw.http.HttpURLConnection
                     .getNonProxyHosts());
 

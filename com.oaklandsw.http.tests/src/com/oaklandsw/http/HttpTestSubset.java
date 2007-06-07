@@ -53,9 +53,19 @@
 package com.oaklandsw.http;
 
 import com.oaklandsw.TestCaseBase;
-import com.oaklandsw.http.webapp.TestAxis;
-import com.oaklandsw.http.webapp.TestIIS;
-import com.oaklandsw.http.webapp.TestRedirect;
+
+import com.oaklandsw.http.local.TestConnectionManagerLocal;
+import com.oaklandsw.http.local.TestDefaults;
+import com.oaklandsw.http.local.TestHeaders;
+import com.oaklandsw.http.local.TestHttpStatus;
+import com.oaklandsw.http.local.TestMethodsNoHost;
+import com.oaklandsw.http.local.TestNtlmMessages;
+import com.oaklandsw.http.local.TestRequestHeaders;
+import com.oaklandsw.http.local.TestResponseHeaders;
+import com.oaklandsw.http.local.TestStreams;
+import com.oaklandsw.http.local.TestTimeout;
+import com.oaklandsw.http.local.TestURIUtil;
+import com.oaklandsw.http.webapp.TestOutputStreamChunked;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
@@ -71,14 +81,50 @@ public class HttpTestSubset extends TestCaseBase
     public static Test suite()
     {
         TestSuite suite = new TestSuite(HttpTestSubset.class.getName());
-        suite.addTest(TestAxis.suite());
-        suite.addTest(TestIIS.suite());
-        suite.addTest(TestRedirect.suite());
-        //suite.addTest(TestWebDavMethods.suite());
-        //suite.addTest(TestBugs.suite());
-        //suite.addTest(TestHttps.suite());
-        //suite.addTest(TestMethods.suite());
-        //suite.addTest(TestTimeout.suite());
+
+        // Local tests must run first
+        // suite.addTest(AllLocalTests.suite());
+
+        // Must be called before the HttpURLConnection static init
+        //com.oaklandsw.http.local.TestProperties.setProperties();
+
+        // This test must run first
+        //suite.addTest(TestProperties.suite());
+
+        if (false)
+        {
+            suite.addTest(TestHttpStatus.suite());
+            suite.addTest(TestDefaults.suite());
+                suite.addTest(TestHeaders.suite());
+                suite.addTest(LocalTestAuthenticator.suite());
+                suite.addTest(TestConnectionManagerLocal.suite());
+                suite.addTest(TestURIUtil.suite());
+
+                suite.addTest(TestMethodsNoHost.suite());
+                suite.addTest(TestResponseHeaders.suite());
+                suite.addTest(TestRequestHeaders.suite());
+                suite.addTest(TestStreams.suite());
+                suite.addTest(TestNtlmMessages.suite());
+                suite.addTest(TestTimeout.suite());
+        }
+
+        // suite.addTest(TestLicense.suite());
+
+        // suite.addTest(AllCookieTests.suite());
+        // suite.addTest(AllErrorsvrTests.suite());
+
+        // suite.addTest(TestAxis.suite());
+        // suite.addTest(TestPipelining.suite());
+        // suite.addTest(TestFailover.suite());
+        //suite.addTest(TestIIS.suite());
+        // suite.addTest(TestJCIFS.suite());
+        suite.addTest(TestOutputStreamChunked.suite());
+        // suite.addTest(TestAuthType.suite());
+        // suite.addTest(TestWebDavMethods.suite());
+        // suite.addTest(TestBugs.suite());
+        // suite.addTest(TestHttps.suite());
+        // suite.addTest(TestMethods.suite());
+        // suite.addTest(TestTimeout.suite());
         return suite;
     }
 

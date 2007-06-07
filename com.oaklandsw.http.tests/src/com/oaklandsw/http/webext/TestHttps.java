@@ -53,17 +53,22 @@
 package com.oaklandsw.http.webext;
 
 import java.io.IOException;
-import java.net.HttpURLConnection;
 import java.net.URL;
+
+import org.apache.commons.logging.Log;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
 import com.oaklandsw.http.HttpTestBase;
 import com.oaklandsw.http.HttpTestEnv;
+import com.oaklandsw.http.HttpURLConnection;
+import com.oaklandsw.util.LogUtils;
 
 public class TestHttps extends HttpTestBase
 {
+
+    private static final Log _log = LogUtils.makeLogger();
 
     public TestHttps(String testName)
     {

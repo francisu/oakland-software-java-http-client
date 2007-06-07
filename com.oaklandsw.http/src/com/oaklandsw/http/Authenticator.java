@@ -1,5 +1,5 @@
 //
-// Some portions copyright 2002-3003, oakland software, all rights reserved.
+// Some portions copyright 2002-2007, oakland software, all rights reserved.
 //
 // May not be used or redistributed without specific written
 // permission from oakland software.
@@ -66,6 +66,7 @@ import org.apache.commons.logging.Log;
 import org.bouncycastle.util.encoders.Base64;
 
 import com.oaklandsw.http.ntlm.Ntlm;
+import com.oaklandsw.util.LogUtils;
 
 /**
  * Utility methods for HTTP authorization and authentication. This class
@@ -89,85 +90,66 @@ import com.oaklandsw.http.ntlm.Ntlm;
  */
 public class Authenticator
 {
-    // ~ Static variables/initializers
-    // ������������������������������������������
+    private static final Log     _log         = LogUtils.makeLogger();
 
-    /** The www authenticate challange header */
-    public static final String  WWW_AUTH        = "WWW-Authenticate";
+    public static final String   BASIC        = "basic";
 
-    /** The www authenticate response header */
-    public static final String  WWW_AUTH_RESP   = "Authorization";
+    public static final String   DIGEST       = "digest";
 
-    /** The proxy authenticate challange header */
-    public static final String  PROXY_AUTH      = "Proxy-Authenticate";
+    public static final String   NTLM         = "ntlm";
 
-    /** The proxy authenticate response header */
-    public static final String  PROXY_AUTH_RESP = "Proxy-Authorization";
+    public static final String[] RESP_HEADERS = new String[] { "Authorization",
+        "Proxy-Authorization"                };
+    public static final String[] REQ_HEADERS  = new String[] {
+        "WWW-Authenticate", "Proxy-Authenticate" };
 
-    public static final String  BASIC           = "basic";
+    private static final char[]  HEXADECIMAL  = { '0', '1', '2', '3', '4', '5',
+        '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f' };
 
-    public static final String  DIGEST          = "digest";
-
-    public static final String  NTLM            = "ntlm";
-
-    /**
-     * Hexa values used when creating 32 character long digest in HTTP Digest in
-     * case of authentication.
-     * 
-     * @see #encode(byte[])
-     */
-    private static final char[] HEXADECIMAL     = { '0', '1', '2', '3', '4',
-        '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f' };
-
-    // Used only for the regression tests
-    public static final boolean authenticate(HttpURLConnectInternal method,
-                                             String authReq,
-                                             String respHeader)
-        throws HttpException
-    {
-        Headers h = new Headers();
-        if (authReq != null)
-            h.add(WWW_AUTH, authReq);
-        else
-            h = null;
-
-        // parse the authenticate header
-        Map challengeMap = parseAuthenticateHeader(h, WWW_AUTH, method);
-
-        return authenticate(method, h, WWW_AUTH, challengeMap, respHeader);
-    }
-
-    public static final boolean authenticate(HttpURLConnectInternal method,
+    public static final boolean authenticate(HttpURLConnectInternal urlCon,
                                              Headers reqAuthenticators,
                                              String reqType,
                                              Map challengeMap,
-                                             String respHeader)
+                                             int normalOrProxy)
         throws HttpException
     {
-        boolean preemptive = HttpURLConnection.getPreemptiveAuthentication();
-        Log log = method.getLog();
+        String respHeader = RESP_HEADERS[normalOrProxy];
 
-        // if there is no challenge, attempt to use preemptive authorization
+        int authenticationType = urlCon.getAuthenticationType(normalOrProxy);
+        boolean preemptive = HttpURLConnection.getPreemptiveAuthentication()
+            || authenticationType == Credential.AUTH_BASIC;
+
+        // If there is no challenge, attempt to use preemptive authorization
         if (reqAuthenticators == null)
         {
-            if (preemptive)
+            HttpUserAgent userAgent = urlCon.getUserAgent();
+
+            if (preemptive && userAgent != null)
             {
-                log.debug("Preemptively sending default basic credentials");
+                if (authenticationType != 0
+                    && authenticationType != Credential.AUTH_BASIC)
+                {
+                    throw new IllegalStateException("Preemptive authentication is "
+                        + "supported only for BASIC authentication.  "
+                        + "See HttpURLConnection.setAuthenticationType()");
+                }
+
+                _log.debug("Preemptively sending basic credentials");
 
                 try
                 {
                     String requestHeader = Authenticator.basic(null,
-                                                               method,
-                                                               respHeader);
-                    method.addRequestProperty(respHeader, requestHeader);
+                                                               urlCon,
+                                                               normalOrProxy);
+                    urlCon.addRequestProperty(respHeader, requestHeader);
 
                     return true;
                 }
                 catch (HttpException httpe)
                 {
-                    if (log.isDebugEnabled())
+                    if (_log.isDebugEnabled())
                     {
-                        log.debug("No default credentials to preemptively"
+                        _log.debug("No default credentials to preemptively"
                             + " send");
                     }
 
@@ -178,30 +160,64 @@ public class Authenticator
             return false;
         }
 
+        if (urlCon._pipelining)
+        {
+            if (authenticationType == 0)
+            {
+                String authType;
+                if (normalOrProxy == HttpURLConnection.AUTH_PROXY)
+                    authType = "proxyAuthenticationType";
+                else
+                    authType = "authenticationType";
+
+                throw new IllegalStateException("Pipelining is only supported for "
+                    + "connections requiring "
+                    + HttpURLConnection.normalOrProxyToString(normalOrProxy)
+                    + "authentication only if the "
+                    + authType
+                    + " "
+                    + "is set or if preemptive authentication (BASIC) is used.  "
+                    + "See HttpURLConnection.set"
+                    + authType.substring(0, 1).toUpperCase()
+                    + authType.substring(1)
+                    + "()");
+            }
+        }
+
+        // We previously sent an response message and got back a 401/407,
+        // this means we are not going to authenticate
+        if (urlCon._authState[normalOrProxy] == HttpURLConnectInternal.AS_FINAL_AUTH_SENT)
+        {
+            Credential sentCred = urlCon.getCredentialSent(normalOrProxy);
+            throw new HttpException("Authentication failed; "
+                + "with credential "
+                + sentCred);
+        }
+
         // determine the most secure request header to add
         String requestHeader = null;
         if (challengeMap.containsKey(NTLM))
         {
             String challenge = (String)challengeMap.get(NTLM);
             requestHeader = Authenticator.ntlm(challenge,
-                                               method,
+                                               urlCon,
                                                reqType,
-                                               respHeader);
+                                               normalOrProxy);
         }
         else if (challengeMap.containsKey(DIGEST))
         {
             String challenge = (String)challengeMap.get(DIGEST);
-            String realm = parseRealmFromChallenge(challenge, method);
+            String realm = parseRealmFromChallenge(challenge, urlCon);
             requestHeader = Authenticator.digest(realm,
                                                  challenge,
-                                                 method,
-                                                 respHeader);
+                                                 urlCon,
+                                                 normalOrProxy);
         }
         else if (challengeMap.containsKey(BASIC))
         {
             String challenge = (String)challengeMap.get(BASIC);
-            String realm = parseRealmFromChallenge(challenge, method);
-            requestHeader = Authenticator.basic(realm, method, respHeader);
+            String realm = parseRealmFromChallenge(challenge, urlCon);
+            requestHeader = Authenticator.basic(realm, urlCon, normalOrProxy);
         }
         else if (challengeMap.size() == 0)
         {
@@ -220,7 +236,7 @@ public class Authenticator
         // Add the header if it has been created and return true
         if (requestHeader != null)
         {
-            method.addRequestProperty(respHeader, requestHeader);
+            urlCon.addRequestProperty(respHeader, requestHeader);
             return true;
         }
         return false;
@@ -311,26 +327,17 @@ public class Authenticator
     }
 
     private static final String basic(String realm,
-                                      HttpURLConnectInternal method,
-                                      String respHeader) throws HttpException
+                                      HttpURLConnectInternal urlCon,
+                                      int normalOrProxy) throws HttpException
     {
-        boolean proxy = PROXY_AUTH_RESP.equals(respHeader);
-
-        // We previously sent an response message and got back a 401/407,
-        // this means we are not going to authenticate
-        Credential sentCred = method.getCredentialSent(proxy);
-        if (sentCred != null)
-        {
-            throw new HttpException("Basic Authentication failed; "
-                + "with credential "
-                + sentCred);
-        }
-
         UserCredential cred = null;
 
         try
         {
-            cred = (UserCredential)getCredentials(realm, proxy, BASIC, method);
+            cred = (UserCredential)getCredentials(realm,
+                                                  normalOrProxy == HttpURLConnection.AUTH_PROXY,
+                                                  BASIC,
+                                                  urlCon);
         }
         catch (ClassCastException e)
         {
@@ -346,17 +353,18 @@ public class Authenticator
                 + "\'");
         }
         String authString = cred.getUser() + ":" + cred.getPassword();
-        method.setCredentialSent(Credential.AUTH_BASIC, proxy, cred);
+        urlCon.setCredentialSent(Credential.AUTH_BASIC,
+                                 normalOrProxy,
+                                 cred,
+                                 HttpURLConnectInternal.AS_FINAL_AUTH_SENT);
         return "Basic " + new String(Base64.encode(authString.getBytes()));
     }
 
     private static final String ntlm(String challenge,
-                                     HttpURLConnectInternal method,
+                                     HttpURLConnectInternal urlCon,
                                      String reqType,
-                                     String respHeader) throws HttpException
+                                     int normalOrProxy) throws HttpException
     {
-        boolean proxy = PROXY_AUTH_RESP.equalsIgnoreCase(respHeader);
-        Log log = method.getLog();
         NtlmCredential cred = null;
 
         try
@@ -370,19 +378,12 @@ public class Authenticator
             throw new HttpException("Invalid NTLM challenge.");
         }
 
-        // We previously sent an NTLM message and got back a 401/407,
-        // this means we are not going to authenticate
-        Credential sentCred = method.getCredentialSent(proxy);
-        if (challenge.equals("") && sentCred != null)
-        {
-            throw new HttpException("NTLM Authentication failed; "
-                + "with credential "
-                + sentCred);
-        }
-
         try
         {
-            cred = (NtlmCredential)getCredentials(null, proxy, NTLM, method);
+            cred = (NtlmCredential)getCredentials(null,
+                                                  normalOrProxy == HttpURLConnection.AUTH_PROXY,
+                                                  NTLM,
+                                                  urlCon);
         }
         catch (ClassCastException e)
         {
@@ -395,51 +396,48 @@ public class Authenticator
             throw new HttpException("No credentials available for NTLM "
                 + "authentication.");
         }
-        try
+
+        int newAuthState;
+
+        // If there is nothing in the challenge, then this is the start
+        // even if we already sent the negotiate message
+        if (challenge.equals(""))
+            newAuthState = HttpURLConnectInternal.AS_INITIAL_AUTH_SENT;
+        else
+            newAuthState = HttpURLConnectInternal.AS_FINAL_AUTH_SENT;
+
+        String resp = "NTLM "
+            + Ntlm.getResponseFor(challenge,
+                                  cred.getUser(),
+                                  cred.getPassword(),
+                                  cred.getHost(),
+                                  cred.getDomain());
+        if (_log.isDebugEnabled())
         {
-            String resp = "NTLM "
-                + Ntlm.getResponseFor(challenge, cred.getUser(), cred
-                        .getPassword(), cred.getHost(), cred.getDomain());
-            if (log.isDebugEnabled())
-            {
-                log.debug("Replying to challenge with: " + resp);
-            }
-            method.setCredentialSent(Credential.AUTH_NTLM, proxy, cred);
-            return resp;
+            _log.debug("Replying to challenge with: " + resp);
         }
-        catch (HttpException he)
-        {
-            log.warn("Exception processing NTLM message");
-            return null;
-        }
-        catch (java.io.UnsupportedEncodingException e)
-        {
-            throw new HttpException("NTLM requires ASCII support.");
-        }
+
+        urlCon.setCredentialSent(Credential.AUTH_NTLM,
+                                 normalOrProxy,
+                                 cred,
+                                 newAuthState);
+        return resp;
+
     }
 
     private static final String digest(String realm,
                                        String challenge,
-                                       HttpURLConnectInternal method,
-                                       String respHeader) throws HttpException
+                                       HttpURLConnectInternal urlCon,
+                                       int normalOrProxy) throws HttpException
     {
-        boolean proxy = PROXY_AUTH_RESP.equalsIgnoreCase(respHeader);
-
-        // We previously sent an response message and got back a 401/407,
-        // this means we are not going to authenticate
-        Credential sentCred = method.getCredentialSent(proxy);
-        if (sentCred != null)
-        {
-            throw new HttpException("Basic Authentication failed; "
-                + "with credential "
-                + sentCred);
-        }
-
         UserCredential cred = null;
 
         try
         {
-            cred = (UserCredential)getCredentials(realm, proxy, DIGEST, method);
+            cred = (UserCredential)getCredentials(realm,
+                                                  normalOrProxy == HttpURLConnection.AUTH_PROXY,
+                                                  DIGEST,
+                                                  urlCon);
         }
         catch (ClassCastException e)
         {
@@ -457,14 +455,17 @@ public class Authenticator
         Map headers = getHTTPDigestCredentials(challenge);
         headers.put("cnonce", "\"" + createCnonce() + "\"");
         headers.put("nc", "00000001");
-        headers.put("uri", method.getPath());
-        headers.put("methodname", method.getName());
+        headers.put("uri", urlCon.getPath());
+        headers.put("methodname", urlCon.getName());
 
         String digest = createDigest(cred.getUser(),
                                      cred.getPassword(),
                                      headers);
 
-        method.setCredentialSent(Credential.AUTH_DIGEST, proxy, cred);
+        urlCon.setCredentialSent(Credential.AUTH_DIGEST,
+                                 normalOrProxy,
+                                 cred,
+                                 HttpURLConnectInternal.AS_FINAL_AUTH_SENT);
         return "Digest " + createDigestHeader(cred.getUser(), headers, digest);
     }
 
@@ -497,12 +498,11 @@ public class Authenticator
 
     static final Map parseAuthenticateHeader(Headers authHeaders,
                                              String authType,
-                                             HttpURLConnectInternal method)
+                                             HttpURLConnectInternal urlCon)
     {
         if (authHeaders == null)
             return new Hashtable(0);
 
-        Log log = method.getLog();
         Map challengeMap = new Hashtable(7);
 
         String challenge = null;
@@ -526,9 +526,12 @@ public class Authenticator
 
                 // store the challenge keyed on the scheme
                 challengeMap.put(scheme.toLowerCase(), challenge);
-                if (log.isDebugEnabled())
+                if (_log.isDebugEnabled())
                 {
-                    log.debug(scheme.toLowerCase() + "=>" + challenge);
+                    _log.debug("authenticator: adding to ChallengeMap: "
+                        + scheme.toLowerCase()
+                        + "=>"
+                        + challenge);
                 }
             }
         }
@@ -626,11 +629,9 @@ public class Authenticator
     }
 
     private static final String parseRealmFromChallenge(String challenge,
-                                                        HttpURLConnectInternal method)
+                                                        HttpURLConnectInternal urlCon)
         throws HttpException
     {
-        Log log = method.getLog();
-
         // FIXME: Note that this won't work if there is more than one realm
         // within the challenge
         try
@@ -646,9 +647,9 @@ public class Authenticator
                 realm = realm.substring(firstq + 1, lastq);
             }
 
-            if (log.isDebugEnabled())
+            if (_log.isDebugEnabled())
             {
-                log.debug("Parsed realm '"
+                _log.debug("Parsed realm '"
                     + realm
                     + "' from challenge '"
                     + challenge

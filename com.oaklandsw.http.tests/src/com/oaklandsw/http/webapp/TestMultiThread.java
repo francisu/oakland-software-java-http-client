@@ -1,7 +1,6 @@
 package com.oaklandsw.http.webapp;
 
 import java.io.OutputStream;
-import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.util.ArrayList;
@@ -12,6 +11,7 @@ import junit.framework.Test;
 import junit.framework.TestSuite;
 
 import com.oaklandsw.http.HttpTestEnv;
+import com.oaklandsw.http.HttpURLConnection;
 import com.oaklandsw.http.servlet.HeaderServlet;
 import com.oaklandsw.http.servlet.ParamServlet;
 import com.oaklandsw.http.servlet.RedirectServlet;
@@ -20,18 +20,20 @@ import com.oaklandsw.util.LogUtils;
 public class TestMultiThread extends TestWebappBase
 {
 
-    private static final Log   _log         = LogUtils.makeLogger();
-    
+    private static final Log _log              = LogUtils.makeLogger();
+
     private static final int NUM_THREADS       = 50;
+    private static final int NUM_TIMES         = 10;
 
     private static final int TEXT_TIMES        = 100;
 
     private static final int MAX_OPEN_PER_HOST = 3;
 
-    private boolean          _failed;
-
+    private int              _failed;
+    private Exception        _failedException;
     private int              _threadDelay;
-
+    private int _times = NUM_TIMES;
+    
     private static String    _textComp;
 
     static
@@ -50,6 +52,9 @@ public class TestMultiThread extends TestWebappBase
     public TestMultiThread(String testName)
     {
         super(testName);
+
+        // Poor Netproxy does not seem to be able to handle this test
+        _doAuthCloseProxyTest = false;
     }
 
     public static Test suite()
@@ -63,10 +68,16 @@ public class TestMultiThread extends TestWebappBase
         mainRun(suite(), args);
     }
 
+    public void setUp() throws Exception
+    {
+        super.setUp();
+        _times = NUM_TIMES;
+        _threadDelay = 0;
+    }
+    
     public void tearDown() throws Exception
     {
         super.tearDown();
-        _threadDelay = 0;
     }
 
     protected void threadMethod(String method,
@@ -109,7 +120,8 @@ public class TestMultiThread extends TestWebappBase
 
             // Don't bother checking the rest if this is a redirect
             // and we are not following them
-            if (!HttpURLConnection.getFollowRedirects() && response > 300)
+            if (!java.net.HttpURLConnection.getFollowRedirects()
+                && response > 300)
             {
                 if (com.oaklandsw.http.HttpURLConnection.getExplicitClose())
                     urlCon.getInputStream().close();
@@ -121,7 +133,7 @@ public class TestMultiThread extends TestWebappBase
                 _log.debug(Thread.currentThread().getName()
                     + " failed status "
                     + response);
-                _failed = true;
+                _failed = 1;
             }
 
             String reply = getReply(urlCon);
@@ -134,7 +146,7 @@ public class TestMultiThread extends TestWebappBase
             {
                 _log.debug(Thread.currentThread().getName()
                     + " failed Header check");
-                _failed = true;
+                _failed = 2;
             }
 
             if (hasExtendedText)
@@ -144,30 +156,27 @@ public class TestMultiThread extends TestWebappBase
                 {
                     _log.debug(Thread.currentThread().getName()
                         + " failed body text");
-                    _failed = true;
+                    _failed = 3;
                 }
             }
 
-            if (com.oaklandsw.http.HttpURLConnection.getExplicitClose())
-                urlCon.getInputStream().close();
-
             _log.debug(Thread.currentThread().getName()
-                + (_failed ? " FAILED " : " PASSED "));
+                + (_failed > 0 ? " FAILED " : " PASSED "));
         }
         catch (Exception ex)
         {
-            _failed = true;
+            _failedException = ex;
+            _failed = 4;
             ex.printStackTrace();
         }
 
     }
 
-    public void testThreadsBase() throws Exception
+    protected void threadsBase() throws Exception
     {
-
         Thread t;
 
-        _failed = false;
+        _failed = 0;
 
         // Only set it if we are currently set to the default
         if (com.oaklandsw.http.HttpURLConnection.getMaxConnectionsPerHost() == 2)
@@ -186,30 +195,36 @@ public class TestMultiThread extends TestWebappBase
                     try
                     {
                         Thread.currentThread().setName("TestMultiThread");
-                        threadMethod(
-                                     com.oaklandsw.http.HttpURLConnection.HTTP_METHOD_GET,
-                                     HeaderServlet.NAME, "Header", true);
+                        for (int j = 0; j < _times; j++)
+                        {
+                            threadMethod(com.oaklandsw.http.HttpURLConnection.HTTP_METHOD_GET,
+                                         HeaderServlet.NAME,
+                                         "Header",
+                                         true);
 
-                        threadMethod(
-                                     com.oaklandsw.http.HttpURLConnection.HTTP_METHOD_GET,
-                                     RedirectServlet.NAME
-                                         + "?to="
-                                         + URLEncoder.encode("http://"
-                                             + HttpTestEnv.TOMCAT_HOST
-                                             + ":"
-                                             + HttpTestEnv.TEST_WEBAPP_PORT
-                                             + "/"
-                                             + context
-                                             + ParamServlet.NAME), "Param",
-                                     false);
-                        threadMethod(
-                                     com.oaklandsw.http.HttpURLConnection.HTTP_METHOD_POST,
-                                     HeaderServlet.NAME, "Header", true);
+                            threadMethod(com.oaklandsw.http.HttpURLConnection.HTTP_METHOD_GET,
+                                         RedirectServlet.NAME
+                                             + "?to="
+                                             + URLEncoder.encode("http://"
+                                                 + HttpTestEnv.TOMCAT_HOST
+                                                 + ":"
+                                                 + HttpTestEnv.TEST_WEBAPP_PORT
+                                                 + "/"
+                                                 + context
+                                                 + ParamServlet.NAME),
+                                         "Param",
+                                         false);
+                            threadMethod(com.oaklandsw.http.HttpURLConnection.HTTP_METHOD_POST,
+                                         HeaderServlet.NAME,
+                                         "Header",
+                                         true);
+                        }
                     }
                     catch (Exception ex)
                     {
                         System.out.println("Unexpected exception: " + ex);
-                        _failed = true;
+                        _failedException = ex;
+                        _failed = 5;
                     }
                 }
             };
@@ -223,26 +238,27 @@ public class TestMultiThread extends TestWebappBase
             ((Thread)threads.get(i)).join(10000);
         }
 
-        if (_failed)
+        if (_failed > 0)
             fail("One or more threads failed");
     }
 
     public void testThreads() throws Exception
     {
-        testThreadsBase();
+        threadsBase();
     }
 
     public void testThreadsDelay() throws Exception
     {
-        _threadDelay = 500;
-        testThreadsBase();
+        _threadDelay = 100;
+        _times = 2;
+        threadsBase();
     }
 
     public void testThreadsNoRedirect() throws Exception
     {
-        HttpURLConnection.setFollowRedirects(false);
-        testThreadsBase();
-        HttpURLConnection.setFollowRedirects(true);
+        java.net.HttpURLConnection.setFollowRedirects(false);
+        threadsBase();
+        java.net.HttpURLConnection.setFollowRedirects(true);
     }
 
     public void allTestMethods() throws Exception

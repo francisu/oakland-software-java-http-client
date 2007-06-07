@@ -58,12 +58,15 @@ package com.oaklandsw.http.local;
 
 import java.net.URL;
 
+import org.apache.commons.logging.Log;
+
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
 import com.oaklandsw.http.HttpURLConnection;
 import com.oaklandsw.http.SimpleHttpMethod;
 import com.oaklandsw.http.HttpTestBase;
+import com.oaklandsw.util.LogUtils;
 
 /**
  * @author Rodney Waldhoff
@@ -72,6 +75,7 @@ import com.oaklandsw.http.HttpTestBase;
  */
 public class TestMethodsNoHost extends HttpTestBase
 {
+    private static final Log _log = LogUtils.makeLogger();
 
     public TestMethodsNoHost(String testName)
     {
@@ -125,7 +129,6 @@ public class TestMethodsNoHost extends HttpTestBase
     // Leaks connections if there is a failure to connect
     public void testBug385() throws Exception
     {
-
         // Bad location
         URL url = new URL("http://localhost:55555");
 
@@ -145,6 +148,38 @@ public class TestMethodsNoHost extends HttpTestBase
         // Should be no connections
         checkNoTotalConns(url);
         // com.oaklandsw.http.HttpURLConnection.dumpConnectionPool();
+    }
+
+    public void testStreamBadChunkSize() throws Exception
+    {
+        URL url = new URL("http://doesnotmatter");
+
+        HttpURLConnection urlCon = (HttpURLConnection)url.openConnection();
+
+        // These should all work
+        urlCon.setChunkedStreamingMode(-1);
+        urlCon.setChunkedStreamingMode(0);
+        urlCon.setChunkedStreamingMode(25);
+    }
+
+    public void testStreamBadFixedSize() throws Exception
+    {
+        URL url = new URL("http://doesnotmatter");
+
+        HttpURLConnection urlCon = (HttpURLConnection)url.openConnection();
+
+        try
+        {
+            urlCon.setFixedLengthStreamingMode(-1);
+            fail("Expected exception");
+        }
+        catch (IllegalArgumentException ex)
+        {
+            // OK
+        }
+
+        urlCon.setFixedLengthStreamingMode(0);
+        urlCon.setFixedLengthStreamingMode(100);
     }
 
 }

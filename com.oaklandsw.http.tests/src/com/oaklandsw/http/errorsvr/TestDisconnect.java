@@ -214,7 +214,7 @@ public class TestDisconnect extends HttpTestBase
         URL url = makeUrl(ErrorServer.ERROR_BEFORE_HEADERS, 10);
 
         HttpURLConnection urlCon = (HttpURLConnection)url.openConnection();
-        com.oaklandsw.http.HttpURLConnection.setTries(1);
+        com.oaklandsw.http.HttpURLConnection.setDefaultMaxTries(1);
 
         // Connection will happen here and fail
         urlCon.getHeaderField(1);
@@ -230,7 +230,7 @@ public class TestDisconnect extends HttpTestBase
         URL url = makeUrl(ErrorServer.ERROR_BEFORE_HEADERS, 10);
 
         HttpURLConnection urlCon = (HttpURLConnection)url.openConnection();
-        com.oaklandsw.http.HttpURLConnection.setTries(1);
+        com.oaklandsw.http.HttpURLConnection.setDefaultMaxTries(1);
 
         // Connection will happen here and fail
         urlCon.getHeaderField(1);

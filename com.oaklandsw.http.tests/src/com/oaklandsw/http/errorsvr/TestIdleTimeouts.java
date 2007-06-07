@@ -68,9 +68,9 @@ public class TestIdleTimeouts extends HttpTestBase
         // Wait until after the connection timed out at the server
         Thread.sleep(2000);
 
+        HttpURLConnection.setDefaultMaxTries(1);
         url = getNormalUrl();
         urlCon = (HttpURLConnection)url.openConnection();
-        HttpURLConnection.setTries(1);
 
         try
         {
@@ -96,9 +96,9 @@ public class TestIdleTimeouts extends HttpTestBase
         Thread.sleep(1500);
 
         // Should work since it's on a new connection
+        HttpURLConnection.setDefaultMaxTries(1);
         url = getNormalUrl();
         urlCon = (HttpURLConnection)url.openConnection();
-        HttpURLConnection.setTries(1);
 
         assertEquals(200, urlCon.getResponseCode());
     }
@@ -119,10 +119,10 @@ public class TestIdleTimeouts extends HttpTestBase
         url = new URL(HttpTestEnv.TEST_URL_HOST_ERRORSVR
             + "?"
             + ErrorServer.POST_NO_DATA);
+        HttpURLConnection.setDefaultMaxTries(numTries);
         urlCon = (HttpURLConnection)url.openConnection();
         urlCon.setIdleConnectionPing(500);
         urlCon.setRequestMethod("POST");
-        HttpURLConnection.setTries(numTries);
 
         if (numTries == 1 && serverTimeout > 0)
         {

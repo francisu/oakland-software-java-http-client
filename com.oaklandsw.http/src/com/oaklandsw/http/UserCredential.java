@@ -111,7 +111,10 @@ public class UserCredential implements Credential
     {
         switch (authType)
         {
+            // -1 is valid because the authentication type for the connection
+            // is unknown
             // Zero is valid here because there is no auth for this connection
+            case -1:
             case 0:
             case AUTH_BASIC:
             case AUTH_DIGEST:

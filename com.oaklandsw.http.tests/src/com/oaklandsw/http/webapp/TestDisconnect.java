@@ -1,5 +1,6 @@
 package com.oaklandsw.http.webapp;
 
+import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
@@ -61,10 +62,11 @@ public class TestDisconnect extends TestWebappBase
         urlCon.setRequestMethod("GET");
         urlCon.connect();
 
-        urlCon.getInputStream().close();
+        InputStream is = urlCon.getInputStream();
+        is.close();
 
         // Should not throw
-        urlCon.getInputStream().close();
+        is.close();
 
         com.oaklandsw.http.HttpURLConnection.setExplicitClose(false);
     }

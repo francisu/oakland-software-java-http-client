@@ -1,5 +1,5 @@
 //
-// Some portions copyright 2002-3003, oakland software, all rights reserved.
+// Some portions copyright 2002-2007, oakland software, all rights reserved.
 //
 // May not be used or redistributed without specific written
 // permission from oakland software.
@@ -63,14 +63,16 @@ import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.net.InetAddress;
+import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.SocketException;
+import java.net.SocketTimeoutException;
 import java.security.Principal;
 import java.security.cert.Certificate;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.net.ssl.SSLPeerUnverifiedException;
 import javax.net.ssl.SSLSession;
@@ -84,114 +86,127 @@ import org.apache.commons.logging.LogFactory;
 import com.oaklandsw.util.LogUtils;
 import com.oaklandsw.util.Util;
 
+import edu.emory.mathcs.backport.java.util.concurrent.ArrayBlockingQueue;
+import edu.emory.mathcs.backport.java.util.concurrent.BlockingQueue;
+
 public class HttpConnection
 {
-    public static final String     WIRE_LOG           = LogUtils.LOG_PREFIX
-                                                          + ".http.wireLog";
+    public static final String WIRE_LOG           = LogUtils.LOG_PREFIX
+                                                      + LogUtils.LOG_WIRE_PREFIX;
 
-    private static final Log       _log               = LogUtils.makeLogger();
+    private static final Log   _log               = LogUtils.makeLogger();
 
     /** Log for any wire messages. */
-    private static final Log       _wireLog           = LogFactory
-                                                              .getLog(WIRE_LOG);
+    private static final Log   _wireLog           = LogFactory.getLog(WIRE_LOG);
 
-    private Exception              _openException;
+    private static final int   STREAM_BUFFER_SIZE = 16384;
 
-    // Used to keep track of the global proxy state at the time
-    // this connection was created.
-    private int                    _proxyIncarnation;
-
-    private static final int       STREAM_BUFFER_SIZE = 65000;
-
-    /** My host. */
-    private String                 _host              = null;
-
-    /** My port. */
-    private int                    _port              = -1;
+    public String              _host;
+    public int                 _port              = -1;
 
     /**
      * The host/port string to use when part of a URL. This has the port number
      * omitted the port is the default port for the protcol.
      */
-    private String                 _hostPortURL;
+    String                     _hostPortURL;
 
     /**
      * The host/port string to use to find the connection with the connection
      * manager. This always includes the port number.
      */
-    private String                 _hostPort;
+    String                     _hostPort;
 
     // The way this connection is idenfified by the connection
     // manager.
-    private String                 _handle;
+    String                     _handle;
 
-    /** My proxy host. */
-    private String                 _proxyHost         = null;
+    // Information about the host/port etc that controls this connection
+    ConnectionInfo             _connectionInfo;
 
-    /** My proxy port. */
-    private int                    _proxyPort         = -1;
+    HttpConnectionManager      _connManager;
 
-    /** My client Socket. */
-    private Socket                 _socket            = null;
+    HttpConnectionThread       _connectionThread;
 
-    /** My InputStream. */
-    private BufferedInputStream    _input             = null;
+    String                     _proxyHost;
+    int                        _proxyPort         = -1;
 
-    /** My OutputStream. */
-    private BufferedOutputStream   _output            = null;
+    Socket                     _socket;
 
-    /** Whether or not I am connected. */
-    private boolean                _open              = false;
+    BufferedInputStream        _input;
+    BufferedOutputStream       _output;
 
-    /** Whether or not I am/should connect via SSL. */
-    private boolean                _ssl               = false;
+    static final int           CS_VIRGIN          = 0;
+    static final int           CS_OPEN            = 1;
+    static final int           CS_CLOSED          = 2;
 
-    /** SO_TIMEOUT value */
-    private int                    _so_timeout        = 0;
+    int                        _state;
+    // boolean _open;
 
-    private int                    _connectTimeout;
+    boolean                    _ssl;
+
+    int                        _soTimeout;
+    int                        _connectTimeout;
 
     /** An alternative factory for SSL sockets to use */
-    private SSLSocketFactory       _sslSocketFactory;
+    SSLSocketFactory           _sslSocketFactory;
 
-    private HostnameVerifier       _hostnameVerifier;
+    HostnameVerifier           _hostnameVerifier;
 
-    /** Whether I am tunneling a proxy or not */
-    private boolean                _tunnelEstablished = false;
+    boolean                    _tunnelEstablished;
 
-    private HttpURLConnectInternal _tunnelCon;
+    HttpURLConnectInternal     _tunnelCon;
 
-    private long                   _lastTimeUsed;
-
-    private long                   _idleTimeout;
-
-    private long                   _idlePing;
+    long                       _lastTimeUsed;
+    long                       _idleTimeout;
+    long                       _idlePing;
 
     // Used only for testing to simulate a connection that fails to
     // connect
-    public static long             _testTimeout;
+    public static long         _testTimeout;
 
     // For SSL hostname matching testing
-    public static boolean          _testNonMatchHost;
+    public static boolean      _testNonMatchHost;
 
-    // This is used to store the method for opening a socket
-    // using the JRE 1.4 method with the timeout value. If this
-    // is properly initialized, it is used instead of the async timeout
-    // mechanism.
-    private static Method          _connectMethod;
+    private Exception          _openException;
 
-    private static Constructor     _inetSocketAddressCons;
+    // Used to keep track of the global proxy state at the time
+    // this connection was created.
+    int                        _proxyIncarnation;
 
-    private static Class           _socketTimeoutException;
+    // The number of urlcons with outstanding pipelined writes
+    // against this connection. This is used to avoid assigning
+    // this connection to a non-pipelined urlcon, this is also used
+    // to manage the pipeline depth
+    int                        _pipelineUrlConCount;
+
+    // High water mark for the above count
+    int                        _pipelineUrlConHigh;
+
+    // The total number of urlcons written to this connection
+    int                        _totalReqUrlConCount;
+
+    // The total number of urlcons written to this connection
+    int                        _totalResUrlConCount;
+
+    // The threads accessing a connection now. In general,
+    // we don't allow a connection to close if someone can access a stream
+    // associated with the connection since we don't want the stream
+    // to close out from under a user (by another thread). This prevents
+    // things like NPEs when accessing the streams. This is synchronized
+    // using this object.
+    List                       _preventCloseList;
+
+    // Queue for pipelining urlcons to be serviced
+    BlockingQueue              _queue;
 
     // Credential associated with this connection if the authentication
     // is session-based.
-    UserCredential                 _credential;
-    UserCredential                 _proxyCredential;
+    UserCredential[]           _credential        = new UserCredential[HttpURLConnection.AUTH_PROXY + 1];
 
     // The authentication protocol associated with the above credential
-    int                            _authProtocol;
-    int                            _proxyAuthProtocol;
+    // Initially set to -1 meaning unknown. Protocol zero means no
+    // authentication is done on the connection
+    int[]                      _authProtocol      = new int[] { -1, -1 };
 
     /**
      * Indicates that NTLM authentication is being used on this connection. This
@@ -199,48 +214,74 @@ public class HttpConnection
      * must be kept open for NTLM to function properly, and we can't send the
      * "Connection: Keep-Alive" to a proxy.
      */
-    private boolean                _ntlmLeaveOpen;
+    boolean                    _ntlmLeaveOpen;
 
-    /**
-     * Indicates the async open process has completed, and that the notification
-     * associated with the async open was not spurious.
-     */
-    private boolean                _asyncOpenCompleted;
+    // This connection has been closed and the bookkeeping associated with that
+    // as been done, ignore any subsequent releases on this connection
+    // boolean _dead;
 
-    static
+    // True when this connection is released back to the connection manager,
+    // used to detect a double release
+    boolean                    _released;
+
+    // The current thread reading from this connection
+    Thread                     _bugCatchReadThread;
+    // Use a count to allow the bug check calls to be nested
+    int                        _bugCatchCount;
+
+    static String stateToString(int state)
     {
-        try
+        switch (state)
         {
-            Class inetSocketAddressClass = Class
-                    .forName("java.net.InetSocketAddress");
-            Class socketAddressClass = Class.forName("java.net.SocketAddress");
-            _socketTimeoutException = Class
-                    .forName("java.net.SocketTimeoutException");
-
-            _connectMethod = Socket.class.getDeclaredMethod("connect",
-                                                            new Class[] {
-        socketAddressClass, Integer.TYPE                   });
-
-            _log.debug("1.4 connect method found");
-
-            _inetSocketAddressCons = inetSocketAddressClass
-                    .getConstructor(new Class[] { String.class, Integer.TYPE });
-            _log.debug("1.4 InetSocketAddress constructor method found");
-
+            case CS_VIRGIN:
+                return "CS_VIRGIN";
+            case CS_OPEN:
+                return "CS_OPEN";
+            case CS_CLOSED:
+                return "CS_CLOSED";
         }
-        catch (NoSuchMethodException nsm)
+        Util.impossible("Unknown connection state: " + state);
+        return null;
+    }
+
+    void startReadBugCheck()
+    {
+        if (_bugCatchReadThread != null
+            && _bugCatchReadThread != Thread.currentThread())
         {
-            _log.debug("1.4 method/constructor NOT found", nsm);
-        }
-        catch (ClassNotFoundException cnf)
-        {
-            _log.debug("1.4 InetSocketAddress class NOT found", cnf);
-        }
-        catch (SecurityException sex)
-        {
-            _log.debug("1.4 InetSocketAddress class (probably in applet)", sex);
+            Util.impossible("Attempting to read on "
+                + "connection "
+                + this
+                + " already reading from: "
+                + _bugCatchReadThread
+                + " from thread: "
+                + Thread.currentThread());
         }
 
+        // Count is only incremented on a nested call
+        if (_bugCatchReadThread == Thread.currentThread())
+            _bugCatchCount++;
+
+        _bugCatchReadThread = Thread.currentThread();
+    }
+
+    void endReadBugCheck()
+    {
+        if (_bugCatchReadThread == null
+            || _bugCatchReadThread != Thread.currentThread())
+        {
+            Util.impossible("Error calling endReadBugCheck(): "
+                + _bugCatchReadThread
+                + " from thread: "
+                + Thread.currentThread());
+        }
+
+        if (_bugCatchCount > 0)
+        {
+            _bugCatchCount--;
+            return;
+        }
+        _bugCatchReadThread = null;
     }
 
     /**
@@ -268,8 +309,7 @@ public class HttpConnection
     {
         if (_log.isDebugEnabled())
         {
-            _log.debug("HttpConnectionManager.getConnection:  creating "
-                + " connection for "
+            _log.debug("constructor for "
                 + host
                 + ":"
                 + port
@@ -293,9 +333,9 @@ public class HttpConnection
         _proxyIncarnation = proxyIncarnation;
         _handle = handle;
         setHostPort();
+        _queue = new ArrayBlockingQueue(100);
+        _preventCloseList = new ArrayList();
     }
-
-    // ------------------------------------------ Attribute Setters and Getters
 
     /**
      * Specifies an alternative factory for SSL sockets. If <code>factory</code>
@@ -395,26 +435,7 @@ public class HttpConnection
         }
     }
 
-    /**
-     * Return my host.
-     * 
-     * @return my host.
-     */
-    public String getHost()
-    {
-        return _host;
-    }
-
-    /**
-     * Set my host.
-     * 
-     * @param host
-     *            the host I should connect to. Parameter value must be
-     *            non-null.
-     * @throws IllegalStateException
-     *             if I am already connected
-     */
-    public void setHost(String host) throws IllegalStateException
+    void setHost(String host) throws IllegalStateException
     {
         if (host == null)
         {
@@ -425,14 +446,6 @@ public class HttpConnection
         setHostPort();
     }
 
-    /**
-     * Return my port.
-     * 
-     * If the port is -1 (or less than 0) the default port for the current
-     * protocol is returned.
-     * 
-     * @return my port.
-     */
     public int getPort()
     {
         if (_port < 0)
@@ -442,15 +455,7 @@ public class HttpConnection
         return _port;
     }
 
-    /**
-     * Set my port.
-     * 
-     * @param port
-     *            the port I should connect to
-     * @throws IllegalStateException
-     *             if I am already connected
-     */
-    public void setPort(int port) throws IllegalStateException
+    void setPort(int port) throws IllegalStateException
     {
         assertNotOpen();
         _port = port;
@@ -470,59 +475,9 @@ public class HttpConnection
 
     }
 
-    public String getHostPortURL()
-    {
-        return _hostPortURL;
-    }
-
-    public String getHostPort()
-    {
-        return _hostPort;
-    }
-
-    public String getHandle()
-    {
-        return _handle;
-    }
-
-    public void setLastTimeUsed()
+    void setLastTimeUsed()
     {
         _lastTimeUsed = System.currentTimeMillis();
-    }
-
-    public long getLastTimeUsed()
-    {
-        return _lastTimeUsed;
-    }
-
-    public void setIdleTimeout(long ms)
-    {
-        _idleTimeout = ms;
-    }
-
-    public long getIdleTimeout()
-    {
-        return _idleTimeout;
-    }
-
-    public void setIdlePing(long ms)
-    {
-        _idlePing = ms;
-    }
-
-    public long getIdlePing()
-    {
-        return _idlePing;
-    }
-
-    public void setNtlmLeaveOpen(boolean req)
-    {
-        _ntlmLeaveOpen = req;
-    }
-
-    public boolean isNtlmLeaveOpen()
-    {
-        return _ntlmLeaveOpen;
     }
 
     // This is the start of the ping message; see the ping() method
@@ -557,28 +512,20 @@ public class HttpConnection
         return c;
     }
 
-    void setCredentialSent(int authType, boolean proxy, UserCredential cred)
+    void setCredentialSent(int authType, int normalOrProxy, UserCredential cred)
     {
         if (_log.isDebugEnabled())
         {
             _log.debug("Credential sent authType: "
-                + authType
+                + HttpURLConnectInternal.authTypeToString(authType)
                 + " cred: "
                 + cred
                 + " proxy: "
-                + proxy);
+                + HttpURLConnection.normalOrProxyToString(normalOrProxy));
         }
 
-        if (proxy)
-        {
-            _proxyCredential = cred;
-            _proxyAuthProtocol = authType;
-        }
-        else
-        {
-            _credential = cred;
-            _authProtocol = authType;
-        }
+        _credential[normalOrProxy] = cred;
+        _authProtocol[normalOrProxy] = authType;
     }
 
     /**
@@ -666,48 +613,22 @@ public class HttpConnection
         setLastTimeUsed();
     }
 
-    /**
-     * Return my proxy host.
-     * 
-     * @return my proxy host.
-     */
     public String getProxyHost()
     {
         return _proxyHost;
     }
 
-    /**
-     * Set the host I should proxy through.
-     * 
-     * @param host
-     *            the host I should proxy through.
-     * @throws IllegalStateException
-     *             if I am already connected
-     */
     public void setProxyHost(String host) throws IllegalStateException
     {
         assertNotOpen();
         _proxyHost = host;
     }
 
-    /**
-     * Return my proxy port.
-     * 
-     * @return my proxy port.
-     */
     public int getProxyPort()
     {
         return _proxyPort;
     }
 
-    /**
-     * Set the port I should proxy through.
-     * 
-     * @param port
-     *            the host I should proxy through.
-     * @throws IllegalStateException
-     *             if I am already connected
-     */
     public void setProxyPort(int port) throws IllegalStateException
     {
         assertNotOpen();
@@ -759,16 +680,6 @@ public class HttpConnection
     }
 
     /**
-     * Return <tt>true</tt> if I am connected, <tt>false</tt> otherwise.
-     * 
-     * @return <tt>true</tt> if I am connected
-     */
-    public boolean isOpen()
-    {
-        return _open;
-    }
-
-    /**
      * Return <tt>true</tt> if I am (or I will be) connected via a proxy,
      * <tt>false</tt> otherwise.
      * 
@@ -802,7 +713,7 @@ public class HttpConnection
     {
         if (_log.isDebugEnabled())
             _log.debug("setSoTimeout(" + timeout + ")");
-        _so_timeout = timeout;
+        _soTimeout = timeout;
         if (_socket != null)
         {
             _socket.setSoTimeout(timeout);
@@ -827,39 +738,19 @@ public class HttpConnection
      */
     public void open() throws IOException
     {
-        _log.trace("open");
-
-        assertNotOpen();
-        try
+        // Lock to synchronize with close
+        synchronized (_connManager)
         {
-            if (null == _socket)
+            if (_state != CS_VIRGIN)
             {
-                // Do the async open if we need a timeout and don't have
-                // the timeout connect method available
-                if (_connectTimeout > 0 && _connectMethod == null)
-                    asyncOpen();
-                else
-                    normalOpen();
+                throw new IOException("Cannot be opened because state is: "
+                    + stateToString(_state));
             }
         }
-        catch (IOException e)
-        {
-            // Connection wasn't opened properly
-            // so close everything out
-            close();
-            throw e;
-        }
-    }
 
-    // This is here because the Socket() constructor is protected in JDK 1.2
-    // When JDK 1.2 support is dropped, remove this
-    // JDK12
-    class Socket14 extends Socket
-    {
-        public Socket14()
-        {
-            super();
-        }
+        _log.trace("open");
+        if (null == _socket)
+            normalOpen();
     }
 
     void openSocket() throws IOException
@@ -870,49 +761,28 @@ public class HttpConnection
         host = InetAddress.getByName(host).getHostAddress();
 
         // Use the connect method with the timeout if its available
-        if (_so_timeout > 0 && _connectMethod != null)
+        if (_soTimeout > 0)
         {
-            if (_log.isDebugEnabled())
-                _log.debug("using 1.4+ connect method with timeout");
-            _socket = new Socket14();
+            _socket = new Socket();
             try
             {
-                Object sa = _inetSocketAddressCons.newInstance(new Object[] {
-                    host, new Integer(port) });
-                _connectMethod.invoke(_socket, new Object[] { sa,
-                    new Integer(_connectTimeout) });
+                _socket.connect(new InetSocketAddress(host, port),
+                                _connectTimeout);
             }
-            catch (InstantiationException ie)
+            catch (SocketTimeoutException tex)
             {
-                _log.error(ie);
-                throw new IOException("Unexpected exception: " + ie);
-
+                _log.debug("Connection timeout after (ms): " + _connectTimeout);
+                throw new HttpTimeoutException();
             }
-            catch (IllegalAccessException iae)
+
+            catch (Exception ex)
             {
-                _log.error(iae);
-                throw new IOException("Unexpected exception: " + iae);
-
-            }
-            catch (InvocationTargetException ite)
-            {
-                Object targetException = ite.getTargetException();
-
-                if (_socketTimeoutException.isAssignableFrom(targetException
-                        .getClass()))
-                {
-                    _log.debug("Connection timeout after (ms): "
-                        + _connectTimeout);
-                    throw new HttpTimeoutException();
-                }
-
-                if (targetException instanceof IOException)
-                    throw (IOException)targetException;
-                if (targetException instanceof RuntimeException)
-                    throw (RuntimeException)targetException;
-                _log.error(targetException);
-                throw new IOException("Unexpected exception: "
-                    + targetException);
+                if (ex instanceof IOException)
+                    throw (IOException)ex;
+                if (ex instanceof RuntimeException)
+                    throw (RuntimeException)ex;
+                _log.error(ex);
+                throw new IOException("Unexpected exception: " + ex);
             }
 
         }
@@ -960,14 +830,18 @@ public class HttpConnection
                         .setRequestMethodInternal(HttpURLConnection.HTTP_METHOD_CONNECT);
                 _tunnelCon.setConnection(this, !HttpURLConnection.RELEASE);
 
+                // Set open to allow the checking in the urlCon to work
+                _state = CS_OPEN;
                 // This handles any authentication that's required
                 _tunnelCon.execute();
+                // Will set open for real later
+                _state = CS_VIRGIN;
                 _tunnelEstablished = true;
             }
 
             // Switch socket to SSL
             if (_log.isDebugEnabled())
-                _log.debug("switching to ssl: " + getHostPort());
+                _log.debug("switching to ssl: " + _hostPort);
 
             if (_sslSocketFactory == null)
             {
@@ -1037,9 +911,9 @@ public class HttpConnection
 
         createStreams();
 
-        synchronized (this)
+        synchronized (_connManager)
         {
-            _open = true;
+            _state = CS_OPEN;
         }
 
         if (_log.isDebugEnabled())
@@ -1147,135 +1021,6 @@ public class HttpConnection
         }
     }
 
-    private final void normalAsyncWrapper()
-    {
-        try
-        {
-            _log.debug("Attempting async open");
-            normalOpen();
-        }
-        catch (Exception ex)
-        {
-            _log.info("Async open exception: ", ex);
-            // Save the problem so we can throw on the
-            // requesting thread
-            synchronized (this)
-            {
-                _openException = ex;
-                // Indicate completion here in case the thread
-                // was interrupted
-                _asyncOpenCompleted = true;
-            }
-        }
-
-        synchronized (this)
-        {
-            _log.debug("Async open - doing notify to: " + hashCode());
-            _asyncOpenCompleted = true;
-            notify();
-        }
-    }
-
-    // Used when we have to do the timeout by hand, spins
-    // a thread to do the open and waits for the thread to
-    // either notify us (and open or fail), or it times out
-    private final void asyncOpen() throws IOException
-    {
-        final HttpConnection thisObject = this;
-
-        Thread openThread = new Thread()
-        {
-            HttpConnection _connection = thisObject;
-
-            public void run()
-            {
-                _connection.normalAsyncWrapper();
-            }
-        };
-
-        openThread.start();
-        // Thread.yield();
-
-        try
-        {
-            synchronized (this)
-            {
-                // Note that _open might be set before the socket
-                // is entirely open in the case of SSL, but we
-                // have established the connection and that's
-                // the main point, so we don't want to be waiting
-                if (!_open && _openException == null)
-                {
-
-                    if (_connectTimeout > 0)
-                    {
-                        long timeoutEnd = System.currentTimeMillis()
-                            + _connectTimeout;
-
-                        _log.debug("Waiting for open time: "
-                            + _connectTimeout
-                            + " ("
-                            + timeoutEnd
-                            + ") on "
-                            + hashCode());
-
-                        // Protected against spurious notify
-                        while (!_asyncOpenCompleted
-                            && System.currentTimeMillis() < timeoutEnd)
-                        {
-                            if (!_asyncOpenCompleted)
-                            {
-                                _log.debug("Spurious notify ("
-                                    + System.currentTimeMillis()
-                                    + ") on "
-                                    + hashCode());
-                            }
-                            wait(_connectTimeout);
-                        }
-                    }
-                    else
-                    {
-                        _log.debug("Waiting for open on " + hashCode());
-
-                        // Protected against spurious notify
-                        while (!_asyncOpenCompleted)
-                        {
-                            if (!_asyncOpenCompleted)
-                                _log.debug("Spurious notify on " + hashCode());
-                            wait();
-                        }
-                    }
-
-                    // Needed only for testing, to make sure these do not
-                    // accumulate
-                    if (_testTimeout > 0)
-                        openThread.interrupt();
-                }
-
-                if (_log.isDebugEnabled())
-                    _log.debug("Done with wait on " + hashCode());
-                if (!_open)
-                {
-                    // The open failed, but did not timeout
-                    if (_openException != null)
-                        throw (IOException)_openException;
-
-                    _log.debug("Connection TIMEOUT after (ms): "
-                        + _connectTimeout);
-                    throw new HttpTimeoutException();
-                }
-                if (_log.isDebugEnabled())
-                    _log.debug("OPENED " + hashCode());
-            }
-
-        }
-        catch (InterruptedException ex)
-        {
-            _log.error("Unexpected thread interruption: ", ex);
-        }
-
-    }
-
     private void createStreams() throws IOException, SocketException
     {
         InputStream is = _socket.getInputStream();
@@ -1294,7 +1039,7 @@ public class HttpConnection
         }
 
         _socket.setTcpNoDelay(true);
-        _socket.setSoTimeout(_so_timeout);
+        _socket.setSoTimeout(_soTimeout);
     }
 
     /**
@@ -1328,6 +1073,78 @@ public class HttpConnection
         return _input;
     }
 
+    void adjustPipelinedUrlConCount(int amount)
+    {
+        synchronized (this)
+        {
+            _pipelineUrlConCount += amount;
+            if (_log.isDebugEnabled())
+            {
+                _log.debug("adjustUrlConCount: "
+                    + this
+                    + " count: "
+                    + _pipelineUrlConCount
+                    + " amount: "
+                    + amount);
+            }
+            if (_pipelineUrlConCount < 0)
+            {
+                Util.impossible("_pipelingUrlConCount underflow: "
+                    + _pipelineUrlConCount
+                    + " delta: "
+                    + amount);
+            }
+
+            if (_pipelineUrlConCount > _pipelineUrlConHigh)
+            {
+                _pipelineUrlConHigh = _pipelineUrlConCount;
+                if (_pipelineUrlConHigh > _connManager._requestCounts[HttpConnectionManager.COUNT_PIPELINE_DEPTH_HIGH])
+                {
+                    _connManager._requestCounts[HttpConnectionManager.COUNT_PIPELINE_DEPTH_HIGH] = _pipelineUrlConHigh;
+                }
+            }
+        }
+    }
+
+    int getPipelinedUrlConCount()
+    {
+        synchronized (this)
+        {
+            return _pipelineUrlConCount;
+        }
+    }
+
+    //
+    // In the 3 methods below, we use the _connManger lock because
+    // we don't want the connection to close while the connManager
+    // is working with the connections
+    //
+
+    void startPreventClose()
+    {
+        synchronized (_connManager)
+        {
+            _preventCloseList.add(Thread.currentThread());
+        }
+    }
+
+    void endPreventClose()
+    {
+        synchronized (_connManager)
+        {
+            // Could happen because we already removed ourselve when
+            // closing
+            if (_preventCloseList.size() == 0)
+                return;
+
+            // This thread may not be found (because it already closed
+            // the connection), that's harmless
+            _preventCloseList.remove(Thread.currentThread());
+            if (_preventCloseList.size() == 0)
+                _connManager.notifyAll();
+        }
+    }
+
     /**
      * Close my socket and streams.
      */
@@ -1336,8 +1153,44 @@ public class HttpConnection
         if (_log.isDebugEnabled())
             _log.debug("CLOSE " + this);
 
-        _open = false;
-        _tunnelEstablished = false;
+        // This thread is allowed to close
+        endPreventClose();
+
+        // If there is another thread accessing the connection
+        // we have to wait
+        synchronized (_connManager)
+        {
+            while (_preventCloseList.size() > 0)
+            {
+                try
+                {
+                    _log.debug("Waiting to close");
+                    _connManager.wait();
+                }
+                catch (InterruptedException e)
+                {
+                    _log.warn("Closing thread interrupted");
+                    return;
+                }
+            }
+
+            _log.debug("Completing close");
+            _state = CS_CLOSED;
+            _tunnelEstablished = false;
+
+            // REMOVEME - maybe this is causing hangs
+            if (false)
+            {
+                try
+                {
+                    _connManager.enqueueCloseForConnection(this);
+                }
+                catch (InterruptedException e)
+                {
+                    _log.debug("Thread interrupted");
+                }
+            }
+        }
 
         if (null != _input)
         {
@@ -1380,31 +1233,25 @@ public class HttpConnection
             }
             _socket = null;
         }
+
     }
 
-    /**
-     * Throw an {@link IllegalStateException}if I am connected.
-     * 
-     * @throws IllegalStateException
-     *             if connected
-     */
+    boolean isOpen()
+    {
+        return _state == CS_OPEN;
+    }
+
     protected void assertNotOpen() throws IllegalStateException
     {
-        if (_open)
+        if (_state == CS_OPEN)
         {
             throw new IllegalStateException("Connection is open");
         }
     }
 
-    /**
-     * Throw an {@link IllegalStateException}if I am not connected.
-     * 
-     * @throws IllegalStateException
-     *             if not connected
-     */
     public void assertOpen() throws IllegalStateException
     {
-        if (!_open)
+        if (_state != CS_OPEN)
         {
             throw new IllegalStateException("Connection is not open");
         }
@@ -1422,18 +1269,73 @@ public class HttpConnection
         }
     }
 
+    public int hashCode()
+    {
+        return System.identityHashCode(this);
+    }
+
+    public boolean equals(Object other)
+    {
+        return this == other;
+    }
+
     public String toString()
     {
-        // return "Conn: " + _hostPort;
-        return "Conn: "
-            + _hostPort
-            + (_proxyHost != null ? " proxyHost: " + _proxyHost : "")
-            + (_proxyPort != -1 ? " proxyPort: " + _proxyPort : "")
-            + ((_socket != null) ? " local: "
-                + Integer.toString(_socket.getLocalPort()) : "")
-            + " ("
-            + System.identityHashCode(this)
-            + ")";
+        // Save local copy to avoid an NPE if the socket closes
+        // in the middle of this
+        Socket socket = _socket;
+
+        StringBuffer sb = new StringBuffer();
+        sb.append(Util.id(this) + " ");
+        sb.append(_hostPort);
+        sb.append(" ");
+        if (socket != null)
+            sb.append("(" + socket.getLocalPort() + ") ");
+        sb.append(stateToString(_state) + " ");
+        if (_authProtocol[HttpURLConnection.AUTH_NORMAL] > 0)
+        {
+            sb.append("(auth: "
+                + _authProtocol[HttpURLConnection.AUTH_NORMAL]
+                + ") ");
+        }
+        if (_authProtocol[HttpURLConnection.AUTH_PROXY] > 0)
+        {
+            sb.append("(pxauth: "
+                + _authProtocol[HttpURLConnection.AUTH_PROXY]
+                + ") ");
+        }
+        if (_proxyHost != null)
+        {
+            sb.append("px(" + _proxyHost);
+            if (_proxyPort != -1)
+                sb.append(":" + _proxyPort);
+            sb.append(")");
+        }
+        return sb.toString();
+    }
+
+    public String dump(int indent)
+    {
+        StringBuffer sb = new StringBuffer();
+
+        sb.append(Util.indent(indent));
+        sb.append("Total responded urlcons:      "
+            + _totalResUrlConCount
+            + "\n");
+        sb.append(Util.indent(indent));
+        sb.append("Total requested urlcons:      "
+            + _totalReqUrlConCount
+            + "\n");
+        sb.append(Util.indent(indent));
+        sb.append("Current pipelined urlcons:    "
+            + _pipelineUrlConCount
+            + "\n");
+        sb.append(Util.indent(indent));
+        sb
+                .append("High water pipelined urlcons: "
+                    + _pipelineUrlConHigh
+                    + "\n");
+        return sb.toString();
     }
 
 }

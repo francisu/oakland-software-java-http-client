@@ -27,7 +27,7 @@ public class Headers
 {
     private static final Log         _log      = LogUtils.makeLogger();
 
-    private static final int         INIT_SIZE = 10;
+    private static final int         INIT_SIZE = 20;
 
     // The keys/values to the headers stored in the order in which they
     // were set/added. Note that remove does not do anything with this.
@@ -36,6 +36,8 @@ public class Headers
 
     protected int                    _currentIndex;
 
+    // Used only to store the value of the header while it is being
+    // read
     protected char[]                 _charBuf;
 
     protected HttpURLConnectInternal _urlCon;
@@ -185,7 +187,7 @@ public class Headers
         _currentIndex = 0;
     }
 
-    private static final int INIT_BUF_SIZE  = 20;
+    private static final int INIT_BUF_SIZE  = 250;
 
     // States
     private static final int HEADER         = 0;
@@ -199,11 +201,18 @@ public class Headers
         read(is, urlCon, false, 0);
     }
 
+    int _depth;
+    
     public final void read(InputStream is,
                            HttpURLConnectInternal urlCon,
                            boolean singleEolChar,
                            int savedFirstChar) throws IOException
     {
+        _depth++;
+        if (_depth >1)
+            Util.impossible("depth");
+        try
+        {
         int ch = 0;
         int ind = 0;
         boolean atNewLine = true;
@@ -341,7 +350,12 @@ public class Headers
                 growCharBuf();
             _charBuf[ind++] = (char)ch;
         }
-
+        }
+        finally
+        {
+            _depth--;
+            
+        }
     }
 
     private void setValue(int ind)

@@ -48,6 +48,10 @@ public class TestFailover extends TestWebappBase
         com.oaklandsw.http.HttpURLConnection ngUrlCon = (com.oaklandsw.http.HttpURLConnection)urlCon;
         ngUrlCon.setConnectionProxyHost("xxxx");
 
+        // Note this test may fail if OpenDNS is used and it redirects
+        // to it's root page.  You can fix this by altering the preferences
+        // of OpenDNS in the network.
+        
         try
         {
             urlCon.setRequestMethod("GET");
@@ -109,8 +113,8 @@ public class TestFailover extends TestWebappBase
             return;
 
         com.oaklandsw.http.HttpURLConnection ngUrlCon = (com.oaklandsw.http.HttpURLConnection)urlCon;
-        assertEquals(ngUrlCon.getConnectionProxyHost(), null);
-        assertEquals(ngUrlCon.getConnectionProxyPort(), -1);
+        assertEquals(null, ngUrlCon.getConnectionProxyHost());
+        assertEquals(-1, ngUrlCon.getConnectionProxyPort());
 
         ngUrlCon.setConnectionProxyHost(HttpTestEnv.TEST_PROXY_HOST);
         ngUrlCon.setConnectionProxyPort(HttpTestEnv.TEST_PROXY_PORT);

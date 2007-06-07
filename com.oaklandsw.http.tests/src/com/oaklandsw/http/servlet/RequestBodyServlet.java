@@ -57,12 +57,14 @@
 package com.oaklandsw.http.servlet;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.PrintWriter;
 
 import javax.servlet.ServletException;
-import javax.servlet.ServletInputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import com.oaklandsw.util.Util;
 
 public class RequestBodyServlet extends MultiMethodServlet
 {
@@ -77,36 +79,11 @@ public class RequestBodyServlet extends MultiMethodServlet
     {
         response.setContentType("text/html");
         PrintWriter out = response.getWriter();
-        StringBuffer buf = null;
-        if (request.getContentLength() > 0)
-        {
-            buf = new StringBuffer();
-            ServletInputStream in = request.getInputStream();
-            int i = 0;
-            while (i < request.getContentLength())
-            {
-                int c = in.read();
-                if (c == -1)
-                {
-                    break;
-                }
-                buf.append((char)c);
-            }
-        }
-        else if ("chunked".equalsIgnoreCase(request
-                .getHeader("Transfer-Encoding")))
-        {
-            buf = new StringBuffer();
-            ServletInputStream in = request.getInputStream();
-            for (int c = in.read(); c != -1; c = in.read())
-            {
-                if (c == -1)
-                {
-                    break;
-                }
-                buf.append((char)c);
-            }
-        }
+        String bodyStr = null;
+        InputStream is = request.getInputStream();
+
+        if (is != null)
+            bodyStr = Util.getStringFromInputStream(is);
 
         out.println("<html>");
         out.println("<head><title>Request Body Servlet: "
@@ -118,9 +95,9 @@ public class RequestBodyServlet extends MultiMethodServlet
             + request.getMethod()
             + " request.</p>");
         out.println("<p>Body:</p>");
-        if (null != buf)
+        if (bodyStr != null)
         {
-            out.println("<p><tt>" + buf.toString() + "</tt></p>");
+            out.println("<p><tt>" + bodyStr + "</tt></p>");
         }
         else
         {

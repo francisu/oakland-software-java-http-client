@@ -2,7 +2,6 @@ package com.oaklandsw.http.webapp;
 
 import java.io.OutputStream;
 import java.io.IOException;
-import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
 
@@ -11,8 +10,11 @@ import org.apache.commons.logging.Log;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
+import com.oaklandsw.http.HttpException;
+import com.oaklandsw.http.HttpRetryException;
 import com.oaklandsw.http.HttpStatus;
 import com.oaklandsw.http.HttpTestEnv;
+import com.oaklandsw.http.HttpURLConnection;
 import com.oaklandsw.http.servlet.ParamServlet;
 import com.oaklandsw.http.servlet.RedirectServlet;
 import com.oaklandsw.util.LogUtils;
@@ -20,7 +22,7 @@ import com.oaklandsw.util.LogUtils;
 public class TestRedirect extends TestWebappBase
 {
 
-    private static final Log   _log         = LogUtils.makeLogger();
+    private static final Log _log = LogUtils.makeLogger();
 
     public TestRedirect(String testName)
     {
@@ -39,7 +41,7 @@ public class TestRedirect extends TestWebappBase
 
     public void testRedirect(String method, int redirectCode) throws Exception
     {
-        assertTrue(HttpURLConnection.getFollowRedirects());
+        assertTrue(java.net.HttpURLConnection.getFollowRedirects());
 
         String qs = "";
         if (redirectCode > 0)
@@ -116,11 +118,11 @@ public class TestRedirect extends TestWebappBase
 
     // Not implemented yet
     // Let's let people ask for this
-//    public void testRedirectPost303() throws Exception
-//    {
-//        // This should be converted to a GET
-//        testRedirect("POST", 303);
-//    }
+    // public void testRedirectPost303() throws Exception
+    // {
+    // // This should be converted to a GET
+    // testRedirect("POST", 303);
+    // }
 
     public void testRedirectPost307() throws Exception
     {
@@ -135,7 +137,7 @@ public class TestRedirect extends TestWebappBase
                                      int portRedir,
                                      boolean fail) throws Exception
     {
-        assertTrue(HttpURLConnection.getFollowRedirects());
+        assertTrue(java.net.HttpURLConnection.getFollowRedirects());
 
         URL url = new URL(_urlBase
             + RedirectServlet.NAME
@@ -201,12 +203,14 @@ public class TestRedirect extends TestWebappBase
 
     public void testRedirectHostPort() throws Exception
     {
-        testRedirectHostPort(getServletIpAddress(), HttpTestEnv.TEST_WEBAPP_PORT, !FAIL);
+        testRedirectHostPort(getServletIpAddress(),
+                             HttpTestEnv.TEST_WEBAPP_PORT,
+                             !FAIL);
     }
 
     public void testNoRedirect() throws Exception
     {
-        HttpURLConnection.setFollowRedirects(false);
+        java.net.HttpURLConnection.setFollowRedirects(false);
 
         URL url = new URL(_urlBase
             + RedirectServlet.NAME
@@ -226,7 +230,7 @@ public class TestRedirect extends TestWebappBase
         response = urlCon.getResponseCode();
         assertEquals(302, response);
 
-        HttpURLConnection.setFollowRedirects(true);
+        java.net.HttpURLConnection.setFollowRedirects(true);
         if (com.oaklandsw.http.HttpURLConnection.getExplicitClose())
             urlCon.getInputStream().close();
         checkNoActiveConns(url);
@@ -251,6 +255,33 @@ public class TestRedirect extends TestWebappBase
                                       "<title>Param Servlet: GET</title>"));
 
         checkNoActiveConns(url);
+    }
+
+    public void testRelativeRedirectStreaming() throws Exception
+    {
+        URL url = new URL(_urlBase
+            + RedirectServlet.NAME
+            + "?to="
+            + URLEncoder.encode("/" + context + "/params"));
+
+        HttpURLConnection urlCon = (HttpURLConnection)url.openConnection();
+        urlCon.setFixedLengthStreamingMode(5);
+
+        urlCon.setDoOutput(true);
+        urlCon.getOutputStream().write("12345".getBytes("ASCII"));
+        urlCon.getOutputStream().close();
+
+        try
+        {
+            // Since authentication happens, it should fail at this point
+            urlCon.getResponseCode();
+            fail("Should have gotten retry exception");
+        }
+        catch (HttpRetryException ex)
+        {
+            assertEquals("Unexpected response code", 302, ex.responseCode());
+            assertEquals("/oaklandsw-http/params", ex.getLocation());
+        }
     }
 
     public void testRedirectWithQueryString() throws Exception
@@ -321,6 +352,9 @@ public class TestRedirect extends TestWebappBase
 
     public void testPutRedirect() throws Exception
     {
+        if (_inAuthCloseProxyTest)
+            return;
+
         String qs = "to="
             + URLEncoder.encode("http://"
                 + HttpTestEnv.TOMCAT_HOST
@@ -365,7 +399,7 @@ public class TestRedirect extends TestWebappBase
             urlCon.getResponseCode();
             fail("Did not receive expected exception about a loop");
         }
-        catch (java.net.ProtocolException ex)
+        catch (HttpException ex)
         {
             // Expected this exception
         }

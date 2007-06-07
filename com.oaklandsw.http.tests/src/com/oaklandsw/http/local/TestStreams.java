@@ -9,6 +9,7 @@ import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
+import com.oaklandsw.http.AutoRetryInputStream;
 import com.oaklandsw.http.ChunkedInputStream;
 import com.oaklandsw.http.ContentLengthInputStream;
 import com.oaklandsw.http.SimpleHttpMethod;
@@ -28,8 +29,10 @@ public class TestStreams extends TestCase
         SimpleHttpMethod method = new SimpleHttpMethod();
 
         // Test for when buffer is larger than chunk size
-        InputStream in = new ChunkedInputStream(new ByteArrayInputStream(
-            correctInput.getBytes()), method);
+        InputStream in = new ChunkedInputStream(new ByteArrayInputStream(correctInput
+                                                        .getBytes()),
+                                                method,
+                                                !AutoRetryInputStream.THROW_AUTO_RETRY);
         byte[] buffer = new byte[300];
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         int len;
@@ -49,7 +52,8 @@ public class TestStreams extends TestCase
 
         // Test for when buffer is smaller than chunk size.
         in = new ChunkedInputStream(new ByteArrayInputStream(correctInput
-                .getBytes()), method);
+                .getBytes()), method, !AutoRetryInputStream.THROW_AUTO_RETRY);
+
         buffer = new byte[7];
         out = new ByteArrayOutputStream();
         while ((len = in.read(buffer)) > 0)
@@ -72,8 +76,10 @@ public class TestStreams extends TestCase
         String corrupInput = "10;key=\"value\"\r\n123456789012345\r\n5\r\n12345\r\n0\r\nFooter1: abcde\r\nFooter2: fghij\r\n";
         SimpleHttpMethod method = new SimpleHttpMethod();
 
-        InputStream in = new ChunkedInputStream(new ByteArrayInputStream(
-            corrupInput.getBytes()), method);
+        InputStream in = new ChunkedInputStream(new ByteArrayInputStream(corrupInput
+                                                        .getBytes()),
+                                                method,
+                                                !AutoRetryInputStream.THROW_AUTO_RETRY);
         byte[] buffer = new byte[300];
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         int len;
@@ -94,8 +100,11 @@ public class TestStreams extends TestCase
     public void testContentLengthInputStream() throws IOException
     {
         String correct = "1234567890123456";
-        InputStream in = new ContentLengthInputStream(new ByteArrayInputStream(
-            correct.getBytes()), null, 10);
+        InputStream in = new ContentLengthInputStream(new ByteArrayInputStream(correct
+                                                              .getBytes()),
+                                                      null,
+                                                      10,
+                                                      !AutoRetryInputStream.THROW_AUTO_RETRY);
         byte[] buffer = new byte[50];
         int len = in.read(buffer);
         ByteArrayOutputStream out = new ByteArrayOutputStream();

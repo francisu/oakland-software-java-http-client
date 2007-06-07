@@ -21,7 +21,7 @@ import com.oaklandsw.util.LogUtils;
 
 class ReleaseInputStream extends FilterInputStream
 {
-    private static final Log        _log = LogUtils.makeLogger();
+    private static final Log  _log = LogUtils.makeLogger();
 
     private HttpURLConnection _urlCon;
 
@@ -49,7 +49,9 @@ class ReleaseInputStream extends FilterInputStream
     {
         _log.trace("close");
 
-        _urlCon.releaseConnection(_shouldClose);
+        _urlCon.releaseConnection(_shouldClose
+            ? HttpURLConnection.CLOSE
+            : HttpURLConnection.READING);
     }
 
 }

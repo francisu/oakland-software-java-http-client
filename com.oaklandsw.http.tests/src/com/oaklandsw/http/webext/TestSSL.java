@@ -1,7 +1,6 @@
 package com.oaklandsw.http.webext;
 
 import java.io.IOException;
-import java.net.HttpURLConnection;
 import java.net.URL;
 import java.security.cert.Certificate;
 import java.security.cert.X509Certificate;
@@ -13,6 +12,7 @@ import junit.framework.TestSuite;
 
 import com.oaklandsw.http.HttpTestBase;
 import com.oaklandsw.http.HttpTestEnv;
+import com.oaklandsw.http.HttpURLConnection;
 
 public class TestSSL extends HttpTestBase
 {
@@ -100,7 +100,7 @@ public class TestSSL extends HttpTestBase
         URL url = new URL(HttpTestEnv.TEST_WEBEXT_SSL_URL);
         HttpURLConnection urlCon = (HttpURLConnection)url.openConnection();
 
-        if (((com.oaklandsw.http.HttpURLConnection)urlCon).getSSLSocketFactory() != sf)
+        if ((urlCon).getSSLSocketFactory() != sf)
             fail("Socket factory mismatch");
 
         urlCon.setRequestMethod("GET");
@@ -115,12 +115,12 @@ public class TestSSL extends HttpTestBase
 
         URL url = new URL(HttpTestEnv.TEST_WEBEXT_SSL_URL);
         HttpURLConnection urlCon = (HttpURLConnection)url.openConnection();
-        ((com.oaklandsw.http.HttpURLConnection)urlCon).setSSLSocketFactory(sf);
+        (urlCon).setSSLSocketFactory(sf);
 
         urlCon.setRequestMethod("GET");
         urlCon.connect();
         assertEquals(200, urlCon.getResponseCode());
-        if (((com.oaklandsw.http.HttpURLConnection)urlCon).getSSLSocketFactory() != sf)
+        if ((urlCon).getSSLSocketFactory() != sf)
             fail("Socket factory mismatch");
         if (!sf._used)
             fail("Default socket factory not used");
@@ -228,11 +228,11 @@ public class TestSSL extends HttpTestBase
 
         URL url = new URL(HttpTestEnv.TEST_WEBEXT_SSL_URL);
         HttpURLConnection urlCon = (HttpURLConnection)url.openConnection();
-        ((com.oaklandsw.http.HttpURLConnection)urlCon).setHostnameVerifier(ver);
+        (urlCon).setHostnameVerifier(ver);
         urlCon.setRequestMethod("GET");
         urlCon.connect();
 
-        if (((com.oaklandsw.http.HttpURLConnection)urlCon).getHostnameVerifier() != ver)
+        if ((urlCon).getHostnameVerifier() != ver)
             fail("Verifier factory mismatch");
 
         if (ver._used)
@@ -253,7 +253,7 @@ public class TestSSL extends HttpTestBase
 
         try
         {
-            ((com.oaklandsw.http.HttpURLConnection)urlCon)
+            (urlCon)
                     .setHostnameVerifier(ver);
             fail("Did not get expected IllegalStateException");
         }
@@ -274,7 +274,7 @@ public class TestSSL extends HttpTestBase
 
         urlCon.setRequestMethod("GET");
         urlCon.connect();
-        Certificate[] certs = ((com.oaklandsw.http.HttpURLConnection)urlCon)
+        Certificate[] certs = (urlCon)
                 .getLocalCertificates();
         if (certs != null)
             fail("Unexpected local certificates");
@@ -292,7 +292,7 @@ public class TestSSL extends HttpTestBase
 
         urlCon.setRequestMethod("GET");
         urlCon.connect();
-        Certificate[] certs = ((com.oaklandsw.http.HttpURLConnection)urlCon)
+        Certificate[] certs = (urlCon)
                 .getServerCertificates();
         if (!(certs[0] instanceof X509Certificate))
             fail("Invalid certificate");
@@ -307,7 +307,7 @@ public class TestSSL extends HttpTestBase
 
         urlCon.setRequestMethod("GET");
         urlCon.connect();
-        String cipherSuite = ((com.oaklandsw.http.HttpURLConnection)urlCon)
+        String cipherSuite = (urlCon)
                 .getCipherSuite();
         if (cipherSuite.indexOf("SSL") != 0)
             fail("Invalid cipher suite");

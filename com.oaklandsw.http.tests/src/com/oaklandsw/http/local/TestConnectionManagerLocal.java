@@ -141,7 +141,7 @@ public class TestConnectionManagerLocal extends HttpTestBase
 
         HttpConnection conn = _connManager.getConnection(urlCon);
         // Validate the connection properties
-        assertEquals("Host", "www.nosuchserver.com", conn.getHost());
+        assertEquals("Host", "www.nosuchserver.com", conn._host);
         assertEquals("Port", 80, conn.getPort());
         // Release the connection
         _connManager.releaseConnection(conn);
@@ -151,7 +151,7 @@ public class TestConnectionManagerLocal extends HttpTestBase
         urlCon = HttpURLConnection.openConnection(url);
         conn = _connManager.getConnection(urlCon);
         // Validate the connection properties
-        assertEquals("Host", "www.nosuchserver.com", conn.getHost());
+        assertEquals("Host", "www.nosuchserver.com", conn._host);
         assertEquals("Port", 443, conn.getPort());
         // Release the connection
         _connManager.releaseConnection(conn);
@@ -161,7 +161,7 @@ public class TestConnectionManagerLocal extends HttpTestBase
         urlCon = HttpURLConnection.openConnection(url);
         conn = _connManager.getConnection(urlCon);
         // Validate the connection properties
-        assertEquals("Host", "www.nowhere.org", conn.getHost());
+        assertEquals("Host", "www.nowhere.org", conn._host);
         assertEquals("Port", 8080, conn.getPort());
         // Release the connection
         _connManager.releaseConnection(conn);

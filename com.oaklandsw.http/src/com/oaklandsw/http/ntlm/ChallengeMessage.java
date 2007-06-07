@@ -7,12 +7,16 @@
 
 package com.oaklandsw.http.ntlm;
 
+import org.apache.commons.logging.Log;
+
 import com.oaklandsw.http.HttpException;
 import com.oaklandsw.util.HexString;
+import com.oaklandsw.util.LogUtils;
 import com.oaklandsw.util.Util;
 
 public class ChallengeMessage extends Message
 {
+    private static final Log   _log                 = LogUtils.makeLogger();
 
     protected static final int CHALLENGE_HEADER_LEN = 24;
 
@@ -27,7 +31,7 @@ public class ChallengeMessage extends Message
     public ChallengeMessage()
     {
     }
-    
+
     public byte[] getTargetBlock()
     {
         return _targetBlock;
@@ -38,7 +42,18 @@ public class ChallengeMessage extends Message
         int index = super.decode();
 
         if (_type != MSG_CHALLENGE)
-            throw new HttpException("Invalid message type");
+        {
+            throw new HttpException("Invalid message type - expected: "
+                + MSG_CHALLENGE
+                + " got: "
+                + _type);
+        }
+
+        if (_log.isDebugEnabled())
+        {
+            _log.debug("Challenge Bytes:");
+            _log.debug(HexString.dump(_msgBytes));
+        }
 
         // session key - skip
         index += 4;
@@ -46,9 +61,11 @@ public class ChallengeMessage extends Message
         _msgLength = (int)Util.fromByteLittle(4, _msgBytes, index);
         if (_msgLength < CHALLENGE_HEADER_LEN + NONCE_LENGTH + 8)
         {
-            throw new RuntimeException("Invalid message length "
+            // JCIFS 1.2.13 servlet filter sends a Challenge with a 0 length
+            // if the domain parameter is not specified
+            _log.warn("Invalid message length "
                 + _msgLength
-                + " in NTLM message");
+                + " in Challenge NTLM message");
         }
         index += 4;
 
@@ -73,12 +90,16 @@ public class ChallengeMessage extends Message
             index += 2;
             int targetLen = (int)Util.fromByteLittle(2, _msgBytes, index);
             index += 2;
-            
+
             // Offset of target block from start of message
             int targetOffset = (int)Util.fromByteLittle(4, _msgBytes, index);
 
             _targetBlock = new byte[targetLen];
-            System.arraycopy(_msgBytes, targetOffset, _targetBlock, 0, targetLen);
+            System.arraycopy(_msgBytes,
+                             targetOffset,
+                             _targetBlock,
+                             0,
+                             targetLen);
         }
 
         log();

@@ -70,6 +70,11 @@ public class TestAxis extends TestWebappBase
     public TestAxis(String testName)
     {
         super(testName);
+
+        // Netproxy cannot deal with this as it closes the connection after
+        // the POST, probably because of a non-standard header.
+        _doAuthCloseProxyTest = false;
+
     }
 
     public static Test suite()
@@ -176,7 +181,7 @@ public class TestAxis extends TestWebappBase
 
         Service service = selectService(serviceNS, serviceName);
         Operation operation = null;
-        
+
         org.apache.axis.client.Service dpf = new org.apache.axis.client.Service(_wsdlParser,
                                                                                 service
                                                                                         .getQName());
@@ -527,7 +532,6 @@ public class TestAxis extends TestWebappBase
         // Not used yet
         if (true)
             return;
-        LogUtils.logAll();
         invokeService("http://webservices.amazon.com/AWSECommerceService/AWSECommerceService.wsdl",
                       "Help",
                       new String[] {});
@@ -557,14 +561,10 @@ public class TestAxis extends TestWebappBase
         testWsBasic();
         // testWsGoogle();
 
-        // NTLM does not work over HTTP 1.0
-        String proxyHost = com.oaklandsw.http.HttpURLConnection.getProxyHost();
-        if (proxyHost == null
-            || !proxyHost.equals(HttpTestEnv.TEST_10_PROXY_HOST))
-        {
-            testWsIISNtlmOk();
-            testWsIISNtlmFail();
-        }
+        if (!isAllowNtlmProxy())
+            return;
+        testWsIISNtlmOk();
+        testWsIISNtlmFail();
     }
 
 }

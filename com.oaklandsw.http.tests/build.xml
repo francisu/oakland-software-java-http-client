@@ -11,7 +11,7 @@
 			<equals arg1="${target.java.version}" arg2="1.2">
 			</equals>
 			<then>
-				<echo message="Compiling with 1.2 compiler"/>
+				<echo message="Compiling with 1.2 compiler" />
 				<!-- this is the 1.2 compiler -->
 				<property name="build.compiler" value="jikes" />
 
@@ -84,6 +84,12 @@
 				<exclude name="lib/**" />
 			</fileset>
 			<classes dir="bin">
+				<include name="**" />
+			</classes>
+			<classes dir="../com.oaklandsw.http/bin">
+				<include name="**" />
+			</classes>
+			<classes dir="../com.oaklandsw.util/bin">
 				<include name="**" />
 			</classes>
 		</war>

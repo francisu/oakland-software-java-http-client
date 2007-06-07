@@ -1,5 +1,5 @@
 //
-// Copyright 2002-3003, oakland software, all rights reserved.
+// Copyright 2002-2007, oakland software, all rights reserved.
 //
 // May not be used or redistributed without specific written
 // permission from oakland software.
@@ -11,6 +11,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InterruptedIOException;
+import java.io.OutputStream;
 import java.net.MalformedURLException;
 import java.net.SocketException;
 import java.net.URL;
@@ -38,6 +39,7 @@ public class HttpURLConnectInternal
     public HttpURLConnectInternal(URL urlParam)
     {
         super(urlParam);
+        _thread = Thread.currentThread();
     }
 
     // For testing and tunnelling
@@ -46,73 +48,108 @@ public class HttpURLConnectInternal
     }
 
     /** My request path + query string. */
-    private String      _pathQuery;
+    private String        _pathQuery;
 
     /** Whether or not the request body has been sent. */
-    private boolean     _bodySent;
+    private boolean       _bodySent;
 
     /**
      * The host/port to be sent on this if this is a connect request.
      */
-    private String      _connectHostPort;
+    private String        _connectHostPort;
 
     /**
      * The input stream from which to read the request body. This is set before
      * the request is issued, if the source of the data is a stream.
      */
-    private InputStream _requestBody;
+    private InputStream   _requestBody;
 
     /**
      * The byte array of the request. If the request source is a byte array,
      * this is set. When the request is first written, the contents of the
      * request is saved here in case it needs to be resent for authentication.
      */
-    private byte[]      _requestBytes;
+    private byte[]        _requestBytes;
 
-    private boolean     _responseBodySetup;
+    private boolean       _responseBodySetup;
 
     /**
      * Indicates that we are sending an NTLM negotiate message on this URL
      * request and the underlying connection (when obtained) should be marked
      * with the setNtlmLeaveOpen() flag.
      */
-    private boolean     _ntlmAuth;
-
+    // private boolean _ntlmAuth;
     // Header values we are interested in
     // NOTE: be sure to change resetBeforeRead if anything is added
     // to this list
-    protected String    _hdrContentLength;
-    protected String    _hdrConnection;
-    protected String    _hdrProxyConnection;
-    protected String    _hdrTransferEncoding;
-    protected String    _hdrWWWAuth;
-    protected String    _hdrLocation;
-    protected String    _hdrProxyAuth;
-    protected int       _hdrContentLengthInt;
+    protected String      _hdrContentLength;
+    protected String      _hdrConnection;
+    protected String      _hdrProxyConnection;
+    protected String      _hdrTransferEncoding;
+    protected String      _hdrWWWAuth;
+    protected String      _hdrLocation;
+    protected String      _hdrProxyAuth;
+    protected int         _hdrContentLengthInt;
 
     // We have read the first character of the next line after
     // the status line, and it is here. This only applies if
     // _singleEolChar is true
-    protected int       _savedAfterStatusNextChar;
+    protected int         _savedAfterStatusNextChar;
 
-    protected boolean   _singleEolChar;
+    protected boolean     _singleEolChar;
+
+    // Either AUTH_NORMAL or AUTH_PROXY, this is set when we get a 401 or a
+    // 407, -1 indicates we have not started authentication so we don't know
+    protected int         _currentAuthType     = -1;
 
     // The credentials that were sent in the authentication. We have
     // to have them both here and in the HTTPConnection. They are here
     // because NTLM authentication closes the connection during
     // authentication and we thus have no where to get the credential
     // information that was sent.
-    UserCredential      _credential;
-    UserCredential      _proxyCredential;
+    UserCredential[]      _credential          = new UserCredential[AUTH_PROXY + 1];
 
     // The authentication protocol associated with the above credential
-    int                 _authProtocol;
-    int                 _proxyAuthProtocol;
+    // This is how this urlcon is authenticated
+    int[]                 _authProtocol        = new int[AUTH_PROXY + 1];
+
+    // The values for _authState
+
+    // No authentication is required for this urlcon
+    static final int      AS_NONE              = 0;
+
+    // We know authentication is required and have not yet done anything
+    static final int      AS_NEEDS_AUTH        = 1;
+
+    // We have sent the initial authentication reponse to the server
+    static final int      AS_INITIAL_AUTH_SENT = 2;
+
+    // We have sent the final authentication response to the server
+    // (perhaps preemtively in the case of basic)
+    static final int      AS_FINAL_AUTH_SENT   = 3;
+
+    // We have received an OK status after authentication, we are authenticated
+    static final int      AS_AUTHENTICATED     = 4;
+
+    int[]                 _authState           = new int[AUTH_PROXY + 1];
+
+    // True if we are reading from the connection on the pipeline
+    // thread, this is used only if authentication is required, then we
+    // want to process the authentication in place and then exit as if
+    // we had done a write
+    protected boolean     _pipelinedReading;
+
+    // Thread on which the connection was created (used for pipelining)
+    protected Thread      _thread;
+
+    // Used for testing
+    protected static int  _diagSequence;
+    public static boolean _addDiagSequence;
 
     /**
      * Maximum number of redirects to forward through.
      */
-    private int         MAX_FORWARDS = 100;
+    private int           MAX_FORWARDS         = 100;
 
     public Log getLog()
     {
@@ -124,44 +161,94 @@ public class HttpURLConnectInternal
         return method;
     }
 
-    void resetSentCredentials()
+    static String authStateToString(int authState)
     {
-        _credential = null;
-        _proxyCredential = null;
+        switch (authState)
+        {
+            case AS_NONE:
+                return "AS_NONE";
+            case AS_NEEDS_AUTH:
+                return "AS_NEEDS_AUTH";
+                // case AS_INITIAL_AUTH_RECD:
+                // return "AS_INITIAL_AUTH_RECD";
+            case AS_INITIAL_AUTH_SENT:
+                return "AS_INITIAL_AUTH_SENT";
+                // case AS_FINAL_AUTH_RECD:
+                // return "AS_FINAL_AUTH_RECD";
+            case AS_FINAL_AUTH_SENT:
+                return "AS_FINAL_AUTH_SENT";
+            case AS_AUTHENTICATED:
+                return "AS_AUTHENTICATED";
+        }
+        Util.impossible("Invalid authState: " + authState);
+        return null;
     }
 
-    Credential getCredentialSent(boolean proxy)
+    static String authTypeToString(int authType)
     {
-        if (proxy)
-            return _proxyCredential;
-        return _credential;
+        switch (authType)
+        {
+            case -1:
+                return "UNKNOWN (-1)";
+            case 0:
+                return "NONE (0)";
+            case Credential.AUTH_BASIC:
+                return "AUTH_BASIC";
+            case Credential.AUTH_DIGEST:
+                return "AUTH_DIGEST";
+            case Credential.AUTH_NTLM:
+                return "AUTH_NTLM";
+        }
+        Util.impossible("Invalid authType: " + authType);
+        return null;
     }
 
-    void setCredentialSent(int authType, boolean proxy, UserCredential cred)
+    Credential getCredentialSent(int normalOrProxy)
+    {
+        return _credential[normalOrProxy];
+    }
+
+    void setAuthState(int authState, int normalOrProxy)
     {
         if (_log.isDebugEnabled())
         {
-            _log.debug("Credential sent authType: "
-                + authType
-                + " cred: "
-                + cred
-                + " proxy: "
-                + proxy);
+            _log.debug("setAuthState: "
+                + normalOrProxyToString(normalOrProxy)
+                + " Type: "
+                + authTypeToString(_authProtocol[normalOrProxy])
+                + ": "
+                + authStateToString(authState)
+                + " (was "
+                + authStateToString(_authState[normalOrProxy])
+                + ")");
         }
 
-        if (proxy)
+        _authState[normalOrProxy] = authState;
+
+    }
+
+    // The lastAuthMessage parameter indicates the last authentication message
+    // was sent on this connection, and thus the special authentication
+    // processing is over
+    void setCredentialSent(int authType,
+                           int normalOrProxy,
+                           UserCredential cred,
+                           int newAuthState)
+    {
+        if (_log.isDebugEnabled())
         {
-            _proxyCredential = cred;
-            _proxyAuthProtocol = authType;
+            _log.debug("setCredentialSent: " + cred);
         }
-        else
-        {
-            _credential = cred;
-            _authProtocol = authType;
-        }
+
+        setAuthState(newAuthState, normalOrProxy);
+
+        _credential[normalOrProxy] = cred;
+        _authProtocol[normalOrProxy] = authType;
 
         if (_connection != null)
-            _connection.setCredentialSent(authType, proxy, cred);
+        {
+            _connection.setCredentialSent(authType, normalOrProxy, cred);
+        }
     }
 
     public final void setRequestBody(byte[] bodydata)
@@ -181,8 +268,8 @@ public class HttpURLConnectInternal
 
     public final void setPathQuery(String pathQuery)
     {
-        if (_log.isTraceEnabled())
-            _log.trace("setPathQuery");
+        if (_log.isDebugEnabled())
+            _log.debug("setPathQuery");
 
         if (pathQuery == null || pathQuery.equals(""))
             _pathQuery = "/";
@@ -221,6 +308,16 @@ public class HttpURLConnectInternal
 
     protected final void addRequestHeaders() throws IOException
     {
+        // For testing, works with ParamServlet
+        if (_addDiagSequence)
+        {
+            synchronized (getClass())
+            {
+                _reqHeaders.remove("Sequence");
+                _reqHeaders.add("Sequence", Integer.toString(_diagSequence));
+            }
+        }
+
         // Use add() instead of set() in this method cuz its faster
         // if we know the header is not present
 
@@ -235,13 +332,13 @@ public class HttpURLConnectInternal
         if (_reqHeaders.get(HDR_HOST) == null)
         {
             _log.debug("Adding Host request header");
-            _reqHeaders.add(HDR_HOST, _connection.getHostPortURL());
+            _reqHeaders.add(HDR_HOST, _connection._hostPortURL);
 
         }
 
         if (_cookieContainer != null && !_cookieContainer.isEmpty())
         {
-            Cookie[] cookies = _cookieSpec.match(_connection.getHost(),
+            Cookie[] cookies = _cookieSpec.match(_connection._host,
                                                  _connection.getPort(),
                                                  getPath(),
                                                  _connection.isSecure(),
@@ -343,18 +440,20 @@ public class HttpURLConnectInternal
         _hdrLocation = null;
         _responseIsEmpty = false;
         _responseBodySetup = false;
+        _responseHeadersRead = false;
         _responseStream = null;
         _responseBytes = null;
+        _savedAfterStatusNextChar = 0;
+        _singleEolChar = false;
     }
 
     protected final void readResponse() throws IOException
     {
-        // _log.trace("readResponse");
-
-        resetBeforeRead();
+        _connection.startReadBugCheck();
         readStatusLine();
         readResponseHeaders();
         isResponseEmpty();
+        _connection.endReadBugCheck();
     }
 
     // Used only on the reading of the first bytes of the connection
@@ -366,7 +465,8 @@ public class HttpURLConnectInternal
             + "sent and before reply received (try #"
             + _tryCount
             + ").  This request was probably sent to a connection that the "
-            + "server closed after being idle.  Consider using the set[Default]IdleConnectionTimeout "
+            + "server closed after being idle.  "
+            + "Consider using the set[Default]IdleConnectionTimeout "
             + "to avoid using connections that the server closed.");
     }
 
@@ -525,7 +625,8 @@ public class HttpURLConnectInternal
                 break;
 
             case 'P':
-                if (name.equalsIgnoreCase(Authenticator.PROXY_AUTH))
+                if (name
+                        .equalsIgnoreCase(Authenticator.REQ_HEADERS[AUTH_PROXY]))
                     _hdrProxyAuth = value;
                 else if (name.equalsIgnoreCase(HDR_PROXY_CONNECTION))
                     _hdrProxyConnection = value;
@@ -538,7 +639,7 @@ public class HttpURLConnectInternal
                         && !name.equalsIgnoreCase("set-cookie2"))
                         break;
 
-                    String host = _connection.getHost();
+                    String host = _connection._host;
                     int port = _connection.getPort();
                     boolean isSecure = _connection.isSecure();
                     Cookie[] cookies = null;
@@ -600,7 +701,8 @@ public class HttpURLConnectInternal
                     _hdrTransferEncoding = value;
                 break;
             case 'W':
-                if (name.equalsIgnoreCase(Authenticator.WWW_AUTH))
+                if (name
+                        .equalsIgnoreCase(Authenticator.REQ_HEADERS[AUTH_NORMAL]))
                     _hdrWWWAuth = value;
                 break;
         }
@@ -614,13 +716,11 @@ public class HttpURLConnectInternal
                           this,
                           _singleEolChar,
                           _savedAfterStatusNextChar);
-
+        _responseHeadersRead = true;
     }
 
     protected final void isResponseEmpty() throws IOException
     {
-        // _log.trace("isResponseEmpty");
-
         // Does not have a response body, even though the headers suggest
         // that it does
         if ((_methodProperties & METHOD_PROP_IGNORE_RESPONSE_BODY) != 0)
@@ -670,8 +770,6 @@ public class HttpURLConnectInternal
     // to read the response
     protected final void setupResponseBody() throws IOException
     {
-        // _log.trace("setupResponseBody");
-
         if (_responseIsEmpty || _responseBodySetup)
             return;
         _responseBodySetup = true;
@@ -689,14 +787,15 @@ public class HttpURLConnectInternal
         {
             if ("chunked".equalsIgnoreCase(_hdrTransferEncoding))
             {
-                result = new ChunkedInputStream(_conInStream, this);
+                result = new ChunkedInputStream(_conInStream, this, _pipelining);
             }
         }
         else if (_hdrContentLength != null)
         {
             result = new ContentLengthInputStream(_conInStream,
                                                   this,
-                                                  _hdrContentLengthInt);
+                                                  _hdrContentLengthInt,
+                                                  _pipelining);
         }
         else
         {
@@ -705,7 +804,12 @@ public class HttpURLConnectInternal
             // connection is to be closed. This type of stream will
             // release and close the underlying connection when close is
             // called on it.
-            result = new ReleaseInputStream(_conInStream, this, shouldClose);
+            _responseStream = new ReleaseInputStream(_conInStream,
+                                                     this,
+                                                     shouldClose);
+            // Don't wrap this in the auto close stream since it will
+            // already handle that
+            return;
         }
 
         if (result == null)
@@ -720,38 +824,26 @@ public class HttpURLConnectInternal
 
     protected final void writeRequest() throws IOException
     {
-        _log.trace("writeRequest");
-        try
-        {
-            writeRequestLine();
-            writeRequestHeaders();
-            _conOutStream.write(Util.CRLF_BYTES);
-            _conOutStream.flush();
+        _log.debug("writeRequest");
+        writeRequestLine();
+        writeRequestHeaders();
+        _conOutStream.write(Util.CRLF_BYTES);
+        _conOutStream.flush();
 
-            // We don't write the body in streaming mode, the user does
-            // that
-            if (isStreaming())
-            {
-                _log.trace("writeRequest - streaming request header sent");
-                _streamingRequestSent = true;
-                return;
-            }
+        // Resets all of the read state so we are not looking
+        // at stale state while processing the write
+        resetBeforeRead();
 
-            _bodySent = writeRequestBody();
-        }
-        catch (HttpException ex)
+        // We don't write the body in streaming mode, the user does
+        // that
+        if (isStreaming())
         {
-            // Show this through since this is a subclass of IOException
-            // we have to catch this first
-            throw ex;
+            _log.debug("writeRequest - streaming request header sent");
+            _requestSent = true;
+            return;
         }
-        catch (IOException ex)
-        {
-            // Ignore this, the connection could have been closed on
-            // the write, but theoretically still open when it is
-            // read. If the connection was closed, then we will get the
-            // error on the read.
-        }
+
+        _bodySent = writeRequestBody();
     }
 
     protected final void writeRequestLine() throws IOException
@@ -769,9 +861,18 @@ public class HttpURLConnectInternal
                     buf.append("https://");
                 else
                     buf.append("http://");
-                buf.append(_connection.getHostPortURL());
+                buf.append(_connection._hostPortURL);
             }
             buf.append(_pathQuery);
+
+            // For testing, works with ParamServlet
+            if (_addDiagSequence)
+            {
+                synchronized (getClass())
+                {
+                    buf.append("&Sequence=" + (++_diagSequence));
+                }
+            }
         }
         else if ((_methodProperties & METHOD_PROP_REQ_LINE_STAR) != 0)
         {
@@ -780,7 +881,7 @@ public class HttpURLConnectInternal
         else if ((_methodProperties & METHOD_PROP_REQ_LINE_HOST_PORT) != 0)
         {
             // Put the host/port junk on the front if required
-            buf.append(_connection.getHostPort());
+            buf.append(_connection._hostPort);
         }
 
         buf.append(_http11 ? " HTTP/1.1\r\n" : " HTTP/1.0\r\n");
@@ -797,8 +898,6 @@ public class HttpURLConnectInternal
 
     protected final boolean writeRequestBody() throws IOException
     {
-        // _log.trace("writeRequestBody");
-
         // Nothing to write
         if (_contentLength == 0)
             return true;
@@ -874,7 +973,7 @@ public class HttpURLConnectInternal
     {
         if (HttpStatus.SC_CONTINUE == _responseCode)
         {
-            _log.trace("Found continue - sending request body");
+            _log.debug("Found continue - sending request body");
             if (!_bodySent)
             {
                 _bodySent = writeRequestBody();
@@ -901,53 +1000,196 @@ public class HttpURLConnectInternal
             // Make sure we have read the entire response before the
             // connection is released. This also ensures a retry if
             // there is a problem getting the response
-            if (_responseCode >= 200)
+            if (_responseCode >= HttpStatus.SC_OK)
             {
                 if (isReleasedAfterExecute())
                     readEntireResponse();
+
+                if (_responseCode >= 300 && readSeparateFromWrite())
+                {
+                    // Doing a pipelined read, we don't own the connection and
+                    // got a retryable
+                    // response
+                    if (_pipelinedReading
+                        && (_responseCode <= 399
+                            || _responseCode == HttpStatus.SC_UNAUTHORIZED || _responseCode == HttpStatus.SC_PROXY_AUTHENTICATION_REQUIRED))
+                    {
+                        String str = "Unexpected "
+                            + _responseCode
+                            + " during pipelined read on: "
+                            + this;
+                        _log.debug(str);
+
+                        // Resent authentication state based on response
+                        if (_responseCode == HttpStatus.SC_UNAUTHORIZED)
+                        {
+                            _currentAuthType = AUTH_NORMAL;
+                            setAuthState(AS_NEEDS_AUTH, AUTH_NORMAL);
+                        }
+                        else if (_responseCode == HttpStatus.SC_PROXY_AUTHENTICATION_REQUIRED)
+                        {
+                            _currentAuthType = AUTH_PROXY;
+                            setAuthState(AS_NEEDS_AUTH, AUTH_PROXY);
+                        }
+                        else
+                        {
+                            _currentAuthType = -1;
+                            // Redirect, we don't know what's going to happen
+                            setAuthState(AS_NONE, AUTH_NORMAL);
+                        }
+
+                        // Force a retry at a higher level for redirect or auth
+                        _tryCount = 0;
+                        throw new HttpException(str);
+                    }
+                    break;
+                }
             }
 
             // if SC_CONTINUE write the request body
             writeRemainingRequestBody();
+
+            // Reset everything before we read again, the first
+            // resetBeforeRead() is called after we write the request
+            if (_responseCode < HttpStatus.SC_OK)
+                resetBeforeRead();
         }
-        while (_responseCode < 200);
+        while (_responseCode < HttpStatus.SC_OK);
+
+        if (_responseCode >= HttpStatus.SC_OK)
+        {
+            // Completely good response, record the statistics
+            if (_responseCode < 300)
+            {
+                _connManager.recordCount(HttpConnectionManager.COUNT_SUCCESS);
+                if (_connection != null)
+                    _connection._totalResUrlConCount++;
+            }
+
+            // Good and redirect, the authentication process is complete
+            if (_responseCode < 400 && _currentAuthType >= 0)
+                setAuthState(AS_AUTHENTICATED, _currentAuthType);
+        }
+
+    }
+
+    // Returns true if we need to start authentication processing
+    private boolean startAuthProcessing(int urlConAuthType, int connAuthType)
+    {
+        switch (urlConAuthType)
+        {
+            case 0:
+            case Credential.AUTH_BASIC:
+                // Never, since basic is always done preemptively
+                return false;
+            case Credential.AUTH_DIGEST:
+                // Always, since we can't do this preemptively
+                if (_pipelining)
+                {
+                    throw new IllegalStateException("Using Digest authentication with "
+                        + "pipeling is not allowed (because it makes no sense), "
+                        + "if you must use Digest authentication, turn off pipelining");
+                }
+                // This is useful with streaming though
+                return true;
+            case Credential.AUTH_NTLM:
+                // Only if the socket connection has not been autheticated
+                if (connAuthType == -1)
+                    return true;
+                return false;
+            default:
+                Util.impossible("Invalid auth type: " + urlConAuthType);
+                return false;
+        }
+    }
+
+    protected void processPreemptiveAuth(int normalOrProxy)
+        throws HttpException
+    {
+        if (_forwardAuthCount == 1
+            || _authState[normalOrProxy] == AS_FINAL_AUTH_SENT)
+        {
+            if (_log.isDebugEnabled())
+            {
+                _log.debug("processPreemptiveAuth - "
+                    + normalOrProxyToString(normalOrProxy)
+                    + " checking for preemptive authentication");
+            }
+
+            boolean sent = Authenticator.authenticate(this,
+                                                      null,
+                                                      null,
+                                                      null,
+                                                      normalOrProxy);
+
+            // The first time, initiate authentication processing
+            // if required, this bypasses pipelining/streaming until
+            // the authentication is complete
+            if (startAuthProcessing(_authenticationType[normalOrProxy],
+                                    _connection._authProtocol[normalOrProxy]))
+            {
+                setAuthState(AS_NEEDS_AUTH, normalOrProxy);
+                sent = true;
+            }
+
+            if (sent)
+                _currentAuthType = normalOrProxy;
+
+        }
+
     }
 
     private final void processRequest() throws IOException
     {
-        int maxTries = _tries;
-
-        // try to do the write
-        _tryCount = 0;
+        // Inner retry loop, this retries to the same destination
+        // in the case of connection failures and timeouts to the _maxTries
+        // limit
         do
         {
-            _tryCount++;
-
-            if (_tryCount > 1 && _retryInterval != 0)
-            {
-                try
-                {
-                    if (_log.isDebugEnabled())
-                        _log.debug("Sleep: " + _retryInterval);
-                    Thread.sleep(_retryInterval);
-                }
-                catch (InterruptedException ex)
-                {
-                    // Ignore
-                }
-            }
-
-            if (_log.isTraceEnabled())
-            {
-                _log.trace("Attempt number " + _tryCount + " to write request");
-            }
-
             try
             {
                 // Bypass this when we have already done it in the
-                // streaming case
-                if (!_streamingRequestSent)
+                // streaming/pipelining case
+                if (!_requestSent)
                 {
+                    _tryCount++;
+
+                    if (_log.isDebugEnabled())
+                    {
+                        _log.debug("Attempt number "
+                            + _tryCount
+                            + " (forward/auth count: "
+                            + _forwardAuthCount
+                            + ") to write request");
+                    }
+
+                    if (_tryCount > 1)
+                    {
+                        // Get rid of previous responses because we don't want
+                        // them considered for authentication
+                        _respHeaders.clear();
+
+                        if (_retryInterval != 0)
+                        {
+                            try
+                            {
+                                if (_log.isDebugEnabled())
+                                {
+                                    _log.debug("Before retry sleep: "
+                                        + _retryInterval);
+                                }
+                                Thread.sleep(_retryInterval);
+                            }
+                            catch (InterruptedException ex)
+                            {
+                                // Ignore
+                            }
+                        }
+                    }
+
+                    HttpConnection oldConnection = _connection;
+
+                    // We are going to write, so we have to connect
                     connect();
 
                     // No retry allowed (POST)
@@ -956,16 +1198,72 @@ public class HttpURLConnectInternal
                         _connection.checkConnection();
                         // Don't allow any retries beyond this point
                         // for a POST as its not idempotent.
-                        maxTries = 0;
+                        _maxTries = 0;
                     }
 
-                    writeRequest();
+                    // Should we initiate authentication? This can happen
+                    // at the beginning, or if we are resending after
+                    // a successful authentication (because the connection
+                    // closed after the authentication)
+                    processPreemptiveAuth(AUTH_NORMAL);
+                    if (_connection.isProxied())
+                        processPreemptiveAuth(AUTH_PROXY);
 
-                    // The user writes the request in streaming mode
-                    if (isStreaming())
+                    // We switched connections, if we got a connection that's
+                    // already authenticated or that has pipelined reads pending
+                    // then just have the pipeline mechanism retry
+
+                    if (oldConnection != _connection
+                        && _pipelining
+                        && _currentAuthType >= 0
+                        && _authState[_currentAuthType] >= AS_NEEDS_AUTH
+                        && _authState[_currentAuthType] < AS_FINAL_AUTH_SENT
+                        && (_connection._authProtocol[AUTH_NORMAL] > 0
+                            || _connection._authProtocol[AUTH_PROXY] > 0 || _connection
+                                .getPipelinedUrlConCount() > 1))
+                    {
+                        setAuthState(AS_NEEDS_AUTH, _currentAuthType);
+                        String str = "Authentication sequence interrupted "
+                            + "because found authenticated connection - retry";
+                        _log.debug(str);
+                        // FIXME we should throw something different because
+                        // this will cause the connection to close and that's
+                        // not what we want, we just cannot use this connection
+                        throw new IOException(str);
+                    }
+
+                    // Do the start/end prevent close only for the pipelined
+                    // case, since that's the only case where we can have
+                    // multiple threads access the same connection
+                    try
+                    {
+                        if (_pipelining)
+                            _connection.startPreventClose();
+
+                        // Make sure it's still open at this point, can't close
+                        // until end prevent close
+                        if (false &&!_connection.isOpen())
+                        {
+                            throw new IOException("Connection: "
+                                + _connection
+                                + " closed");
+                        }
+                        writeRequest();
+                    }
+                    finally
+                    {
+                        if (_pipelining)
+                            _connection.endPreventClose();
+
+                    }
+
+                    // The user writes the request in streaming/pipelining mode
+                    if (readSeparateFromWrite())
                     {
                         _log.debug("processRequest - "
-                            + "streaming exiting for user to write to stream");
+                            + "streaming/pipelining exiting "
+                            + "after request written");
+
                         return;
                     }
                 }
@@ -982,27 +1280,51 @@ public class HttpURLConnectInternal
             catch (HttpException httpe)
             {
                 // This is non-recoverable, throw it up to the user
-                _log
-                        .info("HttpException when writing request/reading response: ",
-                              httpe);
+                _log.info("HttpException when writing "
+                    + "request/reading response: ", httpe);
                 // Handled at a higher level
                 throw httpe;
             }
             catch (IOException ioe)
             {
-                _log.warn("IOException when writing "
-                    + "request/reading response: ", ioe);
+                if (_log.isDebugEnabled())
+                {
+                    _log.debug("IOException when writing "
+                        + "request/reading response: ", ioe);
+                }
+
+                if (_tryCount >= _maxTries)
+                {
+                    _connManager
+                            .recordCount(HttpConnectionManager.COUNT_FAIL_MAX_RETRY);
+                    throw maxRetryExceededWrapper(ioe);
+                }
 
                 // This can be retried
                 releaseConnection(CLOSE);
 
-                if (_tryCount >= maxTries)
+                // Pipelining and before write sent, retry here
+                if (_pipelining && !_requestSent)
                 {
-                    _log.warn("Attempt to write request/read "
-                        + "response has reached max retries: "
-                        + maxTries);
+                    _log.debug("Retrying pipelining before request sent");
+                    // fall through and retry
+                }
+                else if (readSeparateFromWrite())
+                {
+                    if (_log.isWarnEnabled())
+                    {
+                        _log.warn("Retry not allowed for a streaming urlcon: "
+                            + this);
+                    }
+                    // For pipelining in the read, retry happens at a higher
+                    // level
                     throw ioe;
                 }
+
+                // So we resend the request on a retry
+                _requestSent = false;
+
+                _connManager.recordRetry(_connManager._retryCounts, _tryCount);
             }
         }
         while (true);
@@ -1015,8 +1337,7 @@ public class HttpURLConnectInternal
      */
     private final void readEntireResponse() throws IOException
     {
-
-        _log.trace("readEntireResponse");
+        _log.debug("readEntireResponse");
         setupResponseBody();
 
         if (_log.isDebugEnabled())
@@ -1038,37 +1359,113 @@ public class HttpURLConnectInternal
         _responseBytes = os.toByteArray();
     }
 
-    private boolean processAuthenticationResponse(int statusCode)
-        throws HttpException
+    // Returns true if retry needed
+    private boolean processRedirectResponse()
     {
-        _log.trace("processAuthenticationResponse");
+        _log.debug("Redirect required");
 
-        String respType = null;
-        String reqType = null;
+        if (!getInstanceFollowRedirects())
+        {
+            _log.info("Redirect requested but "
+                + "followRedirects is "
+                + "disabled");
+            return false;
+        }
 
-        switch (statusCode)
+        if (_hdrLocation == null)
+        {
+            // got a redirect response, but no location header
+            _log.error("Received redirect response "
+                + _responseCode
+                + " but no location header");
+            return false;
+        }
+
+        if (_log.isDebugEnabled())
+        {
+            _log.debug("Redirect requested to location '" + _hdrLocation + "'");
+        }
+
+        // rfc2616 demands the location value be a complete URI
+        // Location = "Location" ":" absoluteURI
+        URL u = null; // the new url
+        try
+        {
+            u = new URL(_hdrLocation);
+        }
+        catch (Exception ex)
+        {
+            // Fall through and try to make a URL based on
+            // what we know
+        }
+
+        if (u == null)
+        {
+            // try to construct the new url based on the current url
+            try
+            {
+                URL currentUrl = new URL(_urlString);
+                u = new URL(currentUrl, _hdrLocation);
+            }
+            catch (Exception ex)
+            {
+                _log.error("Redirected location '"
+                    + _hdrLocation
+                    + "' is malformed");
+                return false;
+            }
+        }
+
+        // Get rid of the hold Host header since we are
+        // going somewhere else
+        _reqHeaders.remove(HDR_HOST);
+        _urlString = u.toExternalForm();
+
+        // change the path and query string to the redirect
+        String newPathQuery = URIUtil.getPathQuery(u.toExternalForm());
+        if (_log.isDebugEnabled())
+        {
+            _log.debug("Changing path/query from \""
+                + _pathQuery
+                + "\" to \""
+                + newPathQuery
+                + "\" in response to "
+                + _responseCode
+                + " response.");
+        }
+        _pathQuery = newPathQuery;
+        // Do a retry
+        return true;
+    }
+
+    // Returns true if retry needed
+    private boolean processAuthenticationResponse() throws HttpException
+    {
+        _log.debug("processAuthenticationResponse");
+
+        switch (_responseCode)
         {
             case HttpStatus.SC_UNAUTHORIZED:
                 if (_hdrWWWAuth == null)
                     return false;
-                reqType = Authenticator.WWW_AUTH;
-                respType = Authenticator.WWW_AUTH_RESP;
+                _currentAuthType = AUTH_NORMAL;
                 break;
 
             case HttpStatus.SC_PROXY_AUTHENTICATION_REQUIRED:
                 if (_hdrProxyAuth == null)
                     return false;
-                reqType = Authenticator.PROXY_AUTH;
-                respType = Authenticator.PROXY_AUTH_RESP;
+                _currentAuthType = AUTH_PROXY;
                 break;
         }
 
         boolean authenticated = false;
 
         // remove preemptive header and reauthenticate
-        _reqHeaders.remove(respType);
+        _reqHeaders.remove(Authenticator.RESP_HEADERS[_currentAuthType]);
         try
         {
+            String reqType = Authenticator.REQ_HEADERS[_currentAuthType];
+
             // parse the authenticate header
             Map challengeMap = Authenticator
                     .parseAuthenticateHeader(_respHeaders, reqType, this);
@@ -1077,178 +1474,143 @@ public class HttpURLConnectInternal
                                                        _respHeaders,
                                                        reqType,
                                                        challengeMap,
-                                                       respType);
-
-            if (authenticated && challengeMap.containsKey(Authenticator.NTLM))
-                _ntlmAuth = true;
+                                                       _currentAuthType);
         }
         catch (HttpException ex)
         {
             // Don't show this to the user, just indicate that we are
             // authenticated
             _log.warn("Exception processing authentication response: ", ex);
-            return true;
+            return false;
         }
 
         if (!authenticated)
         {
             // won't be able to authenticate to this challenge
             // without additional information
-            _log.debug("execute(): Server demands "
+            _log.debug("Server demands "
                 + "authentication credentials, but none are "
                 + "available, so aborting.");
         }
         else
         {
-            _log.debug("execute(): Server demanded "
+            _log.debug("Server demanded "
                 + "authentication credentials, will try again.");
             // let's try it again, using the credentials
         }
 
-        return !authenticated; // finished processing if we aren't
-        // authenticated
+        // Do a retry if true
+        return authenticated;
+    }
+
+    // Handles processing after the request is sent for streaming/pipelining
+    private void processAfterRequestStreamPipe() throws IOException
+    {
+        // Either a redirection or error, we can't continue
+        if (_responseCode > 300)
+        {
+            HttpRetryException rte = new HttpRetryException(new String(_responseText,
+                                                                       0,
+                                                                       _responseTextLength),
+                                                            _responseCode);
+            rte._location = _hdrLocation;
+            if (_log.isDebugEnabled())
+            {
+                _log.debug("Streaming/pipelining non-OK "
+                    + "response, throwing", rte);
+            }
+            throw rte;
+        }
+        _log.debug("Streaming/pipelining - returning");
     }
 
     protected final void processRequestLoop() throws IOException
     {
-        int forwardCount = 0; // protect from an infinite loop
-
-        while (forwardCount++ < MAX_FORWARDS)
+        // Loop for redirection and authentication retries
+        while (_forwardAuthCount++ < MAX_FORWARDS)
         {
-            if (_log.isDebugEnabled())
-            {
-                _log.debug("Redirect loop try " + forwardCount);
-            }
+            boolean redirect = false;
 
-            // write the request and read the response, will retry
+            // Write the request and read the response, will retry if
+            // necessary
             processRequest();
 
             // We let the user send the bytes if streaming
-            if (isStreaming())
+            if (doOutput && readSeparateFromWrite())
             {
-                // Either a redirection or error, we can't continue
-                if (_responseCode > 300)
-                {
-                    HttpRetryException rte = new HttpRetryException(new String(_responseText,
-                                                                               0,
-                                                                               _responseTextLength),
-                                                                    _responseCode);
-                    rte._location = _hdrLocation;
-                    _log.debug("Streaming non-OK response, throwing", rte);
-                    throw rte;
-                }
-                _log.debug("Streaming - returning to user");
-                return;
+                processAfterRequestStreamPipe();
             }
+
+            // Because of pipelining or streaming we have not read
+            // the response yet, so just get out
+            if (!_responseHeadersRead)
+                return;
 
             switch (_responseCode)
             {
                 case HttpStatus.SC_UNAUTHORIZED:
                 case HttpStatus.SC_PROXY_AUTHENTICATION_REQUIRED:
-                    _log.debug("Authorization required");
                     if (_doAuthentication)
                     {
-                        // Process authentication response
-                        // If the authentication is successful,
-                        // return the statusCode otherwise, drop through the
-                        // switch and try again.
-                        if (processAuthenticationResponse(_responseCode))
+                        // processAuthenticationResponse will set the
+                        // authState
+
+                        // Returns true if request should be retried
+                        if (!processAuthenticationResponse())
                             return;
                     }
                     else
                     {
-                        // let the client handle the authenticaiton
+                        // Let the client handle the authenticaiton
+                        _log.debug("Authorization required - "
+                            + "client handles authentication");
                         return;
                     }
+                    _requestSent = false;
+                    _tryCount = 0;
                     break;
 
                 case HttpStatus.SC_MOVED_TEMPORARILY:
                 case HttpStatus.SC_MOVED_PERMANENTLY:
                 case HttpStatus.SC_TEMPORARY_REDIRECT:
-                    _log.debug("Redirect required");
-
-                    resetSentCredentials();
-
-                    // TODO: This block should be factored into a new
-                    // method called processRedirectResponse
-                    if (!getInstanceFollowRedirects())
-                    {
-                        _log.info("Redirect requested but followRedirects is "
-                            + "disabled");
+                    if (!processRedirectResponse())
                         return;
-                    }
-
-                    if (_hdrLocation == null)
-                    {
-                        // got a redirect response, but no location header
-                        _log.error("Received redirect response "
-                            + _responseCode
-                            + " but no location header");
-                        return;
-                    }
-                    if (_log.isDebugEnabled())
-                    {
-                        _log.debug("Redirect requested to location '"
-                            + _hdrLocation
-                            + "'");
-                    }
-
-                    // rfc2616 demands the location value be a complete URI
-                    // Location = "Location" ":" absoluteURI
-                    URL u = null; // the new url
-                    try
-                    {
-                        u = new URL(_hdrLocation);
-                    }
-                    catch (Exception ex)
-                    {
-                        // Fall through and try to make a URL based on
-                        // what we know
-                    }
-
-                    if (u == null)
-                    {
-                        // try to construct the new url based on the current url
-                        try
-                        {
-                            URL currentUrl = new URL(_urlString);
-                            u = new URL(currentUrl, _hdrLocation);
-                        }
-                        catch (Exception ex)
-                        {
-                            _log.error("Redirected location '"
-                                + _hdrLocation
-                                + "' is malformed");
-                            return;
-                        }
-                    }
-
-                    // Get rid of the hold Host header since we are
-                    // going somewhere else
-                    _reqHeaders.remove(HDR_HOST);
-                    _urlString = u.toExternalForm();
-
-                    // change the path and query string to the redirect
-                    String newPathQuery = URIUtil.getPathQuery(u
-                            .toExternalForm());
-                    if (_log.isDebugEnabled())
-                    {
-                        _log.debug("Changing path/query from \""
-                            + _pathQuery
-                            + "\" to \""
-                            + newPathQuery
-                            + "\" in response to "
-                            + _responseCode
-                            + " response.");
-                    }
-                    _pathQuery = newPathQuery;
-
+                    _requestSent = false;
+                    _tryCount = 0;
+                    redirect = true;
                     break;
+
+                case HttpStatus.SC_OK:
+
+                    // This happens if we expect an authentication challenge
+                    // but none is forthcoming, in this case we just retry
+                    // the request so the normal pipelining mechanism can be
+                    // used
+                    if (_forwardAuthCount == 1
+                        && (isStreaming() || _pipelining))
+                    {
+                        _log.warn("setAuthenticationType() specified with "
+                            + "pipelining/streaming, but no authorization "
+                            + "is required - retrying");
+
+                        // Set up the response body so it can be flushed
+                        // below, and indicate it's not setup so that the
+                        // next time around it will setup again
+                        setupResponseBody();
+                        _responseBodySetup = false;
+
+                        // Go around again
+                        break;
+                    }
+
+                    // Fall through
+
                 default:
-                    // neither an unauthorized nor a redirect response
+                    // Neither an unauthorized nor a redirect response,
+                    // no retry possible, or this is just normal
                     return;
 
-            } // end of switch
+            }
 
             if (shouldCloseConnection())
             {
@@ -1256,23 +1618,27 @@ public class HttpURLConnectInternal
             }
             else
             {
-                if (_connection != null && _connection.isOpen())
+                if (_connection.isOpen())
                 {
-                    // throw away body to position the stream after the response
+                    // Throw away body to position the stream after the response
                     discardResponseBody();
                 }
 
-                // Force getting a new connection, like for the redirect
-                // case where it goes to another host
-                releaseConnection(!CLOSE);
+                // For redirect, force getting a new connection, for auth
+                // we way on the same connection
+                if (redirect)
+                    releaseConnection(NORMAL);
             }
 
-        } // end of loop
+        }
 
-        _log.error("Giving up after " + MAX_FORWARDS + " forwards");
-        throw new java.net.ProtocolException("Maximum redirects ("
+        _log.error("Giving up after "
             + MAX_FORWARDS
-            + ") exceeded");
+            + " forwards/authentication restarts");
+        throw new HttpException("Maximum redirects/authentication restarts ("
+            + MAX_FORWARDS
+            + ") exceeded for "
+            + this);
 
     }
 
@@ -1280,9 +1646,9 @@ public class HttpURLConnectInternal
     // case, this starts the request and leaves it executing.
     protected final void executeStart() throws IOException
     {
-        if (_log.isTraceEnabled())
+        if (_log.isDebugEnabled())
         {
-            _log.trace("execute "
+            _log.debug("executeStart "
                 + method
                 + " ExplicitClose: "
                 + _explicitClose);
@@ -1298,32 +1664,9 @@ public class HttpURLConnectInternal
             setRequestMethodInternal(HTTP_METHOD_GET);
         }
 
-        // Get me a connection, if there is a problem here, it just throws
-        connect();
-
-        // We have a connection at this point that we must release
-        // if there is a problem, or if we no longer need it when the
-        // execute finishes
-
         try
         {
             _executing = true;
-
-            // pre-emptively add the authorization header, if required.
-            Authenticator.authenticate(this,
-                                       null,
-                                       null,
-                                       null,
-                                       Authenticator.WWW_AUTH_RESP);
-            if (_connection.isProxied())
-            {
-                Authenticator.authenticate(this,
-                                           null,
-                                           null,
-                                           null,
-                                           Authenticator.PROXY_AUTH_RESP);
-            }
-
             processRequestLoop();
         }
         catch (InterruptedIOException ioiex)
@@ -1337,9 +1680,8 @@ public class HttpURLConnectInternal
         catch (IOException httpe)
         {
             releaseConnection(CLOSE);
-            // Remember this in case we have to re-throw it
-            _ioException = httpe;
-            _dead = true;
+            // Remember this in case we have to re-throw it, also sets _dead
+            recordIOException(httpe);
             throw httpe;
         }
         catch (RuntimeException re)
@@ -1404,15 +1746,396 @@ public class HttpURLConnectInternal
         }
         finally
         {
+            _log.debug("execute - finally");
+
             _executing = false;
             _executed = true;
 
             // The connection is released in the explicit close case
             // when the stream is released
             if (_responseIsEmpty || isReleasedAfterExecute())
-                releaseConnection(!CLOSE);
+                releaseConnection(NORMAL);
         }
 
+    }
+
+    // Does the write for a pipelined connection. This can happen
+    // on any thread, but is synchronized because it must obtain
+    // the connection exclusively from the connection manager
+    protected void processPipelinedWrite() throws InterruptedException
+    {
+        if (_log.isDebugEnabled())
+        {
+            _log.debug("processPipelinedWrite " + this);
+        }
+
+        // We want direct access to the output stream
+        // FIXME - this is set for everything, is that fair?
+        HttpURLConnection.setExplicitClose(true);
+
+        try
+        {
+            OutputStream os = null;
+            if (doOutput)
+            {
+                // This sends the request and then allows the user to
+                // write to the stream, the connection is released when
+                // this output stream is closed
+                // Note that we allow only the streaming output streams
+                // for pipelining, which call streamWriteFinished() when
+                // their connection is closed
+                os = getOutputStream();
+
+                HttpConnection connection = _connection;
+                try
+                {
+                    connection.startPreventClose();
+
+                    // Make sure it's still open at this point, can't close
+                    // until end prevent close
+                    if (!connection.isOpen())
+                    {
+                        throw new IOException("Connection: "
+                            + _connection
+                            + " closed");
+                    }
+
+                    _callback.writeRequest(this, os);
+                }
+                finally
+                {
+                    connection.endPreventClose();
+                }
+            }
+            else
+            {
+                // Nothing for the user to write, send the request out
+                // (the startPreventClose stuff is called inside of here for the
+                // pipelined case)
+                executeStart();
+                // Indicate we have sent the request out
+                _requestSent = true;
+                // This releases the connection
+                streamWriteFinished(true);
+            }
+        }
+        catch (Exception ex)
+        {
+            // Some problem writing, pass this to the user, we have
+            // already retried if possible
+            if (_log.isDebugEnabled())
+            {
+                _log
+                        .debug("processPipelineWrite "
+                            + "exception writing: "
+                            + ex);
+            }
+
+            // We got so far as to get a connection, we need to indicate
+            // we are no longer using that connection
+            if (_connection != null)
+                _connection.adjustPipelinedUrlConCount(-1);
+
+            if (ex instanceof AutomaticHttpRetryException)
+            {
+                if (_log.isDebugEnabled())
+                {
+                    _log.debug("processPipelinedWrite "
+                        + "AutomaticHttpRetryException thrown while writing "
+                        + "Callback - attempting retry ", ex);
+                }
+
+                // Returns null if we can retry
+                IOException ioex = (IOException)attemptPipelinedRetry(_ioException);
+                if (ioex == null)
+                    return;
+                ex = ioex;
+                // Continue
+            }
+
+            // We are done with this urlcon
+            if (_log.isDebugEnabled())
+                _log.debug("urlConWasRead (write error): " + this);
+            _connManager.urlConWasRead(_thread);
+
+            // Something is really wrong, blow out of here, so the main
+            // caller sees the problem
+            if (ex instanceof RuntimeException)
+            {
+                _log.warn("Unexpected RuntimeException, not calling callback: "
+                    + this, ex);
+                throw (RuntimeException)ex;
+            }
+
+            // Tell the user what went wrong
+            _callback.error(this, null, ex);
+            return;
+        }
+    }
+
+    // Process the pipelined read, this is executed on the HttpConnectionThread,
+    // that guarantees that each connection is accessed by only one thread for
+    // reading.
+    protected void processPipelinedRead() throws InterruptedException
+    {
+        Exception ex = null;
+        InputStream is = null;
+
+        // Save the connection going in, the connection might change
+        // in the event of initiating a retry, and we need to know to
+        // reduce the count on the original connection
+        HttpConnection connection = _connection;
+
+        boolean readSuccessful = false;
+
+        // Make sure we have only one read at a time for the connection,
+        // since enqueing work happens in the middle of writing (if we
+        // have to write for authentication), we don't want to be
+        // reentered
+        synchronized (this)
+        {
+            try
+            {
+                if (_log.isDebugEnabled())
+                {
+                    _log.debug("processPipelinedRead "
+                        + "for HttpURLConnection: "
+                        + this);
+                }
+
+                // Don't allow a close while we have the input stream
+                connection.startPreventClose();
+
+                // Gets or blocks for the connection, could throw
+                // if there is a problem
+                try
+                {
+                    _pipelinedReading = true;
+
+                    connection.startReadBugCheck();
+
+                    // Do this check inside of the startPreventClose() block
+                    // (above)
+                    // the connection cannot be closed by another thread after
+                    // that
+                    // point, but we want to make sure it is still open before
+                    // we
+                    // try to read it
+                    if (!connection.isOpen())
+                        throw new IOException("Connection is closed when reading response");
+
+                    if (!_executed)
+                        execute();
+
+                    // We have written authentication, now return so the
+                    // response may be read on the new connection
+                    if (_currentAuthType >= 0
+                        && _authState[_currentAuthType] == AS_FINAL_AUTH_SENT)
+                    {
+                        _requestSent = true;
+
+                        if (_log.isDebugEnabled())
+                        {
+                            _log.debug("processPipelinedRead "
+                                + "unexpected authentication - "
+                                + "wrote authentication and returning");
+                        }
+                        // Will retry
+                        return;
+                    }
+
+                    // Gets the input stream if we actually read
+                    is = getResponseStream();
+                }
+                catch (IOException iex)
+                {
+                    // We are not reading during a retry
+                    _pipelinedReading = false;
+
+                    // Returns the exception to use, or null if we can retry
+                    ex = attemptPipelinedRetry(iex);
+                    if (ex == null)
+                        return;
+                }
+                catch (Exception sex)
+                {
+                    ex = sex;
+                }
+                finally
+                {
+                    connection.endReadBugCheck();
+                    _pipelinedReading = false;
+                }
+
+                if (_log.isDebugEnabled())
+                {
+                    _log.debug("processPipelinedRead "
+                        + "calling callback "
+                        + "for HttpURLConnection: "
+                        + this
+                        + " is: "
+                        + is);
+                    if (ex != null)
+                        _log.debug("processPipelinedRead: EXCEPTION", ex);
+                }
+
+                Exception saveExc = _ioException;
+                try
+                {
+                    // Call the user
+                    if (ex != null
+                        || _responseCode >= HttpStatus.SC_REDIRECTION)
+                        _callback.error(this, is, ex);
+                    else
+                        _callback.readResponse(this, is);
+
+                    // Inside of the call to the user a stream got closed and
+                    // caused an exception reading, it will have thrown an
+                    // AutomaticHttpRetryException to the user, if this happens
+                    // then do the retry
+                    if (_ioException instanceof AutomaticHttpRetryException)
+                    {
+                        if (_log.isDebugEnabled())
+                        {
+                            _log.debug("processPipelinedRead "
+                                + "AutomaticHttpRetryException thrown in "
+                                + "Callback - attempting retry ", _ioException);
+                        }
+
+                        // Returns null if we can retry
+                        IOException ioex = (IOException)attemptPipelinedRetry(_ioException);
+                        if (ioex == null)
+                            return;
+                        _ioException = ioex;
+                    }
+
+                }
+                catch (Throwable t)
+                {
+                    // Ignore this
+                    _log.error("Exception thrown out of "
+                        + "Callback.readResponse() for: "
+                        + this
+                        + " conn: "
+                        + _connection, t);
+                }
+                finally
+                {
+                    _ioException = (IOException)saveExc;
+                }
+
+                readSuccessful = true;
+            }
+            finally
+            {
+                connection.endPreventClose();
+
+                // Make sure this gets closed even if the user doesn't
+                try
+                {
+                    if (is != null)
+                        is.close();
+                }
+                catch (IOException iex)
+                {
+                    // We don't care about exception during close
+                    if (_log.isWarnEnabled())
+                    {
+                        _log.warn("Exception during close of InputStream for: "
+                            + this
+                            + " conn: "
+                            + _connection, iex);
+                    }
+                }
+
+                // Regardless of what happened, if we are on a different
+                // connection now, then adjust the count for the former
+                // connection (which is probably dead anyways)
+                if (connection != _connection)
+                    connection.adjustPipelinedUrlConCount(-1);
+
+                if (readSuccessful)
+                {
+                    _log.debug("processPipelineRead - SUCCESS");
+                    _connection.adjustPipelinedUrlConCount(-1);
+                    if (_log.isDebugEnabled())
+                        _log.debug("urlConWasRead (read success): " + this);
+                    _connManager.urlConWasRead(_thread);
+                }
+            }
+        }
+    }
+
+    // Returns null if retry is possible, otherwise returns the exception to
+    // throw
+    protected Exception attemptPipelinedRetry(IOException iex)
+        throws InterruptedException
+    {
+        // If allowed, give it another go
+        if (_tryCount < _maxTries)
+        {
+            if (_log.isDebugEnabled())
+            {
+                _log.debug("pipelined RETRY (exception) " + this, iex);
+            }
+            // System.out.println("processPipelineRead RETRY " + this);
+            // FIXME - make this cleanup a little more sane
+            _dead = false;
+            _requestSent = false;
+            _executed = false;
+            _ioException = null;
+            _connManager.recordRetry(_connManager._pipelineReadRetryCounts,
+                                     _tryCount);
+            processPipelinedWrite();
+            if (_log.isDebugEnabled())
+            {
+                _log.debug("pipelined FINISHED RETRY " + this);
+            }
+            return null;
+        }
+
+        return maxRetryExceededWrapper(iex);
+    }
+
+    // Give it a wrapper to show how hard we tried
+    protected IOException maxRetryExceededWrapper(IOException ex)
+    {
+        // If we did not retry, just give the underlying exception
+        // Or if not pipelining.  This exception is intended to provide
+        // extra information useful for the pipelining case
+        if (_tryCount == 1 || !_pipelining)
+            return ex;
+
+        String str = "Request "
+            + this
+            + " failed after trying "
+            + _tryCount
+            + " times. ";
+        if (_pipelining)
+            str += "Consider increasing maxTries. ";
+
+        _log.warn(str);
+
+        // Give it a wrapper to show how hard we tried
+        HttpException retryFailed = new HttpException(str);
+        retryFailed.initCause(ex);
+        return retryFailed;
+    }
+
+    void recordIOException(IOException ex)
+    {
+        _ioException = ex;
+        _dead = true;
+    }
+
+    void pipelinedConnectionClosed() throws IOException
+    {
+        IOException ex = new SocketException("The socket connection ["
+            + this
+            + "] was closed "
+            + "while waiting for a pipelined response.");
+        recordIOException(ex);
+        throw ex;
     }
 
     // Called when the streaming I/O is either done or if there
@@ -1426,6 +2149,19 @@ public class HttpURLConnectInternal
         {
             _log.debug("streaming write finished");
             _streamingWritingFinished = true;
+            if (_pipelining)
+            {
+                try
+                {
+                    _connManager.enqueueWorkForConnection(this);
+                }
+                catch (InterruptedException e)
+                {
+                    _dead = true;
+                    _log.warn("Thread interrupted", e);
+                    return;
+                }
+            }
         }
         else
         {
@@ -1436,6 +2172,15 @@ public class HttpURLConnectInternal
         }
     }
 
+    // The response is read in a separate call from the write, either due
+    // to pipelining or streaming
+    protected boolean readSeparateFromWrite()
+    {
+        return (isStreaming() || _pipelining)
+            && (_currentAuthType == -1
+                || _authState[_currentAuthType] == AS_NONE || _authState[_currentAuthType] >= AS_FINAL_AUTH_SENT);
+    }
+
     void setConnection(HttpConnection conn, boolean release) throws IOException
     {
         super.setConnection(conn, release);
@@ -1443,31 +2188,20 @@ public class HttpURLConnectInternal
         if (_connection != null)
         {
             // For HTTP/1.0, leave this connection open
-            if (_ntlmAuth)
-                _connection.setNtlmLeaveOpen(true);
-
-            // Set these in the connection so it can support connection-based
-            // authentication. They are set in this object during the
-            // authentication process
-            if (_connection._authProtocol != 0)
+            if (_authProtocol[AUTH_NORMAL] == Credential.AUTH_NTLM
+                || _authProtocol[AUTH_PROXY] == Credential.AUTH_NTLM)
             {
-                _connection._authProtocol = _authProtocol;
-                _connection._credential = _credential;
+                _connection._ntlmLeaveOpen = true;
             }
 
-            if (_connection._proxyAuthProtocol != 0)
-            {
-                _connection._proxyAuthProtocol = _proxyAuthProtocol;
-                _connection._proxyCredential = _proxyCredential;
-            }
-
+            // FIXME - maybe replace this in the connection stuff with the use
+            // of authProtocol there
             if (_log.isDebugEnabled())
             {
                 _log.debug("setConn: NTLMLeaveOpen: "
-                    + _connection.isNtlmLeaveOpen());
+                    + _connection._ntlmLeaveOpen);
             }
         }
-
     }
 
     protected final boolean isReleasedAfterExecute()
@@ -1501,7 +2235,7 @@ public class HttpURLConnectInternal
             if (_log.isDebugEnabled())
             {
                 _log.debug("shouldClose: NTLMLeaveOpen: "
-                    + _connection.isNtlmLeaveOpen());
+                    + _connection._ntlmLeaveOpen);
             }
         }
 
@@ -1512,6 +2246,18 @@ public class HttpURLConnectInternal
         {
             _log.debug("Will CLOSE - "
                 + "\"[Proxy-]Connection: close\" header found.");
+
+            if (_connection != null)
+            {
+                if (false)
+                {
+                    System.out.println("Setting max url cons at close: "
+                        + _connection._totalResUrlConCount);
+                }
+                // Record the number of urlcons allowed before this got closed
+                _connection._connectionInfo._observedMaxUrlCons = _connection._totalResUrlConCount;
+            }
+
             result = true;
         }
 
@@ -1538,7 +2284,7 @@ public class HttpURLConnectInternal
                 _log.debug("HTTP/1.0 - Leave OPEN - tunneling");
                 result = false;
             }
-            else if (_connection != null && _connection.isNtlmLeaveOpen())
+            else if (_connection != null && _connection._ntlmLeaveOpen)
             {
                 _log.debug("HTTP/1.0 - Leave OPEN - NTLM is used");
                 result = false;

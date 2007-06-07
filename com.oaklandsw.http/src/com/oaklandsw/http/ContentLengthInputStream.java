@@ -58,10 +58,8 @@
 
 package com.oaklandsw.http;
 
-import java.io.FilterInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InterruptedIOException;
 
 import org.apache.commons.logging.Log;
 
@@ -75,15 +73,13 @@ import com.oaklandsw.util.Util;
  * @since 2.0
  */
 
-public class ContentLengthInputStream extends FilterInputStream
+public class ContentLengthInputStream extends AutoRetryInputStream
 {
-    private static final Log        _log = LogUtils.makeLogger();
+    private static final Log _log = LogUtils.makeLogger();
 
-    private int               contentLength;
+    private int              _contentLength;
 
-    private int               pos  = 0;
-
-    private HttpURLConnection _urlCon;
+    private int              _pos;
 
     /**
      * Creates a new length limited stream
@@ -93,33 +89,34 @@ public class ContentLengthInputStream extends FilterInputStream
      * @param cl
      *            The maximum number of bytes that can be read from the stream.
      *            Subsequent read operations will return -1.
+     * @param throwAutoRetry
+     *            used when an AutomaticHttpRetryException should be thrown if
+     *            there is an IOException on a read.
      */
     public ContentLengthInputStream(InputStream inStr,
-            HttpURLConnection urlCon,
-            int cl)
+            HttpURLConnectInternal urlCon,
+            int cl,
+            boolean throwAutoRetry)
     {
-        super(inStr);
-        this.contentLength = cl;
-        _urlCon = urlCon;
+        super(inStr, urlCon, throwAutoRetry);
+        this._contentLength = cl;
     }
 
     public int read() throws IOException
     {
-        if (pos >= contentLength)
+        if (_pos >= _contentLength)
             return -1;
-        pos++;
+        _pos++;
         int c;
         try
         {
-            c = super.read();
+            c = _inStr.read();
         }
         catch (IOException ex)
         {
-            _log.warn("IOException on read", ex);
-            close(true);
-            if (ex instanceof InterruptedIOException)
-                throw new HttpTimeoutException();
-            throw ex;
+            processIOException(ex);
+            // Keeps compiler happy
+            return 0;
         }
 
         if (c == -1)
@@ -127,74 +124,58 @@ public class ContentLengthInputStream extends FilterInputStream
         return c;
     }
 
+    public int read(byte[] b) throws IOException
+    {
+        return read(b, 0, b.length);
+    }
+
     public int read(byte[] b, int off, int len) throws IOException
     {
-        if (pos >= contentLength)
+        if (_pos >= _contentLength)
             return -1;
-        if (pos + len > contentLength)
+        if (_pos + len > _contentLength)
         {
-            len = contentLength - pos;
+            len = _contentLength - _pos;
         }
 
         int count;
 
         try
         {
-            count = super.read(b, off, len);
+            count = _inStr.read(b, off, len);
         }
         catch (IOException ex)
         {
-            _log.warn("IOException on read", ex);
-            close(true);
-            if (ex instanceof InterruptedIOException)
-                throw new HttpTimeoutException();
-            throw ex;
+            processIOException(ex);
+            // Keeps compiler happy
+            return 0;
         }
 
         if (count == -1)
             checkShort();
         else
-            pos += count;
+            _pos += count;
         return count;
     }
 
     private void checkShort() throws IOException
     {
-        if (pos >= contentLength)
+        if (_pos >= _contentLength)
             return;
 
         String warn = "Connection closed before all content (of "
-            + contentLength
+            + _contentLength
             + " bytes) was read (try #"
             + _urlCon.getActualTries()
             + ")";
         _log.warn(warn);
         close(true);
-        throw new IOException(warn);
+        processIOException(new IOException(warn));
     }
 
-    public int read(byte[] b) throws IOException
+    protected void closeSubclass(boolean closeConn) throws IOException
     {
-        return read(b, 0, b.length);
-    }
-
-    public void close() throws IOException
-    {
-        close(false);
-    }
-
-    public void close(boolean closeConn) throws IOException
-    {
-        _log.trace("close");
-
-        if (closeConn)
-        {
-            _log.debug("Closing underlying connection due to error on read");
-            _urlCon.releaseConnection(HttpURLConnection.CLOSE);
-            return;
-        }
-
-        if (pos < contentLength)
+        if (_pos < _contentLength)
         {
             try
             {
@@ -202,7 +183,7 @@ public class ContentLengthInputStream extends FilterInputStream
                 {
                     _log.debug("Closing stream before all content read "
                         + "- flushing "
-                        + (contentLength - pos)
+                        + (_contentLength - _pos)
                         + " bytes");
                 }
                 Util.flushStream(this);
@@ -216,8 +197,7 @@ public class ContentLengthInputStream extends FilterInputStream
         }
 
         // Prevent trying to flush again
-        pos = contentLength;
-        _urlCon.releaseConnection(!HttpURLConnection.CLOSE);
+        _pos = _contentLength;
     }
 
 }

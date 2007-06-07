@@ -3,7 +3,6 @@ package com.oaklandsw.http;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.HttpURLConnection;
 import java.net.URL;
 
 import org.apache.commons.logging.Log;
@@ -21,36 +20,57 @@ public class HttpTestBase extends com.oaklandsw.TestCaseBase
 
     protected static String    _urlBase     = HttpTestEnv.TEST_URL_WEBAPP;
 
+    public boolean             _showStats;
+
+    // For more stress testing
+    protected boolean          _extended    = false;
+
+    // For logging
+    protected boolean          _logging     = false;
+
+    protected String           _testAllName;
+
     // Enables the https protocol test for all of the test methods
     // defined in allTestMethods()
     protected boolean          _doHttps;
+    protected boolean          _inHttps;
 
     // Enables the proxy test for all of the test methods
     // defined in allTestMethods()
     protected boolean          _doProxyTest;
+    protected boolean          _inProxyTest;
 
     // Enables the HTTP 1.0 proxy test for all of the test methods
     // defined in allTestMethods()
     protected boolean          _do10ProxyTest;
+    protected boolean          _in10ProxyTest;
 
     // Enables the authentication proxy test for all of the test methods
     // defined in allTestMethods()
     protected boolean          _doAuthProxyTest;
+    protected boolean          _inAuthProxyTest;
 
     // Enables the authentication close proxy test for all of the test methods
     // defined in allTestMethods()
     protected boolean          _doAuthCloseProxyTest;
+    protected boolean          _inAuthCloseProxyTest;
 
     // Enables the explicit close test for all of the test methods
     // defined in allTestMethods()
     protected boolean          _doExplicitTest;
+    protected boolean          _inExplicitTest;
 
     // Enables the useDnsJava for all of the test methods
     // defined in allTestMethods()
     protected boolean          _doUseDnsJava;
+    protected boolean          _inUseDnsJava;
 
     // Tests everything inside of an applet
     protected boolean          _doAppletTest;
+    protected boolean          _inAppletTest;
+
+    // Curently executing one of the test sets above
+    protected boolean          _inTestGroup;
 
     protected final String     UTF8         = "UTF-8";
 
@@ -81,13 +101,9 @@ public class HttpTestBase extends com.oaklandsw.TestCaseBase
                 HttpURLConnection urlCon = (HttpURLConnection)url
                         .openConnection();
 
-                // Only valid for oaklandsw implementation
-                if (!(urlCon instanceof com.oaklandsw.http.HttpURLConnection))
-                    return;
-
                 // Turn off the timeout for the connection since the
                 // default timeout has been set in the main thread
-                ((com.oaklandsw.http.HttpURLConnection)urlCon).setTimeout(0);
+                urlCon.setTimeout(0);
                 urlCon.setRequestMethod("GET");
                 urlCon.setRequestProperty("timeout", "4000");
                 urlCon.getResponseCode();
@@ -103,6 +119,9 @@ public class HttpTestBase extends com.oaklandsw.TestCaseBase
     {
         super.setUp();
         HttpTestEnv.setUp();
+
+        HttpURLConnection.getConnectionManager().resetStatistics();
+        Util.resetTest();
     }
 
     public void tearDown() throws Exception
@@ -110,20 +129,37 @@ public class HttpTestBase extends com.oaklandsw.TestCaseBase
         super.tearDown();
         LogUtils.logNone();
 
-        com.oaklandsw.http.HttpURLConnection.setDefaultTimeout(0);
-        com.oaklandsw.http.HttpURLConnection.setDefaultConnectionTimeout(0);
-        com.oaklandsw.http.HttpURLConnection.setDefaultRequestTimeout(0);
-        com.oaklandsw.http.HttpURLConnection.setExplicitClose(false);
-        com.oaklandsw.http.HttpURLConnection
-                .setTries(com.oaklandsw.http.HttpURLConnection.MAX_TRIES);
+        _inTestGroup = false;
 
-        com.oaklandsw.http.HttpURLConnection
-                .setDefaultIdleConnectionTimeout(com.oaklandsw.http.HttpURLConnection.DEFAULT_IDLE_TIMEOUT);
-        com.oaklandsw.http.HttpURLConnection
-                .setDefaultIdleConnectionPing(com.oaklandsw.http.HttpURLConnection.DEFAULT_IDLE_PING);
-        com.oaklandsw.http.HttpURLConnection
+        if (!HttpURLConnection.getConnectionManager().checkEverythingEmpty())
+        {
+            HttpURLConnection.dumpAll();
+            Util.impossible("Connection manager not clean");
+        }
+
+        if (Util._impossibleException != null)
+        {
+            HttpURLConnection.dumpAll();
+            Util.impossible("Impossible called: ", Util._impossibleException);
+        }
+
+        HttpURLConnection.setDefaultTimeout(0);
+        HttpURLConnection.setDefaultConnectionTimeout(0);
+        HttpURLConnection.setDefaultRequestTimeout(0);
+        HttpURLConnection.setDefaultAuthenticationType(0);
+        HttpURLConnection.setPreemptiveAuthentication(false);
+        HttpURLConnection.setExplicitClose(false);
+        HttpURLConnection.setDefaultMaxTries(HttpURLConnection.MAX_TRIES);
+        HttpURLConnection.setDefaultPipelining(false);
+
+        HttpURLConnection
+                .setDefaultIdleConnectionTimeout(HttpURLConnection.DEFAULT_IDLE_TIMEOUT);
+        HttpURLConnection
+                .setDefaultIdleConnectionPing(HttpURLConnection.DEFAULT_IDLE_PING);
+        HttpURLConnection
                 .setMaxConnectionsPerHost(HttpConnectionManager.DEFAULT_MAX_CONNECTIONS);
-        com.oaklandsw.http.HttpURLConnection.closeAllPooledConnections();
+        HttpURLConnection.setDefaultPipelining(false);
+        HttpURLConnection.closeAllPooledConnections();
     }
 
     protected void setupDefaultTimeout(int type, int value)
@@ -131,20 +167,18 @@ public class HttpTestBase extends com.oaklandsw.TestCaseBase
         switch (type)
         {
             case DEF:
-                com.oaklandsw.http.HttpURLConnection.setDefaultTimeout(value);
+                HttpURLConnection.setDefaultTimeout(value);
                 break;
             case DEF_REQUEST:
-                com.oaklandsw.http.HttpURLConnection
-                        .setDefaultRequestTimeout(value);
+                HttpURLConnection.setDefaultRequestTimeout(value);
                 break;
             case DEF_CONNECT:
-                com.oaklandsw.http.HttpURLConnection
-                        .setDefaultConnectionTimeout(value);
+                HttpURLConnection.setDefaultConnectionTimeout(value);
                 break;
         }
     }
 
-    protected void setupConnTimeout(com.oaklandsw.http.HttpURLConnection urlCon,
+    protected void setupConnTimeout(HttpURLConnection urlCon,
                                     int type,
                                     int value)
     {
@@ -319,7 +353,7 @@ public class HttpTestBase extends com.oaklandsw.TestCaseBase
         }
         else
         {
-            if (com.oaklandsw.http.HttpURLConnection.getExplicitClose())
+            if (HttpURLConnection.getExplicitClose())
                 urlCon.getInputStream().close();
         }
 
@@ -338,22 +372,23 @@ public class HttpTestBase extends com.oaklandsw.TestCaseBase
 
     public static int getActiveConns(URL url)
     {
-        return com.oaklandsw.http.HttpURLConnection.getConnectionManager()
+        return HttpURLConnection.getConnectionManager()
                 .getActiveConnectionCount(url.toString());
     }
 
     public static int getTotalConns(URL url)
     {
-        return com.oaklandsw.http.HttpURLConnection.getConnectionManager()
+        return HttpURLConnection.getConnectionManager()
                 .getTotalConnectionCount(url.toString());
     }
 
     protected void resetProxyParams()
     {
-        com.oaklandsw.http.HttpURLConnection.setProxyHost(null);
-        com.oaklandsw.http.HttpURLConnection.setProxyPort(-1);
-        com.oaklandsw.http.HttpURLConnection.setProxyUser(null);
-        com.oaklandsw.http.HttpURLConnection.setProxyPassword(null);
+        HttpURLConnection.setProxyHost(null);
+        HttpURLConnection.setProxyPort(-1);
+        HttpURLConnection.setProxyUser(null);
+        HttpURLConnection.setProxyPassword(null);
+        HttpURLConnection.setDefaultProxyAuthenticationType(0);
     }
 
     // Test everything as SSL
@@ -362,7 +397,9 @@ public class HttpTestBase extends com.oaklandsw.TestCaseBase
         if (!_doHttps)
             return;
 
-        System.out.println("https test");
+        _inHttps = true;
+        _testAllName = "testHttps";
+        _inTestGroup = true;
         HttpTestEnv.HTTP_PROTOCOL = "https:";
         try
         {
@@ -371,6 +408,7 @@ public class HttpTestBase extends com.oaklandsw.TestCaseBase
         finally
         {
             HttpTestEnv.HTTP_PROTOCOL = "http:";
+            _inHttps = false;
         }
     }
 
@@ -380,15 +418,15 @@ public class HttpTestBase extends com.oaklandsw.TestCaseBase
         if (!_doProxyTest)
             return;
 
-        com.oaklandsw.http.HttpURLConnection
-                .setProxyHost(HttpTestEnv.TEST_PROXY_HOST);
-        com.oaklandsw.http.HttpURLConnection
-                .setProxyPort(HttpTestEnv.TEST_PROXY_PORT);
+        _testAllName = "testProxy";
+        _inProxyTest = true;
+        _inTestGroup = true;
+        HttpURLConnection.setProxyHost(HttpTestEnv.TEST_PROXY_HOST);
+        HttpURLConnection.setProxyPort(HttpTestEnv.TEST_PROXY_PORT);
 
         // Bug 954 setProxyHost/setProxyPort had no effect
         URL url = new URL(_urlBase);
-        com.oaklandsw.http.HttpURLConnection urlCon = (com.oaklandsw.http.HttpURLConnection)url
-                .openConnection();
+        HttpURLConnection urlCon = (HttpURLConnection)url.openConnection();
         assertEquals(HttpTestEnv.TEST_PROXY_HOST, urlCon
                 .getConnectionProxyHost());
         assertEquals(HttpTestEnv.TEST_PROXY_PORT, urlCon
@@ -401,6 +439,7 @@ public class HttpTestBase extends com.oaklandsw.TestCaseBase
         finally
         {
             resetProxyParams();
+            _inProxyTest = false;
         }
     }
 
@@ -410,10 +449,11 @@ public class HttpTestBase extends com.oaklandsw.TestCaseBase
         if (!_do10ProxyTest)
             return;
 
-        com.oaklandsw.http.HttpURLConnection
-                .setProxyHost(HttpTestEnv.TEST_10_PROXY_HOST);
-        com.oaklandsw.http.HttpURLConnection
-                .setProxyPort(HttpTestEnv.TEST_10_PROXY_PORT);
+        _testAllName = "test10Proxy";
+        _in10ProxyTest = true;
+        _inTestGroup = true;
+        HttpURLConnection.setProxyHost(HttpTestEnv.TEST_10_PROXY_HOST);
+        HttpURLConnection.setProxyPort(HttpTestEnv.TEST_10_PROXY_PORT);
         try
         {
             allTestMethods();
@@ -421,23 +461,44 @@ public class HttpTestBase extends com.oaklandsw.TestCaseBase
         finally
         {
             resetProxyParams();
+            _in10ProxyTest = false;
         }
     }
 
-    // Test everything through a proxy server
+    protected boolean isInAuthProxyTest()
+    {
+        return _inAuthProxyTest || _inAuthCloseProxyTest;
+    }
+
+    // True if this proxy supports NTLM. Apache as a proxy does not support
+    // NTLM because it closes the connection in the middle of the
+    // authentication. Netproxy also does not support it because it hangs.
+    // Netproxy has a few problems: 1) It does not pass through
+    // either a Connection: close or a Proxy-Connection: close
+    // after the initial 401 message, and 2) it hangs after
+    // the NTLM Authenticate request is sent in reading the
+    // response.
+    protected boolean isAllowNtlmProxy()
+    {
+        return !isInAuthProxyTest() && !_inProxyTest;
+    }
+
+    // Test everything through an authenticating proxy server (uses only basic)
     public void testAuthProxy() throws Exception
     {
         if (!_doAuthProxyTest)
             return;
 
-        com.oaklandsw.http.HttpURLConnection
-                .setProxyHost(HttpTestEnv.TEST_AUTH_PROXY_HOST);
-        com.oaklandsw.http.HttpURLConnection
-                .setProxyPort(HttpTestEnv.TEST_AUTH_PROXY_PORT);
-        com.oaklandsw.http.HttpURLConnection
-                .setProxyUser(HttpTestEnv.TEST_AUTH_PROXY_USER);
-        com.oaklandsw.http.HttpURLConnection
+        _testAllName = "testAuthProxy";
+        _inAuthProxyTest = true;
+        _inTestGroup = true;
+        HttpURLConnection.setProxyHost(HttpTestEnv.TEST_AUTH_PROXY_HOST);
+        HttpURLConnection.setProxyPort(HttpTestEnv.TEST_AUTH_PROXY_PORT);
+        HttpURLConnection.setProxyUser(HttpTestEnv.TEST_AUTH_PROXY_USER);
+        HttpURLConnection
                 .setProxyPassword(HttpTestEnv.TEST_AUTH_PROXY_PASSWORD);
+        HttpURLConnection
+                .setDefaultProxyAuthenticationType(Credential.AUTH_BASIC);
         // Proxy type is used only for auth
         TestUserAgent._proxyType = TestUserAgent.PROXY;
 
@@ -448,23 +509,27 @@ public class HttpTestBase extends com.oaklandsw.TestCaseBase
         finally
         {
             resetProxyParams();
+            _inAuthProxyTest = false;
         }
     }
 
-    // Test everything through a proxy server
+    // Test everything through an authenticating proxy server (uses only basic)
+    // that closes the connection after sending the 407 response.
     public void testAuthCloseProxy() throws Exception
     {
         if (!_doAuthCloseProxyTest)
             return;
 
-        com.oaklandsw.http.HttpURLConnection
-                .setProxyHost(HttpTestEnv.TEST_AUTH_PROXY_CLOSE_HOST);
-        com.oaklandsw.http.HttpURLConnection
-                .setProxyPort(HttpTestEnv.TEST_AUTH_PROXY_CLOSE_PORT);
-        com.oaklandsw.http.HttpURLConnection
-                .setProxyUser(HttpTestEnv.TEST_AUTH_PROXY_CLOSE_USER);
-        com.oaklandsw.http.HttpURLConnection
+        _testAllName = "testAuthCloseProxy";
+        _inAuthCloseProxyTest = true;
+        _inTestGroup = true;
+        HttpURLConnection.setProxyHost(HttpTestEnv.TEST_AUTH_PROXY_CLOSE_HOST);
+        HttpURLConnection.setProxyPort(HttpTestEnv.TEST_AUTH_PROXY_CLOSE_PORT);
+        HttpURLConnection.setProxyUser(HttpTestEnv.TEST_AUTH_PROXY_CLOSE_USER);
+        HttpURLConnection
                 .setProxyPassword(HttpTestEnv.TEST_AUTH_PROXY_CLOSE_PASSWORD);
+        HttpURLConnection
+                .setDefaultProxyAuthenticationType(Credential.AUTH_BASIC);
         // Proxy type is used only for auth
         TestUserAgent._proxyType = TestUserAgent.NETPROXY;
         try
@@ -474,7 +539,7 @@ public class HttpTestBase extends com.oaklandsw.TestCaseBase
         finally
         {
             resetProxyParams();
-
+            _inAuthCloseProxyTest = false;
         }
     }
 
@@ -483,10 +548,12 @@ public class HttpTestBase extends com.oaklandsw.TestCaseBase
         if (!_doExplicitTest)
             return;
 
-        com.oaklandsw.http.HttpURLConnection.setExplicitClose(true);
+        _testAllName = "testExplicitClose";
+        _inExplicitTest = true;
+        _inTestGroup = true;
+        HttpURLConnection.setExplicitClose(true);
 
-        int maxCon = com.oaklandsw.http.HttpURLConnection
-                .getMaxConnectionsPerHost();
+        int maxCon = HttpURLConnection.getMaxConnectionsPerHost();
 
         try
         {
@@ -498,21 +565,34 @@ public class HttpTestBase extends com.oaklandsw.TestCaseBase
         }
         finally
         {
-            com.oaklandsw.http.HttpURLConnection.setExplicitClose(false);
+            HttpURLConnection.setExplicitClose(false);
+            _inExplicitTest = false;
         }
 
     }
 
     public void testUseDnsJava() throws Exception
     {
-        // FIXME - we don't support this for now
-        /**
-         * if (!_doUseDnsJava) return;
-         * 
-         * com.oaklandsw.http.HttpURLConnection.setUseDnsJava(true);
-         * allTestMethods();
-         * com.oaklandsw.http.HttpURLConnection.setUseDnsJava(false);
-         */
+        if (!_doUseDnsJava)
+            return;
+
+        _testAllName = "testDnsJava";
+        _inUseDnsJava = true;
+        _inTestGroup = true;
+        try
+        {
+            // This feature is not supported for now
+            if (false)
+            {
+                // HttpURLConnection.setUseDnsJava(true);
+                allTestMethods();
+                // HttpURLConnection.setUseDnsJava(false);
+            }
+        }
+        finally
+        {
+            _inUseDnsJava = false;
+        }
 
     }
 
@@ -522,10 +602,22 @@ public class HttpTestBase extends com.oaklandsw.TestCaseBase
     {
         if (!_doAppletTest)
             return;
-        //        
-        // System.setSecurityManager(new sun.applet.AppletSecurity());
-        // allTestMethods();
-        // System.setSecurityManager(null);
+
+        _testAllName = "testApplet";
+        _inTestGroup = true;
+        try
+        {
+            if (false)
+            {
+                System.setSecurityManager(new sun.applet.AppletSecurity());
+                allTestMethods();
+                System.setSecurityManager(null);
+            }
+        }
+        finally
+        {
+            _inAppletTest = false;
+        }
     }
 
     protected void allTestMethods() throws Exception

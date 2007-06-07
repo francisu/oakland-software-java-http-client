@@ -17,14 +17,20 @@ public class AllWebappTests extends TestCaseBase
     public static Test suite()
     {
         TestSuite suite = new TestSuite(AllWebappTests.class.getName());
-        suite.addTest(TestTimeout.suite());
+        //suite.addTest(TestTimeout.suite());
         suite.addTest(TestFailover.suite());
         // Axis requires 1.3
         if (SystemUtils.isJavaVersionAtLeast(1.3f))
             suite.addTest(TestAxis.suite());
         suite.addTest(TestIIS.suite());
+        suite.addTest(TestJCIFS.suite());
         suite.addTest(TestExplicitConnection.suite());
         suite.addTest(TestMethods.suite());
+        suite.addTest(TestAuthType.suite());
+        suite.addTest(TestPipelining.suite());
+        suite.addTest(TestOutputStream.suite());
+        suite.addTest(TestOutputStreamChunked.suite());
+        suite.addTest(TestOutputStreamFixed.suite());
         suite.addTest(TestMultiThread.suite());
         suite.addTest(TestParameters.suite());
         suite.addTest(TestHeaders.suite());

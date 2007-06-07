@@ -1,0 +1,6 @@
+These files are to be put in the InetPub directory of the IIS server used
+to test NTLM.
+
+They are slightly modified from the samples that come with IIS.
+
+27 May 07 FRU

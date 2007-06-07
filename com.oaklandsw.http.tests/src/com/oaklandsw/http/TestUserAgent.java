@@ -19,20 +19,29 @@ public class TestUserAgent implements HttpUserAgent
     public static int        _proxyType;
 
     public static final int  GOOD               = 1;
-    public static final int  BAD                = 2;
-    public static final int  NULL               = 3;
-    public static final int  LOCAL              = 4;
-    public static final int  PROXY              = 5;
-    public static final int  NETPROXY           = 6;
-    public static final int  OFFICESHARE_XSO    = 7;
-    public static final int  OFFICESHARE_ICEWEB = 8;
-    public static final int  WEBSERVER_BASIC    = 9;
-    public static final int  WEBSERVER_DIGEST   = 10;
+    public static final int  NO_DOMAIN          = 2;
+    public static final int  NO_USER            = 3;
+    public static final int  NO_PASSWORD        = 4;
+    public static final int  NO_HOST            = 5;
+    public static final int  NO_HOST_OR_DOMAIN  = 6;
+    public static final int  BAD                = 10;
+    public static final int  NULL               = 11;
+    public static final int  LOCAL              = 12;
+    public static final int  PROXY              = 13;
+    public static final int  NETPROXY           = 14;
+    public static final int  OFFICESHARE_XSO    = 20;
+    public static final int  OFFICESHARE_ICEWEB = 21;
+    public static final int  WEBSERVER_BASIC    = 22;
+    public static final int  WEBSERVER_DIGEST   = 23;
 
     public Credential getCredential(String realm, String url, int scheme)
     {
-
-        _log.debug("getGred: " + realm + " url: " + url + " scheme: " + scheme);
+        _log.debug("getGred: realm: "
+            + realm
+            + " url: "
+            + url
+            + " scheme: "
+            + scheme);
 
         if (!url.startsWith("http"))
         {
@@ -59,6 +68,41 @@ public class TestUserAgent implements HttpUserAgent
                         ntlmCred.setPassword(HttpTestEnv.TEST_IIS_PASSWORD);
                         ntlmCred.setDomain(HttpTestEnv.TEST_IIS_DOMAIN);
                         ntlmCred.setHost(HttpTestEnv.TEST_IIS_HOST);
+                        break;
+
+                    case NO_DOMAIN:
+                        ntlmCred.setUser(HttpTestEnv.TEST_IIS_USER);
+                        ntlmCred.setPassword(HttpTestEnv.TEST_IIS_PASSWORD);
+                        // ntlmCred.setDomain(HttpTestEnv.TEST_IIS_DOMAIN);
+                        ntlmCred.setHost(HttpTestEnv.TEST_IIS_HOST);
+                        break;
+
+                    case NO_HOST:
+                        ntlmCred.setUser(HttpTestEnv.TEST_IIS_USER);
+                        ntlmCred.setPassword(HttpTestEnv.TEST_IIS_PASSWORD);
+                        ntlmCred.setDomain(HttpTestEnv.TEST_IIS_DOMAIN);
+                        // ntlmCred.setHost(HttpTestEnv.TEST_IIS_HOST);
+                        break;
+
+                    case NO_HOST_OR_DOMAIN:
+                        ntlmCred.setUser(HttpTestEnv.TEST_IIS_USER);
+                        ntlmCred.setPassword(HttpTestEnv.TEST_IIS_PASSWORD);
+                        // ntlmCred.setDomain(HttpTestEnv.TEST_IIS_DOMAIN);
+                        // ntlmCred.setHost(HttpTestEnv.TEST_IIS_HOST);
+                        break;
+
+                    case NO_USER:
+                        // ntlmCred.setUser(HttpTestEnv.TEST_IIS_USER);
+                        ntlmCred.setPassword(HttpTestEnv.TEST_IIS_PASSWORD);
+                        ntlmCred.setDomain(HttpTestEnv.TEST_IIS_DOMAIN);
+                        // ntlmCred.setHost(HttpTestEnv.TEST_IIS_HOST);
+                        break;
+
+                    case NO_PASSWORD:
+                        ntlmCred.setUser(HttpTestEnv.TEST_IIS_USER);
+                        // ntlmCred.setPassword(HttpTestEnv.TEST_IIS_PASSWORD);
+                        // ntlmCred.setDomain(HttpTestEnv.TEST_IIS_DOMAIN);
+                        // ntlmCred.setHost(HttpTestEnv.TEST_IIS_HOST);
                         break;
 
                     case BAD:
@@ -159,7 +203,7 @@ public class TestUserAgent implements HttpUserAgent
             + " scheme: "
             + scheme);
 
-        if (!url.startsWith("http://"))
+        if (!url.startsWith("http"))
         {
             throw new RuntimeException("Invalid URL String: " + url);
         }

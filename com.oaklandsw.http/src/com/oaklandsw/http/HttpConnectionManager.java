@@ -63,7 +63,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
 
@@ -74,6 +74,9 @@ import org.apache.regexp.RESyntaxException;
 import com.oaklandsw.util.LogUtils;
 import com.oaklandsw.util.StringUtils;
 import com.oaklandsw.util.URIUtil;
+import com.oaklandsw.util.Util;
+
+import edu.emory.mathcs.backport.java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Creates and manages a pool of HttpConnections.
@@ -83,18 +86,34 @@ import com.oaklandsw.util.URIUtil;
  */
 public class HttpConnectionManager
 {
-    private static final Log      _log                    = LogUtils
-                                                                  .makeLogger();
+    private static final Log      _log                      = LogUtils
+                                                                    .makeLogger();
 
     // RFC 2616 sec 8.1.4
-    public static int             DEFAULT_MAX_CONNECTIONS = 2;
+    public static int             DEFAULT_MAX_CONNECTIONS   = 2;
 
-    private Map                   _hostMap                = new HashMap();
+    // K(connection key) V(ConnectionInfo)
+    private Map                   _hostMap                  = new HashMap();
 
-    private int                   _maxConns               = DEFAULT_MAX_CONNECTIONS;
+    // K(current Thread) V(List of urlcons)
+    private Map                   _threadUrlConMap          = new HashMap();
+
+    private int                   _maxConns                 = DEFAULT_MAX_CONNECTIONS;
+
+    private HttpConnectionTimeout _timeout;
+
+    // K(HttpConnection) v(a Thread)
+    protected Map                 _threadConnectionMap;
+
+    // K(current Thread) V(AtomicInteger) - count of urlcons to read
+    Map                           _threadUrlConCountMap;
+
+    // Used to keep track of the global proxy state at the time
+    // this connection was created.
+    private int                   _globalProxyIncarnation;
 
     private String                _proxyHost;
-    private int                   _proxyPort              = -1;
+    private int                   _proxyPort                = -1;
     private String                _proxyUser;
     private String                _proxyPassword;
 
@@ -102,123 +121,62 @@ public class HttpConnectionManager
 
     private ArrayList             _nonProxyHosts;
 
-    private HttpConnectionTimeout _timeout;
+    // The maximum number of pipelined urlcons for a connection
+    int                           _pipelineMaxDepth;
 
-    // Used to keep track of the global proxy state at the time
-    // this connection was created.
-    private int                   _globalProxyIncarnation;
+    static final int              PCONN_MAX_CONNECTIONS     = 0;
+    static final int              PCONN_FIXED_NUMBER        = 1;
+    static final int              PCONN_MAX_PER_CALLBACK    = 2;
 
-    private class ConnectionInfo
+    int                           _pipelineConnectionUseType;
+
+    // If the connection use type is FIXED_NUMBER
+    int                           _pipelineFixedLimit;
+
+    // Used to synchronize the pipeline related methods, as distinct
+    // from the connection management methods which are synchronized
+    // with "this"
+    protected String              _pipelineLock;
+
+    // Statistics
+
+    // V(AtomicInteger) - by number of tries when it succeeds
+    ArrayList                     _retryCounts;
+    ArrayList                     _pipelineReadRetryCounts;
+
+    static final int              COUNT_ATTEMPTED           = 0;
+    static final int              COUNT_SUCCESS             = 1;
+    static final int              COUNT_FAIL_IO             = 2;
+    static final int              COUNT_FAIL_MAX_RETRY      = 3;
+    static final int              COUNT_PIPELINE_DEPTH_HIGH = 4;
+    static final int              COUNT_LAST                = COUNT_PIPELINE_DEPTH_HIGH;
+
+    int[]                         _requestCounts;
+    String[]                      _requestCountNames        = new String[] { //
+                                                            "Attempted:                      " //
+        , "Success:                        " //
+        , "Failed IOException:             " //
+        , "Failed Max Retries:             " //
+        , "Pipeline max depth (all conns): " //
+                                                            };
+
+    // Just a dummy class to enqueue to get a connection thread to close
+    static class CloseMarker
     {
-
-        // The concatenation of host/port and if a specific
-        // proxy host/port was specified, that is added as well.
-        // This is used to tell where the connection is going.
-        // If the proxy was not specified on a per-connection basis,
-        // it is not included here; the proxy incarnation mechanism
-        // is used to deal with that.
-        String     _connectionKey;
-
-        // The number that is incremented whenever the global
-        // proxy state changes (ie, all connections are reset)
-        // This is used to make sure that older connections opened
-        // before the reset are closed.
-        int        _proxyIncarnation;
-
-        // The total number of connections that have been created,
-        // this includes any that are presently assigned, and any
-        // that are in the pool
-        int        _count;
-
-        // List of connections that are presently not assigned
-        LinkedList _connections;
-
-        // Returns a connection that can be used for this URL connection,
-        // delinks the returned connection
-        HttpConnection getMatchingConnection(HttpURLConnection urlCon)
-        {
-            int len = _connections.size();
-            if (len == 0)
-                return null;
-            // Fast path
-            HttpConnection conn = (HttpConnection)_connections.getFirst();
-            if (checkMatch(conn, urlCon))
-                return (HttpConnection)_connections.removeFirst();
-
-            // Slow patch, check them all (we already checked the first)
-            for (int i = 1; i < len; i++)
-            {
-                conn = (HttpConnection)_connections.get(i);
-                if (checkMatch(conn, urlCon))
-                    return (HttpConnection)_connections.remove(i);
-            }
-            return null;
-        }
-
-        // See if this connection has a matching credential if required
-        private boolean checkMatch(HttpConnection conn, HttpURLConnection urlCon)
-        {
-            if (conn._credential == null && conn._proxyCredential == null)
-                return true;
-
-            if (!UserCredential.useConnectionAuthentication(conn._authProtocol)
-                && !UserCredential
-                        .useConnectionAuthentication(conn._proxyAuthProtocol))
-            {
-                return true;
-            }
-            
-            HttpUserAgent ua = urlCon.getUserAgent();
-            if (ua == null)
-                return false;
-
-            if (conn._credential != null)
-            {
-                UserCredential cred = (UserCredential)ua
-                        .getCredential(null,
-                                       urlCon.getUrlString(),
-                                       conn._authProtocol);
-                if (cred == null)
-                    return false;
-                if (!cred.getKey().equals(conn._credential.getKey()))
-                    return false;
-            }
-
-            if (conn._proxyCredential != null)
-            {
-                UserCredential cred = (UserCredential)ua
-                        .getProxyCredential(null,
-                                            urlCon.getUrlString(),
-                                            conn._proxyAuthProtocol);
-                if (cred == null)
-                    return false;
-                if (!cred.getKey().equals(conn._proxyCredential.getKey()))
-                    return false;
-            }
-            return true;
-        }
     }
 
-    // Object only for synchronization
-    // You cannot get the HttpConnectionTimeout lock while you have
-    // this lock as this lock is obtained with the timeout lock locked.
-    private HttpConnectionManager _lock;
+    // Used to tell a connection thread to close
+    static CloseMarker _closeMarker = new CloseMarker();
 
-    /**
-     * No-args constructor
-     */
     public HttpConnectionManager()
     {
-        _lock = this;
         _timeout = new HttpConnectionTimeout(this);
+        _threadConnectionMap = new HashMap();
+        _threadUrlConCountMap = new HashMap();
+        _pipelineLock = new String();
+        resetStatistics();
     }
 
-    /**
-     * Set the proxy host to use for all connections.
-     * 
-     * @param proxyHost -
-     *            the proxy host name
-     */
     public void setProxyHost(String proxyHost)
     {
         _proxyHost = proxyHost;
@@ -227,11 +185,6 @@ public class HttpConnectionManager
         resetConnectionPool();
     }
 
-    /**
-     * Get the proxy host.
-     * 
-     * @return the proxy host name
-     */
     public String getProxyHost()
     {
         return _proxyHost;
@@ -265,7 +218,7 @@ public class HttpConnectionManager
      */
     void setNonProxyHosts(String hosts)
     {
-        synchronized (_lock)
+        synchronized (this)
         {
             // Get rid of all current connections as they are not
             // going to the right place.
@@ -308,7 +261,8 @@ public class HttpConnectionManager
                 }
 
                 re.setMatchFlags(RE.MATCH_CASEINDEPENDENT);
-                _log.debug("Non proxy host: " + host);
+                if (_log.isDebugEnabled())
+                    _log.debug("Non proxy host: " + host);
                 _nonProxyHosts.add(re);
             }
         }
@@ -316,7 +270,7 @@ public class HttpConnectionManager
 
     String getNonProxyHosts()
     {
-        synchronized (_lock)
+        synchronized (this)
         {
             return _nonProxyHostsString;
         }
@@ -368,6 +322,210 @@ public class HttpConnectionManager
         return _maxConns;
     }
 
+    // Executes the processPipelinedRead on the specified urlCon, creating
+    // the thread if necessary, also releases the connection from the urlCon
+    void enqueueWorkForConnection(HttpURLConnection urlCon)
+        throws InterruptedException
+    {
+        HttpConnection conn;
+        HttpConnectionThread t;
+
+        conn = urlCon._connection;
+
+        if (_log.isDebugEnabled())
+        {
+            _log.debug("enqueueWork: "
+                + "conn: "
+                + conn
+                + " enqueued: "
+                + urlCon);
+        }
+
+        // There is actually a small window here were the capacity could go
+        // to zero after this message is written and before the put, but
+        // this is only tracing, so it's ok - that's why we say (probably)
+        if (conn._queue.remainingCapacity() == 0)
+        {
+            _log.warn("enqueueWork: (probably) blocking "
+                + "for queue capacity on conn: "
+                + conn
+                + " queue size: "
+                + conn._queue.size());
+        }
+
+        conn._queue.put(urlCon);
+
+        // Make sure there is a thread to service this. Note the locking
+        // in the thread locks the connmgr (this) lock when dequeuing
+        // and terminating it prevents the thread from terminating
+        // if there is anything on the queue. This means we don't need
+        // to lock when we write something to the queue. This is
+        // necessary because writing to the queue may block for lack
+        // of space (given the implementation of an ArrayBlockingQueue).
+
+        synchronized (this)
+        {
+            t = (HttpConnectionThread)_threadConnectionMap.get(conn);
+            if (t == null)
+            {
+                t = new HttpConnectionThread(conn, this);
+                _threadConnectionMap.put(conn, t);
+
+                t.start();
+                if (_log.isDebugEnabled())
+                {
+                    _log.debug("enqueueWork: "
+                        + "conn: "
+                        + conn
+                        + " created thread");
+                }
+            }
+
+            // Also releases the connection; we don't use the higher
+            // level HttpURLConnection.releaseConnection() because
+            // we need to do the enqueue and release atomically
+            // to preserve the order of the reads on the connection
+            releaseConnection(conn);
+        }
+    }
+
+    void enqueueCloseForConnection(HttpConnection conn)
+        throws InterruptedException
+    {
+        conn._queue.put(_closeMarker);
+    }
+
+    // Called when the connection thread is going to terminate
+    // because of lack of work
+    void connectionThreadTerminated(HttpConnection conn)
+    {
+        synchronized (this)
+        {
+            if (_log.isDebugEnabled())
+            {
+                _log.debug("connThreadTerminated: " + "conn: " + conn);
+            }
+            _threadConnectionMap.remove(conn);
+        }
+    }
+
+    //
+    // Methods below are synchronized with the _pipelineLock
+    // 
+
+    void addUrlConToExecute(HttpURLConnection urlCon)
+    {
+        Thread thread = Thread.currentThread();
+
+        synchronized (_pipelineLock)
+        {
+            List conList = (List)_threadUrlConMap.get(thread);
+            if (conList == null)
+            {
+                conList = new ArrayList();
+                _threadUrlConMap.put(thread, conList);
+            }
+            conList.add(urlCon);
+            if (_log.isDebugEnabled())
+            {
+                _log
+                        .debug("adding urlcon: "
+                            + urlCon
+                            + " to Thread: "
+                            + thread);
+            }
+        }
+    }
+
+    void removeUrlConToExecute(HttpURLConnection urlCon)
+    {
+        synchronized (_pipelineLock)
+        {
+            List conList = (List)_threadUrlConMap.get(Thread.currentThread());
+            if (conList == null)
+                return;
+            conList.remove(urlCon);
+            if (conList.isEmpty())
+                _threadUrlConMap.remove(Thread.currentThread());
+        }
+    }
+
+    void addUrlConToRead(Thread thread)
+    {
+        synchronized (_pipelineLock)
+        {
+            AtomicInteger ai = (AtomicInteger)_threadUrlConCountMap.get(thread);
+            if (ai == null)
+            {
+                ai = new AtomicInteger();
+                _threadUrlConCountMap.put(thread, ai);
+            }
+            int count = ai.incrementAndGet();
+            if (_log.isDebugEnabled())
+                _log.debug("addUrlConToRead - count (after) " + count);
+        }
+    }
+
+    void urlConWasRead(Thread thread)
+    {
+        synchronized (_pipelineLock)
+        {
+            AtomicInteger ai = (AtomicInteger)_threadUrlConCountMap.get(thread);
+            if (ai == null)
+                Util.impossible("No counter for callback: " + thread);
+            int count = ai.decrementAndGet();
+            if (_log.isDebugEnabled())
+                _log.debug("urlConWasRead - count (after) " + count);
+            if (count == 0)
+            {
+                _pipelineLock.notifyAll();
+                _threadUrlConCountMap.remove(thread);
+            }
+        }
+    }
+
+    void blockForUrlCons() throws InterruptedException
+    {
+        synchronized (_pipelineLock)
+        {
+            Thread thread = Thread.currentThread();
+            AtomicInteger ai = (AtomicInteger)_threadUrlConCountMap.get(thread);
+            if (ai == null)
+            {
+                _log.debug("no outstanding connections (they probably all finished - continuing");
+                return;
+            }
+            while (ai.get() != 0)
+            {
+                _log.debug("waiting for pipelined urlcons to complete");
+                _pipelineLock.wait();
+            }
+            _log.debug("pipelined urlcons are complete");
+        }
+    }
+
+    /**
+     * This assumes every URL on the list will be handled, so it returns the
+     * list and then clears the entry for the callback.
+     * 
+     * @param callback
+     * @return
+     */
+    List getUrlConsToExecute()
+    {
+        synchronized (_pipelineLock)
+        {
+            Thread thread = Thread.currentThread();
+            List list = (List)_threadUrlConMap.get(thread);
+            _threadUrlConMap.remove(thread);
+            return list;
+        }
+    }
+
+    //
+    // End of methods synchronized with the _pipelineLocka
+    //
+
     /**
      * Return the port provided if not -1 (default), return 443 if the protocol
      * is HTTPS, otherwise 80.
@@ -405,7 +563,7 @@ public class HttpConnectionManager
     {
         // This should be OK, as we never lock the connection
         // info while we have the lock on this.
-        synchronized (_lock)
+        synchronized (this)
         {
             // Look for hosts to not proxy for
             if (_nonProxyHosts != null)
@@ -439,21 +597,8 @@ public class HttpConnectionManager
      * connection becomes available. If no connection becomes available before
      * the timeout expires an HttpException will be thrown.
      * 
-     * @param url -
-     *            a fully specified string.
-     * @param connectionTimeout -
-     *            the time (in milliseconds) to wait for a connection to become
-     *            available
-     * @param idleTimeout -
-     *            the time (in milliseconds) to destroy the newly created
-     *            connection after it becomes idle.
-     * @param idlePing -
-     *            the idle time interval (in milliseconds) to send a ping
-     *            message before a POST on the newly created connection.
-     * @param proxyHost -
-     *            the host to use as a proxy.
-     * @param proxyPort -
-     *            the port number to use as a proxy.
+     * @param urlCon -
+     *            an HttpURLConnection
      * @return an HttpConnection for the given host:port
      * @exception java.net.MalformedURLException
      * @exception com.oaklandsw.http.HttpException -
@@ -464,7 +609,6 @@ public class HttpConnectionManager
         throws HttpException,
             MalformedURLException
     {
-
         long connectionTimeout = urlCon.getConnectionTimeout();
         String url = urlCon.getUrlString();
         long idleTimeout = urlCon.getIdleConnectionTimeout();
@@ -485,14 +629,14 @@ public class HttpConnectionManager
 
         HttpConnection conn = null;
 
-        synchronized (_lock)
+        synchronized (this)
         {
             // Look for a list of connections for the given host:port
             ConnectionInfo ci = getConnectionInfo(connectionKey);
 
             // Don't have any available connections, wait for one
             // -1 in _maxConns is unlimited
-            while (ci._count >= _maxConns
+            while (ci.getActiveConnectionCount() >= _maxConns
                 && _maxConns >= 0
                 && (conn = ci.getMatchingConnection(urlCon)) == null)
             {
@@ -505,7 +649,7 @@ public class HttpConnectionManager
                     if (connectionTimeout > 0)
                         startTime = System.currentTimeMillis();
 
-                    _lock.wait(connectionTimeout);
+                    this.wait(connectionTimeout);
 
                     // Need to refetch this as it might have changed since
                     // the wait unlocked
@@ -535,7 +679,18 @@ public class HttpConnectionManager
             if (conn != null)
             {
                 _log.debug("Using existing connection");
-                conn.assertOpen();
+                // The connection has to be open because the
+                // ConnectionInfo.checkMatching removes any closed connections
+                try
+                {
+                    conn.assertOpen();
+                }
+                catch (Exception ex)
+                {
+                    Util.impossible("Returned connection "
+                        + "not open: "
+                        + conn, ex);
+                }
             }
             else
             {
@@ -583,11 +738,12 @@ public class HttpConnectionManager
                                           isSecure,
                                           ci._proxyIncarnation,
                                           connectionKey);
-                ci._count++;
+                ci.addNewConnection(conn);
             }
 
-            conn.setIdleTimeout(idleTimeout);
-            conn.setIdlePing(idlePing);
+            conn._idleTimeout = idleTimeout;
+            conn._idlePing = idlePing;
+            conn._released = false;
 
             if (_log.isDebugEnabled())
                 _log.debug("Obtained connection: " + conn);
@@ -629,19 +785,21 @@ public class HttpConnectionManager
     {
         ConnectionInfo ci;
 
-        synchronized (_lock)
+        synchronized (this)
         {
             // Look for a list of connections for the given host:port
             ci = (ConnectionInfo)_hostMap.get(connectionKey);
             if (ci == null)
             {
-                _log
-                        .debug("Creating new connection info for: "
-                            + connectionKey);
-                ci = new ConnectionInfo();
-                ci._connectionKey = connectionKey;
-                ci._proxyIncarnation = _globalProxyIncarnation;
-                ci._connections = new LinkedList();
+                if (_log.isDebugEnabled())
+                {
+                    _log.debug("Creating new connection "
+                        + "info for: "
+                        + connectionKey);
+                }
+                ci = new ConnectionInfo(this,
+                                        connectionKey,
+                                        _globalProxyIncarnation);
                 _hostMap.put(connectionKey, ci);
             }
             return ci;
@@ -663,23 +821,27 @@ public class HttpConnectionManager
             _log.debug("Releasing connection: " + conn);
         }
 
-        boolean startIdle = false;
-        boolean shutdown = false;
-        synchronized (_lock)
+        if (conn._released && conn.isOpen())
+            Util.impossible("Connection released twice: " + conn);
+
+        synchronized (this)
         {
-            ConnectionInfo ci = getConnectionInfo(conn.getHandle());
+            ConnectionInfo ci = getConnectionInfo(conn._handle);
 
             // This connection does not belong to this ConnectionInfo
             // because the connection was created before a reset.
             if (ci._proxyIncarnation != conn.getProxyIncarnation())
             {
-                _log
-                        .debug("Closed connection due to non-equal proxyIncarnation: "
-                            + conn
-                            + " ci._proxyInc: "
-                            + ci._proxyIncarnation
-                            + " conn inc: "
-                            + conn.getProxyIncarnation());
+                if (_log.isDebugEnabled())
+                {
+                    _log.debug("Closed connection due to "
+                        + "non-equal proxyIncarnation: "
+                        + conn
+                        + " ci._proxyInc: "
+                        + ci._proxyIncarnation
+                        + " conn inc: "
+                        + conn.getProxyIncarnation());
+                }
                 conn.close();
                 return;
             }
@@ -687,43 +849,62 @@ public class HttpConnectionManager
             // Don't put a closed connection back
             if (!conn.isOpen())
             {
-                _log.debug("Closed connection: " + conn);
-                shutdown = reduceConnCount(ci, null);
+                if (_log.isDebugEnabled())
+                {
+                    _log.debug("releaseConnection - "
+                        + "was closed (not putting back): "
+                        + conn);
+                }
+
+                // This connection is already in the avail queue, remove it
+                if (conn._released)
+                {
+                    if (_log.isDebugEnabled())
+                    {
+                        _log.debug("releaseConnection - "
+                            + "removing closed conn from avail queue");
+                    }
+                    ci.removeAvailConnection(conn);
+                }
+                else
+                {
+                    ci.removeAssignedConnection(conn);
+                }
+
+                if (checkConnCount(ci, null))
+                    _timeout.shutdown();
             }
             else
             {
                 conn.setLastTimeUsed();
 
                 // Put the connect back in the available list
-                ci._connections.addFirst(conn);
-                if (conn.getIdleTimeout() > 0)
-                    startIdle = true;
+                ci.connectionAvail(conn);
+                if (conn._idleTimeout > 0)
+                    _timeout.startIdleTimeout(conn);
             }
-            _lock.notifyAll();
+
+            conn._released = true;
+            _log.debug("releaseConnection: released = true");
+            this.notifyAll();
         }
-
-        // Can't get the timeout lock while the manager is locked
-        if (shutdown)
-            _timeout.shutdown();
-        if (startIdle)
-            _timeout.startIdleTimeout(conn);
-
     }
 
-    // Reduces the number of connections present, and if there
-    // are no more connections, gets ride of the host table
-    // entry. This assumes the ConnectionInfo is locked.
+    // Checks if there are no more connections, then gets rid of the host table
+    // entry.
     // Return true to shutdown
-    private final boolean reduceConnCount(ConnectionInfo ci,
-                                          Iterator hostMapIterator)
+    boolean checkConnCount(ConnectionInfo ci, Iterator hostMapIterator)
     {
-        synchronized (_lock)
+        synchronized (this)
         {
-            _log.trace("reduceConnCount");
-            ci._count--;
-            if (ci._count == 0)
+            _log.debug("checkConnCount");
+            if (ci.getActiveConnectionCount() == 0)
             {
-                _log.debug("Removing ConnectionInfo for: " + ci._connectionKey);
+                if (_log.isDebugEnabled())
+                {
+                    _log.debug("Removing ConnectionInfo for: "
+                        + ci._connectionKey);
+                }
                 if (hostMapIterator != null)
                     hostMapIterator.remove();
                 else
@@ -746,7 +927,7 @@ public class HttpConnectionManager
      */
     private ConnectionInfo getConnectionInfoFromUrl(String url)
     {
-        synchronized (_lock)
+        synchronized (this)
         {
             String hostAndPort = URIUtil.getProtocolHostPort(url);
             String proxyHost = HttpURLConnection.getProxyHost();
@@ -764,11 +945,17 @@ public class HttpConnectionManager
      */
     int getActiveConnectionCount(String url)
     {
-        synchronized (_lock)
+        synchronized (this)
         {
             ConnectionInfo ci = getConnectionInfoFromUrl(url);
-            int count = ci._count - ci._connections.size();
-            _log.debug("active connection count: " + url + " - " + count);
+            int count = ci._assignedConnections.size();
+            if (_log.isDebugEnabled())
+            {
+                _log.debug("active connection count: "
+                    + ci._connectionKey
+                    + " - "
+                    + count);
+            }
             return count;
         }
     }
@@ -779,12 +966,30 @@ public class HttpConnectionManager
      */
     int getTotalConnectionCount(String url)
     {
-        synchronized (_lock)
+        synchronized (this)
         {
             ConnectionInfo ci = getConnectionInfoFromUrl(url);
-            _log.debug("total connection count: " + url + " - " + ci._count);
-            return ci._count;
+            if (_log.isDebugEnabled())
+            {
+                _log.debug("total connection count: "
+                    + ci._connectionKey
+                    + " - "
+                    + ci.getActiveConnectionCount());
+            }
+            return ci.getActiveConnectionCount();
         }
+    }
+
+    public boolean checkEverythingEmpty()
+    {
+        if (_threadUrlConCountMap.size() > 0)
+        {
+            _log.error("_threadUrlConCountMap not empty: "
+                + _threadConnectionMap.size());
+            System.out.println(_threadUrlConCountMap);
+            return false;
+        }
+        return true;
     }
 
     /**
@@ -801,18 +1006,18 @@ public class HttpConnectionManager
         long currentTime = System.currentTimeMillis();
         long wakeTime = 0;
 
-        synchronized (_lock)
+        synchronized (this)
         {
             Collection hosts = _hostMap.values();
             Iterator hostIt = hosts.iterator();
             while (hostIt.hasNext())
             {
                 ConnectionInfo ci = (ConnectionInfo)hostIt.next();
-                Iterator connIt = ci._connections.iterator();
+                Iterator connIt = ci._availableConnections.iterator();
                 while (connIt.hasNext())
                 {
                     HttpConnection conn = (HttpConnection)connIt.next();
-                    long idleTimeout = conn.getIdleTimeout();
+                    long idleTimeout = conn._idleTimeout;
                     if (_log.isDebugEnabled())
                     {
                         _log.debug("Looking at: "
@@ -820,20 +1025,26 @@ public class HttpConnectionManager
                             + " idle timeout: "
                             + idleTimeout
                             + " last used: "
-                            + conn.getLastTimeUsed());
+                            + conn._lastTimeUsed);
                     }
                     if (idleTimeout == 0)
                         continue;
-                    long timeToDie = conn.getLastTimeUsed() + idleTimeout;
+                    long timeToDie = conn._lastTimeUsed + idleTimeout;
                     if (timeToDie <= currentTime)
                     {
-                        _log.debug("Closed due to to idle timeout of: "
-                            + idleTimeout
-                            + " - "
-                            + ci._connectionKey);
+                        if (_log.isDebugEnabled())
+                        {
+                            _log.debug("Closed due to to idle timeout of: "
+                                + idleTimeout
+                                + " - "
+                                + ci._connectionKey);
+                        }
                         conn.close();
                         connIt.remove();
-                        shutdown |= reduceConnCount(ci, hostIt);
+                        shutdown |= checkConnCount(ci, hostIt);
+                        // Wake anyone who might be waiting for a connection
+                        // slot
+                        this.notifyAll();
                     }
                     else if (wakeTime == 0 || timeToDie < wakeTime)
                     {
@@ -848,7 +1059,10 @@ public class HttpConnectionManager
             _timeout.shutdown();
 
         // Time to wake up again
-        _log.debug("Time to wake timeout thread: " + wakeTime);
+        if (_log.isDebugEnabled())
+        {
+            _log.debug("Time to wake timeout thread: " + wakeTime);
+        }
         return wakeTime;
     }
 
@@ -858,7 +1072,7 @@ public class HttpConnectionManager
      */
     void resetConnectionPool()
     {
-        synchronized (_lock)
+        synchronized (this)
         {
             _log.trace("resetConnectionPool");
 
@@ -875,9 +1089,9 @@ public class HttpConnectionManager
                 // as they are released, since the ConnectionInfo
                 // entry will not be found.
                 ConnectionInfo ci = (ConnectionInfo)it.next();
-                _log.debug("Closing connections for: " + ci._connectionKey);
-                for (int i = 0; i < ci._connections.size(); i++)
-                    ((HttpConnection)ci._connections.get(i)).close();
+                if (_log.isDebugEnabled())
+                    _log.debug("Closing connections for: " + ci._connectionKey);
+                ci.closeAllConnections();
             }
             _hostMap = new HashMap();
         }
@@ -888,7 +1102,7 @@ public class HttpConnectionManager
 
     void dumpConnectionPool()
     {
-        synchronized (_lock)
+        synchronized (this)
         {
             _log.trace("dumpConnectionPool");
 
@@ -896,20 +1110,95 @@ public class HttpConnectionManager
             Iterator it = hosts.iterator();
             while (it.hasNext())
             {
-                // Close all of the existing connections. If there
-                // are connections that are in use, they are closed
-                // as they are released, since the ConnectionInfo
-                // entry will not be found.
                 ConnectionInfo ci = (ConnectionInfo)it.next();
-                System.out.println("Connection: "
-                    + ci._connectionKey
-                    + " total connections: "
-                    + ci._count
-                    + " avail connections: "
-                    + ci._connections.size());
+                System.out.println(ci.dump(0));
             }
         }
+    }
 
+    // Statistics
+
+    public void resetStatistics()
+    {
+        _retryCounts = new ArrayList();
+        _pipelineReadRetryCounts = new ArrayList();
+        _requestCounts = new int[COUNT_LAST + 1];
+    }
+
+    void recordRetry(ArrayList counts, int numTries)
+    {
+        synchronized (this)
+        {
+            // System.out.println("record retry: " + numTries);
+
+            AtomicInteger ai = null;
+            if (numTries < counts.size())
+                ai = (AtomicInteger)counts.get(numTries);
+            else
+            {
+                for (int i = counts.size(), len = numTries; i <= len; i++)
+                {
+                    ai = new AtomicInteger();
+                    counts.add(i, ai);
+                }
+                // When this exists, the last ai is the one we want
+            }
+            ai.incrementAndGet();
+        }
+    }
+
+    void recordCount(int reason)
+    {
+        synchronized (this)
+        {
+            _requestCounts[reason]++;
+        }
+    }
+
+    String getRetryStatistics(List counts)
+    {
+        StringBuffer sb = new StringBuffer();
+
+        for (int i = 0, len = counts.size(); i < len; i++)
+        {
+            if (i == 0)
+                continue;
+            AtomicInteger ai = (AtomicInteger)counts.get(i);
+            if (ai != null && ai.intValue() > 0)
+            {
+                // The number it is recorded under is the num tries
+                // before the retry
+                sb.append("  Retry times: "
+                    + (i + 1)
+                    + " count: "
+                    + ai.intValue()
+                    + "\n");
+            }
+        }
+        return sb.toString();
+    }
+
+    String getFailureStatistics()
+    {
+        StringBuffer sb = new StringBuffer();
+
+        for (int i = 0; i < _requestCounts.length; i++)
+
+            sb.append(_requestCountNames[i] + " " + _requestCounts[i] + "\n");
+
+        return sb.toString();
+    }
+
+    String getStatistics()
+    {
+        StringBuffer sb = new StringBuffer();
+        sb.append("Retry counts: \n");
+        sb.append(getRetryStatistics(_retryCounts));
+        sb.append("Pipeline Retry counts: \n");
+        sb.append(getRetryStatistics(_pipelineReadRetryCounts));
+        sb.append("Counts: \n");
+        sb.append(getFailureStatistics());
+        return sb.toString();
     }
 
 }

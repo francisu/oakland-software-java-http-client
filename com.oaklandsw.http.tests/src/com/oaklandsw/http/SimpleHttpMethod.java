@@ -115,14 +115,11 @@ public class SimpleHttpMethod extends HttpURLConnectInternal
         connected = true;
     }
 
-    protected void releaseConnection(boolean close)
+    protected void releaseConnection(int close)
     {
         _log.trace("releaseConnection");
         if (_connection != null)
         {
-            _connection = null;
-            _conInStream = null;
-            _conOutStream = null;
             connected = false;
         }
     }
@@ -135,6 +132,12 @@ public class SimpleHttpMethod extends HttpURLConnectInternal
         execute();
     }
 
+    public void setConnection(HttpConnection connection)
+    {
+        // Don't call super
+        _connection = connection;
+    }
+    
     public void setState(HttpConnection connection)
         throws HttpException,
             IOException

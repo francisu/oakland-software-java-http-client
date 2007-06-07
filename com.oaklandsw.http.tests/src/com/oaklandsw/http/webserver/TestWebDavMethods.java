@@ -2,7 +2,6 @@ package com.oaklandsw.http.webserver;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.net.HttpURLConnection;
 import java.net.URL;
 
 import junit.framework.Test;
@@ -10,6 +9,7 @@ import junit.framework.TestSuite;
 
 import com.oaklandsw.http.HttpTestBase;
 import com.oaklandsw.http.HttpTestEnv;
+import com.oaklandsw.http.HttpURLConnection;
 
 /**
  * Test webdav methods

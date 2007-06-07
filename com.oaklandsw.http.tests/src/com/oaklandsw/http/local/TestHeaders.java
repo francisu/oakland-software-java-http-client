@@ -104,7 +104,7 @@ public class TestHeaders extends TestCase
         h.add("one", "onevalnew2");
         // Should get the most recent one
         assertEquals("onevalnew2", h.get("one"));
-        
+
         // Bug 1440 getHeaderFields() not implemented
         Map map = h.getMap();
         List list = (List)map.get("one");
@@ -113,7 +113,7 @@ public class TestHeaders extends TestCase
         assertEquals("onevalnew", list.get(1));
         assertEquals("onevalrevised", list.get(2));
         assertEquals("onevalnew2", list.get(3));
-        
+
         assertEquals(null, map.get("two"));
 
     }
@@ -187,6 +187,33 @@ public class TestHeaders extends TestCase
         assertEquals("one1", h.getKey(1));
         assertEquals("one200", h.getKey(200));
         assertEquals("one999", h.getKey(999));
+    }
+
+    public void testReadEmpty1() throws Exception
+    {
+        Headers h = new Headers();
+
+        String str = "\n";
+        StringBufferInputStream is = new StringBufferInputStream(str);
+        h.read(is, new HttpURLConnectInternal(), true, 0);
+    }
+
+    public void testReadEmpty2() throws Exception
+    {
+        Headers h = new Headers();
+
+        String str = "\n\n";
+        StringBufferInputStream is = new StringBufferInputStream(str);
+        h.read(is, new HttpURLConnectInternal(), true, 0);
+    }
+
+    public void testReadEmpty3() throws Exception
+    {
+        Headers h = new Headers();
+
+        String str = "\r\n";
+        StringBufferInputStream is = new StringBufferInputStream(str);
+        h.read(is, new HttpURLConnectInternal());
     }
 
     public void testReadGood() throws Exception

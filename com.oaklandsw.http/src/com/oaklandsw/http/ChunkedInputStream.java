@@ -1,5 +1,5 @@
 //
-// Some portions copyright 2002-3003, oakland software, all rights reserved.
+// Some portions copyright 2002-2007, oakland software, all rights reserved.
 //
 // May not be used or redistributed without specific written
 // permission from oakland software.
@@ -61,7 +61,6 @@ package com.oaklandsw.http;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InterruptedIOException;
 
 import org.apache.commons.logging.Log;
 
@@ -84,26 +83,22 @@ import com.oaklandsw.util.Util;
  * 
  */
 
-public class ChunkedInputStream extends InputStream
+public class ChunkedInputStream extends AutoRetryInputStream
 {
-    private static final Log       _log     = LogUtils.makeLogger();
+    private static final Log    _log     = LogUtils.makeLogger();
 
-    private InputStream            in;
+    private int                 chunkSize, pos;
 
-    private int                    chunkSize, pos;
+    private boolean             eof;
 
-    private boolean                eof      = false;
-
-    private static final String    HTTP_ENC = "US-ASCII";
-
-    private HttpURLConnectInternal method;
+    private static final String HTTP_ENC = "US-ASCII";
 
     /**
      * 
      * 
      * @param inStr
      *            must be non-null
-     * @param methodParam
+     * @param urlCon
      *            must be non-null
      * 
      * @throws java.io.IOException
@@ -111,14 +106,10 @@ public class ChunkedInputStream extends InputStream
      * 
      */
     public ChunkedInputStream(final InputStream inStr,
-            final HttpURLConnectInternal methodParam) throws IOException
+            final HttpURLConnectInternal urlCon,
+            boolean throwAutoRetry) throws IOException
     {
-        if (null == inStr)
-        {
-            throw new NullPointerException("InputStream parameter");
-        }
-        this.in = inStr;
-        this.method = methodParam;
+        super(inStr, urlCon, throwAutoRetry);
         this.chunkSize = getChunkSizeFromInputStream(inStr);
         if (chunkSize == 0)
         {
@@ -151,17 +142,20 @@ public class ChunkedInputStream extends InputStream
                     return -1;
             }
             pos++;
-            return in.read();
+            return _inStr.read();
 
         }
         catch (IOException ex)
         {
-            _log.warn("IOException on read", ex);
-            close(true);
-            if (ex instanceof InterruptedIOException)
-                throw new HttpTimeoutException();
-            throw ex;
+            processIOException(ex);
+            // Keep compiler happy
+            return 0;
         }
+    }
+
+    public int read(byte[] b) throws java.io.IOException
+    {
+        return read(b, 0, b.length);
     }
 
     public int read(byte[] b, int off, int len) throws java.io.IOException
@@ -177,35 +171,28 @@ public class ChunkedInputStream extends InputStream
                     return -1;
             }
             len = Math.min(len, chunkSize - pos);
-            int count = in.read(b, off, len);
+            int count = _inStr.read(b, off, len);
             pos += count;
             return count;
         }
         catch (IOException ex)
         {
-            _log.warn("IOException on read", ex);
-            close(true);
-            if (ex instanceof InterruptedIOException)
-                throw new HttpTimeoutException();
-            throw ex;
+            processIOException(ex);
+            // Keep compiler happy
+            return 0;
         }
-    }
-
-    public int read(byte[] b) throws java.io.IOException
-    {
-        return read(b, 0, b.length);
     }
 
     private void nextChunk() throws IOException
     {
-        int cr = in.read();
-        int lf = in.read();
+        int cr = _inStr.read();
+        int lf = _inStr.read();
 
         // This handles cases where there is no CRLF after the chunk. This
         // was encountered with resin.
         if (cr == '0' && lf == '\r')
         {
-            lf = in.read();
+            lf = _inStr.read();
             if (lf == '\n')
             {
                 eof = true;
@@ -224,7 +211,7 @@ public class ChunkedInputStream extends InputStream
                 + lf);
         }
 
-        chunkSize = getChunkSizeFromInputStream(in);
+        chunkSize = getChunkSizeFromInputStream(_inStr);
         pos = 0;
         if (chunkSize == 0)
         {
@@ -246,7 +233,7 @@ public class ChunkedInputStream extends InputStream
      * 
      * 
      */
-    private static int getChunkSizeFromInputStream(final InputStream in)
+    private int getChunkSizeFromInputStream(final InputStream in)
         throws IOException
     {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -257,7 +244,8 @@ public class ChunkedInputStream extends InputStream
             int b = in.read();
             if (b == -1)
             {
-                throw new IOException("chunked stream ended unexpectedly");
+                // This could be a close
+                processIOException(new IOException("chunked stream ended unexpectedly"));
             }
             switch (state)
             {
@@ -303,7 +291,7 @@ public class ChunkedInputStream extends InputStream
                     }
                     break;
                 default:
-                    throw new RuntimeException("assertion failed");
+                    Util.impossible("Invalid state: " + state);
             }
         }
 
@@ -338,8 +326,8 @@ public class ChunkedInputStream extends InputStream
             {
                 String key = line.substring(0, colonPos).trim();
                 String val = line.substring(colonPos + 1).trim();
-                if (method != null)
-                    method.addResponseFooter(key, val);
+                if (_urlCon != null)
+                    _urlCon.addResponseFooter(key, val);
             }
             line = readLine();
         }
@@ -351,7 +339,7 @@ public class ChunkedInputStream extends InputStream
         StringBuffer buf = new StringBuffer();
         for (;;)
         {
-            int ch = in.read();
+            int ch = _inStr.read();
             if (ch < 0)
             {
                 if (buf.length() == 0)
@@ -373,23 +361,8 @@ public class ChunkedInputStream extends InputStream
         return (buf.toString());
     }
 
-    public void close() throws IOException
+    protected void closeSubclass(boolean closeConn) throws IOException
     {
-        close(false);
-    }
-
-    public void close(boolean closeConn) throws IOException
-    {
-        _log.trace("close");
-
-        if (closeConn)
-        {
-            _log.debug("Closing underlying connection due to error on read");
-            if (method != null)
-                method.releaseConnection(HttpURLConnection.CLOSE);
-            return;
-        }
-
         try
         {
             Util.flushStream(this);
@@ -398,12 +371,9 @@ public class ChunkedInputStream extends InputStream
         {
             // The stream must have been closed, or something went
             // wrong, so do close it
-            if (method != null)
-                method.releaseConnection(HttpURLConnection.CLOSE);
+            if (_urlCon != null)
+                _urlCon.releaseConnection(HttpURLConnection.CLOSE);
             return;
         }
-
-        if (method != null)
-            method.releaseConnection(!HttpURLConnection.CLOSE);
     }
 }

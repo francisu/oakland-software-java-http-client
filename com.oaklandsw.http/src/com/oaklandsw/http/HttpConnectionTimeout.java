@@ -1,5 +1,5 @@
 //
-// Copyright 2002-3003, oakland software, all rights reserved.
+// Copyright 2002-2007, oakland software, all rights reserved.
 //
 // May not be used or redistributed without specific written
 // permission from oakland software.
@@ -10,13 +10,14 @@ package com.oaklandsw.http;
 import org.apache.commons.logging.Log;
 
 import com.oaklandsw.util.LogUtils;
+import com.oaklandsw.util.Util;
 
 /**
  * Handles the connection timeout mechanism.
  */
 public class HttpConnectionTimeout
 {
-    private static final Log            _log          = LogUtils.makeLogger();
+    private static final Log      _log          = LogUtils.makeLogger();
 
     private TimeoutThread         _timeoutThread;
 
@@ -32,17 +33,13 @@ public class HttpConnectionTimeout
     private boolean               _shutdown;
 
     // Object only for synchronization
-    private HttpConnectionTimeout _lock;
+    private HttpConnectionManager _lock;
 
     private HttpConnectionManager _connManager;
 
-    // If the time we are supposed to wait is less than the current
-    // time, just add a little.
-    private static final long     TIMEOUT_FUDGE = 10;
-
     HttpConnectionTimeout(HttpConnectionManager connManager)
     {
-        _lock = this;
+        _lock = connManager;
         _connManager = connManager;
     }
 
@@ -68,14 +65,17 @@ public class HttpConnectionTimeout
             if (_log.isDebugEnabled())
             {
                 long delta = _timeoutThreadWake - System.currentTimeMillis();
-                _log.debug("Timeout thread starting: "
-                    + _timeoutThreadWake
-                    + " current: "
-                    + System.currentTimeMillis()
-                    + " delta: "
-                    + delta);
+                if (_log.isDebugEnabled())
+                {
+                    _log.debug("Timeout thread starting: "
+                        + _timeoutThreadWake
+                        + " current: "
+                        + System.currentTimeMillis()
+                        + " delta: "
+                        + delta);
+                }
                 if (delta < 0)
-                    _log.debug("!!!!! NEG DELTA");
+                    Util.impossible("Negative delta: " + delta);
             }
 
             synchronized (_lock)
@@ -92,8 +92,11 @@ public class HttpConnectionTimeout
                         }
                         try
                         {
-                            _log.debug("Timeout wake time: "
-                                + _timeoutThreadWake);
+                            if (_log.isDebugEnabled())
+                            {
+                                _log.debug("Timeout wake time: "
+                                    + _timeoutThreadWake);
+                            }
                             long waitTime = _timeoutThreadWake - currentTime;
 
                             // System.out.println("WAITING: currentTime: "
@@ -135,12 +138,12 @@ public class HttpConnectionTimeout
         synchronized (_lock)
         {
             _log.debug("startIdleTimeout");
-            long killTime = System.currentTimeMillis() + conn.getIdleTimeout();
+            long killTime = System.currentTimeMillis() + conn._idleTimeout;
 
             if (_log.isDebugEnabled())
             {
                 _log.debug("startIdleTimeout: timeout: "
-                    + conn.getIdleTimeout()
+                    + conn._idleTimeout
                     + " current: "
                     + System.currentTimeMillis()
                     + " kill: "
@@ -169,12 +172,13 @@ public class HttpConnectionTimeout
                 _timeoutThreadWake = killTime;
                 if (_log.isDebugEnabled())
                 {
-                    // System.out.println("Altering timeout thread wake time to:
-                    // "
-                    // + killTime);
-                    _log.debug("Altering timeout thread wake time to: "
-                        + killTime);
+                    if (_log.isDebugEnabled())
+                    {
+                        _log.debug("Altering timeout thread wake time to: "
+                            + killTime);
+                    }
                 }
+
                 // Avoid the check when waking this time
                 _threadNoCheck = true;
                 _lock.notifyAll();

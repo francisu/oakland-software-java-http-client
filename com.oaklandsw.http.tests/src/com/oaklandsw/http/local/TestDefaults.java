@@ -1,5 +1,5 @@
 /*
- * Copyright 2004 oakland software, incorporated.  All rights Reserved.
+ * Copyright 2004 oakland software, incorporated. All rights Reserved.
  */
 package com.oaklandsw.http.local;
 
@@ -19,8 +19,8 @@ import com.oaklandsw.util.LogUtils;
  */
 public class TestDefaults extends HttpTestBase
 {
-    
-    private static final Log   _log         = LogUtils.makeLogger();
+
+    private static final Log _log = LogUtils.makeLogger();
 
     public TestDefaults(String testName)
     {
@@ -39,8 +39,7 @@ public class TestDefaults extends HttpTestBase
     }
 
     // 962 - per connection idle timeout does not work properly
-    public void testDefaultConnectionTimeout()
-    throws Exception
+    public void testDefaultConnectionTimeout() throws Exception
     {
         HttpURLConnection.setDefaultIdleConnectionTimeout(99);
         URL url = new URL("http://dummy");
@@ -55,10 +54,9 @@ public class TestDefaults extends HttpTestBase
         // Verify the first connection did not change
         assertEquals(10, urlCon1.getIdleConnectionTimeout());
     }
-    
+
     // Same as above except for ping
-    public void testDefaultConnectionPing()
-    throws Exception
+    public void testDefaultConnectionPing() throws Exception
     {
         HttpURLConnection.setDefaultIdleConnectionPing(99);
         URL url = new URL("http://dummy");
@@ -73,7 +71,32 @@ public class TestDefaults extends HttpTestBase
         // Verify the first connection did not change
         assertEquals(10, urlCon1.getIdleConnectionPing());
     }
-    
 
-    
+    public void testDefaultPipelining() throws Exception
+    {
+        HttpURLConnection.setDefaultPipelining(true);
+        URL url = new URL("http://dummy");
+        HttpURLConnection urlCon1 = HttpURLConnection.openConnection(url);
+        assertEquals(true, urlCon1.isPipelining());
+
+        // Execute this pipelining connection (since it's associated with the
+        // thread
+        try
+        {
+            // Will throw since no Callback is set
+            HttpURLConnection.executeAndBlock();
+            fail("Expected exception");
+        }
+        catch (IllegalStateException ex)
+        {
+            // Expected
+        }
+
+        HttpURLConnection.setDefaultPipelining(false);
+
+        urlCon1 = HttpURLConnection.openConnection(url);
+        assertEquals(false, urlCon1.isPipelining());
+
+    }
+
 }

@@ -1,7 +1,8 @@
 package com.oaklandsw.http.errorsvr;
 
-import java.net.HttpURLConnection;
 import java.net.URL;
+
+import org.apache.commons.logging.Log;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
@@ -9,10 +10,13 @@ import junit.framework.TestSuite;
 import com.oaklandsw.http.HttpException;
 import com.oaklandsw.http.HttpTestBase;
 import com.oaklandsw.http.HttpTestEnv;
+import com.oaklandsw.http.HttpURLConnection;
+import com.oaklandsw.util.LogUtils;
 import com.oaklandsw.util.URIUtil;
 
 public class TestStatusLine extends HttpTestBase
 {
+    private static final Log _log = LogUtils.makeLogger();
 
     protected static String _errorUrl = HttpTestEnv.TEST_URL_HOST_ERRORSVR;
 

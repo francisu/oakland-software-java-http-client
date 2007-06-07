@@ -57,7 +57,6 @@
 package com.oaklandsw.http.webserver;
 
 import java.io.IOException;
-import java.net.HttpURLConnection;
 import java.net.URL;
 
 import junit.framework.Test;
@@ -65,6 +64,7 @@ import junit.framework.TestSuite;
 
 import com.oaklandsw.http.HttpTestBase;
 import com.oaklandsw.http.HttpTestEnv;
+import com.oaklandsw.http.HttpURLConnection;
 
 /**
  * Simple tests of {@link GetMethod}hitting a local webserver.
