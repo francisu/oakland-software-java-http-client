@@ -235,7 +235,7 @@ public class TestMultiThread extends TestWebappBase
 
         for (int i = 0; i < threads.size(); i++)
         {
-            ((Thread)threads.get(i)).join(10000);
+            ((Thread)threads.get(i)).join(100000);
         }
 
         if (_failed > 0)

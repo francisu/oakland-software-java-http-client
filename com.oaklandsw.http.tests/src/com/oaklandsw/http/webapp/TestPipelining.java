@@ -13,10 +13,11 @@ import com.oaklandsw.util.LogUtils;
 
 public class TestPipelining extends TestWebappBase
 {
-    private static final Log _log     = LogUtils.makeLogger();
+    private static final Log _log = LogUtils.makeLogger();
 
     protected boolean        _threadFailed;
 
+    protected String         _threadTestName;
 
     public TestPipelining(String testName)
     {
@@ -153,6 +154,22 @@ public class TestPipelining extends TestWebappBase
     {
         Thread t;
 
+        _threadTestName = "t" + threadCount + "_" + num;
+
+        if (false)
+        {
+            System.out.println("*** Starting executing "
+                + threadCount
+                + " threads "
+                + _testAllName);
+        }
+        _log.debug("*** Starting executing "
+            + threadCount
+            + " threads "
+            + _testAllName
+            + " "
+            + _threadTestName);
+
         ArrayList threads = new ArrayList();
         for (int i = 0; i < threadCount; i++)
         {
@@ -163,7 +180,10 @@ public class TestPipelining extends TestWebappBase
                 {
                     try
                     {
-                        Thread.currentThread().setName("Thread" + threadInd);
+                        Thread.currentThread().setName("Thread"
+                            + threadInd
+                            + _threadTestName
+                            + _testAllName);
                         PipelineTester pt = new PipelineTester(_urlBase
                             + ParamServlet.NAME, num);
                         pt._checkConnections = false;
@@ -174,6 +194,7 @@ public class TestPipelining extends TestWebappBase
                     catch (Exception ex)
                     {
                         System.out.println("Unexpected exception: " + ex);
+                        _threadFailed = true;
                     }
                 }
             };
@@ -182,10 +203,25 @@ public class TestPipelining extends TestWebappBase
             threads.add(t);
         }
 
-        for (int i = 0; i < threads.size(); i++)
+        for (int i = 0; i < threadCount; i++)
         {
-            ((Thread)threads.get(i)).join(10000);
+            ((Thread)threads.get(i)).join(100000);
         }
+
+        _log.debug("*** Finished executing "
+            + threadCount
+            + " threads "
+            + _testAllName);
+        if (false)
+        {
+            System.out.println("*** Finished executing "
+                + threadCount
+                + " threads "
+                + _testAllName
+                + " "
+                + _threadTestName);
+        }
+
         PipelineTester.cleanup();
     }
 

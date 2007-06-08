@@ -261,7 +261,7 @@ public class PipelineTester
         {
             if (HttpTestBase.getActiveConns(url) != 0)
             {
-                System.out.println("Remainging active connections");
+                System.out.println("Remaining active connections");
                 HttpURLConnection.dumpAll();
                 setFailType(30, null, 0);
             }
