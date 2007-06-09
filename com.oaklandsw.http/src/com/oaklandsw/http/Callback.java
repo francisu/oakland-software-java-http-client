@@ -47,8 +47,6 @@ public interface Callback
      *            the InputStream on which to read the data. Call the close()
      *            method on this when done. This will be provided even in the
      *            exception case if there is anything to read.
-     * @param ex
-     *            an Exception if the request failed.
      */
     public void readResponse(HttpURLConnection urlCon,
                              InputStream is);

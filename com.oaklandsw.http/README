@@ -1,8 +1,9 @@
-Copyright 2002-2006 oakland software incorporated, all rights reserved.
+Copyright 2002-2007 oakland software incorporated, all rights reserved.
 
 Readme file for oakland software HTTP client support.
 
 See http://www.oaklandsoftware.com/support.html for current known problems.
+
 
 Configuration Instructions
 ------------------------------------------------
@@ -16,52 +17,38 @@ See http://www.oaklandsoftware.com/product_http/config.html
 Installation Instructions
 ------------------------------------------------
 
+- Requires JRE 1.4.2 or higher.
 
-The distribution has the following jar files you will need to include in your
-CLASSPATH:
+- Include the file http.jar in the CLASSPATH for your application.  It does not
+depend on anything.
 
-http.jar - The HTTP Client protocol support.
-
-This software has no dependencies on other software, except if you are
-using SSL with a JRE versions 1.2 or 1.3 (see item 2 below)
+- There are various sample programs in the examples directory of this kit.
 
 
+How to Hook Your Code to the HTTP client
+------------------------------------------------
 
-This requires JRE 1.2.2 (or higher)
-
-
-There is a sample program at:
-
-   http://www.oaklandsoftware.com/HttpGetSample.java        
-
-
-To use the HTTP client support:
-
-*** NOTE - if you are using https (SSL) connections and you are
-    getting exceptions when trying to connect, this may be caused by
-    an expired root CA associated with your JRE.  Please see:
-
-    http://sunsolve.sun.com/search/document.do?assetkey=1-26-57436-1
-
-    For how to correct the problem.
-
-
-1) To enable the HTTP support (you must do this before you open
-   the first URL connection):
+1) If you require complete plug-compatibility with the JRE (no code changes), then
+set this property before the first HTTP URL connection is opened:
 
         System.setProperty("java.protocol.handler.pkgs", "com.oaklandsw");
 
-   Alternatively, you can use these other methods to explicitly specify
-   the use of this HTTP client:
+2) Alternatively, you can use these other methods to explicitly specify
+the use of this HTTP client:
    
-   a) Explicitly specify the Handler objects:
+   a) Explicitly open the connection like this:
+   
+         HttpURLConnection urlCon = com.oaklandsw.http.HttpURLConnection
+                .openConnection(url);
+
+   b) Explicitly specify the Handler objects:
 
       // HTTP
       URL url = new URL("http", "host", 9999, "file", new com.oaklandsw.http.Handler());
       // HTTPS
       URL url = new URL("https", "host", 9999, "file", new com.oaklandsw.https.Handler());
 
-   b) Use a URLStreamHandlerFactory:
+   c) Use a URLStreamHandlerFactory:
 
             URL.setURLStreamHandlerFactory(new URLStreamHandlerFactory()
             {
@@ -81,16 +68,8 @@ To use the HTTP client support:
        use method a (explicitly specifying the handlers).
 
 
-2) If using SSL, make sure you have the JSSE jar files if you are not using JDK 1.4
-   or higher.  Here is the code you must include if you are JDK 1.2 or
-   1.3:
-
-        // SSL - Uncomment this if you are < JDK 1.4
-        Security.addProvider(new com.sun.net.ssl.internal.ssl.Provider());
-
-
-3) You will need to make a class implement the HttpUserAgent
-   interface (see the javadoc for details, and sample below).  This
+3) For authentication support, you will need to make a class implement the 
+   HttpUserAgent interface (see the javadoc for details, and sample below).  This
    class is called when necessary to get the NTLM or basic
    credentials.
 

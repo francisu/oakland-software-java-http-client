@@ -1,6 +1,4 @@
-// Copyright 2002 (c) oakland software, All rights reserved
 
-package com.oaklandsw.http.sa;
 
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;

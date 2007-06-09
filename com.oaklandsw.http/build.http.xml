@@ -24,7 +24,7 @@
     <property name="http.productId" value="16"/>
     <property name="javadoc.packages" value="com.oaklandsw.util.*,com.oaklandsw.http.*"/>
 
-    <property name="java.target" value="1.2"/>
+    <property name="java.target" value="1.4"/>
     <property name="debug" value="on"/>
     <property name="optimize" value="off"/>
     <property name="deprecation" value="off"/>
@@ -106,9 +106,17 @@
   <!-- Creates the class package                                           -->
   <!-- =================================================================== -->
   <target name="package-java" depends="compile-java">
-    <jar jarfile="${jar.http.name}.jar"
-         basedir="${classes.dir}"
-         includes="com/oaklandsw/http/**,com/oaklandsw/util/**"/>
+    <jar jarfile="${jar.http.name}.jar">
+		<fileset dir="${classes.dir}" />
+		<zipfileset src="jakarta-regexp-1.3.jar" />
+		<zipfileset src="backport-util-concurrent.jar" />
+		<zipfileset src="commons-logging-1.1.1-SNAPSHOT.jar" />
+		<manifest>
+			<section name="org/apache/regexp/">
+				<attribute name="Sealed" value="true" />
+			</section>
+		</manifest>
+	</jar>
   </target>
 
 

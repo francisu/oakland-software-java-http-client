@@ -211,13 +211,13 @@
 				<include name="*.sample" />
 				<include name="${package.name}.jar" />
 			</fileset>
-			<fileset dir="../com.oaklandsw.http.tests/src/">
-				<include name="HttpGetSample.java" />
-			</fileset>
+			<zipfileset dir="../com.oaklandsw.http.tests/src/" prefix="examples">
+				<include name="*.java" />
+			</zipfileset>
 			<zipfileset dir="${javadocs.dir}" prefix="javadocs" />
 		</zip>
 
-		<!-- eval -->
+		<!-- eval - derived from normal zip file -->
 		<zip zipfile="${release.dir}/${dist.zip.name}Eval.zip" includes="**">
 			<zipfileset src="${release.dir}/${dist.zip.name}.zip">
 				<exclude name="${package.name}.jar" />
@@ -247,9 +247,9 @@
 			<fileset dir="../com.oaklandsw.util.jars">
 				<include name="commons-logging*.jar" />
 			</fileset>
-			<fileset dir="../com.oaklandsw.http.tests/src/">
-				<include name="HttpGetSample.java" />
-			</fileset>
+			<zipfileset dir="../com.oaklandsw.http.tests/src/" prefix="examples">
+				<include name="*.java" />
+			</zipfileset>
 			<zipfileset dir="../com.oaklandsw.http.tests/" includes="runsrc*" filemode="755" />
 		</zip>
 

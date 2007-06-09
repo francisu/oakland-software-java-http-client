@@ -990,7 +990,7 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
     }
 
     /**
-     * @see java.net.HttpURLConnection#HttpURLConnection()
+     * Constructor, works the same as the constructor for java.net.HttpURLConnection.
      */
     public HttpURLConnection(URL urlParam)
     {
@@ -2589,9 +2589,9 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
      * </ul>
      * 
      * @param authenticationType
-     * @see #setPipelining()
-     * @see #setChunkedStreamingMode()
-     * @see #setFixedStreamingMode()
+     * @see #setPipelining(boolean)
+     * @see #setChunkedStreamingMode(int)
+     * @see #setFixedLengthStreamingMode(int)
      */
     public void setAuthenticationType(int authenticationType)
     {
@@ -2645,7 +2645,7 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
      * Same as setAuthenticationType, except for a proxy.
      * 
      * @param authenticationType
-     * @see #setAuthenticationType()
+     * @see #setAuthenticationType(int)
      */
     public void setProxyAuthenticationType(int authenticationType)
     {
@@ -2748,7 +2748,7 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
      * Returns a string representation of the specified pipelining options.
      * 
      * @param options
-     * @return
+     * @return a String which is a text representation of the pipelining options.
      */
     public static String plOptionsToString(int options)
     {
@@ -2811,13 +2811,12 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
     }
 
     /**
-     * Sets the maximum depth of pipelining for all connections
-     * <p>
+     * Sets the maximum depth of pipelining for all connections.
      * 
-     * @see setPipeliningMaxDepth
+     * @see #setPipeliningMaxDepth(int)
      * 
-     * @param an
-     *            int, the maximum pipelining depth.
+     * @param pipeliningMaxDepth
+     *            the maximum pipelining depth.
      * 
      */
     public void setDefaultPipeliningMaxDepth(int pipeliningMaxDepth)
@@ -2826,7 +2825,7 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
     }
 
     /**
-     * Get the value of the maximum depth of pipelining for all connections
+     * Get the value of the maximum depth of pipelining for all connections.
      * 
      * @return an int, the maximum pipelining depth.
      */
@@ -2846,8 +2845,8 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
      * by the server and uses this as the maximum depth. See
      * PIPE_USE_OBSERVED_CONN_LIMIT.
      * 
-     * @param an
-     *            int, the maximum pipelining depth.
+     * @param pipeliningMaxDepth
+     *            the maximum pipelining depth.
      * 
      */
     public void setPipeliningMaxDepth(int pipeliningMaxDepth)

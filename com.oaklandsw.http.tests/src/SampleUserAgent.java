@@ -1,6 +1,4 @@
-// Copyright 2002 oakland software, All rights reserved
 
-package com.oaklandsw.http.sa;
 
 import org.apache.commons.logging.Log;
 
