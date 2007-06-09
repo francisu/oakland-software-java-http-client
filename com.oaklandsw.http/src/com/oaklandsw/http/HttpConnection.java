@@ -185,7 +185,7 @@ public class HttpConnection
     // The total number of urlcons written to this connection
     int                        _totalReqUrlConCount;
 
-    // The total number of urlcons written to this connection
+    // The total number of urlcons read from this connection
     int                        _totalResUrlConCount;
 
     // The threads accessing a connection now. In general,

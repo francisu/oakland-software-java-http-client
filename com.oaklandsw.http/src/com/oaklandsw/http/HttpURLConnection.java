@@ -409,19 +409,52 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
     protected static int                   _defaultConnectionTimeout;
     protected static int                   _defaultRequestTimeout;
 
-    private static boolean                 DEFAULT_PIPELINING                = false;
-    protected static boolean               _defaultPipelining                = DEFAULT_PIPELINING;
-
     protected static Callback              _defaultCallback;
     protected Callback                     _callback;
 
+    public static final int                DEFAULT_PIPELINING_OPTIONS        = 0;
+    protected static int                   _defaultPipeliningOptions         = DEFAULT_PIPELINING_OPTIONS;
+
+    public static final int                DEFAULT_PIPELINING_MAX_DEPTH      = 0;
+    protected static int                   _defaultPipeliningMaxDepth        = DEFAULT_PIPELINING_MAX_DEPTH;
+
     protected int                          _connectionTimeout;
     protected int                          _requestTimeout;
-    protected boolean                      _pipelining;
 
-    // Used for pipelined connections, the order in which they were received
-    // to make sure they are read in order
-    protected int                          _pipelineSequenceNumber;
+    public static final int                PIPE_NONE                         = 0x00;
+
+    /**
+     * Use pipelining
+     */
+    public static final int                PIPE_PIPELINE                     = 0x01;
+
+    /**
+     * Use as many connections as possible (up to the maximum number of
+     * connections to a host/port), spreading the requests across all available
+     * connections evenly. If this is not set, a single connection will be used
+     * for all requests.
+     */
+    public static final int                PIPE_MAX_CONNECTIONS              = 0x02;
+
+    /**
+     * Set the connection depth to be the number of connections observed before
+     * the server closes its connection. Many servers close the socket
+     * connection after a certain number of requests. The HTTP client will note
+     * this number of requests and use this as the pipeline depth for all
+     * connections to that host/port.
+     */
+    public static final int                PIPE_USE_OBSERVED_CONN_LIMIT      = 0x04;
+
+    public static final int                PIPE_STANDARD_OPTIONS             = PIPE_PIPELINE
+                                                                                 | PIPE_MAX_CONNECTIONS
+                                                                                 | PIPE_USE_OBSERVED_CONN_LIMIT;
+    int                                    _pipeliningOptions;
+
+    /**
+     * The maximum number of simitaneous requests that can be outstanding on a
+     * pipelined connection. If this is zero, then the number is unlimited.
+     */
+    int                                    _pipeliningMaxDepth;
 
     protected String                       _proxyHost;
     protected int                          _proxyPort;
@@ -1003,7 +1036,8 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
         _cookieSpec = _defaultCookieSpec;
         // Don't use direct assignment because there is other
         // processing in this call
-        setPipelining(_defaultPipelining);
+        setPipeliningOptions(_defaultPipeliningOptions);
+        setPipeliningMaxDepth(_defaultPipeliningMaxDepth);
         _callback = _defaultCallback;
         _authenticationType[AUTH_NORMAL] = _defaultAuthenticationType;
         _authenticationType[AUTH_PROXY] = _defaultProxyAuthenticationType;
@@ -1212,7 +1246,7 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
             return _outStream;
         }
 
-        if (_pipelining)
+        if ((_pipeliningOptions & PIPE_PIPELINE) != 0)
         {
             throw new IllegalStateException("You cannot use the pipelining feature for "
                 + "sending output unless the connection is streaming.  "
@@ -1285,7 +1319,9 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
 
                     // When reading and piplining the connection is not owned
                     // from the connection manager point of view
-                    if (closed || type != READING || !_pipelining)
+                    if (closed
+                        || type != READING
+                        || (_pipeliningOptions & PIPE_PIPELINE) == 0)
                         _connManager.releaseConnection(_connection);
 
                     // Never reset these because the connection might be in
@@ -1422,11 +1458,18 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
             connected = true;
             _connection = conn;
 
-            if (_pipelining)
+            if ((_pipeliningOptions & PIPE_PIPELINE) != 0)
                 _connection.adjustPipelinedUrlConCount(1);
             _connection._totalReqUrlConCount++;
-            // System.out.println("setConn:" + this + " count: " +
-            // _connection._totalUrlConCount);
+
+            if (_log.isDebugEnabled())
+            {
+                _log.debug("setConnection: to: "
+                    + conn
+                    + " total req count:"
+                    + _connection._totalReqUrlConCount);
+            }
+
             _releaseConnection = release;
 
             _connection.setSoTimeout(_requestTimeout);
@@ -1789,7 +1832,7 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
                         + _connection
                         + " found closed when attempting to read response data");
                 }
-                if (_pipelining)
+                if ((_pipeliningOptions & PIPE_PIPELINE) != 0)
                 {
                     // If there is trouble reading due to a close, this will be
                     // retried
@@ -2626,7 +2669,10 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
     {
         if (_log.isDebugEnabled())
             _log.debug("setDefaultPipelining: " + enabled);
-        _defaultPipelining = enabled;
+        if (enabled)
+            _defaultPipeliningOptions = PIPE_STANDARD_OPTIONS;
+        else
+            _defaultPipeliningOptions = 0;
     }
 
     /**
@@ -2636,7 +2682,36 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
      */
     public static boolean isDefaultPipelining()
     {
-        return _defaultPipelining;
+        return (_defaultPipeliningOptions & PIPE_PIPELINE) != 0;
+    }
+
+    /**
+     * Set specific pipeline options for all connections. This allows finer
+     * control of the pipelining behavior.
+     * 
+     * @param pipeliningOptions -
+     *            see the PIPE_ constants.
+     * 
+     */
+    public static void setDefaultPipeliningOptions(int pipeliningOptions)
+    {
+        if (_log.isDebugEnabled())
+        {
+            _log.debug("setDefaultPipeliningOptions: "
+                + plOptionsToString(pipeliningOptions));
+        }
+
+        _defaultPipeliningOptions = pipeliningOptions;
+    }
+
+    /**
+     * Get the value of pipelining options for all connections.
+     * 
+     * @return an int, the options
+     */
+    public int getDefaultPipeliningOptions()
+    {
+        return _defaultPipeliningOptions;
     }
 
     /**
@@ -2644,22 +2719,19 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
      * requests to be sent in a single underlying socket connection before a
      * response is received. This can have a substantial performance benefit if
      * you are fetching multiple objects from the same server.
+     * <p>
+     * By default, the following pipeline options are set: PIPE_PIPELINE,
+     * PIPE_MAX_CONNECTIONS and PIPE_USE_OBSERVED_CONN_LIMIT
      * 
      * @param enabled
      *            true if enabled for this connection
      */
     public void setPipelining(boolean enabled)
     {
-        if (_log.isDebugEnabled())
-            _log.debug("setPipelining: " + enabled);
-
-        // We keep track of pipelined connections in the connection manger
-        // because that is how they get executed
-        if (_pipelining && !enabled)
-            _connManager.removeUrlConToExecute(this);
         if (enabled)
-            _connManager.addUrlConToExecute(this);
-        _pipelining = enabled;
+            setPipeliningOptions(PIPE_STANDARD_OPTIONS);
+        else
+            setPipeliningOptions(PIPE_NONE);
     }
 
     /**
@@ -2669,7 +2741,132 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
      */
     public boolean isPipelining()
     {
-        return _pipelining;
+        return (_pipeliningOptions & PIPE_PIPELINE) != 0;
+    }
+
+    /**
+     * Returns a string representation of the specified pipelining options.
+     * 
+     * @param options
+     * @return
+     */
+    public static String plOptionsToString(int options)
+    {
+        if (options == 0)
+            return "PIPE_NONE";
+        StringBuffer sb = new StringBuffer();
+        if ((options & PIPE_PIPELINE) != 0)
+            sb.append("PIPE_PIPELINE ");
+        if ((options & PIPE_MAX_CONNECTIONS) != 0)
+            sb.append("PIPE_MAX_CONNECTIONS ");
+        if ((options & PIPE_USE_OBSERVED_CONN_LIMIT) != 0)
+            sb.append("PIPE_USE_OBSERVED_CONN_LIMIT");
+        return sb.toString();
+    }
+
+    /**
+     * Set specific pipeline options for this connection. This allows finer
+     * control of the pipelining behavior.
+     * 
+     * @param pipeliningOptions -
+     *            see the PIPE_ constants.
+     * 
+     */
+    public void setPipeliningOptions(int pipeliningOptions)
+    {
+        if (_log.isDebugEnabled())
+        {
+            _log.debug("setPipeliningOptions: "
+                + plOptionsToString(pipeliningOptions));
+        }
+
+        // We keep track of pipelined connections in the connection manger
+        // because that is how they get executed
+
+        // Remove it if we are removing pipelining
+        if ((_pipeliningOptions & PIPE_PIPELINE) != 0
+            && (pipeliningOptions & PIPE_PIPELINE) == 0)
+        {
+            _connManager.removeUrlConToExecute(this);
+        }
+
+        // Add it if we are adding pipelining
+        if ((_pipeliningOptions & PIPE_PIPELINE) == 0
+            && (pipeliningOptions & PIPE_PIPELINE) != 0)
+        {
+            _connManager.addUrlConToExecute(this);
+        }
+
+        _pipeliningOptions = pipeliningOptions;
+    }
+
+    /**
+     * Get the value of pipelining options for this connection.
+     * 
+     * @return an int, the options
+     */
+    public int getPipeliningOptions()
+    {
+        return _pipeliningOptions;
+    }
+
+    /**
+     * Sets the maximum depth of pipelining for all connections
+     * <p>
+     * 
+     * @see setPipeliningMaxDepth
+     * 
+     * @param an
+     *            int, the maximum pipelining depth.
+     * 
+     */
+    public void setDefaultPipeliningMaxDepth(int pipeliningMaxDepth)
+    {
+        _defaultPipeliningMaxDepth = pipeliningMaxDepth;
+    }
+
+    /**
+     * Get the value of the maximum depth of pipelining for all connections
+     * 
+     * @return an int, the maximum pipelining depth.
+     */
+    public int getDefaultPipeliningMaxDepth()
+    {
+        return _defaultPipeliningMaxDepth;
+    }
+
+    /**
+     * Sets the maximum depth of pipelining for this connection.
+     * <p>
+     * The maximum depth is the number of outstanding HTTP requests that can be
+     * active at any one time on a socket connection. If this is 0 then there is
+     * no limit. Note that most of the time this is not necessary, as the
+     * pipelining mechanism automatically senses the maximum number of HTTP
+     * requests allowed on a socket connection before that connection is closed
+     * by the server and uses this as the maximum depth. See
+     * PIPE_USE_OBSERVED_CONN_LIMIT.
+     * 
+     * @param an
+     *            int, the maximum pipelining depth.
+     * 
+     */
+    public void setPipeliningMaxDepth(int pipeliningMaxDepth)
+    {
+        if (_log.isDebugEnabled())
+        {
+            _log.debug("setPipeliningMaxDepth: " + pipeliningMaxDepth);
+        }
+        _pipeliningMaxDepth = pipeliningMaxDepth;
+    }
+
+    /**
+     * Get the value of the maximum depth of pipelining for this connection.
+     * 
+     * @return an int, the maximum pipelining depth.
+     */
+    public int getPipeliningMaxDepth()
+    {
+        return _pipeliningMaxDepth;
     }
 
     /**
@@ -2748,8 +2945,6 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
                 + " connections");
         }
 
-        int seq = 0;
-
         int len = urlCons.size();
         for (int i = 0; i < len; i++)
         {
@@ -2759,7 +2954,6 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
                 throw new IllegalStateException("A pipelined HttpURLConnection does not have a Callback set: "
                     + urlCon);
             }
-            urlCon._pipelineSequenceNumber = seq++;
             if (_log.isDebugEnabled())
                 _log.debug("addUrlConToRead (start): " + urlCon);
             _connManager.addUrlConToRead(Thread.currentThread());
@@ -3278,7 +3472,7 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
     public String toString()
     {
         // Add the Util.id for better diagnostics if desired
-        return /*Util.id(this) + " " + */ _urlString;
+        return /* Util.id(this) + " " + */_urlString;
     }
 
     static String normalOrProxyToString(int normalOrProxy)

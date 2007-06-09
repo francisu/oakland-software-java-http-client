@@ -163,9 +163,6 @@ public class HttpGetSample implements com.oaklandsw.http.HttpUserAgent
             index++;
         }
 
-        // SSL - Uncomment this if you are < JDK 1.4
-        // Security.addProvider(new com.sun.net.ssl.internal.ssl.Provider());
-
         // Tell Java to use the oaklandsw implementation
         System.setProperty("java.protocol.handler.pkgs", "com.oaklandsw");
 

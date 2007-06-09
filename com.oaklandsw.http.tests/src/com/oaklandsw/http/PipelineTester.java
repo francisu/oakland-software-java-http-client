@@ -34,12 +34,20 @@ public class PipelineTester
     public String              _url;
     public boolean             _checkConnections = true;
 
+    public int                 _pipeliningOptions;
+    public int                 _pipeliningMaxDepth;
+
     public static final String COUNT_PROP        = "count";
 
-    public PipelineTester(String url, int iterations)
+    public PipelineTester(String url,
+            int iterations,
+            int pipeliningOptions,
+            int pipeliningMaxDepth)
     {
         _url = url;
         _iterations = iterations;
+        _pipeliningMaxDepth = pipeliningMaxDepth;
+        _pipeliningOptions = pipeliningOptions;
     }
 
     public class TestCallback implements Callback
@@ -119,7 +127,7 @@ public class PipelineTester
                 {
                     _readCountOk++;
                     _log.debug("response:" + reqNumber);
-                    //System.out.println("response: " + reqNumber);
+                    // System.out.println("response: " + reqNumber);
                     _responseCounts[reqNumber]++;
                 }
             }
@@ -221,6 +229,8 @@ public class PipelineTester
             HttpURLConnection urlCon = (HttpURLConnection)url.openConnection();
             urlCon.setCallback(cb);
 
+            urlCon.setPipeliningOptions(_pipeliningOptions);
+            urlCon.setPipeliningMaxDepth(_pipeliningMaxDepth);
             urlCon.setRequestProperty(COUNT_PROP, Integer.toString(i + 1));
             urlCon.setRequestProperty("threadName", Thread.currentThread()
                     .getName());

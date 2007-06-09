@@ -46,9 +46,11 @@ public class TestAuthType extends TestWebappBase
             // Net proxy cannot deal with pipelining
             if (_inAuthCloseProxyTest)
                 return;
-            
+
             PipelineTester pt = new PipelineTester(_urlBase + ParamServlet.NAME,
-                                                   number);
+                                                   number,
+                                                   _pipelineOptions,
+                                                   _pipelineMaxDepth);
             assertFalse(pt.runTest());
         }
     }

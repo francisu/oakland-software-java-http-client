@@ -7,6 +7,7 @@ import org.apache.commons.logging.Log;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
+import com.oaklandsw.http.HttpURLConnection;
 import com.oaklandsw.http.PipelineTester;
 import com.oaklandsw.http.servlet.ParamServlet;
 import com.oaklandsw.util.LogUtils;
@@ -28,6 +29,8 @@ public class TestPipelining extends TestWebappBase
 
         // Netproxy seems to drop requests
         _doAuthCloseProxyTest = false;
+        
+        //_logging = true;
     }
 
     public static Test suite()
@@ -57,8 +60,11 @@ public class TestPipelining extends TestWebappBase
     protected void testSimple(int number) throws Exception
     {
         PipelineTester pt = new PipelineTester(_urlBase + ParamServlet.NAME,
-                                               number);
+                                               number,
+                                               _pipelineOptions,
+                                               _pipelineMaxDepth);
         assertFalse(pt.runTest());
+        HttpURLConnection.dumpAll();
     }
 
     public void testSimple1() throws Exception
@@ -185,7 +191,10 @@ public class TestPipelining extends TestWebappBase
                             + _threadTestName
                             + _testAllName);
                         PipelineTester pt = new PipelineTester(_urlBase
-                            + ParamServlet.NAME, num);
+                                                                   + ParamServlet.NAME,
+                                                               num,
+                                                               _pipelineOptions,
+                                                               _pipelineMaxDepth);
                         pt._checkConnections = false;
                         boolean failed = pt.runTestMt();
                         if (failed)

@@ -16,17 +16,22 @@ import com.oaklandsw.util.Util;
 public class HttpTestBase extends com.oaklandsw.TestCaseBase
 {
 
-    private static final Log   _log         = LogUtils.makeLogger();
+    private static final Log   _log             = LogUtils.makeLogger();
 
-    protected static String    _urlBase     = HttpTestEnv.TEST_URL_WEBAPP;
+    protected static String    _urlBase         = HttpTestEnv.TEST_URL_WEBAPP;
 
     public boolean             _showStats;
 
     // For more stress testing
-    protected boolean          _extended    = false;
+    protected boolean          _extended        = false;
 
     // For logging
-    protected boolean          _logging     = false;
+    protected boolean          _logging         = false;
+
+    // Default setup if we are using pipelining. This is used by the
+    // PipelineTest class
+    protected int              _pipelineOptions = HttpURLConnection.PIPE_STANDARD_OPTIONS;
+    protected int              _pipelineMaxDepth;
 
     protected String           _testAllName;
 
@@ -72,15 +77,15 @@ public class HttpTestBase extends com.oaklandsw.TestCaseBase
     // Curently executing one of the test sets above
     protected boolean          _inTestGroup;
 
-    protected final String     UTF8         = "UTF-8";
+    protected final String     UTF8             = "UTF-8";
 
     // Constants for timeout tests
-    protected static final int DEF          = 1;
-    protected static final int DEF_REQUEST  = 2;
-    protected static final int DEF_CONNECT  = 3;
-    protected static final int CONN         = 4;
-    protected static final int CONN_REQUEST = 5;
-    protected static final int CONN_CONNECT = 6;
+    protected static final int DEF              = 1;
+    protected static final int DEF_REQUEST      = 2;
+    protected static final int DEF_CONNECT      = 3;
+    protected static final int CONN             = 4;
+    protected static final int CONN_REQUEST     = 5;
+    protected static final int CONN_CONNECT     = 6;
 
     public class OpenThread extends Thread
     {

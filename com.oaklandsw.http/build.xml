@@ -9,9 +9,11 @@
 
 		<property name="command.file" value="${basedir}/lictool.scr" />
 
-		<!-- this is the 1.2 compiler -->
-		<property name="build.compiler" value="jikes"/>
-	
+		<!-- this is the 1.2 compiler - only use this for building 1.xxx of product -->
+		<!--
+		<property name="build.compiler" value="jikes" />
+	    -->
+
 		<!-- see License -->
 		<property name="licensetype" value="1" />
 		<!-- see ConstantsOaklandsw -->
@@ -21,8 +23,8 @@
 		<!-- see http/HttpURLConnection -->
 		<property name="licfile" value="http.lic" />
 
-		<property name="eval.jar.name" value="${package.name}Eval.jar"/>
-		
+		<property name="eval.jar.name" value="${package.name}Eval.jar" />
+
 		<path id="compile.classpath">
 			<fileset dir="${basedir}/../com.oaklandsw.${package.name}.jars">
 				<include name="*.jar" />
@@ -31,7 +33,7 @@
 				<include name="*.jar" />
 			</fileset>
 			<dirset dir="${basedir}/../com.oaklandsw.util/bin" />
-			<path refid="compile.classpath12"/>
+			<path refid="compile.classpath12" />
 		</path>
 
 	</target>
@@ -50,8 +52,12 @@
 				<include name="com/oaklandsw/http/HttpConnectionManager.java" />
 				<include name="com/oaklandsw/http/URIException.java" />
 				<include name="com/oaklandsw/http/HttpException.java" />
+				<include name="com/oaklandsw/http/HttpRetryException.java" />
+				<include name="com/oaklandsw/http/AutomaticHttpRetryException.java" />
 				<include name="com/oaklandsw/http/HttpTimeoutException.java" />
 				<include name="com/oaklandsw/http/HttpUserAgent.java" />
+				<include name="com/oaklandsw/http/AbstractCallback.java" />
+				<include name="com/oaklandsw/http/Callback.java" />
 				<include name="com/oaklandsw/http/Credential.java" />
 				<include name="com/oaklandsw/http/UserCredential.java" />
 				<include name="com/oaklandsw/http/NtlmCredential.java" />
@@ -68,7 +74,7 @@
 		<echo file="${command.file}">
 			-licfile ${licfile} -create -lictype ${licensetype} -productid ${productid} -lictype ${licensetype} -cbid ${codebaseid}
 		</echo>
-		
+
 		<java classpath="${lictool.classpath}" classname="${lictool.class}" fork="yes">
 			<arg value="-commandfile" />
 			<arg value="${command.file}" />
@@ -141,8 +147,8 @@
 			</fileset>
 		</path>
 
-		<property name="non.obfuscated.class.path" refid="non.obfuscated.jars"/>
-		
+		<property name="non.obfuscated.class.path" refid="non.obfuscated.jars" />
+
 		<!--
     compile path for all jars that should not be obfuscated, but that should
     be on the classpath.
@@ -195,7 +201,7 @@
 				<exclude name="com/oaklandsw/http/${licfile}" />
 			</zipfileset>
 		</jar>
-			
+
 		<!-- normal -->
 		<zip zipfile="${release.dir}/${dist.zip.name}.zip" includes="**">
 			<fileset dir="${basedir}">
@@ -222,15 +228,15 @@
 		<!-- source -->
 		<!-- don't include the license stuff -->
 		<zip zipfile="${release.dir}/${dist.zip.name}Src.zip" includes="**">
-			<zipfileset dir="${src.dir}" prefix="src" >
-				<exclude name="**/HttpLicense*.java"/>
+			<zipfileset dir="${src.dir}" prefix="src">
+				<exclude name="**/HttpLicense*.java" />
 			</zipfileset>
-			<zipfileset dir="../com.oaklandsw.util/src" prefix="src" >
-				<exclude name="**/license/**"/>
-				<exclude name="**/jak/**"/>
-				<exclude name="**/util/AbstractCommandLine.java"/>
-				</zipfileset>
-			<zipfileset dir="${basedir}" includes="build.http.xml" fullpath="build.xml"/>
+			<zipfileset dir="../com.oaklandsw.util/src" prefix="src">
+				<exclude name="**/license/**" />
+				<exclude name="**/jak/**" />
+				<exclude name="**/util/AbstractCommandLine.java" />
+			</zipfileset>
+			<zipfileset dir="${basedir}" includes="build.http.xml" fullpath="build.xml" />
 			<fileset dir="${basedir}">
 				<include name="SOURCE_LICENSE" />
 				<include name="README_SOURCE" />
@@ -244,7 +250,7 @@
 			<fileset dir="../com.oaklandsw.http.tests/src/">
 				<include name="HttpGetSample.java" />
 			</fileset>
-			<zipfileset dir="../com.oaklandsw.http.tests/" includes="runsrc*" filemode="755"/>
+			<zipfileset dir="../com.oaklandsw.http.tests/" includes="runsrc*" filemode="755" />
 		</zip>
 
 	</target>

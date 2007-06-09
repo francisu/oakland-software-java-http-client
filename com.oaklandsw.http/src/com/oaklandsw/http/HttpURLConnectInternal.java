@@ -787,7 +787,9 @@ public class HttpURLConnectInternal
         {
             if ("chunked".equalsIgnoreCase(_hdrTransferEncoding))
             {
-                result = new ChunkedInputStream(_conInStream, this, _pipelining);
+                result = new ChunkedInputStream(_conInStream,
+                                                this,
+                                                (_pipeliningOptions & PIPE_PIPELINE) != 0);
             }
         }
         else if (_hdrContentLength != null)
@@ -795,7 +797,7 @@ public class HttpURLConnectInternal
             result = new ContentLengthInputStream(_conInStream,
                                                   this,
                                                   _hdrContentLengthInt,
-                                                  _pipelining);
+                                                  (_pipeliningOptions & PIPE_PIPELINE) != 0);
         }
         else
         {
@@ -1084,7 +1086,7 @@ public class HttpURLConnectInternal
                 return false;
             case Credential.AUTH_DIGEST:
                 // Always, since we can't do this preemptively
-                if (_pipelining)
+                if ((_pipeliningOptions & PIPE_PIPELINE) != 0)
                 {
                     throw new IllegalStateException("Using Digest authentication with "
                         + "pipeling is not allowed (because it makes no sense), "
@@ -1214,7 +1216,7 @@ public class HttpURLConnectInternal
                     // then just have the pipeline mechanism retry
 
                     if (oldConnection != _connection
-                        && _pipelining
+                        && (_pipeliningOptions & PIPE_PIPELINE) != 0
                         && _currentAuthType >= 0
                         && _authState[_currentAuthType] >= AS_NEEDS_AUTH
                         && _authState[_currentAuthType] < AS_FINAL_AUTH_SENT
@@ -1237,12 +1239,12 @@ public class HttpURLConnectInternal
                     // multiple threads access the same connection
                     try
                     {
-                        if (_pipelining)
+                        if ((_pipeliningOptions & PIPE_PIPELINE) != 0)
                             _connection.startPreventClose();
 
                         // Make sure it's still open at this point, can't close
                         // until end prevent close
-                        if (false &&!_connection.isOpen())
+                        if (false && !_connection.isOpen())
                         {
                             throw new IOException("Connection: "
                                 + _connection
@@ -1252,7 +1254,7 @@ public class HttpURLConnectInternal
                     }
                     finally
                     {
-                        if (_pipelining)
+                        if ((_pipeliningOptions & PIPE_PIPELINE) != 0)
                             _connection.endPreventClose();
 
                     }
@@ -1304,7 +1306,7 @@ public class HttpURLConnectInternal
                 releaseConnection(CLOSE);
 
                 // Pipelining and before write sent, retry here
-                if (_pipelining && !_requestSent)
+                if ((_pipeliningOptions & PIPE_PIPELINE) != 0 && !_requestSent)
                 {
                     _log.debug("Retrying pipelining before request sent");
                     // fall through and retry
@@ -1587,7 +1589,7 @@ public class HttpURLConnectInternal
                     // the request so the normal pipelining mechanism can be
                     // used
                     if (_forwardAuthCount == 1
-                        && (isStreaming() || _pipelining))
+                        && (isStreaming() || (_pipeliningOptions & PIPE_PIPELINE) != 0))
                     {
                         _log.warn("setAuthenticationType() specified with "
                             + "pipelining/streaming, but no authorization "
@@ -2101,9 +2103,9 @@ public class HttpURLConnectInternal
     protected IOException maxRetryExceededWrapper(IOException ex)
     {
         // If we did not retry, just give the underlying exception
-        // Or if not pipelining.  This exception is intended to provide
+        // Or if not pipelining. This exception is intended to provide
         // extra information useful for the pipelining case
-        if (_tryCount == 1 || !_pipelining)
+        if (_tryCount == 1 || (_pipeliningOptions & PIPE_PIPELINE) == 0)
             return ex;
 
         String str = "Request "
@@ -2111,7 +2113,7 @@ public class HttpURLConnectInternal
             + " failed after trying "
             + _tryCount
             + " times. ";
-        if (_pipelining)
+        if ((_pipeliningOptions & PIPE_PIPELINE) != 0)
             str += "Consider increasing maxTries. ";
 
         _log.warn(str);
@@ -2149,7 +2151,7 @@ public class HttpURLConnectInternal
         {
             _log.debug("streaming write finished");
             _streamingWritingFinished = true;
-            if (_pipelining)
+            if ((_pipeliningOptions & PIPE_PIPELINE) != 0)
             {
                 try
                 {
@@ -2176,7 +2178,7 @@ public class HttpURLConnectInternal
     // to pipelining or streaming
     protected boolean readSeparateFromWrite()
     {
-        return (isStreaming() || _pipelining)
+        return (isStreaming() || (_pipeliningOptions & PIPE_PIPELINE) != 0)
             && (_currentAuthType == -1
                 || _authState[_currentAuthType] == AS_NONE || _authState[_currentAuthType] >= AS_FINAL_AUTH_SENT);
     }

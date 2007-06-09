@@ -131,6 +131,20 @@ class ConnectionInfo
     // Assumed to be synchronized on the HttpConnectionManager
     HttpConnection getMatchingConnection(HttpURLConnection urlCon)
     {
+        // Only pay attention to this option if there is a limit on the max
+        // number of connections, for obvious reasons
+        if ((urlCon._pipeliningOptions & HttpURLConnection.PIPE_MAX_CONNECTIONS) != 0
+            && _connManager._maxConns >= 0)
+        {
+            if (getActiveConnectionCount() < _connManager._maxConns)
+            {
+                // Force it to create a connection
+                return null;
+            }
+            // Use the next available connection, since the available
+            // connections are a queue this should work in round robin fashion
+        }
+
         // Fast path
         HttpConnection conn = (HttpConnection)_availableConnections.peek();
         if (conn == null)
@@ -138,7 +152,6 @@ class ConnectionInfo
 
         assign:
         {
-
             if (checkMatch(conn, urlCon))
             {
                 if (conn.isOpen())
@@ -217,13 +230,34 @@ class ConnectionInfo
 
         check:
         {
+            int pipelinedCount = conn.getPipelinedUrlConCount();
 
-            // A connection with pipeline I/O outstanding can only be used
-            // by a urlCon requesting pipelining.
-            if (conn.getPipelinedUrlConCount() > 0 && !urlCon._pipelining)
+            if (urlCon.isPipelining())
             {
-                matched = -1;
-                break check;
+                if (urlCon._pipeliningMaxDepth > 0
+                    && pipelinedCount > urlCon._pipeliningMaxDepth)
+                {
+                    matched = -10;
+                    break check;
+                }
+
+                if (_observedMaxUrlCons != 0
+                    && (urlCon._pipeliningOptions & HttpURLConnection.PIPE_USE_OBSERVED_CONN_LIMIT) != 0
+                    && conn._totalReqUrlConCount > _observedMaxUrlCons)
+                {
+                    matched = -11;
+                    break check;
+                }
+            }
+            else
+            {
+                // A connection with pipeline I/O outstanding can only be used
+                // by a urlCon requesting pipelining.
+                if (pipelinedCount > 0)
+                {
+                    matched = -1;
+                    break check;
+                }
             }
 
             if (conn._credential[HttpURLConnection.AUTH_NORMAL] == null
@@ -292,7 +326,7 @@ class ConnectionInfo
             if (false)
             {
                 System.out.println(" url: "
-                    + urlCon._pipelining
+                    + urlCon.isPipelining()
                     + " con: "
                     + conn.getPipelinedUrlConCount());
             }

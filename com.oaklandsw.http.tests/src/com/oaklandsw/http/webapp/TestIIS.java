@@ -256,7 +256,10 @@ public class TestIIS extends HttpTestBase
         HttpURLConnection.setDefaultAuthenticationType(Credential.AUTH_NTLM);
 
         PipelineTester pt = new PipelineTester(HttpTestEnv.TEST_URL_IIS
-            + HttpTestEnv.TEST_URL_APP_IIS_QUERY_STRING, num);
+                                                   + HttpTestEnv.TEST_URL_APP_IIS_QUERY_STRING,
+                                               num,
+                                               _pipelineOptions,
+                                               _pipelineMaxDepth);
         assertFalse(pt.runTest());
     }
 

@@ -160,7 +160,7 @@ public class Authenticator
             return false;
         }
 
-        if (urlCon._pipelining)
+        if (urlCon.isPipelining())
         {
             if (authenticationType == 0)
             {
