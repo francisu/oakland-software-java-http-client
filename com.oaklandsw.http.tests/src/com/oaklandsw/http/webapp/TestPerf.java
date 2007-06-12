@@ -1,12 +1,12 @@
 package com.oaklandsw.http.webapp;
 
 import java.io.InputStream;
-import java.net.HttpURLConnection;
 import java.net.URL;
 
 import org.apache.commons.logging.Log;
 
 import com.oaklandsw.http.HttpTestEnv;
+import com.oaklandsw.http.HttpURLConnection;
 import com.oaklandsw.http.servlet.HeaderServlet;
 import com.oaklandsw.util.LogUtils;
 import com.oaklandsw.util.Util;
@@ -78,7 +78,7 @@ public class TestPerf
             }
             else if (args[i].equalsIgnoreCase("-explicit"))
             {
-                com.oaklandsw.http.HttpURLConnection.setExplicitClose(true);
+                com.oaklandsw.http.HttpURLConnection.setDefaultExplicitClose(true);
             }
             else if (args[i].equalsIgnoreCase("-nowarmup"))
             {
@@ -156,7 +156,7 @@ public class TestPerf
             is.close();
         }
 
-        if (com.oaklandsw.http.HttpURLConnection.getExplicitClose())
+        if (urlCon.isExplicitClose())
             urlCon.getInputStream().close();
     }
 

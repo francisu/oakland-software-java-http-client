@@ -123,7 +123,7 @@ public class TestMultiThread extends TestWebappBase
             if (!java.net.HttpURLConnection.getFollowRedirects()
                 && response > 300)
             {
-                if (com.oaklandsw.http.HttpURLConnection.getExplicitClose())
+                if (urlCon.isExplicitClose())
                     urlCon.getInputStream().close();
                 return;
             }

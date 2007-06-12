@@ -116,7 +116,7 @@ public class Authenticator
         String respHeader = RESP_HEADERS[normalOrProxy];
 
         int authenticationType = urlCon.getAuthenticationType(normalOrProxy);
-        boolean preemptive = HttpURLConnection.getPreemptiveAuthentication()
+        boolean preemptive = urlCon.isConnectionPreemptiveAuthentication()
             || authenticationType == Credential.AUTH_BASIC;
 
         // If there is no challenge, attempt to use preemptive authorization

@@ -37,8 +37,8 @@ public class TestTimeout extends HttpTestBase
 
     public void tearDown() throws Exception
     {
+        super.tearDown();
         com.oaklandsw.http.HttpURLConnection.setDefaultTimeout(0);
-        com.oaklandsw.http.HttpURLConnection.setExplicitClose(false);
         HttpConnection._testTimeout = 0;
     }
 

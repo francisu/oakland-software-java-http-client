@@ -231,7 +231,7 @@ public class TestRedirect extends TestWebappBase
         assertEquals(302, response);
 
         java.net.HttpURLConnection.setFollowRedirects(true);
-        if (com.oaklandsw.http.HttpURLConnection.getExplicitClose())
+        if (urlCon.isExplicitClose())
             urlCon.getInputStream().close();
         checkNoActiveConns(url);
     }
@@ -381,7 +381,7 @@ public class TestRedirect extends TestWebappBase
         response = urlCon.getResponseCode();
         assertEquals(HttpStatus.SC_MOVED_TEMPORARILY, response);
 
-        if (com.oaklandsw.http.HttpURLConnection.getExplicitClose())
+        if (urlCon.isExplicitClose())
             urlCon.getInputStream().close();
         checkNoActiveConns(url);
     }

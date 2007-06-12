@@ -94,7 +94,7 @@ public class TestData extends HttpTestBase
 
         com.oaklandsw.http.HttpURLConnection urlCon = (com.oaklandsw.http.HttpURLConnection)url
                 .openConnection();
-        com.oaklandsw.http.HttpURLConnection.setExplicitClose(true);
+        urlCon.setExplicitClose(true);
         urlCon.setRequestMethod("GET");
         urlCon.connect();
 

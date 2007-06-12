@@ -310,9 +310,9 @@ public class LocalTestAuthenticator extends TestCase
 
     public void testPreemptiveAuthorizationTrueNoCreds() throws Exception
     {
+        HttpURLConnection.setPreemptiveAuthentication(true);
         SimpleHttpMethod method = new SimpleHttpMethod();
 
-        HttpURLConnection.setPreemptiveAuthentication(true);
         TestUserAgent._type = TestUserAgent.NULL;
         assertFalse(authenticateForTests(method,
                                          null,
@@ -321,9 +321,9 @@ public class LocalTestAuthenticator extends TestCase
 
     public void testPreemptiveAuthorizationTrueWithCreds() throws Exception
     {
+        HttpURLConnection.setPreemptiveAuthentication(true);
         SimpleHttpMethod method = new SimpleHttpMethod();
 
-        HttpURLConnection.setPreemptiveAuthentication(true);
         assertTrue(authenticateForTests(method,
                                         null,
                                         HttpURLConnection.AUTH_NORMAL));
@@ -335,9 +335,9 @@ public class LocalTestAuthenticator extends TestCase
 
     public void testPreemptiveAuthorizationFalse() throws Exception
     {
+        HttpURLConnection.setPreemptiveAuthentication(false);
         SimpleHttpMethod method = new SimpleHttpMethod();
 
-        HttpURLConnection.setPreemptiveAuthentication(false);
         assertTrue(!authenticateForTests(method,
                                          null,
                                          HttpURLConnection.AUTH_NORMAL));

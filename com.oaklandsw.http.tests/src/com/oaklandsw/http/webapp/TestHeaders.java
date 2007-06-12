@@ -59,7 +59,7 @@ public class TestHeaders extends TestWebappBase
         else
         {
             // checkReply - above gets the InputStream
-            if (com.oaklandsw.http.HttpURLConnection.getExplicitClose())
+            if (urlCon.isExplicitClose())
                 urlCon.getInputStream().close();
         }
         checkNoActiveConns(url);
@@ -126,7 +126,7 @@ public class TestHeaders extends TestWebappBase
         List headerField = (List)headerMap.get("HeaderSetByServlet");
         assertEquals("Yes", headerField.get(0));
 
-        if (com.oaklandsw.http.HttpURLConnection.getExplicitClose())
+        if (urlCon.isExplicitClose())
             urlCon.getInputStream().close();
         checkNoActiveConns(url);
     }

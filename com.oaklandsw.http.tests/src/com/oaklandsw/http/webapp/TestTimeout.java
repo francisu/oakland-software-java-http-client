@@ -101,8 +101,6 @@ public class TestTimeout extends TestWebappBase
     // Tests timeout waiting for a connection to be available
     public void testConnectWaitForThread() throws Exception
     {
-        logAll();
-
         // Use up up lots of connections available by default
         for (int i = 0; i < CONN_COUNT; i++)
             (new OpenThread()).start();
@@ -333,7 +331,7 @@ public class TestTimeout extends TestWebappBase
     public void testRequestNoTimeoutLoop(int type) throws Exception
     {
         setupDefaultTimeout(type, 5000);
-        com.oaklandsw.http.HttpURLConnection.setExplicitClose(true);
+        com.oaklandsw.http.HttpURLConnection.setDefaultExplicitClose(true);
 
         URL url = new URL(_urlBase + TimeoutServlet.NAME);
         int response = 0;
@@ -397,7 +395,7 @@ public class TestTimeout extends TestWebappBase
         throws Exception
     {
         setupDefaultTimeout(type, 2000);
-        com.oaklandsw.http.HttpURLConnection.setExplicitClose(true);
+        com.oaklandsw.http.HttpURLConnection.setDefaultExplicitClose(true);
 
         URL url = new URL(_urlBase + TimeoutServlet.NAME);
         int response = 0;
@@ -465,7 +463,7 @@ public class TestTimeout extends TestWebappBase
     public void testRequestNoTimeoutLoopNoClose(int type) throws Exception
     {
         setupDefaultTimeout(type, 2000);
-        com.oaklandsw.http.HttpURLConnection.setExplicitClose(true);
+        com.oaklandsw.http.HttpURLConnection.setDefaultExplicitClose(true);
 
         URL url = new URL(_urlBase + TimeoutServlet.NAME);
         int response = 0;

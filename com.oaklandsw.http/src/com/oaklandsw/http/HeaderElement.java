@@ -268,30 +268,6 @@ public class HeaderElement extends NameValuePair
     }
 
     /**
-     * This parses the value part of a header. The result is an array of
-     * HeaderElement objects.
-     * 
-     * @param headerValue
-     *            the string representation of the header value (as received
-     *            from the web server).
-     * @return array of {@link HeaderElement}s.
-     * @throws HttpException
-     *             if the above syntax rules are violated.
-     * 
-     * @deprecated Use #parseElements(String).
-     */
-    public static final HeaderElement[] parse(String headerValue)
-        throws HttpException
-    {
-
-        if (headerValue == null)
-        {
-            return new HeaderElement[] {};
-        }
-        return parseElements(headerValue.toCharArray());
-    }
-
-    /**
      * Returns parameter with the given name, if found. Otherwise null is
      * returned
      * 

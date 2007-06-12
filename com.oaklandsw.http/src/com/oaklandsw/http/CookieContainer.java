@@ -46,7 +46,7 @@ import com.oaklandsw.util.LogUtils;
 public class CookieContainer implements Collection
 {
     private static final Log _log     = LogUtils.makeLogger();
-    private List       _cookies = new ArrayList();
+    private List             _cookies = new ArrayList();
 
     public CookieContainer()
     {

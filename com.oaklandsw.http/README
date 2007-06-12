@@ -5,6 +5,18 @@ Readme file for oakland software HTTP client support.
 See http://www.oaklandsoftware.com/support.html for current known problems.
 
 
+Incompatible Changes since release 1.x
+------------------------------------------------
+1) The HttpURLConnection.setExplicitClose() and HttpURLConnection.isExplicitClose() have
+been replaced by HttpURLConnection.setDefaultExplicitClose() and 
+HttpURLConnection.isDefaultExplicitClose() respectively.  This is to align this
+with the convention used by the other properties.
+
+2) The HttpURLConnection.setExplicitClose() and HttpURLConnection.isExplicitClose() are 
+now instance methods that affect only the connection on which they are called.
+
+
+
 Configuration Instructions
 ------------------------------------------------
 If you are using this with Apache Axis, you must change the Axis configuration

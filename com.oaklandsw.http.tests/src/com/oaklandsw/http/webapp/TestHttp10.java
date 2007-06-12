@@ -62,7 +62,7 @@ public class TestHttp10 extends TestWebappBase
             checkReply(urlCon, "name=\"" + conName + "\";value=\"keep-alive\"<br>");
         }
 
-        if (com.oaklandsw.http.HttpURLConnection.getExplicitClose())
+        if (urlCon.isExplicitClose())
             urlCon.getInputStream().close();
         checkNoActiveConns(url);
     }
@@ -86,7 +86,7 @@ public class TestHttp10 extends TestWebappBase
             + conName
             + "\";value=\"keep-alive\"<br>"));
 
-        if (com.oaklandsw.http.HttpURLConnection.getExplicitClose())
+        if (urlCon.isExplicitClose())
             urlCon.getInputStream().close();
         checkNoActiveConns(url);
 

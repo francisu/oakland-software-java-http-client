@@ -4,7 +4,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.net.HttpURLConnection;
 import java.net.URL;
 
 import org.apache.commons.logging.Log;
@@ -14,6 +13,7 @@ import junit.framework.TestSuite;
 
 import com.oaklandsw.http.HttpTestBase;
 import com.oaklandsw.http.HttpTestEnv;
+import com.oaklandsw.http.HttpURLConnection;
 import com.oaklandsw.http.server.ErrorServer;
 import com.oaklandsw.util.LogUtils;
 import com.oaklandsw.util.Util;
@@ -113,7 +113,7 @@ public class TestDisconnect extends HttpTestBase
         urlCon.setRequestMethod("GET");
         urlCon.connect();
 
-        if (com.oaklandsw.http.HttpURLConnection.getExplicitClose())
+        if (urlCon.isExplicitClose())
         {
             // Should work
             urlCon.getResponseCode();
@@ -158,7 +158,7 @@ public class TestDisconnect extends HttpTestBase
 
     public void testNoRead(String when, int lines) throws Exception
     {
-        if (com.oaklandsw.http.HttpURLConnection.getExplicitClose())
+        if (com.oaklandsw.http.HttpURLConnection.isDefaultExplicitClose())
         {
             URL url = makeUrl(when, lines);
 

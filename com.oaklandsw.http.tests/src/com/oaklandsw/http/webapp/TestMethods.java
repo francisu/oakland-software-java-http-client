@@ -120,7 +120,7 @@ public class TestMethods extends TestWebappBase
 
     public void testHeadMethodExplicitClose() throws Exception
     {
-        com.oaklandsw.http.HttpURLConnection.setExplicitClose(true);
+        HttpURLConnection.setDefaultExplicitClose(true);
 
         URL url = new URL(_urlBase + RequestBodyServlet.NAME);
 
@@ -132,8 +132,6 @@ public class TestMethods extends TestWebappBase
             urlCon.setRequestMethod("HEAD");
             assertEquals(200, urlCon.getResponseCode());
         }
-
-        com.oaklandsw.http.HttpURLConnection.setExplicitClose(false);
     }
 
     // Test a sequence of calls used by Credit-Suisse (bug 1433)

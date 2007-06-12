@@ -463,7 +463,9 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
 
     protected static int                   _ntlmPreferredEncoding            = NTLM_ENCODING_UNICODE;
 
-    protected static boolean               _explicitClose;
+    protected static final boolean         DEFAULT_EXPLICIT_CLOSE            = false;
+    protected static boolean               _defaultExplicitClose;
+    protected boolean                      _explicitClose;
 
     // For tests
     public static final int                DEFAULT_IDLE_TIMEOUT              = 14000;
@@ -492,7 +494,9 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
     protected static int                   _retryInterval                    = DEFAULT_RETRY_INTERVAL;
 
     private static boolean                 DEFAULT_PREEMPTIVE_AUTHENTICATION = false;
-    protected static boolean               _preemptiveAuthentication         = DEFAULT_PREEMPTIVE_AUTHENTICATION;
+    protected static boolean               _defaultPreemptiveAuthentication  = DEFAULT_PREEMPTIVE_AUTHENTICATION;
+
+    protected boolean                      _preemptiveAuthentication;
 
     private static int                     DEFAULT_AUTHENTICATION_TYPE       = 0;
     protected static int                   _defaultAuthenticationType;
@@ -682,7 +686,7 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
                 if (explicitStr != null)
                 {
                     _log.info("Require explicit close");
-                    _explicitClose = true;
+                    _defaultExplicitClose = true;
                 }
 
                 String followRedirects = System
@@ -990,7 +994,8 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
     }
 
     /**
-     * Constructor, works the same as the constructor for java.net.HttpURLConnection.
+     * Constructor, works the same as the constructor for
+     * java.net.HttpURLConnection.
      */
     public HttpURLConnection(URL urlParam)
     {
@@ -1013,6 +1018,7 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
         _contentLength = UNINIT_CONTENT_LENGTH;
 
         _urlString = urlParam.toExternalForm();
+
         try
         {
             setUrl(_urlString);
@@ -1026,6 +1032,8 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
         }
 
         _userAgent = _defaultUserAgent;
+        _explicitClose = _defaultExplicitClose;
+        _preemptiveAuthentication = _defaultPreemptiveAuthentication;
 
         _connectionTimeout = _defaultConnectionTimeout;
         _requestTimeout = _defaultRequestTimeout;
@@ -2293,25 +2301,42 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
     }
 
     /**
-     * Returns true if an explicit close is required, false otherwise.
+     * Returns the default value of explicit close for all connections.
      * 
+     * @see #isExplicitClose()
      * @return the value of the explicit close flag.
      */
-    public static boolean getExplicitClose()
+    public static boolean isDefaultExplicitClose()
     {
-        return _explicitClose;
+        return _defaultExplicitClose;
+    }
+
+    /**
+     * Sets the default value of explicit close for all connections.
+     * <p>
+     * This is equivalent to setting the
+     * <code>com.oaklandsw.http.explicitClose</code> property to anything.
+     * 
+     * @see #setExplicitClose(boolean)
+     * @param explicitClose
+     *            the value for explicit closing of the connection.
+     */
+    public static void setDefaultExplicitClose(boolean explicitClose)
+    {
+        if (_log.isDebugEnabled())
+            _log.debug("setDefaultExplicitClose: " + explicitClose);
+        _defaultExplicitClose = explicitClose;
     }
 
     /**
      * Used to allow you to directly read the result from the socket, avoiding
      * buffering.
      * <p>
-     * Sets all connections to require the InputStream to be obtained using a
+     * Sets the connection to require the InputStream to be obtained using a
      * call to getInputStream(), and for that stream to be closed. If this is
      * specified, this can result in better performance as the data associated
      * with the connection is not read unless the stream associated with the
-     * connection is read. This is equivalent to setting the
-     * <code>com.oaklandsw.http.explicitClose</code> property to anything.
+     * connection is read.
      * 
      * <p>
      * Here are the rules for using this option:
@@ -2336,11 +2361,21 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
      * @param explicitClose
      *            the value for explicit closing of the connection.
      */
-    public static void setExplicitClose(boolean explicitClose)
+    public void setExplicitClose(boolean explicitClose)
     {
         if (_log.isDebugEnabled())
             _log.debug("setExplicitClose: " + explicitClose);
         _explicitClose = explicitClose;
+    }
+
+    /**
+     * Returns true if an explicit close is required, false otherwise.
+     * 
+     * @return the value of the explicit close flag.
+     */
+    public boolean isExplicitClose()
+    {
+        return _explicitClose;
     }
 
     /**
@@ -2476,6 +2511,34 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
     }
 
     /**
+     * Enable preemptive authentication for all connections.
+     * <p>
+     * This is by default disabled.
+     * 
+     * @see #setConnectionPreemptiveAuthentication(boolean)
+     * @param enabled
+     *            true if enabled
+     */
+    public static void setPreemptiveAuthentication(boolean enabled)
+    {
+        if (_log.isDebugEnabled())
+            _log.debug("setPreemptiveAuthentication: " + enabled);
+        _defaultPreemptiveAuthentication = enabled;
+    }
+
+    /**
+     * Get the value of preemptive authentication enablement for all
+     * connections.
+     * 
+     * @see #isConnectionPreemptiveAuthentication()
+     * @return true if preemptive authentication is enabled.
+     */
+    public static boolean getPreemptiveAuthentication()
+    {
+        return _defaultPreemptiveAuthentication;
+    }
+
+    /**
      * Enable preemptive authentication. Preemptive authentication is used with
      * basic and digest authentication modes to send the authentication
      * credentials on an HTTP request without being prompted for them by the
@@ -2486,10 +2549,10 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
      * @param enabled
      *            true if enabled
      */
-    public static void setPreemptiveAuthentication(boolean enabled)
+    public void setConnectionPreemptiveAuthentication(boolean enabled)
     {
         if (_log.isDebugEnabled())
-            _log.debug("setPreemptiveAuthentication: " + enabled);
+            _log.debug("setConnectionPreemptiveAuthentication: " + enabled);
         _preemptiveAuthentication = enabled;
     }
 
@@ -2498,7 +2561,7 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
      * 
      * @return true if preemptive authentication is enabled.
      */
-    public static boolean getPreemptiveAuthentication()
+    public boolean isConnectionPreemptiveAuthentication()
     {
         return _preemptiveAuthentication;
     }
@@ -2748,7 +2811,8 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
      * Returns a string representation of the specified pipelining options.
      * 
      * @param options
-     * @return a String which is a text representation of the pipelining options.
+     * @return a String which is a text representation of the pipelining
+     *         options.
      */
     public static String plOptionsToString(int options)
     {

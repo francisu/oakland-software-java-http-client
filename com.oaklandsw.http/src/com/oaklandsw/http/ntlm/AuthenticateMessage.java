@@ -20,15 +20,11 @@ public class AuthenticateMessage extends Message
 {
 
     protected String           _host;
-
     protected String           _user;
-
     protected String           _domain;
-
     protected String           _password;
 
     protected byte[]           _ntResponse;
-
     protected byte[]           _lmResponse;
 
     protected boolean          _encodingOem;
@@ -40,7 +36,6 @@ public class AuthenticateMessage extends Message
     protected static final int AUTHENTICATE_HEADER_LEN = 64;
 
     protected static final int PASSWORD_LEN            = 14;
-
     protected static final int RESPONSE_LEN            = 24;
 
     protected static final int HASHED_PASSWORD_LEN     = 21;
@@ -274,9 +269,17 @@ public class AuthenticateMessage extends Message
         byte[] magicConstant = "KGS!@#$%".getBytes("US-ASCII");
         byte[] lmHash = new byte[16];
         byte[] key = createDESKey(keyBytes, 0);
-        SecurityHelper.des(SecurityHelper.ENCRYPT, magicConstant, key, lmHash, 0);
+        SecurityHelper.des(SecurityHelper.ENCRYPT,
+                           magicConstant,
+                           key,
+                           lmHash,
+                           0);
         key = createDESKey(keyBytes, 7);
-        SecurityHelper.des(SecurityHelper.ENCRYPT, magicConstant, key, lmHash, 8);
+        SecurityHelper.des(SecurityHelper.ENCRYPT,
+                           magicConstant,
+                           key,
+                           lmHash,
+                           8);
         return lmHash;
     }
 
@@ -339,13 +342,25 @@ public class AuthenticateMessage extends Message
     {
         byte[] lmResponse = new byte[24];
         byte[] keyBytes = new byte[21];
-        System.arraycopy(hash, 0, keyBytes, 0, 16);        
+        System.arraycopy(hash, 0, keyBytes, 0, 16);
         byte[] key = createDESKey(keyBytes, 0);
-        SecurityHelper.des(SecurityHelper.ENCRYPT, challenge, key, lmResponse, 0);
+        SecurityHelper.des(SecurityHelper.ENCRYPT,
+                           challenge,
+                           key,
+                           lmResponse,
+                           0);
         key = createDESKey(keyBytes, 7);
-        SecurityHelper.des(SecurityHelper.ENCRYPT, challenge, key, lmResponse, 8);
+        SecurityHelper.des(SecurityHelper.ENCRYPT,
+                           challenge,
+                           key,
+                           lmResponse,
+                           8);
         key = createDESKey(keyBytes, 14);
-        SecurityHelper.des(SecurityHelper.ENCRYPT, challenge, key, lmResponse, 16);
+        SecurityHelper.des(SecurityHelper.ENCRYPT,
+                           challenge,
+                           key,
+                           lmResponse,
+                           16);
         return lmResponse;
     }
 
@@ -641,6 +656,7 @@ public class AuthenticateMessage extends Message
                                                    hostOffset);
             }
         }
+
         index += hostLen;
 
         if (userLen != 0)
@@ -672,16 +688,16 @@ public class AuthenticateMessage extends Message
     {
         calcResponses();
 
-        int domainLen = _domain.length();
-        int hostLen = _host.length();
-        int userLen = _user.length();
+        int domainLen = _domain == null ? 0 : _domain.length();
+        int hostLen = _host == null ? 0 : _host.length();
+        int userLen = _user == null ? 0 : _user.length();
 
         // Unicode is 2 bytes per char
         if (!_encodingOem)
         {
-            domainLen = _domain.length() * 2;
-            hostLen = _host.length() * 2;
-            userLen = _user.length() * 2;
+            domainLen = domainLen * 2;
+            hostLen = hostLen * 2;
+            userLen = userLen * 2;
         }
 
         _msgLength = AUTHENTICATE_HEADER_LEN
@@ -754,15 +770,23 @@ public class AuthenticateMessage extends Message
 
         if (_encodingOem)
         {
-            index = Util.toByteAscii(_user.toUpperCase(), _msgBytes, index);
-            index = Util.toByteAscii(_host.toUpperCase(), _msgBytes, index);
+            if (_user != null)
+                index = Util.toByteAscii(_user.toUpperCase(), _msgBytes, index);
+            if (_host != null)
+                index = Util.toByteAscii(_host.toUpperCase(), _msgBytes, index);
         }
         else
         {
-            index = Util.toByteUnicodeLittle(_user, _msgBytes, index);
-            index = Util.toByteUnicodeLittle(_host.toUpperCase(),
-                                             _msgBytes,
-                                             index);
+            if (_user != null)
+            {
+                index = Util.toByteUnicodeLittle(_user, _msgBytes, index);
+            }
+            if (_host != null)
+            {
+                index = Util.toByteUnicodeLittle(_host.toUpperCase(),
+                                                 _msgBytes,
+                                                 index);
+            }
         }
 
         System.arraycopy(_lmResponse,

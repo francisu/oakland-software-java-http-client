@@ -43,7 +43,6 @@ import com.oaklandsw.http.HttpURLConnection;
 import com.oaklandsw.http.HttpUserAgent;
 import com.oaklandsw.http.UserCredential;
 import com.oaklandsw.util.LogUtils;
-import com.oaklandsw.util.URIUtil;
 import com.oaklandsw.util.Util;
 
 import javax.xml.soap.MimeHeader;
@@ -174,9 +173,7 @@ public class OaklandHTTPSender extends BasicHandler implements HttpUserAgent
                 urlCon.setCookieSupport(cc, CookiePolicy.BROWSER_COMPATIBILITY);
 
                 String host = targetURL.getHost();
-                // JDK12 - switch to this when we drop JDK 12
-                // String path = targetURL.getPath();
-                String path = URIUtil.getPath(targetURLString);
+                String path = targetURL.getPath();
                 boolean secure = targetURL.getProtocol()
                         .equalsIgnoreCase("https");
                 fillHeaders(msgContext,
@@ -352,7 +349,7 @@ public class OaklandHTTPSender extends BasicHandler implements HttpUserAgent
      * @param cookie
      * @param msgContext
      */
-    public void handleCookie(String cookieName,
+    public static void handleCookie(String cookieName,
                              String cookie,
                              MessageContext msgContext)
     {
@@ -458,7 +455,7 @@ public class OaklandHTTPSender extends BasicHandler implements HttpUserAgent
      * 
      * @return a cleaned up cookie value.
      */
-    private String cleanupCookie(String cookie)
+    private static String cleanupCookie(String cookie)
     {
         cookie = cookie.trim();
         // chop after first ; a la Apache SOAP (see HTTPUtils.java there)
@@ -474,9 +471,6 @@ public class OaklandHTTPSender extends BasicHandler implements HttpUserAgent
                                 MessageContext msgContext,
                                 URL tmpURL) throws Exception
     {
-        // JDK12 - see below
-        String tmpURLString = tmpURL.toString();
-
         // optionally set a timeout for the request
         if (msgContext.getTimeout() != 0)
         {
@@ -509,9 +503,7 @@ public class OaklandHTTPSender extends BasicHandler implements HttpUserAgent
 
         // if UserID is not part of the context, but is in the URL, use
         // the one in the URL.
-        // JDK12
-        //String userInfo = tmpURL.getUserInfo();
-        String userInfo = URIUtil.getUserInfo(tmpURLString);
+        String userInfo = tmpURL.getUserInfo();
 
         if ((userID == null) && (userInfo != null))
         {

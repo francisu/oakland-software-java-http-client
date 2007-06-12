@@ -5,14 +5,13 @@ import org.apache.commons.logging.Log;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
-import com.oaklandsw.http.HttpURLConnection;
 import com.oaklandsw.http.HttpTestEnv;
+import com.oaklandsw.http.HttpURLConnection;
 import com.oaklandsw.http.TestUserAgent;
 import com.oaklandsw.http.axis.OaklandHTTPSender;
 import com.oaklandsw.util.FileUtils;
 import com.oaklandsw.util.LogUtils;
 
-import org.apache.axis.AxisFault;
 import org.apache.axis.Constants;
 import org.apache.axis.EngineConfiguration;
 import org.apache.axis.Handler;
@@ -56,30 +55,30 @@ import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 
-public class TestAxis extends TestWebappBase
+public class TestAxis1 extends TestWebappBase
 {
 
     private static final Log _log = LogUtils.makeLogger();
 
-    private String           _user;
-    private String           _password;
     private Parser           _wsdlParser;
 
     private MessageContext   _messageContext;
 
-    public TestAxis(String testName)
+    protected String         _user;
+    protected String         _password;
+
+    public TestAxis1(String testName)
     {
         super(testName);
 
         // Netproxy cannot deal with this as it closes the connection after
         // the POST, probably because of a non-standard header.
         _doAuthCloseProxyTest = false;
-
     }
 
     public static Test suite()
     {
-        TestSuite suite = new TestSuite(TestAxis.class);
+        TestSuite suite = new TestSuite(TestAxis1.class);
         return suite;
     }
 
@@ -91,10 +90,9 @@ public class TestAxis extends TestWebappBase
     public void setUp() throws Exception
     {
         super.setUp();
-
         HttpURLConnection.setDefaultUserAgent(null);
-        _user = null;
         _password = null;
+        _user = null;
     }
 
     // Returns the result
@@ -158,6 +156,14 @@ public class TestAxis extends TestWebappBase
         return map;
     }
 
+    public String[] getCookies()
+    {
+        Message m = _messageContext.getResponseMessage();
+        MimeHeaders mh = m.getMimeHeaders();
+
+        return mh.getHeader("Set-Cookie");
+    }
+    
     public HashMap invokeMethod(EngineConfiguration eConfig,
                                 String operationName,
                                 String portName,
@@ -462,10 +468,7 @@ public class TestAxis extends TestWebappBase
             + "axis/EchoHeaders.jws?wsdl", "list", new String[] {});
         assertEquals(1, map.size());
 
-        Message m = _messageContext.getResponseMessage();
-        MimeHeaders mh = m.getMimeHeaders();
-
-        String cookie[] = mh.getHeader("Set-Cookie");
+        String cookie[] = getCookies();
         assertTrue(cookie[0].startsWith("JSESSIONID"));
     }
 
@@ -550,7 +553,7 @@ public class TestAxis extends TestWebappBase
             invokeWindowsService();
             fail("This was supposed to fail due to auth problems");
         }
-        catch (AxisFault ex)
+        catch (Exception ex)
         {
             assertTrue(ex.getMessage().indexOf("401") >= 0);
         }

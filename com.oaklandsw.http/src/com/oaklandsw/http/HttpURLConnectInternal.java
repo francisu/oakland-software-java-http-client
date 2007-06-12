@@ -1772,8 +1772,7 @@ public class HttpURLConnectInternal
         }
 
         // We want direct access to the output stream
-        // FIXME - this is set for everything, is that fair?
-        HttpURLConnection.setExplicitClose(true);
+        setExplicitClose(true);
 
         try
         {

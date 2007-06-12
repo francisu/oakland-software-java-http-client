@@ -15,7 +15,7 @@ import com.oaklandsw.util.LogUtils;
 public class TestData extends TestWebappBase
 {
 
-    private static final Log   _log         = LogUtils.makeLogger();
+    private static final Log _log      = LogUtils.makeLogger();
 
     protected static String  _errorUrl = HttpTestEnv.TEST_URL_HOST_ERRORSVR;
 
@@ -37,8 +37,7 @@ public class TestData extends TestWebappBase
 
     public void testDisconnect() throws Exception
     {
-
-        com.oaklandsw.http.HttpURLConnection.setExplicitClose(true);
+        com.oaklandsw.http.HttpURLConnection.setDefaultExplicitClose(true);
 
         URL url = new URL(_urlBase + RequestBodyServlet.NAME);
 
@@ -51,14 +50,12 @@ public class TestData extends TestWebappBase
 
         doGetLikeMethod("GET", CHECK_CONTENT);
 
-        com.oaklandsw.http.HttpURLConnection.setExplicitClose(false);
-
         checkNoActiveConns(url);
     }
 
     public void testAccessAfterClose() throws Exception
     {
-        com.oaklandsw.http.HttpURLConnection.setExplicitClose(true);
+        com.oaklandsw.http.HttpURLConnection.setDefaultExplicitClose(true);
 
         URL url = new URL(_urlBase + RequestBodyServlet.NAME);
 
@@ -70,8 +67,6 @@ public class TestData extends TestWebappBase
 
         // Should not throw
         urlCon.getInputStream().close();
-
-        com.oaklandsw.http.HttpURLConnection.setExplicitClose(false);
 
         checkNoActiveConns(url);
     }

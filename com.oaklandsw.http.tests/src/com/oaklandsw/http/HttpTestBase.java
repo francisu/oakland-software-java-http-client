@@ -153,7 +153,7 @@ public class HttpTestBase extends com.oaklandsw.TestCaseBase
         HttpURLConnection.setDefaultRequestTimeout(0);
         HttpURLConnection.setDefaultAuthenticationType(0);
         HttpURLConnection.setPreemptiveAuthentication(false);
-        HttpURLConnection.setExplicitClose(false);
+        HttpURLConnection.setDefaultExplicitClose(false);
         HttpURLConnection.setDefaultMaxTries(HttpURLConnection.MAX_TRIES);
         HttpURLConnection.setDefaultPipelining(false);
 
@@ -358,7 +358,7 @@ public class HttpTestBase extends com.oaklandsw.TestCaseBase
         }
         else
         {
-            if (HttpURLConnection.getExplicitClose())
+            if (urlCon.isExplicitClose())
                 urlCon.getInputStream().close();
         }
 
@@ -556,7 +556,7 @@ public class HttpTestBase extends com.oaklandsw.TestCaseBase
         _testAllName = "testExplicitClose";
         _inExplicitTest = true;
         _inTestGroup = true;
-        HttpURLConnection.setExplicitClose(true);
+        HttpURLConnection.setDefaultExplicitClose(true);
 
         int maxCon = HttpURLConnection.getMaxConnectionsPerHost();
 
@@ -570,7 +570,7 @@ public class HttpTestBase extends com.oaklandsw.TestCaseBase
         }
         finally
         {
-            HttpURLConnection.setExplicitClose(false);
+            HttpURLConnection.setDefaultExplicitClose(false);
             _inExplicitTest = false;
         }
 

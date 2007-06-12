@@ -4,7 +4,6 @@ import junit.framework.Test;
 import junit.framework.TestSuite;
 
 import com.oaklandsw.TestCaseBase;
-import com.oaklandsw.util.SystemUtils;
 
 public class AllWebappTests extends TestCaseBase
 {
@@ -17,11 +16,10 @@ public class AllWebappTests extends TestCaseBase
     public static Test suite()
     {
         TestSuite suite = new TestSuite(AllWebappTests.class.getName());
-        //suite.addTest(TestTimeout.suite());
+        suite.addTest(TestTimeout.suite());
         suite.addTest(TestFailover.suite());
-        // Axis requires 1.3
-        if (SystemUtils.isJavaVersionAtLeast(1.3f))
-            suite.addTest(TestAxis.suite());
+        suite.addTest(TestAxis1.suite());
+        suite.addTest(TestAxis2.suite());
         suite.addTest(TestIIS.suite());
         suite.addTest(TestJCIFS.suite());
         suite.addTest(TestExplicitConnection.suite());
