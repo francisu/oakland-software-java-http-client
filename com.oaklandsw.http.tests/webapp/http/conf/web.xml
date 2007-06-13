@@ -91,6 +91,12 @@
     <url-pattern>/ntlmparams</url-pattern>
   </servlet-mapping>
 
+  <!--  uses JCIFS/NTLMv2 servlet filter below -->
+  <servlet-mapping>
+    <servlet-name>params</servlet-name>
+    <url-pattern>/ntlm2params</url-pattern>
+  </servlet-mapping>
+
   <servlet-mapping>
     <servlet-name>params</servlet-name>
     <url-pattern>/params3</url-pattern>
@@ -168,6 +174,40 @@
   <filter-mapping>
     <filter-name>NtlmHttpFilter</filter-name>
     <url-pattern>/ntlmparams</url-pattern>
+  </filter-mapping>
+
+  <filter>
+    <filter-name>Ntlm2HttpFilter</filter-name>
+    <filter-class>com.oaklandsw.http.servlet.NtlmHttpFilter</filter-class>
+
+    <init-param>
+      <param-name>jcifs.http.domainController</param-name>
+      <param-value>192.168.1.20</param-value>
+    </init-param>
+    <init-param>
+      <param-name>jcifs.smb.client.domain</param-name>
+    <!--  specify an empty domain name which causes a zero length to be sent
+          in the challenge - see bug 1946 -->
+      <param-value></param-value>
+    </init-param>
+    <init-param>
+      <param-name>jcifs.smb.client.username</param-name>
+      <param-value>httptest</param-value>
+    </init-param>
+    <init-param>
+      <param-name>jcifs.smb.client.password</param-name>
+      <param-value>httptestpw</param-value>
+    </init-param>
+    <init-param>
+      <param-name>jcifs.util.loglevel</param-name>
+    <!--  6 is full detail logging -->
+      <param-value>1</param-value>
+    </init-param>
+  </filter>
+
+  <filter-mapping>
+    <filter-name>Ntlm2HttpFilter</filter-name>
+    <url-pattern>/ntlm2params</url-pattern>
   </filter-mapping>
 
 </web-app>

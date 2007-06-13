@@ -14,8 +14,10 @@ import com.oaklandsw.http.HttpURLConnection;
 
 public class Ntlm
 {
+    // For testing
+    public static boolean       _forceNtlmV2 = false;
 
-    private static final String ENCODING = "8859_1";
+    private static final String ENCODING     = "8859_1";
 
     /**
      * Returns the response for the given message.
@@ -83,11 +85,6 @@ public class Ntlm
             authMsg.setPassword(password);
             authMsg.setDomain(domain);
 
-            // Testing
-            // authMsg.setUseNtlm2(true);
-            // authMsg.encode();
-
-            // authMsg.setUseNtlm2(false);
             authMsg.encode();
             return new String(Base64.encode(authMsg.getBytes()), ENCODING);
         }

@@ -1,0 +1,15 @@
+This directory contains a servlet with identical functionality
+to the JCIFS HTTP authentication filter.
+
+This is based on the JCIFS implementation and the only modification
+is to hook that implementation to the Oakland Software authentication
+code supporting NTLMv2.
+
+Since this is based on the JCIFS implementation which is LGPL, 
+all of the contents of this directory are also licensed as LGPL,
+and are thus publicly available (as they are modified code
+from the original LGPL code of JCIFS).
+
+The other parts of the Oakland Software HTTP client do not call
+or use this code in any way and as such are not dependent on it.
+

@@ -9,11 +9,15 @@ import junit.framework.TestSuite;
 
 import com.oaklandsw.http.HttpURLConnection;
 import com.oaklandsw.http.TestUserAgent;
+import com.oaklandsw.http.ntlm.Ntlm;
 import com.oaklandsw.http.servlet.ParamServlet;
 import com.oaklandsw.util.LogUtils;
 
 /**
- * Test with the JCIFS filter
+ * Test with the JCIFS filter.
+ * 
+ * This tests both with the unmodified JCIFS filter and with the Oakland
+ * Software version that supports NTLMv2
  */
 public class TestJCIFS extends TestWebappBase
 {
@@ -44,13 +48,18 @@ public class TestJCIFS extends TestWebappBase
         _showStats = true;
     }
 
+    public void tearDown() throws Exception
+    {
+        super.tearDown();
+        Ntlm._forceNtlmV2= false;
+    }
+    
     // Bug 1946 - make sure JCIFS "server" (really the servet filter) is
     // supported
-    public void testGetMethodParameters(int agentType) throws Exception
+    public void testGetMethodParameters(int agentType, String servlet)
+        throws Exception
     {
-        URL url = new URL(_urlBase
-            + ParamServlet.NAME_NTLM
-            + "?param-one=param-value");
+        URL url = new URL(_urlBase + servlet + "?param-one=param-value");
         int response = 0;
 
         TestUserAgent._type = agentType;
@@ -90,12 +99,24 @@ public class TestJCIFS extends TestWebappBase
 
     public void testNormal() throws Exception
     {
-        testGetMethodParameters(TestUserAgent.GOOD);
+        testGetMethodParameters(TestUserAgent.GOOD, ParamServlet.NAME_NTLM);
     }
 
     public void testBad() throws Exception
     {
-        testGetMethodParameters(TestUserAgent.BAD);
+        testGetMethodParameters(TestUserAgent.BAD, ParamServlet.NAME_NTLM);
+    }
+
+    public void test2Normal() throws Exception
+    {
+        Ntlm._forceNtlmV2 = true;
+        testGetMethodParameters(TestUserAgent.GOOD, ParamServlet.NAME_NTLM2);
+    }
+
+    public void test2Bad() throws Exception
+    {
+        Ntlm._forceNtlmV2 = true;
+        testGetMethodParameters(TestUserAgent.BAD, ParamServlet.NAME_NTLM2);
     }
 
     public void allTestMethods() throws Exception

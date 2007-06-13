@@ -19,17 +19,15 @@ import com.oaklandsw.util.Util;
 public class AuthenticateMessage extends Message
 {
 
-    protected String           _host;
-    protected String           _user;
-    protected String           _domain;
-    protected String           _password;
+    public String              _host;
+    public String              _user;
+    public String              _domain;
+    public String              _password;
 
-    protected byte[]           _ntResponse;
-    protected byte[]           _lmResponse;
+    public byte[]              _ntResponse;
+    public byte[]              _lmResponse;
 
     protected boolean          _encodingOem;
-
-    protected boolean          _useNtlm2;
 
     protected ChallengeMessage _challenge;
 
@@ -68,11 +66,6 @@ public class AuthenticateMessage extends Message
     public void setEncodingOem(boolean encodingOem)
     {
         _encodingOem = encodingOem;
-    }
-
-    public void setUseNtlm2(boolean useNtlm2)
-    {
-        _useNtlm2 = useNtlm2;
     }
 
     public void setChallenge(ChallengeMessage challenge)
@@ -530,32 +523,23 @@ public class AuthenticateMessage extends Message
                                   clientChallenge,
                                   0);
 
-                _lmResponse = getLMv2Response(_domain,
-                                              _user,
-                                              _password,
-                                              _nonce,
-                                              clientChallenge);
+                if (!Ntlm._forceNtlmV2)
+                {
+                    _lmResponse = getLMv2Response(_domain,
+                                                  _user,
+                                                  _password,
+                                                  _nonce,
+                                                  clientChallenge);
+                }
 
-                if (false && (_challenge.getFlags() & NEGOTIATE_NTLM2) != 0)
-                {
-                    // NTLM2 Session response - this does not appear
-                    // to be used for anything
-                    _ntResponse = getNTLM2SessionResponse(_password,
-                                                          _nonce,
-                                                          clientChallenge);
-                    _flags |= NEGOTIATE_NTLM2;
-                }
-                else
-                {
-                    // NTLM V2 response
-                    _ntResponse = getNTLMv2Response(_domain,
-                                                    _user,
-                                                    _password,
-                                                    _challenge.getTargetBlock(),
-                                                    _nonce,
-                                                    clientChallenge);
-                    _flags |= NEGOTIATE_NTLM2;
-                }
+                // NTLM V2 response
+                _ntResponse = getNTLMv2Response(_domain,
+                                                _user,
+                                                _password,
+                                                _challenge.getTargetBlock(),
+                                                _nonce,
+                                                clientChallenge);
+                _flags |= NEGOTIATE_NTLM2;
             }
             else
             {
@@ -569,10 +553,6 @@ public class AuthenticateMessage extends Message
         {
             Util.impossible(e);
         }
-
-        // _lmResponse = encryptResponse(lmPassword);
-        // if (!_useNtlm2)
-        // _ntResponse = encryptResponse(ntPassword);
     }
 
     public int decode() throws HttpException
@@ -674,12 +654,25 @@ public class AuthenticateMessage extends Message
         }
         index += userLen;
 
-        // Nonsense to avoid compiler warnings, remove this if the responses
-        // are to be read
-        lmResponseLen = lmResponseLen + 77;
-        lmResponseOffset = lmResponseOffset + 77;
-        ntResponseLen = ntResponseLen + 77;
-        ntResponseOffset = ntResponseOffset + 77;
+        if (lmResponseLen > 0)
+        {
+            _lmResponse = new byte[lmResponseLen];
+            System.arraycopy(_msgBytes,
+                             lmResponseOffset,
+                             _lmResponse,
+                             0,
+                             lmResponseLen);
+        }
+
+        if (ntResponseLen > 0)
+        {
+            _ntResponse = new byte[ntResponseLen];
+            System.arraycopy(_msgBytes,
+                             ntResponseOffset,
+                             _ntResponse,
+                             0,
+                             ntResponseLen);
+        }
 
         return index;
     }
@@ -704,8 +697,8 @@ public class AuthenticateMessage extends Message
             + hostLen
             + userLen
             + domainLen
-            + _ntResponse.length
-            + _lmResponse.length;
+            + (_ntResponse == null ? 0 : _ntResponse.length)
+            + (_lmResponse == null ? 0 : _lmResponse.length);
 
         _type = MSG_AUTHENTICATE;
         int index = super.encode();
@@ -721,18 +714,25 @@ public class AuthenticateMessage extends Message
         int userOffset = domainOffset + domainLen;
         int hostOffset = userOffset + userLen;
         int lmResponseOffset = hostOffset + hostLen;
-        int ntResponseOffset = lmResponseOffset + _lmResponse.length;
+        int ntResponseOffset = lmResponseOffset
+            + (_lmResponse == null ? 0 : _lmResponse.length);
 
         if (domainLen == 0)
             domainOffset = 0;
 
-        index = Util.toByteLittle(_lmResponse.length, 2, _msgBytes, index);
-        index = Util.toByteLittle(_lmResponse.length, 2, _msgBytes, index);
-        index = Util.toByteLittle(lmResponseOffset, 4, _msgBytes, index);
+        if (_lmResponse != null)
+        {
+            index = Util.toByteLittle(_lmResponse.length, 2, _msgBytes, index);
+            index = Util.toByteLittle(_lmResponse.length, 2, _msgBytes, index);
+            index = Util.toByteLittle(lmResponseOffset, 4, _msgBytes, index);
+        }
 
-        index = Util.toByteLittle(_ntResponse.length, 2, _msgBytes, index);
-        index = Util.toByteLittle(_ntResponse.length, 2, _msgBytes, index);
-        index = Util.toByteLittle(ntResponseOffset, 4, _msgBytes, index);
+        if (_ntResponse != null)
+        {
+            index = Util.toByteLittle(_ntResponse.length, 2, _msgBytes, index);
+            index = Util.toByteLittle(_ntResponse.length, 2, _msgBytes, index);
+            index = Util.toByteLittle(ntResponseOffset, 4, _msgBytes, index);
+        }
 
         index = Util.toByteLittle(domainLen, 2, _msgBytes, index);
         index = Util.toByteLittle(domainLen, 2, _msgBytes, index);
@@ -789,16 +789,22 @@ public class AuthenticateMessage extends Message
             }
         }
 
-        System.arraycopy(_lmResponse,
-                         0,
-                         _msgBytes,
-                         lmResponseOffset,
-                         _lmResponse.length);
-        System.arraycopy(_ntResponse,
-                         0,
-                         _msgBytes,
-                         ntResponseOffset,
-                         _ntResponse.length);
+        if (_lmResponse != null)
+        {
+            System.arraycopy(_lmResponse,
+                             0,
+                             _msgBytes,
+                             lmResponseOffset,
+                             _lmResponse.length);
+        }
+        if (_ntResponse != null)
+        {
+            System.arraycopy(_ntResponse,
+                             0,
+                             _msgBytes,
+                             ntResponseOffset,
+                             _ntResponse.length);
+        }
 
         log();
 

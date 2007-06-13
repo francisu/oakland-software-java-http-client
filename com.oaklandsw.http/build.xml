@@ -138,6 +138,7 @@
 				<include name="servlet.jar" />
 			</fileset>
 			<fileset dir="${basedir}/../com.oaklandsw.http.jars">
+				<include name="jcifs*.jar" />
 				<include name="saaj.jar" />
 				<include name="backport-util-concurrent.jar" />
 				<include name="axis*.jar" />
@@ -251,6 +252,13 @@
 				<include name="*.java" />
 			</zipfileset>
 			<zipfileset dir="../com.oaklandsw.http.tests/" includes="runsrc*" filemode="755" />
+		</zip>
+
+		<!-- source for JCIFS LGPL code normal -->
+		<zip zipfile="${release.dir}/${dist.zip.name}JCIFSSrc.zip" includes="**">
+			<zipfileset dir="${src.dir}" prefix="src">
+				<include name="com/oaklandsw/http/servlet/**" />
+			</zipfileset>
 		</zip>
 
 	</target>

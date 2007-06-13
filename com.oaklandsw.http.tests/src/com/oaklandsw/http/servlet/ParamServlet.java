@@ -73,7 +73,12 @@ public class ParamServlet extends MultiMethodServlet
 
     // The part of the URL where this servlet is installed
     public static final String NAME            = "/params";
+
+    // Unmodified JCIFS filter
     public static final String NAME_NTLM       = "/ntlmparams";
+
+    // Oakland Software NTLMv2 filter
+    public static final String NAME_NTLM2       = "/ntlm2params";
 
     protected void genericService(HttpServletRequest request,
                                   HttpServletResponse response)

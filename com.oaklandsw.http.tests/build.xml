@@ -11,9 +11,9 @@
 			<equals arg1="${target.java.version}" arg2="1.2">
 			</equals>
 			<then>
-				<echo message="Compiling with 1.2 compiler" />
+				<!-- <echo message="Compiling with 1.2 compiler" />-->
 				<!-- this is the 1.2 compiler -->
-				<property name="build.compiler" value="jikes" />
+				<!-- <property name="build.compiler" value="jikes" />-->
 
 				<path id="compile.classpath">
 					<fileset dir="${basedir}/../com.oaklandsw.http.jars">
@@ -69,6 +69,8 @@
 			</webinf>
 			<lib dir="webapp/http/lib">
 				<include name="**" />
+				<!-- needed for the JCIFS ntlm2 tests -->
+				<include name="${basedir}/../com.oaklandsw.http/http.jar" />
 			</lib>
 			<fileset dir="${basedir}/../com.oaklandsw.http">
 				<include name="http.jar" />
