@@ -97,6 +97,7 @@ public class TestNoData extends TestWebappBase
         doGetLikeMethod("GET", CHECK_CONTENT);
     }
 
+    // Bug 1956
     public void testHangIfStreamNotRead() throws Exception
     {
         HttpURLConnection.resetUrlConReleased();
