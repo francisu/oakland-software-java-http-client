@@ -773,13 +773,18 @@ public class OaklandHTTPTransportSender2 extends AbstractHandler
             OMElement body = (OMElement)header.getNextOMSibling();
             OMElement op = (OMElement)body.getFirstOMChild();
             String namespaceURI = op.getNamespace().getNamespaceURI();
-            if (namespaceURI.endsWith("/"))
+
+            // The namespace might already be there
+            if (!soapActionString.startsWith(namespaceURI))
             {
-                soapActionString = namespaceURI + soapActionString;
-            }
-            else
-            {
-                soapActionString = namespaceURI + "/" + soapActionString;
+                if (namespaceURI.endsWith("/"))
+                {
+                    soapActionString = namespaceURI + soapActionString;
+                }
+                else
+                {
+                    soapActionString = namespaceURI + "/" + soapActionString;
+                }
             }
         }
 

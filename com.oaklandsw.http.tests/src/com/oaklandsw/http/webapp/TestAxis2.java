@@ -262,7 +262,6 @@ public class TestAxis2 extends TestWebappBase
 
     public void testSharepointIcewebGood() throws Exception
     {
-        logAll();
         com.oaklandsw.http.HttpURLConnection
                 .setDefaultUserAgent(new com.oaklandsw.http.TestUserAgent());
         TestUserAgent._type = TestUserAgent.OFFICESHARE_ICEWEB;
@@ -279,7 +278,6 @@ public class TestAxis2 extends TestWebappBase
     // tests it passes (clearly something is wrong)
     public void testSharepointIcewebBadNoAuth() throws Exception
     {
-        logAll();
         // com.oaklandsw.http.HttpURLConnection
         // .setDefaultUserAgent(new com.oaklandsw.http.TestUserAgent());
         // TestUserAgent._type = TestUserAgent.OFFICESHARE_ICEWEB;
@@ -294,7 +292,6 @@ public class TestAxis2 extends TestWebappBase
 
     public void NOtestSharepointXsoLive() throws Exception
     {
-        logAll();
         com.oaklandsw.http.HttpURLConnection
                 .setDefaultUserAgent(new com.oaklandsw.http.TestUserAgent());
         TestUserAgent._type = TestUserAgent.OFFICESHARE_XSO;
@@ -314,7 +311,6 @@ public class TestAxis2 extends TestWebappBase
 
     public void NOtestSharepointXsoLiveBad() throws Exception
     {
-        logAll();
         com.oaklandsw.http.HttpURLConnection
                 .setDefaultUserAgent(new com.oaklandsw.http.TestUserAgent());
         TestUserAgent._type = TestUserAgent.GOOD;
