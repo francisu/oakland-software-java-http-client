@@ -290,6 +290,20 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
 
     protected static HttpConnectionManager _connManager;
 
+    /**
+     * This is a heuristic to prevent a programming problem. If you create a
+     * urlcon and it has a good response (200), but you don't get the
+     * InputStream and close it, the underlying connection will be tied up. The
+     * Sun implementation has this same issue, but they don't have a max
+     * connection limit, so they just go on creating connections. However, our
+     * implementation has a limit on the number of connections (by default 2),
+     * so you will quickly hang if you do this. This bit is set if some
+     * connection has had an InputStream read. If this bit is *not* set, and the
+     * connection wait times out, there is a good chance it's a programming
+     * error, so we give a message with that information.
+     */
+    static boolean                         _urlConReleased;
+
     // Stores the properties associated with each method
     // K(Method name) V(Method property)
     protected static Map                   _methodPropertyMap;
@@ -1311,7 +1325,11 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
                     if (closed
                         || type != READING
                         || (_pipeliningOptions & PIPE_PIPELINE) == 0)
+                    {
+                        // See the comment on this field
+                        _urlConReleased = true;
                         _connManager.releaseConnection(_connection);
+                    }
 
                     // Never reset these because the connection might be in
                     // use in another thread (with this same urlcon)
@@ -3442,6 +3460,12 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
         return "AUTH_PROXY";
     }
 
+    // Used only for the tests
+    public static void resetUrlConReleased()
+    {
+        _urlConReleased = false;
+    }
+    
     protected abstract void execute() throws HttpException, IOException;
 
     protected abstract void executeStart() throws HttpException, IOException;

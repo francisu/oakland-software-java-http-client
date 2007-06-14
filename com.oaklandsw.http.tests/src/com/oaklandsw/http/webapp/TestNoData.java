@@ -1,7 +1,6 @@
 package com.oaklandsw.http.webapp;
 
 import java.io.InputStream;
-import java.net.HttpURLConnection;
 import java.net.URL;
 
 import org.apache.commons.logging.Log;
@@ -9,6 +8,7 @@ import org.apache.commons.logging.Log;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
+import com.oaklandsw.http.HttpURLConnection;
 import com.oaklandsw.http.servlet.HeaderServlet;
 import com.oaklandsw.util.LogUtils;
 import com.oaklandsw.util.Util;
@@ -95,6 +95,33 @@ public class TestNoData extends TestWebappBase
         doGetLikeMethod("GET", CHECK_CONTENT);
         testNullInputStream(304, false);
         doGetLikeMethod("GET", CHECK_CONTENT);
+    }
+
+    public void testHangIfStreamNotRead() throws Exception
+    {
+        HttpURLConnection.resetUrlConReleased();
+
+        String urlStr = _urlBase + HeaderServlet.NAME;
+        URL url = new URL(urlStr);
+
+        try
+        {
+            HttpURLConnection urlCon = (HttpURLConnection)url.openConnection();
+            for (int i = 0; i < HttpURLConnection.getMaxConnectionsPerHost() + 1; i++)
+            {
+                urlCon = (HttpURLConnection)url.openConnection();
+                // The last of of these will hang here because all of the
+                // connections are allocated
+                urlCon.getResponseCode();
+            }
+        }
+        catch (IllegalStateException is)
+        {
+            // Expected
+        }
+
+        // The pool will still have 2 connections, this is expected
+        assertEquals(2, getActiveConns(url));
     }
 
     public void allTestMethods() throws Exception

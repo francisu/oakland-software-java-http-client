@@ -40,6 +40,9 @@ public class HttpConnectionManager
     // From RFC 2616 section 8.1.4
     public static int             DEFAULT_MAX_CONNECTIONS   = 2;
 
+    // See the comment about _urlConReleased in HttpURLConnection
+    protected static final int    NOT_RELEASED_TIMEOUT      = 10000;
+
     // K(connection key) V(ConnectionInfo)
     private Map                   _hostMap                  = new HashMap();
 
@@ -543,6 +546,9 @@ public class HttpConnectionManager
         String proxyHost = urlCon.getConnectionProxyHost();
         int proxyPort = urlCon.getConnectionProxyPort();
 
+        if (!HttpURLConnection._urlConReleased)
+            connectionTimeout = NOT_RELEASED_TIMEOUT;
+
         // Get the protocol and port (use default port if not specified)
         final String protocol = URIUtil.getProtocol(url);
         if (!protocol.toLowerCase().startsWith("http"))
@@ -575,7 +581,12 @@ public class HttpConnectionManager
                 try
                 {
                     if (_log.isDebugEnabled())
-                        _log.debug("Waiting for: " + connectionKey);
+                    {
+                        _log.debug("Waiting for: "
+                            + connectionKey
+                            + " waiting for: "
+                            + connectionTimeout);
+                    }
 
                     long startTime = 0;
                     if (connectionTimeout > 0)
@@ -587,15 +598,35 @@ public class HttpConnectionManager
                     // the wait unlocked
                     ci = getConnectionInfo(connectionKey);
 
+                    // Add the 32ms because wait seems to wake a little early sometimes
+                    long waitTime = System.currentTimeMillis() - startTime + 32;
+
                     if (connectionTimeout > 0
-                        && (System.currentTimeMillis() - startTime >= connectionTimeout))
+                        && (waitTime >= connectionTimeout))
                     {
+                        if (!HttpURLConnection._urlConReleased
+                            && connectionTimeout == NOT_RELEASED_TIMEOUT)
+                        {
+                            throw new IllegalStateException("Possible programming error: "
+                                + "You have timed out waiting for a "
+                                + "connection and our records indicate you have not "
+                                + "done a getInputStream() and read the results yet.  If"
+                                + "the reponse code is successful (20x), "
+                                + "and there is data returned, you must go a "
+                                + "getInputStream() and read and close the stream. ");
+                        }
+
                         _log.info("Timed out waiting for connection");
                         throw new HttpTimeoutException();
                     }
 
                     if (_log.isDebugEnabled())
-                        _log.debug("Waiting END: " + connectionKey);
+                    {
+                        _log.debug("Waiting END: "
+                            + connectionKey
+                            + " waited: "
+                            + waitTime);
+                    }
                 }
                 catch (InterruptedException ex)
                 {
