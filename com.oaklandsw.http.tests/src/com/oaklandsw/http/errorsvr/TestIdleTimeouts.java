@@ -64,6 +64,7 @@ public class TestIdleTimeouts extends HttpTestBase
 
         HttpURLConnection urlCon = (HttpURLConnection)url.openConnection();
         urlCon.getResponseCode();
+        urlCon.getInputStream().close();
 
         // Wait until after the connection timed out at the server
         Thread.sleep(2000);
@@ -110,6 +111,7 @@ public class TestIdleTimeouts extends HttpTestBase
 
         HttpURLConnection urlCon = (HttpURLConnection)url.openConnection();
         urlCon.getResponseCode();
+        urlCon.getInputStream().close();
 
         // Wait for connection to timeout at the server
         Thread.sleep(1500);

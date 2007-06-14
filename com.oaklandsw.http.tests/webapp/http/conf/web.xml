@@ -167,7 +167,7 @@
     <init-param>
       <param-name>jcifs.util.loglevel</param-name>
     <!--  6 is full detail logging -->
-      <param-value>1</param-value>
+      <param-value>6</param-value>
     </init-param>
   </filter>
 
@@ -186,9 +186,7 @@
     </init-param>
     <init-param>
       <param-name>jcifs.smb.client.domain</param-name>
-    <!--  specify an empty domain name which causes a zero length to be sent
-          in the challenge - see bug 1946 -->
-      <param-value></param-value>
+      <param-value>oaklandsw</param-value>
     </init-param>
     <init-param>
       <param-name>jcifs.smb.client.username</param-name>
@@ -201,7 +199,7 @@
     <init-param>
       <param-name>jcifs.util.loglevel</param-name>
     <!--  6 is full detail logging -->
-      <param-value>1</param-value>
+      <param-value>6</param-value>
     </init-param>
   </filter>
 

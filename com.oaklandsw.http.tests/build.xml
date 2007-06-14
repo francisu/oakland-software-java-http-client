@@ -69,9 +69,10 @@
 			</webinf>
 			<lib dir="webapp/http/lib">
 				<include name="**" />
-				<!-- needed for the JCIFS ntlm2 tests -->
-				<include name="${basedir}/../com.oaklandsw.http/http.jar" />
+				<include name="${basedir}/../com.oaklandsw.util.jars/log4j*" />
 			</lib>
+			<lib file="${basedir}/../com.oaklandsw.util.jars/log4j*.jar" />
+			<lib file="${basedir}/../com.oaklandsw.util.jars/commons-log*.jar" />
 			<fileset dir="${basedir}/../com.oaklandsw.http">
 				<include name="http.jar" />
 				<include name="http-signed.jar" />
@@ -93,6 +94,9 @@
 			</classes>
 			<classes dir="../com.oaklandsw.util/bin">
 				<include name="**" />
+			</classes>
+			<classes dir="webapp/http">
+				<include name="log4j.properties" />
 			</classes>
 		</war>
 	</target>

@@ -94,7 +94,6 @@ public class TestData extends HttpTestBase
 
         com.oaklandsw.http.HttpURLConnection urlCon = (com.oaklandsw.http.HttpURLConnection)url
                 .openConnection();
-        urlCon.setExplicitClose(true);
         urlCon.setRequestMethod("GET");
         urlCon.connect();
 
@@ -128,6 +127,7 @@ public class TestData extends HttpTestBase
         urlCon.setRequestMethod("GET");
         urlCon.connect();
         assertEquals(200, urlCon.getResponseCode());
+        urlCon.getInputStream().close();
         checkNoActiveConns(url);
     }
 

@@ -216,10 +216,6 @@ public class HttpConnection
      */
     boolean                    _ntlmLeaveOpen;
 
-    // This connection has been closed and the bookkeeping associated with that
-    // as been done, ignore any subsequent releases on this connection
-    // boolean _dead;
-
     // True when this connection is released back to the connection manager,
     // used to detect a double release
     boolean                    _released;
@@ -1177,19 +1173,6 @@ public class HttpConnection
             _log.debug("Completing close");
             _state = CS_CLOSED;
             _tunnelEstablished = false;
-
-            // REMOVEME - maybe this is causing hangs
-            if (false)
-            {
-                try
-                {
-                    _connManager.enqueueCloseForConnection(this);
-                }
-                catch (InterruptedException e)
-                {
-                    _log.debug("Thread interrupted");
-                }
-            }
         }
 
         if (null != _input)

@@ -189,6 +189,7 @@ public class TestIIS extends HttpTestBase
         HttpURLConnection urlCon = (HttpURLConnection)url.openConnection();
         urlCon.setRequestMethod("GET");
         urlCon.getResponseCode();
+        urlCon.getInputStream().close();
 
         // Now try and create one with the bad params, should block
         // to wait for a connection since they are used up with the good params,

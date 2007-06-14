@@ -1,6 +1,5 @@
 package com.oaklandsw.http.webapp;
 
-import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -12,11 +11,12 @@ import junit.framework.TestSuite;
 
 import com.oaklandsw.http.servlet.HeaderServlet;
 import com.oaklandsw.util.LogUtils;
+import com.oaklandsw.util.Util;
 
 public class TestNoData extends TestWebappBase
 {
 
-    private static final Log   _log         = LogUtils.makeLogger();
+    private static final Log _log = LogUtils.makeLogger();
 
     public TestNoData(String testName)
     {
@@ -50,9 +50,11 @@ public class TestNoData extends TestWebappBase
         response = urlCon.getResponseCode();
         assertEquals(code, response);
 
-        // Should be empty byte array streams
+        // Should be empty streams
         InputStream is = urlCon.getInputStream();
-        assertTrue(is.getClass() == ByteArrayInputStream.class);
+        int count = Util.flushStream(is);
+        assertEquals(0, count);
+
         is = urlCon.getErrorStream();
         assertEquals(null, is);
 
@@ -89,15 +91,9 @@ public class TestNoData extends TestWebappBase
         testNullInputStream(304, true);
         doGetLikeMethod("GET", CHECK_CONTENT);
 
-        testNullInputStream(404, true);
-        doGetLikeMethod("GET", CHECK_CONTENT);
-
         testNullInputStream(204, false);
         doGetLikeMethod("GET", CHECK_CONTENT);
         testNullInputStream(304, false);
-        doGetLikeMethod("GET", CHECK_CONTENT);
-
-        testNullInputStream(404, true);
         doGetLikeMethod("GET", CHECK_CONTENT);
     }
 

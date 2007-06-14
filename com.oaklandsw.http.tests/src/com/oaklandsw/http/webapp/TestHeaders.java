@@ -59,8 +59,7 @@ public class TestHeaders extends TestWebappBase
         else
         {
             // checkReply - above gets the InputStream
-            if (urlCon.isExplicitClose())
-                urlCon.getInputStream().close();
+            urlCon.getInputStream().close();
         }
         checkNoActiveConns(url);
     }
@@ -103,6 +102,8 @@ public class TestHeaders extends TestWebappBase
         // Netproxy seems to strip the header
         if (!_inAuthCloseProxyTest)
             checkReply(urlCon, "name=\"xxx-a-header\";value=\"two\"<br>");
+        else
+            urlCon.getInputStream().close();
         checkNoActiveConns(url);
     }
 
@@ -126,8 +127,7 @@ public class TestHeaders extends TestWebappBase
         List headerField = (List)headerMap.get("HeaderSetByServlet");
         assertEquals("Yes", headerField.get(0));
 
-        if (urlCon.isExplicitClose())
-            urlCon.getInputStream().close();
+        urlCon.getInputStream().close();
         checkNoActiveConns(url);
     }
 

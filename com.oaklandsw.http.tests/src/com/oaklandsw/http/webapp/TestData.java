@@ -37,8 +37,6 @@ public class TestData extends TestWebappBase
 
     public void testDisconnect() throws Exception
     {
-        com.oaklandsw.http.HttpURLConnection.setDefaultExplicitClose(true);
-
         URL url = new URL(_urlBase + RequestBodyServlet.NAME);
 
         HttpURLConnection urlCon = (HttpURLConnection)url.openConnection();
@@ -55,8 +53,6 @@ public class TestData extends TestWebappBase
 
     public void testAccessAfterClose() throws Exception
     {
-        com.oaklandsw.http.HttpURLConnection.setDefaultExplicitClose(true);
-
         URL url = new URL(_urlBase + RequestBodyServlet.NAME);
 
         HttpURLConnection urlCon = (HttpURLConnection)url.openConnection();

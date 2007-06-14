@@ -37,8 +37,7 @@ public class TestTimeout extends HttpTestBase
     // Test read timeout
     public void testReadTimeout(int type) throws Exception
     {
-        // Explicit close and 1 second timeout
-        com.oaklandsw.http.HttpURLConnection.setDefaultExplicitClose(true);
+        // 1 second timeout
         setupDefaultTimeout(type, 1000);
 
         // Delay the content for 5 seconds

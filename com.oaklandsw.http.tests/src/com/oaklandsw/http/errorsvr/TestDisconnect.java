@@ -20,7 +20,7 @@ import com.oaklandsw.util.Util;
 
 public class TestDisconnect extends HttpTestBase
 {
-    private static final Log   _log         = LogUtils.makeLogger();
+    private static final Log _log      = LogUtils.makeLogger();
 
     protected static String  _errorUrl = HttpTestEnv.TEST_URL_HOST_ERRORSVR;
 
@@ -113,43 +113,24 @@ public class TestDisconnect extends HttpTestBase
         urlCon.setRequestMethod("GET");
         urlCon.connect();
 
-        if (urlCon.isExplicitClose())
+        // Should work
+        urlCon.getResponseCode();
+        try
         {
-            // Should work
-            urlCon.getResponseCode();
-            try
-            {
-                InputStream is = urlCon.getInputStream();
-                ByteArrayOutputStream os = new ByteArrayOutputStream();
-                // Should fail when trying to read the stream
-                Util.copyStreams(is, os);
-                fail("Did not get expected exception");
-            }
-            catch (IOException ex)
-            {
-                // System.out.println("testTryRead Expected exception: " + ex);
-                assertTrue(ex.getMessage().indexOf("before all content") >= 0);
-                // There should be no retry since we can't retry once
-                // the input stream has been given to the user
-                assertTrue(ex.getMessage().indexOf("try #1") >= 0);
-                // Expcitied IO Exception
-            }
+            InputStream is = urlCon.getInputStream();
+            ByteArrayOutputStream os = new ByteArrayOutputStream();
+            // Should fail when trying to read the stream
+            Util.copyStreams(is, os);
+            fail("Did not get expected exception");
         }
-        else
+        catch (IOException ex)
         {
-            try
-            {
-                urlCon.getResponseCode();
-                fail("Did not get expected exception");
-            }
-            catch (IOException ex)
-            {
-                // System.out.println("Expected exception: " + ex);
-                assertTrue(ex.getMessage().indexOf("before all content") >= 0);
-                // Make sure there are retries on a get
-                assertTrue(ex.getMessage().indexOf("try #3") >= 0);
-                // Expcitied IO Exception
-            }
+            // System.out.println("testTryRead Expected exception: " + ex);
+            assertTrue(ex.getMessage().indexOf("before all content") >= 0);
+            // There should be no retry since we can't retry once
+            // the input stream has been given to the user
+            assertTrue(ex.getMessage().indexOf("try #1") >= 0);
+            // Expcitied IO Exception
         }
 
         checkNoActiveConns(url);
@@ -158,24 +139,20 @@ public class TestDisconnect extends HttpTestBase
 
     public void testNoRead(String when, int lines) throws Exception
     {
-        if (com.oaklandsw.http.HttpURLConnection.isDefaultExplicitClose())
-        {
-            URL url = makeUrl(when, lines);
+        URL url = makeUrl(when, lines);
 
-            HttpURLConnection urlCon = (HttpURLConnection)url.openConnection();
-            urlCon.setRequestMethod("GET");
-            urlCon.connect();
+        HttpURLConnection urlCon = (HttpURLConnection)url.openConnection();
+        urlCon.setRequestMethod("GET");
+        urlCon.connect();
 
-            // Should work
-            urlCon.getResponseCode();
+        // Should work
+        urlCon.getResponseCode();
 
-            // Should also work, since we are just closing the connection
-            // we don't care if there are errors
-            urlCon.getInputStream().close();
+        // Should also work, since we are just closing the connection
+        // we don't care if there are errors
+        urlCon.getInputStream().close();
 
-            checkNoActiveConns(url);
-        }
-
+        checkNoActiveConns(url);
     }
 
     public void testServerCloseBR() throws Exception

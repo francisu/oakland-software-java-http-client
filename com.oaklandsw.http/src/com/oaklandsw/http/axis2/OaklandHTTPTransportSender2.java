@@ -424,9 +424,6 @@ public class OaklandHTTPTransportSender2 extends AbstractHandler
             // necessary
             msgContext.setProperty(HTTPConstants.HTTP_METHOD, urlCon);
 
-            // We close this in the cleanup() method
-            urlCon.setExplicitClose(true);
-
             if (httpMethod != null)
                 urlCon.setRequestMethod(httpMethod);
             else

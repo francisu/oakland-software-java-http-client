@@ -7,6 +7,7 @@
 
 package com.oaklandsw.http;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -70,8 +71,6 @@ public class HttpURLConnectInternal
      * request is saved here in case it needs to be resent for authentication.
      */
     private byte[]        _requestBytes;
-
-    private boolean       _responseBodySetup;
 
     /**
      * Indicates that we are sending an NTLM negotiate message on this URL
@@ -439,10 +438,8 @@ public class HttpURLConnectInternal
         _hdrProxyAuth = null;
         _hdrLocation = null;
         _responseIsEmpty = false;
-        _responseBodySetup = false;
         _responseHeadersRead = false;
         _responseStream = null;
-        _responseBytes = null;
         _savedAfterStatusNextChar = 0;
         _singleEolChar = false;
     }
@@ -450,9 +447,50 @@ public class HttpURLConnectInternal
     protected final void readResponse() throws IOException
     {
         _connection.startReadBugCheck();
+
         readStatusLine();
         readResponseHeaders();
         isResponseEmpty();
+
+        if (!_responseIsEmpty)
+        {
+            // This creates the InputStream for the user to read the response;
+            // the connection is released when the InputStream finishes reading.
+            // For a normal response, we don't release the connection, it is
+            // done when the stream is read.  We assume the user will always
+            // read and close the InputStream on a normal response.
+            setupResponseBody();
+
+            // For a bad response, the user might not read the InputStream.
+            // We thus buffer it and release the connection immediately
+            // when it is executed.  This way the user can read it or not.
+            if (_responseCode >= 400)
+            {
+                ByteArrayOutputStream baStream = new ByteArrayOutputStream();
+                try
+                {
+                    int count = Util.copyStreams(_responseStream, baStream);
+                    if (_log.isDebugEnabled())
+                    {
+                        _log.debug("Copied "
+                            + count
+                            + " bytes from connection "
+                            + "that's closing");
+                    }
+                }
+                catch (IOException e)
+                {
+                    // We tried
+                    _log.debug("Error while copying stream from "
+                        + "connection that's closing", e);
+                }
+
+                // The user can read from this
+                _responseStream = new ByteArrayInputStream(baStream
+                        .toByteArray());
+            }
+        }
+
         _connection.endReadBugCheck();
     }
 
@@ -770,13 +808,8 @@ public class HttpURLConnectInternal
     // to read the response
     protected final void setupResponseBody() throws IOException
     {
-        if (_responseIsEmpty || _responseBodySetup)
-            return;
-        _responseBodySetup = true;
-
         // In case there have been retries
         _responseStream = null;
-        _responseBytes = null;
 
         boolean shouldClose = shouldCloseConnection();
         InputStream result = null;
@@ -1004,9 +1037,6 @@ public class HttpURLConnectInternal
             // there is a problem getting the response
             if (_responseCode >= HttpStatus.SC_OK)
             {
-                if (isReleasedAfterExecute())
-                    readEntireResponse();
-
                 if (_responseCode >= 300 && readSeparateFromWrite())
                 {
                     // Doing a pipelined read, we don't own the connection and
@@ -1333,34 +1363,6 @@ public class HttpURLConnectInternal
 
     }
 
-    /**
-     * Reads the entire response from the responseInputStream so that we can
-     * release the connection. Used only when _explicitClose is not specified.
-     */
-    private final void readEntireResponse() throws IOException
-    {
-        _log.debug("readEntireResponse");
-        setupResponseBody();
-
-        if (_log.isDebugEnabled())
-        {
-            _log.debug("responseStream: "
-                + (_responseStream == null ? "null" : _responseStream
-                        .getClass().getName().toString()));
-        }
-
-        InputStream is = _responseStream;
-        if (is == null)
-        {
-            _responseBytes = new byte[0];
-            return;
-        }
-
-        ByteArrayOutputStream os = new ByteArrayOutputStream();
-        Util.copyStreams(is, os);
-        _responseBytes = os.toByteArray();
-    }
-
     // Returns true if retry needed
     private boolean processRedirectResponse()
     {
@@ -1595,12 +1597,6 @@ public class HttpURLConnectInternal
                             + "pipelining/streaming, but no authorization "
                             + "is required - retrying");
 
-                        // Set up the response body so it can be flushed
-                        // below, and indicate it's not setup so that the
-                        // next time around it will setup again
-                        setupResponseBody();
-                        _responseBodySetup = false;
-
                         // Go around again
                         break;
                     }
@@ -1620,11 +1616,9 @@ public class HttpURLConnectInternal
             }
             else
             {
-                if (_connection.isOpen())
-                {
-                    // Throw away body to position the stream after the response
-                    discardResponseBody();
-                }
+                // Any data left unread on the connection will be read
+                // automatically before the next connecion uses this
+                // because of the _unfinishedResponseStream
 
                 // For redirect, force getting a new connection, for auth
                 // we way on the same connection
@@ -1641,7 +1635,6 @@ public class HttpURLConnectInternal
             + MAX_FORWARDS
             + ") exceeded for "
             + this);
-
     }
 
     // Called by execute() and also called in getOutputStream() in the streaming
@@ -1650,10 +1643,7 @@ public class HttpURLConnectInternal
     {
         if (_log.isDebugEnabled())
         {
-            _log.debug("executeStart "
-                + method
-                + " ExplicitClose: "
-                + _explicitClose);
+            _log.debug("executeStart " + method);
         }
 
         if (_executed)
@@ -1753,9 +1743,12 @@ public class HttpURLConnectInternal
             _executing = false;
             _executed = true;
 
-            // The connection is released in the explicit close case
-            // when the stream is released
-            if (_responseIsEmpty || isReleasedAfterExecute())
+            // We can release if there is nothing to read, otherwise
+            // the connection is released when the stream is read
+            // For a bad response, we buffer the output so we can
+            // release the connection, this way the user is not
+            // required to read it
+            if (_responseIsEmpty || _responseCode >= 400)
                 releaseConnection(NORMAL);
         }
 
@@ -2205,20 +2198,6 @@ public class HttpURLConnectInternal
         }
     }
 
-    protected final boolean isReleasedAfterExecute()
-    {
-        // On any kind of error condition, we release the connection (and
-        // therefore don't require an explicit close)
-        boolean result;
-        if (!_explicitClose || _responseCode >= 300)
-            result = true;
-        else
-            result = false;
-        if (_log.isDebugEnabled())
-            _log.debug("isReleasedAfterExecute: " + result);
-        return result;
-    }
-
     private final void closeConnection()
     {
         if (shouldCloseConnection())
@@ -2306,9 +2285,8 @@ public class HttpURLConnectInternal
      * Reads the entire response from the responseInputStream so that we can
      * close the connection.
      */
-    protected final void discardResponseBody() throws IOException
+    protected final void discardResponseBody(InputStream is) throws IOException
     {
-        InputStream is = _responseStream;
         if (is == null)
             return;
 

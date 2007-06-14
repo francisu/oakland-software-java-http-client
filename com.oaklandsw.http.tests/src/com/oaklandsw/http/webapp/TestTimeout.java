@@ -331,7 +331,6 @@ public class TestTimeout extends TestWebappBase
     public void testRequestNoTimeoutLoop(int type) throws Exception
     {
         setupDefaultTimeout(type, 5000);
-        com.oaklandsw.http.HttpURLConnection.setDefaultExplicitClose(true);
 
         URL url = new URL(_urlBase + TimeoutServlet.NAME);
         int response = 0;
@@ -395,7 +394,6 @@ public class TestTimeout extends TestWebappBase
         throws Exception
     {
         setupDefaultTimeout(type, 2000);
-        com.oaklandsw.http.HttpURLConnection.setDefaultExplicitClose(true);
 
         URL url = new URL(_urlBase + TimeoutServlet.NAME);
         int response = 0;
@@ -414,6 +412,8 @@ public class TestTimeout extends TestWebappBase
 
             response = urlCon.getResponseCode();
             assertEquals(200, response);
+            
+            urlCon.getInputStream().close();
 
             // If we collect, the garbage collector will finalize the connection
             // since there is no reference to it, this will cause it to be
@@ -463,7 +463,6 @@ public class TestTimeout extends TestWebappBase
     public void testRequestNoTimeoutLoopNoClose(int type) throws Exception
     {
         setupDefaultTimeout(type, 2000);
-        com.oaklandsw.http.HttpURLConnection.setDefaultExplicitClose(true);
 
         URL url = new URL(_urlBase + TimeoutServlet.NAME);
         int response = 0;

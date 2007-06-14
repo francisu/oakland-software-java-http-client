@@ -32,8 +32,8 @@ public class TestMultiThread extends TestWebappBase
     private int              _failed;
     private Exception        _failedException;
     private int              _threadDelay;
-    private int _times = NUM_TIMES;
-    
+    private int              _times            = NUM_TIMES;
+
     private static String    _textComp;
 
     static
@@ -74,7 +74,7 @@ public class TestMultiThread extends TestWebappBase
         _times = NUM_TIMES;
         _threadDelay = 0;
     }
-    
+
     public void tearDown() throws Exception
     {
         super.tearDown();
@@ -123,8 +123,7 @@ public class TestMultiThread extends TestWebappBase
             if (!java.net.HttpURLConnection.getFollowRedirects()
                 && response > 300)
             {
-                if (urlCon.isExplicitClose())
-                    urlCon.getInputStream().close();
+                urlCon.getInputStream().close();
                 return;
             }
 
@@ -133,7 +132,7 @@ public class TestMultiThread extends TestWebappBase
                 _log.debug(Thread.currentThread().getName()
                     + " failed status "
                     + response);
-                _failed = 1;
+                testFailed(1, null);
             }
 
             String reply = getReply(urlCon);
@@ -146,7 +145,7 @@ public class TestMultiThread extends TestWebappBase
             {
                 _log.debug(Thread.currentThread().getName()
                     + " failed Header check");
-                _failed = 2;
+                testFailed(2, null);
             }
 
             if (hasExtendedText)
@@ -156,7 +155,7 @@ public class TestMultiThread extends TestWebappBase
                 {
                     _log.debug(Thread.currentThread().getName()
                         + " failed body text");
-                    _failed = 3;
+                    testFailed(3, null);
                 }
             }
 
@@ -165,11 +164,18 @@ public class TestMultiThread extends TestWebappBase
         }
         catch (Exception ex)
         {
-            _failedException = ex;
-            _failed = 4;
-            ex.printStackTrace();
+            testFailed(4, ex);
         }
 
+    }
+
+    protected void testFailed(int reason, Exception ex)
+    {
+        _log.debug("TEST FAILED: " + reason);
+        _failed = reason;
+        _failedException = ex;
+        if (ex != null)
+            ex.printStackTrace();
     }
 
     protected void threadsBase() throws Exception
@@ -188,13 +194,15 @@ public class TestMultiThread extends TestWebappBase
         ArrayList threads = new ArrayList();
         for (int i = 0; i < NUM_THREADS; i++)
         {
+            final int threadNum = i;
             t = new Thread()
             {
                 public void run()
                 {
                     try
                     {
-                        Thread.currentThread().setName("TestMultiThread");
+                        Thread.currentThread().setName("TestMultiThread"
+                            + threadNum);
                         for (int j = 0; j < _times; j++)
                         {
                             threadMethod(com.oaklandsw.http.HttpURLConnection.HTTP_METHOD_GET,
@@ -222,9 +230,7 @@ public class TestMultiThread extends TestWebappBase
                     }
                     catch (Exception ex)
                     {
-                        System.out.println("Unexpected exception: " + ex);
-                        _failedException = ex;
-                        _failed = 5;
+                        testFailed(5, ex);
                     }
                 }
             };

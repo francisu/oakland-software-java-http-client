@@ -7,17 +7,20 @@
 
 package com.oaklandsw.http.ntlm;
 
+import org.apache.commons.logging.Log;
 import org.bouncycastle.crypto.Digest;
 import org.bouncycastle.crypto.digests.MD4Digest;
 import org.bouncycastle.crypto.digests.MD5Digest;
 import org.bouncycastle.crypto.params.DESParameters;
 
 import com.oaklandsw.http.HttpException;
+import com.oaklandsw.util.LogUtils;
 import com.oaklandsw.util.SecurityHelper;
 import com.oaklandsw.util.Util;
 
 public class AuthenticateMessage extends Message
 {
+    private static final Log   _log                    = LogUtils.makeLogger();
 
     public String              _host;
     public String              _user;
@@ -560,7 +563,12 @@ public class AuthenticateMessage extends Message
         int index = super.decode();
 
         if (_type != MSG_AUTHENTICATE)
-            throw new HttpException("Invalid message type");
+        {
+            throw new HttpException("Invalid message type - expected: "
+                + MSG_AUTHENTICATE
+                + " got: "
+                + _type);
+        }
 
         int lmResponseLen;
         int lmResponseOffset;
@@ -674,6 +682,8 @@ public class AuthenticateMessage extends Message
                              ntResponseLen);
         }
 
+        log();
+
         return index;
     }
 
@@ -684,6 +694,8 @@ public class AuthenticateMessage extends Message
         int domainLen = _domain == null ? 0 : _domain.length();
         int hostLen = _host == null ? 0 : _host.length();
         int userLen = _user == null ? 0 : _user.length();
+        int ntResponseLen = _ntResponse == null ? 0 : _ntResponse.length;
+        int lmResponseLen = _lmResponse == null ? 0 : _lmResponse.length;
 
         // Unicode is 2 bytes per char
         if (!_encodingOem)
@@ -697,8 +709,8 @@ public class AuthenticateMessage extends Message
             + hostLen
             + userLen
             + domainLen
-            + (_ntResponse == null ? 0 : _ntResponse.length)
-            + (_lmResponse == null ? 0 : _lmResponse.length);
+            + ntResponseLen
+            + lmResponseLen;
 
         _type = MSG_AUTHENTICATE;
         int index = super.encode();
@@ -714,25 +726,18 @@ public class AuthenticateMessage extends Message
         int userOffset = domainOffset + domainLen;
         int hostOffset = userOffset + userLen;
         int lmResponseOffset = hostOffset + hostLen;
-        int ntResponseOffset = lmResponseOffset
-            + (_lmResponse == null ? 0 : _lmResponse.length);
+        int ntResponseOffset = lmResponseOffset + lmResponseLen;
 
         if (domainLen == 0)
             domainOffset = 0;
 
-        if (_lmResponse != null)
-        {
-            index = Util.toByteLittle(_lmResponse.length, 2, _msgBytes, index);
-            index = Util.toByteLittle(_lmResponse.length, 2, _msgBytes, index);
-            index = Util.toByteLittle(lmResponseOffset, 4, _msgBytes, index);
-        }
+        index = Util.toByteLittle(lmResponseLen, 2, _msgBytes, index);
+        index = Util.toByteLittle(lmResponseLen, 2, _msgBytes, index);
+        index = Util.toByteLittle(lmResponseOffset, 4, _msgBytes, index);
 
-        if (_ntResponse != null)
-        {
-            index = Util.toByteLittle(_ntResponse.length, 2, _msgBytes, index);
-            index = Util.toByteLittle(_ntResponse.length, 2, _msgBytes, index);
-            index = Util.toByteLittle(ntResponseOffset, 4, _msgBytes, index);
-        }
+        index = Util.toByteLittle(ntResponseLen, 2, _msgBytes, index);
+        index = Util.toByteLittle(ntResponseLen, 2, _msgBytes, index);
+        index = Util.toByteLittle(ntResponseOffset, 4, _msgBytes, index);
 
         index = Util.toByteLittle(domainLen, 2, _msgBytes, index);
         index = Util.toByteLittle(domainLen, 2, _msgBytes, index);

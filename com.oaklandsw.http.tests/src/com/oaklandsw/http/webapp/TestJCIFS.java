@@ -65,8 +65,6 @@ public class TestJCIFS extends TestWebappBase
         TestUserAgent._type = agentType;
 
         HttpURLConnection urlCon = (HttpURLConnection)url.openConnection();
-        urlCon.setRequestMethod("GET");
-        urlCon.connect();
         response = urlCon.getResponseCode();
 
         check:

@@ -106,6 +106,7 @@ public class TestSSL extends HttpTestBase
         urlCon.setRequestMethod("GET");
         urlCon.connect();
         assertEquals(200, urlCon.getResponseCode());
+        urlCon.getInputStream().close();
         checkNoActiveConns(url);
     }
 
@@ -120,6 +121,7 @@ public class TestSSL extends HttpTestBase
         urlCon.setRequestMethod("GET");
         urlCon.connect();
         assertEquals(200, urlCon.getResponseCode());
+        urlCon.getInputStream().close();
         if ((urlCon).getSSLSocketFactory() != sf)
             fail("Socket factory mismatch");
         if (!sf._used)
@@ -238,6 +240,7 @@ public class TestSSL extends HttpTestBase
         if (ver._used)
             fail("Default verifier unexpectedly not used");
         assertEquals(200, urlCon.getResponseCode());
+        urlCon.getInputStream().close();
         checkNoActiveConns(url);
     }
 
@@ -261,6 +264,7 @@ public class TestSSL extends HttpTestBase
         {
         }
         assertEquals(200, urlCon.getResponseCode());
+        urlCon.getInputStream().close();
         checkNoActiveConns(url);
     }
 
@@ -279,6 +283,7 @@ public class TestSSL extends HttpTestBase
         if (certs != null)
             fail("Unexpected local certificates");
         assertEquals(200, urlCon.getResponseCode());
+        urlCon.getInputStream().close();
         checkNoActiveConns(url);
     }
 
@@ -297,6 +302,7 @@ public class TestSSL extends HttpTestBase
         if (!(certs[0] instanceof X509Certificate))
             fail("Invalid certificate");
         assertEquals(200, urlCon.getResponseCode());
+        urlCon.getInputStream().close();
         checkNoActiveConns(url);
     }
 
@@ -312,6 +318,7 @@ public class TestSSL extends HttpTestBase
         if (cipherSuite.indexOf("SSL") != 0)
             fail("Invalid cipher suite");
         assertEquals(200, urlCon.getResponseCode());
+        urlCon.getInputStream().close();
         checkNoActiveConns(url);
     }
 

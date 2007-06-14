@@ -91,6 +91,7 @@ public class TestBasicAndDigestAuth extends HttpTestBase
         urlCon.connect();
         response = urlCon.getResponseCode();
         assertEquals(expectedResponse, response);
+        urlCon.getInputStream().close();
         checkNoActiveConns(url);
     }
 

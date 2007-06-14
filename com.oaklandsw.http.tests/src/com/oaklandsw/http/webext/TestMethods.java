@@ -109,8 +109,9 @@ public class TestMethods extends HttpTestBase
 
     public void testMethodsGetExternal() throws Exception
     {
-        HttpURLConnection urlCon = HttpTestBase.doGetLikeMethod("http://"
-            + HttpTestEnv.TEST_WEBEXT_EXTERNAL_HOST, "GET", null, false);
+        URL url = new URL("http://" + HttpTestEnv.TEST_WEBEXT_EXTERNAL_HOST);
+
+        HttpURLConnection urlCon = (HttpURLConnection)url.openConnection();
 
         String data = HttpTestBase.getReply(urlCon);
         assertTrue("No data returned.", (data.length() > 0));

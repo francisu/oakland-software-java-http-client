@@ -76,10 +76,6 @@ public class TestPerf
             {
                 _url = HttpTestEnv.TEST_URL_WEBSERVER + "/";
             }
-            else if (args[i].equalsIgnoreCase("-explicit"))
-            {
-                com.oaklandsw.http.HttpURLConnection.setDefaultExplicitClose(true);
-            }
             else if (args[i].equalsIgnoreCase("-nowarmup"))
             {
                 _warmUp = false;
@@ -156,8 +152,7 @@ public class TestPerf
             is.close();
         }
 
-        if (urlCon.isExplicitClose())
-            urlCon.getInputStream().close();
+        urlCon.getInputStream().close();
     }
 
     public static void testGetMethod() throws Exception

@@ -47,7 +47,6 @@ public class Test292 extends HttpTestBase
 
     public void test() throws Exception
     {
-        com.oaklandsw.http.HttpURLConnection.setDefaultExplicitClose(true);
         com.oaklandsw.http.HttpURLConnection.setMaxConnectionsPerHost(1);
 
         final URL url = new URL(HttpTestEnv.TEST_URL_WEBSERVER);

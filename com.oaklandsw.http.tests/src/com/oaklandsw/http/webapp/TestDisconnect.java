@@ -35,8 +35,6 @@ public class TestDisconnect extends TestWebappBase
 
     public void testDisconnect() throws Exception
     {
-        HttpURLConnection.setDefaultExplicitClose(true);
-
         URL url = new URL(_urlBase + RequestBodyServlet.NAME);
 
         HttpURLConnection urlCon = (HttpURLConnection)url.openConnection();
@@ -51,8 +49,6 @@ public class TestDisconnect extends TestWebappBase
 
     public void testAccessAfterClose() throws Exception
     {
-        HttpURLConnection.setDefaultExplicitClose(true);
-
         URL url = new URL(_urlBase + RequestBodyServlet.NAME);
 
         HttpURLConnection urlCon = (HttpURLConnection)url.openConnection();

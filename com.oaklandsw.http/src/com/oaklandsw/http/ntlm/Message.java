@@ -18,13 +18,16 @@ import com.oaklandsw.util.Util;
 public class Message implements Dump
 {
 
-    private static final Log      _log                               = LogUtils.makeLogger();
+    private static final Log      _log                               = LogUtils
+                                                                             .makeLogger();
 
     protected byte[]              _msgBytes;
 
     protected int                 _msgLength;
 
     protected static final String NTLMSSP                            = "NTLMSSP";
+
+    protected static final int    SECURITY_BUFFER_LEN                = 8;
 
     // Message types
     public static final int       MSG_NEGOTIATE                      = 1;
@@ -154,6 +157,12 @@ public class Message implements Dump
      */
     public int decode() throws HttpException
     {
+        if (_log.isDebugEnabled())
+        {
+            _log.debug("Message Bytes:");
+            _log.debug("\n" + HexString.dump(_msgBytes));
+        }
+
         int index = 0;
 
         String magic = Util.fromByteAscii(7, _msgBytes, index);

@@ -153,7 +153,6 @@ public class HttpTestBase extends com.oaklandsw.TestCaseBase
         HttpURLConnection.setDefaultRequestTimeout(0);
         HttpURLConnection.setDefaultAuthenticationType(0);
         HttpURLConnection.setPreemptiveAuthentication(false);
-        HttpURLConnection.setDefaultExplicitClose(false);
         HttpURLConnection.setDefaultMaxTries(HttpURLConnection.MAX_TRIES);
         HttpURLConnection.setDefaultPipelining(false);
 
@@ -163,6 +162,7 @@ public class HttpTestBase extends com.oaklandsw.TestCaseBase
                 .setDefaultIdleConnectionPing(HttpURLConnection.DEFAULT_IDLE_PING);
         HttpURLConnection
                 .setMaxConnectionsPerHost(HttpConnectionManager.DEFAULT_MAX_CONNECTIONS);
+        HttpURLConnection.setDefaultUserAgent(null);
         HttpURLConnection.setDefaultPipelining(false);
         HttpURLConnection.closeAllPooledConnections();
     }
@@ -276,13 +276,13 @@ public class HttpTestBase extends com.oaklandsw.TestCaseBase
     public static boolean checkReplyNoAssert(String actualReply,
                                              String replyToCheck)
     {
-        _log.debug("check reply: \n"
+        if (actualReply.toLowerCase().indexOf(replyToCheck.toLowerCase()) >= 0)
+            return true;
+
+        _log.debug("FAILED check reply: \n"
             + replyToCheck
             + "\n-----------\n"
             + actualReply);
-
-        if (actualReply.toLowerCase().indexOf(replyToCheck.toLowerCase()) >= 0)
-            return true;
         return false;
     }
 
@@ -309,6 +309,7 @@ public class HttpTestBase extends com.oaklandsw.TestCaseBase
         urlCon.connect();
         response = urlCon.getResponseCode();
         assertEquals(200, response);
+        urlCon.getInputStream().close();
         return urlCon.getHeaderField(ParamServlet.HOST_IP_ADDRESS);
     }
 
@@ -358,8 +359,7 @@ public class HttpTestBase extends com.oaklandsw.TestCaseBase
         }
         else
         {
-            if (urlCon.isExplicitClose())
-                urlCon.getInputStream().close();
+            urlCon.getInputStream().close();
         }
 
         return urlCon;
@@ -367,12 +367,18 @@ public class HttpTestBase extends com.oaklandsw.TestCaseBase
 
     public static void checkNoActiveConns(URL url)
     {
-        assertEquals(0, getActiveConns(url));
+        int count = getActiveConns(url);
+        if (count > 0)
+            HttpURLConnection.dumpAll();
+        assertEquals(0, count);
     }
 
     public static void checkNoTotalConns(URL url)
     {
-        assertEquals(0, getTotalConns(url));
+        int count = getTotalConns(url);
+        if (count > 0)
+            HttpURLConnection.dumpAll();
+        assertEquals(0, count);
     }
 
     public static int getActiveConns(URL url)
@@ -556,21 +562,19 @@ public class HttpTestBase extends com.oaklandsw.TestCaseBase
         _testAllName = "testExplicitClose";
         _inExplicitTest = true;
         _inTestGroup = true;
-        HttpURLConnection.setDefaultExplicitClose(true);
 
         int maxCon = HttpURLConnection.getMaxConnectionsPerHost();
 
         try
         {
             // Make sure we don't hang
-            for (int i = 0; i < maxCon + 5; i++)
+            for (int i = 0; i < maxCon + 2; i++)
             {
                 allTestMethods();
             }
         }
         finally
         {
-            HttpURLConnection.setDefaultExplicitClose(false);
             _inExplicitTest = false;
         }
 

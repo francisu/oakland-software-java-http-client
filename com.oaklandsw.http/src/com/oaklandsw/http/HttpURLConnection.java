@@ -94,11 +94,6 @@ import com.oaklandsw.util.Util14Controller;
  * connection was idle for at least the number of milliseconds specified. See
  * setIdleConnectionPing() and setDefaultIdleConnectionPing().
  * <p>
- * <code>com.oaklandsw.http.explicitClose</code>- requires the InputStream to
- * be obtained and closed explicitly. This is enabled if the value of this
- * property is set to anything. See setExplicitClose() for important details
- * about how to use this feature.
- * <p>
  * <code>com.oaklandsw.http.maxConnectionsPerHost</code>- sets the maximum
  * number of connections allowed to a given host:port. If not specified, a
  * default of 2 is assumed. See setMaxConnectionsPerHost().
@@ -341,14 +336,9 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
     protected InputStream                  _responseStream;
 
     // Indicates there is no data in the response (for whatever reason)
-    // this allows the connection to be released immediately (instead
-    // of waiting for the getInputStream().close() on _explicitClose)
+    // this allows the connection to be released immediately
+    // of waiting for the getInputStream().close()
     protected boolean                      _responseIsEmpty;
-
-    // The entire response, which was read from the
-    // _responseStream. This is always used if the _explicitClose
-    // option is not specified
-    protected byte[]                       _responseBytes;
 
     protected static final int             MAX_RESPONSE_TEXT                 = 120;
 
@@ -462,10 +452,6 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
     protected String                       _proxyPassword;
 
     protected static int                   _ntlmPreferredEncoding            = NTLM_ENCODING_UNICODE;
-
-    protected static final boolean         DEFAULT_EXPLICIT_CLOSE            = false;
-    protected static boolean               _defaultExplicitClose;
-    protected boolean                      _explicitClose;
 
     // For tests
     public static final int                DEFAULT_IDLE_TIMEOUT              = 14000;
@@ -679,14 +665,6 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
                         throw new RuntimeException("Invalid value specified for idleConnectionPing: "
                             + timeoutStr);
                     }
-                }
-
-                String explicitStr = System
-                        .getProperty("com.oaklandsw.http.explicitClose");
-                if (explicitStr != null)
-                {
-                    _log.info("Require explicit close");
-                    _defaultExplicitClose = true;
                 }
 
                 String followRedirects = System
@@ -1032,7 +1010,6 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
         }
 
         _userAgent = _defaultUserAgent;
-        _explicitClose = _defaultExplicitClose;
         _preemptiveAuthentication = _defaultPreemptiveAuthentication;
 
         _connectionTimeout = _defaultConnectionTimeout;
@@ -1291,11 +1268,11 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
     {
         switch (type)
         {
-            case 0:
+            case NORMAL:
                 return "NORMAL";
-            case 1:
+            case CLOSE:
                 return "CLOSE";
-            case 2:
+            case READING:
                 return "READING";
             default:
                 Util.impossible("Invalid type: " + type);
@@ -1316,6 +1293,10 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
             {
                 if (_releaseConnection)
                 {
+                    if (_log.isDebugEnabled())
+                        _log.debug("releaseConnection: now connected = FALSE");
+                    connected = false;
+
                     boolean closed = false;
                     if (type == CLOSE || shouldCloseConnection())
                     {
@@ -1338,9 +1319,6 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
                     // _conInStream = null;
                     // _conOutStream = null;
 
-                    if (_log.isDebugEnabled())
-                        _log.debug("releaseConnection: now connected = FALSE");
-                    connected = false;
                 }
                 else
                 {
@@ -1818,78 +1796,52 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
         if (_dead)
             return null;
 
-        setupResponseBody();
+        // Could be the type of request does not return data, just give
+        // back an empty stream
+        if (_responseStream == null)
+            return new ByteArrayInputStream(new byte[] {});
 
-        // _responseBytes contains the entire response; if this
-        // has not been fully read (the non-explicit close case),
-        // then return the stream.
-        if (_responseBytes == null)
+        if ((_pipeliningOptions & PIPE_PIPELINE) != 0)
         {
-            if (_responseStream != null)
+            // If there is trouble reading due to a close, this will be
+            // retried
+            is = new FilterInputStream(_responseStream)
             {
-                // This is a stream that directly reads from the
-                // connection, make sure the connection is still open
-                if (!connected)
+                public int read() throws IOException
                 {
-                    throw new IOException("No longer connected when "
-                        + "attempting to read response data");
-                }
-                if (!_connection.isOpen())
-                {
-                    throw new IOException("Connection "
-                        + _connection
-                        + " found closed when attempting to read response data");
-                }
-                if ((_pipeliningOptions & PIPE_PIPELINE) != 0)
-                {
-                    // If there is trouble reading due to a close, this will be
-                    // retried
-                    is = new FilterInputStream(_responseStream)
+                    try
                     {
-                        public int read() throws IOException
-                        {
-                            try
-                            {
-                                return super.read();
-                            }
-                            catch (IOException ex)
-                            {
-                                _ioException = new AutomaticHttpRetryException(ex
-                                        .getMessage());
-                                _ioException.initCause(ex);
-                                throw _ioException;
-                            }
-                        }
-
-                        public int read(byte b[], int off, int len)
-                            throws IOException
-                        {
-                            try
-                            {
-                                return super.read(b, off, len);
-                            }
-                            catch (IOException ex)
-                            {
-                                _ioException = new AutomaticHttpRetryException(ex
-                                        .getMessage());
-                                _ioException.initCause(ex);
-                                throw _ioException;
-                            }
-                        }
-
-                    };
+                        return super.read();
+                    }
+                    catch (IOException ex)
+                    {
+                        _ioException = new AutomaticHttpRetryException(ex
+                                .getMessage());
+                        _ioException.initCause(ex);
+                        throw _ioException;
+                    }
                 }
-                else
+
+                public int read(byte b[], int off, int len) throws IOException
                 {
-                    is = _responseStream;
+                    try
+                    {
+                        return super.read(b, off, len);
+                    }
+                    catch (IOException ex)
+                    {
+                        _ioException = new AutomaticHttpRetryException(ex
+                                .getMessage());
+                        _ioException.initCause(ex);
+                        throw _ioException;
+                    }
                 }
-            }
-            else
-                is = new ByteArrayInputStream(new byte[0]);
+
+            };
         }
         else
         {
-            is = new ByteArrayInputStream(_responseBytes);
+            is = _responseStream;
         }
 
         if (_log.isDebugEnabled())
@@ -2301,81 +2253,26 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
     }
 
     /**
-     * Returns the default value of explicit close for all connections.
+     * This returns true. All connections are assumed that they will get an
+     * input stream and close it if the connection succeeds.
      * 
-     * @see #isExplicitClose()
+     * @deprecated
      * @return the value of the explicit close flag.
      */
-    public static boolean isDefaultExplicitClose()
+    public static boolean isExplicitClose()
     {
-        return _defaultExplicitClose;
+        return true;
     }
 
     /**
-     * Sets the default value of explicit close for all connections.
-     * <p>
-     * This is equivalent to setting the
-     * <code>com.oaklandsw.http.explicitClose</code> property to anything.
+     * This does nothing.
      * 
-     * @see #setExplicitClose(boolean)
+     * @deprecated
      * @param explicitClose
      *            the value for explicit closing of the connection.
      */
-    public static void setDefaultExplicitClose(boolean explicitClose)
+    public static void setExplicitClose(boolean explicitClose)
     {
-        if (_log.isDebugEnabled())
-            _log.debug("setDefaultExplicitClose: " + explicitClose);
-        _defaultExplicitClose = explicitClose;
-    }
-
-    /**
-     * Used to allow you to directly read the result from the socket, avoiding
-     * buffering.
-     * <p>
-     * Sets the connection to require the InputStream to be obtained using a
-     * call to getInputStream(), and for that stream to be closed. If this is
-     * specified, this can result in better performance as the data associated
-     * with the connection is not read unless the stream associated with the
-     * connection is read.
-     * 
-     * <p>
-     * Here are the rules for using this option:
-     * <ul>
-     * <li>In the event of an exception in a call to connect() you are not
-     * required to do anything further with the connection.
-     * <li>In <i>all other </i> cases, you must do a getResponseCode(),
-     * getResponseMessage(), or getInputStream() when you use explicit close.
-     * <li>In any case where the response code is > 300, or there is expected
-     * to be an empty response (like a 204, Post/Put/Delete, etc), or the
-     * response is in fact empty, you are <i>not </i> required to do a
-     * getInputStream().close(). If any exception is thrown by one of the above
-     * getXXX() methods, you are also not required to close the stream. In all
-     * of these cases, the connection is released upon the return of the
-     * getXXX() method.
-     * <li>The only time you are required to close() the stream is when a
-     * successful response actually returned data.
-     * <li>Note that in the case of an empty response, say a 204, if you do a
-     * getInputStream(), you will just get an empty ByteInputStream.
-     * </ul>
-     * 
-     * @param explicitClose
-     *            the value for explicit closing of the connection.
-     */
-    public void setExplicitClose(boolean explicitClose)
-    {
-        if (_log.isDebugEnabled())
-            _log.debug("setExplicitClose: " + explicitClose);
-        _explicitClose = explicitClose;
-    }
-
-    /**
-     * Returns true if an explicit close is required, false otherwise.
-     * 
-     * @return the value of the explicit close flag.
-     */
-    public boolean isExplicitClose()
-    {
-        return _explicitClose;
     }
 
     /**

@@ -260,6 +260,78 @@ public class TestAxis2 extends TestWebappBase
         assertContains(result, "Hello Francis");
     }
 
+    public void testSharepointIcewebGood() throws Exception
+    {
+        logAll();
+        com.oaklandsw.http.HttpURLConnection
+                .setDefaultUserAgent(new com.oaklandsw.http.TestUserAgent());
+        TestUserAgent._type = TestUserAgent.OFFICESHARE_ICEWEB;
+        String output = invokeService("http://sharepoint.iceweb.com/sites/demo/_vti_bin/Lists.asmx",
+                                      "http://schemas.microsoft.com/sharepoint/soap/",
+                                      "GetListCollection",
+                                      new String[] {});
+
+        // System.out.println(HexString.dump(output.getBytes()));
+        assertContains(output, "GetListCollectionResponse");
+    }
+
+    // FIXME - this gets an NPE when run by itself, but when run with other
+    // tests it passes (clearly something is wrong)
+    public void testSharepointIcewebBadNoAuth() throws Exception
+    {
+        logAll();
+        // com.oaklandsw.http.HttpURLConnection
+        // .setDefaultUserAgent(new com.oaklandsw.http.TestUserAgent());
+        // TestUserAgent._type = TestUserAgent.OFFICESHARE_ICEWEB;
+        String output = invokeService("http://sharepoint.iceweb.com/sites/demo/_vti_bin/Lists.asmx",
+                                      "http://schemas.microsoft.com/sharepoint/soap/",
+                                      "GetListCollection",
+                                      new String[] {});
+
+        // System.out.println(HexString.dump(output.getBytes()));
+        assertContains(output, "GetListCollectionResponse");
+    }
+
+    public void NOtestSharepointXsoLive() throws Exception
+    {
+        logAll();
+        com.oaklandsw.http.HttpURLConnection
+                .setDefaultUserAgent(new com.oaklandsw.http.TestUserAgent());
+        TestUserAgent._type = TestUserAgent.OFFICESHARE_XSO;
+        // xsolive.com
+        String output = invokeService("http://74.218.125.36/_vti_bin/Lists.asmx",
+                                      "http://schemas.microsoft.com/sharepoint/soap/",
+                                      "GetListCollection",
+                                      new String[] {});
+
+        // System.out.println(output);
+        assertContains(output, "user-agent:Axis2");
+
+        String sessionCookie = (String)_serviceContext.getProperty("Cookie");
+        // System.out.println("cookie: " + sessionCookie);
+        assertNotNull(sessionCookie);
+    }
+
+    public void NOtestSharepointXsoLiveBad() throws Exception
+    {
+        logAll();
+        com.oaklandsw.http.HttpURLConnection
+                .setDefaultUserAgent(new com.oaklandsw.http.TestUserAgent());
+        TestUserAgent._type = TestUserAgent.GOOD;
+        // xsolive.com
+        String output = invokeService("http://74.218.125.36/_vti_bin/Lists.asmx",
+                                      "http://schemas.microsoft.com/sharepoint/soap/",
+                                      "GetListCollection",
+                                      new String[] {});
+
+        // System.out.println(output);
+        assertContains(output, "user-agent:Axis2");
+
+        String sessionCookie = (String)_serviceContext.getProperty("Cookie");
+        // System.out.println("cookie: " + sessionCookie);
+        assertNotNull(sessionCookie);
+    }
+
     // This test is flaky, not sure why, but it's not our problem
     public void testWsGoogle() throws Exception
     {

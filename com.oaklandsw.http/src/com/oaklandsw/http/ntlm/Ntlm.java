@@ -55,6 +55,17 @@ public class Ntlm
             challengeMsg.setBytes(Base64.decode(message.getBytes(ENCODING)));
             challengeMsg.decode();
 
+            // Do checking of the challenge flags
+            if (_forceNtlmV2)
+            {
+                long expectedFlags = Message.NEGOTIATE_NTLM
+                    | Message.NEGOTIATE_TARGET_INFO;
+                if ((challengeMsg.getFlags() & expectedFlags) != expectedFlags)
+                {
+                    throw new HttpException("Expected NTLMv2 flags not set in Challenge message");
+                }
+            }
+
             AuthenticateMessage authMsg = new AuthenticateMessage();
             authMsg.setChallenge(challengeMsg);
 
@@ -95,5 +106,4 @@ public class Ntlm
         }
 
     }
-
 }

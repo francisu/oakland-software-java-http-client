@@ -120,8 +120,6 @@ public class TestMethods extends TestWebappBase
 
     public void testHeadMethodExplicitClose() throws Exception
     {
-        HttpURLConnection.setDefaultExplicitClose(true);
-
         URL url = new URL(_urlBase + RequestBodyServlet.NAME);
 
         // Make sure we don't require explicit close for the HEAD method
