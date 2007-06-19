@@ -14,6 +14,7 @@ import org.bouncycastle.crypto.digests.MD5Digest;
 import org.bouncycastle.crypto.params.DESParameters;
 
 import com.oaklandsw.http.HttpException;
+import com.oaklandsw.util.HexString;
 import com.oaklandsw.util.LogUtils;
 import com.oaklandsw.util.SecurityHelper;
 import com.oaklandsw.util.Util;
@@ -319,7 +320,8 @@ public class AuthenticateMessage extends Message
         throws Exception
     {
         byte[] ntlmHash = ntlmHash(password);
-        String identity = user.toUpperCase() + target.toUpperCase();
+        String identity = user.toUpperCase()
+            + (target != null ? target.toUpperCase() : "");
         return hmacMD5(identity.getBytes("UnicodeLittleUnmarked"), ntlmHash);
     }
 
@@ -518,7 +520,8 @@ public class AuthenticateMessage extends Message
                              0,
                              _challenge._msgLength);
 
-            if ((_challenge.getFlags() & NEGOTIATE_TARGET_INFO) != 0)
+            if ((_challenge.getFlags() & NEGOTIATE_TARGET_INFO) != 0
+                && Ntlm._forceNtlmType != Ntlm.FORCE_V1)
             {
                 byte[] clientChallenge = new byte[8];
                 Util.toByteLittle(System.currentTimeMillis(),
@@ -526,7 +529,7 @@ public class AuthenticateMessage extends Message
                                   clientChallenge,
                                   0);
 
-                if (!Ntlm._forceNtlmV2)
+                if (Ntlm._forceNtlmType != Ntlm.FORCE_V2)
                 {
                     _lmResponse = getLMv2Response(_domain,
                                                   _user,
@@ -827,6 +830,16 @@ public class AuthenticateMessage extends Message
         sb.append("  password: ");
         sb.append(_password);
         sb.append("\n");
+        if (_lmResponse != null)
+        {
+            sb.append("  lmResponse: \n");
+            sb.append(HexString.dump(_lmResponse));
+        }
+        if (_ntResponse != null)
+        {
+            sb.append("  ntResponse: \n");
+            sb.append(HexString.dump(_ntResponse));
+        }
     }
 
 }

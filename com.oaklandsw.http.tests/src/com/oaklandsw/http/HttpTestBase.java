@@ -22,6 +22,12 @@ public class HttpTestBase extends com.oaklandsw.TestCaseBase
 
     public boolean             _showStats;
 
+    protected static final int STREAM_NONE    = 0;
+    protected static final int STREAM_CHUNKED = 1;
+    protected static final int STREAM_FIXED   = 2;
+
+    protected int              _streamingType;
+
     // For more stress testing
     protected boolean          _extended        = false;
 
@@ -123,7 +129,10 @@ public class HttpTestBase extends com.oaklandsw.TestCaseBase
     public void setUp() throws Exception
     {
         super.setUp();
-        HttpTestEnv.setUp();
+
+        System.setProperty("java.protocol.handler.pkgs", "com.oaklandsw");
+
+        HttpURLConnection.setDefaultUserAgent(new TestUserAgent());
 
         HttpURLConnection.getConnectionManager().resetStatistics();
         Util.resetTest();
@@ -152,7 +161,7 @@ public class HttpTestBase extends com.oaklandsw.TestCaseBase
         HttpURLConnection.setDefaultConnectionTimeout(0);
         HttpURLConnection.setDefaultRequestTimeout(0);
         HttpURLConnection.setDefaultAuthenticationType(0);
-        HttpURLConnection.setPreemptiveAuthentication(false);
+        HttpURLConnection.setDefaultProxyAuthenticationType(0);
         HttpURLConnection.setDefaultMaxTries(HttpURLConnection.MAX_TRIES);
         HttpURLConnection.setDefaultPipelining(false);
 
@@ -162,7 +171,6 @@ public class HttpTestBase extends com.oaklandsw.TestCaseBase
                 .setDefaultIdleConnectionPing(HttpURLConnection.DEFAULT_IDLE_PING);
         HttpURLConnection
                 .setMaxConnectionsPerHost(HttpConnectionManager.DEFAULT_MAX_CONNECTIONS);
-        HttpURLConnection.setDefaultUserAgent(null);
         HttpURLConnection.setDefaultPipelining(false);
         HttpURLConnection.closeAllPooledConnections();
     }
@@ -200,6 +208,28 @@ public class HttpTestBase extends com.oaklandsw.TestCaseBase
                 break;
         }
 
+    }
+
+    protected void setupStreaming(HttpURLConnection urlCon, int size)
+    {
+        switch (_streamingType)
+        {
+            case STREAM_NONE:
+                break;
+            case STREAM_CHUNKED:
+                urlCon.setChunkedStreamingMode(size);
+                break;
+            case STREAM_FIXED:
+                urlCon.setFixedLengthStreamingMode(size);
+                break;
+            default:
+                Util.impossible("Invalid streamingtype: " + _streamingType);
+        }
+    }
+
+    protected boolean isInStreamTest()
+    {
+        return _streamingType != STREAM_NONE;
     }
 
     protected void checkErrorSvrData(HttpURLConnection urlCon,

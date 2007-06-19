@@ -24,7 +24,6 @@
 // class is JCIFS (version 1.2.13), the only change being to call the
 // Oakland Software NTLM authentication methods.
 //
-
 package com.oaklandsw.http.servlet;
 
 import java.io.IOException;
@@ -132,6 +131,17 @@ public class NtlmSsp implements NtlmFlags
                 AuthenticateMessage amsg = new AuthenticateMessage();
                 amsg.setBytes(src);
                 amsg.decode();
+
+                if (amsg._user == null)
+                {
+                    throw new IllegalArgumentException("Username must not be null");
+                }
+                if (amsg._domain == null)
+                {
+                    resp.sendError(HttpServletResponse.SC_UNAUTHORIZED,
+                                   "Domain name not specified");
+                    return null;
+                }
 
                 byte[] lmResponse = amsg._lmResponse;
                 if (lmResponse == null)

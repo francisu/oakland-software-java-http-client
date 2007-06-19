@@ -5,7 +5,6 @@ import java.net.URL;
 
 import com.oaklandsw.http.AutomaticHttpRetryException;
 import com.oaklandsw.http.Callback;
-import com.oaklandsw.http.HttpTestEnv;
 import com.oaklandsw.http.HttpURLConnection;
 
 public class HttpGetPipeline
@@ -69,7 +68,7 @@ public class HttpGetPipeline
 
     public static final void main(String[] args) throws Exception
     {
-        HttpTestEnv.setUp();
+        System.setProperty("java.protocol.handler.pkgs", "com.oaklandsw");
 
         String urlStr;
         if (args.length == 0)

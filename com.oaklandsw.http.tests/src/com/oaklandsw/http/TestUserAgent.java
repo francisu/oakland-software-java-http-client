@@ -50,7 +50,7 @@ public class TestUserAgent implements HttpUserAgent
 
         if (_type == NULL)
         {
-            _log.debug("Returning null cred");
+            _log.debug("TestUserAgent - Returning null cred");
             return null;
         }
 
@@ -125,12 +125,11 @@ public class TestUserAgent implements HttpUserAgent
                         ntlmCred.setHost("host");
                         break;
                     case OFFICESHARE_ICEWEB:
-                        ntlmCred.setUser("demo");
-                        ntlmCred.setPassword("demo");
-                        ntlmCred.setDomain("icemail");
+                        ntlmCred.setUser(HttpTestEnv.TEST_ICEWEB_USER);
+                        ntlmCred.setPassword(HttpTestEnv.TEST_ICEWEB_PASSWORD);
+                        ntlmCred.setDomain(HttpTestEnv.TEST_ICEWEB_DOMAIN);
                         ntlmCred.setHost("host");
                         break;
-
                 }
                 cred = ntlmCred;
                 break;
@@ -168,7 +167,7 @@ public class TestUserAgent implements HttpUserAgent
                 break;
         }
 
-        _log.debug("Returning cred: " + ((UserCredential)cred).getUser());
+        _log.debug("TestUserAgent - Returning cred: " + ((UserCredential)cred).getUser());
 
         return cred;
     }
@@ -191,6 +190,11 @@ public class TestUserAgent implements HttpUserAgent
             basicCred.setUser("name");
             basicCred.setPassword("pass");
         }
+        else
+        {
+            basicCred.setUser("nameOther");
+            basicCred.setPassword("passOther");
+        }
 
     }
 
@@ -210,7 +214,7 @@ public class TestUserAgent implements HttpUserAgent
 
         if (_proxyType == NULL)
         {
-            _log.debug("Returning null proxy cred");
+            _log.debug("TestUserAgent - Returning null proxy cred");
             return null;
         }
 
@@ -244,7 +248,7 @@ public class TestUserAgent implements HttpUserAgent
                 break;
         }
 
-        _log.debug("Returning cred: " + ((UserCredential)cred).getUser());
+        _log.debug("TestUserAgent - Returning cred: " + ((UserCredential)cred).getUser());
 
         return cred;
     }

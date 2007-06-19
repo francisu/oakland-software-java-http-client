@@ -27,12 +27,6 @@ public class TestOutputStream extends TestWebappBase
 
     private static final Log   _log           = LogUtils.makeLogger();
 
-    protected static final int STREAM_NONE    = 0;
-    protected static final int STREAM_CHUNKED = 1;
-    protected static final int STREAM_FIXED   = 2;
-
-    protected int              _streamingType;
-
     public TestOutputStream(String testName)
     {
         super(testName);
@@ -48,28 +42,6 @@ public class TestOutputStream extends TestWebappBase
     public static void main(String args[])
     {
         mainRun(suite(), args);
-    }
-
-    protected void setupStreaming(HttpURLConnection urlCon, int size)
-    {
-        switch (_streamingType)
-        {
-            case STREAM_NONE:
-                break;
-            case STREAM_CHUNKED:
-                urlCon.setChunkedStreamingMode(size);
-                break;
-            case STREAM_FIXED:
-                urlCon.setFixedLengthStreamingMode(size);
-                break;
-            default:
-                Util.impossible("Invalid streamingtype: " + _streamingType);
-        }
-    }
-
-    protected boolean isInStreamTest()
-    {
-        return _streamingType != STREAM_NONE;
     }
 
     // Return true if the connection worked

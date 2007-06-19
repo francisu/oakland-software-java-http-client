@@ -7,6 +7,7 @@ import org.apache.commons.logging.Log;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
+import com.oaklandsw.http.HttpTestEnv;
 import com.oaklandsw.http.HttpURLConnection;
 import com.oaklandsw.http.TestUserAgent;
 import com.oaklandsw.http.ntlm.Ntlm;
@@ -51,9 +52,9 @@ public class TestJCIFS extends TestWebappBase
     public void tearDown() throws Exception
     {
         super.tearDown();
-        Ntlm._forceNtlmV2= false;
+        Ntlm._forceNtlmType = Ntlm.FORCE_NONE;
     }
-    
+
     // Bug 1946 - make sure JCIFS "server" (really the servet filter) is
     // supported
     public void testGetMethodParameters(int agentType, String servlet)
@@ -105,15 +106,74 @@ public class TestJCIFS extends TestWebappBase
         testGetMethodParameters(TestUserAgent.BAD, ParamServlet.NAME_NTLM);
     }
 
+    public static final boolean FORCE = true;
+
+    protected void noDomain2Normal() throws Exception
+    {
+        URL url = new URL(_urlBase + ParamServlet.NAME_NTLM2);
+
+        TestUserAgent._type = TestUserAgent.NO_DOMAIN;
+
+        HttpURLConnection urlCon = (HttpURLConnection)url.openConnection();
+        assertEquals(401, urlCon.getResponseCode());
+        assertContains(urlCon.getResponseMessage(), "Domain name");
+    }
+
+    public void test2NormalForce2() throws Exception
+    {
+        Ntlm._forceNtlmType = Ntlm.FORCE_V2;
+        testGetMethodParameters(TestUserAgent.GOOD, ParamServlet.NAME_NTLM2);
+    }
+
+    public void test2NormalForce2NoDomain() throws Exception
+    {
+        Ntlm._forceNtlmType = Ntlm.FORCE_V2;
+        noDomain2Normal();
+    }
+
+    public void test2BadForce2() throws Exception
+    {
+        Ntlm._forceNtlmType = Ntlm.FORCE_V2;
+        testGetMethodParameters(TestUserAgent.BAD, ParamServlet.NAME_NTLM2);
+    }
+
+    public void test2NormalForce1() throws Exception
+    {
+        // Don't do this if only NTLM v2 is available
+        if (HttpTestEnv.REQUIRE_NTLMV2 == null)
+        {
+            Ntlm._forceNtlmType = Ntlm.FORCE_V1;
+            // This fails if the target IIS server is configured to require
+            // only NTLMv2 authentication
+            testGetMethodParameters(TestUserAgent.GOOD, ParamServlet.NAME_NTLM2);
+        }
+    }
+
+    public void test2NormalForce1NoDomain() throws Exception
+    {
+        Ntlm._forceNtlmType = Ntlm.FORCE_V1;
+        noDomain2Normal();
+    }
+
+    public void test2BadForce1() throws Exception
+    {
+        Ntlm._forceNtlmType = Ntlm.FORCE_V1;
+        testGetMethodParameters(TestUserAgent.BAD, ParamServlet.NAME_NTLM2);
+
+    }
+
     public void test2Normal() throws Exception
     {
-        Ntlm._forceNtlmV2 = true;
         testGetMethodParameters(TestUserAgent.GOOD, ParamServlet.NAME_NTLM2);
+    }
+
+    public void test2NormalNoDomain() throws Exception
+    {
+        noDomain2Normal();
     }
 
     public void test2Bad() throws Exception
     {
-        Ntlm._forceNtlmV2 = true;
         testGetMethodParameters(TestUserAgent.BAD, ParamServlet.NAME_NTLM2);
     }
 

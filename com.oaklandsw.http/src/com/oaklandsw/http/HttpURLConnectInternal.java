@@ -22,6 +22,7 @@ import org.apache.commons.logging.Log;
 
 import com.oaklandsw.http.cookie.MalformedCookieException;
 import com.oaklandsw.util.LogUtils;
+import com.oaklandsw.util.StringUtils;
 import com.oaklandsw.util.URIUtil;
 import com.oaklandsw.util.Util;
 
@@ -32,132 +33,138 @@ public class HttpURLConnectInternal
     extends
         com.oaklandsw.http.HttpURLConnection
 {
-    private static final Log _log = LogUtils.makeLogger();
+    private static final Log _log                 = LogUtils.makeLogger();
+
+    private String           _pathQuery;
 
     /**
-     * @see java.net.HttpURLConnection#HttpURLConnection(URL)
+     * Whether or not the request body has been sent. Used to initiate sending
+     * the body on receipt of a continue if it has not already been sent.
      */
-    public HttpURLConnectInternal(URL urlParam)
-    {
-        super(urlParam);
-        _thread = Thread.currentThread();
-    }
-
-    // For testing and tunnelling
-    public HttpURLConnectInternal()
-    {
-    }
-
-    /** My request path + query string. */
-    private String        _pathQuery;
-
-    /** Whether or not the request body has been sent. */
-    private boolean       _bodySent;
+    private boolean          _bodySent;
 
     /**
      * The host/port to be sent on this if this is a connect request.
      */
-    private String        _connectHostPort;
+    private String           _connectHostPort;
 
     /**
      * The input stream from which to read the request body. This is set before
      * the request is issued, if the source of the data is a stream.
      */
-    private InputStream   _requestBody;
+    private InputStream      _requestBody;
 
     /**
      * The byte array of the request. If the request source is a byte array,
      * this is set. When the request is first written, the contents of the
      * request is saved here in case it needs to be resent for authentication.
      */
-    private byte[]        _requestBytes;
+    private byte[]           _requestBytes;
 
     /**
      * Indicates that we are sending an NTLM negotiate message on this URL
      * request and the underlying connection (when obtained) should be marked
      * with the setNtlmLeaveOpen() flag.
      */
-    // private boolean _ntlmAuth;
-    // Header values we are interested in
-    // NOTE: be sure to change resetBeforeRead if anything is added
-    // to this list
-    protected String      _hdrContentLength;
-    protected String      _hdrConnection;
-    protected String      _hdrProxyConnection;
-    protected String      _hdrTransferEncoding;
-    protected String      _hdrWWWAuth;
-    protected String      _hdrLocation;
-    protected String      _hdrProxyAuth;
-    protected int         _hdrContentLengthInt;
+
+    /**
+     * Header values we are interested in
+     * 
+     * NOTE: be sure to change resetBeforeRead if anything is added to this list
+     */
+    protected String         _hdrContentLength;
+    protected String         _hdrConnection;
+    protected String         _hdrProxyConnection;
+    protected String         _hdrTransferEncoding;
+    protected String         _hdrWWWAuth;
+    protected String         _hdrLocation;
+    protected String         _hdrProxyAuth;
+    protected int            _hdrContentLengthInt;
 
     // We have read the first character of the next line after
     // the status line, and it is here. This only applies if
     // _singleEolChar is true
-    protected int         _savedAfterStatusNextChar;
+    protected int            _savedAfterStatusNextChar;
 
-    protected boolean     _singleEolChar;
+    protected boolean        _singleEolChar;
 
     // Either AUTH_NORMAL or AUTH_PROXY, this is set when we get a 401 or a
     // 407, -1 indicates we have not started authentication so we don't know
-    protected int         _currentAuthType     = -1;
+    protected int            _currentAuthType     = -1;
 
     // The credentials that were sent in the authentication. We have
     // to have them both here and in the HTTPConnection. They are here
     // because NTLM authentication closes the connection during
     // authentication and we thus have no where to get the credential
     // information that was sent.
-    UserCredential[]      _credential          = new UserCredential[AUTH_PROXY + 1];
+    UserCredential[]         _credential          = new UserCredential[AUTH_PROXY + 1];
 
     // The authentication protocol associated with the above credential
     // This is how this urlcon is authenticated
-    int[]                 _authProtocol        = new int[AUTH_PROXY + 1];
+    int[]                    _authProtocol        = new int[AUTH_PROXY + 1];
 
     // The values for _authState
 
     // No authentication is required for this urlcon
-    static final int      AS_NONE              = 0;
+    static final int         AS_NONE              = 0;
 
     // We know authentication is required and have not yet done anything
-    static final int      AS_NEEDS_AUTH        = 1;
+    static final int         AS_NEEDS_AUTH        = 1;
 
     // We have sent the initial authentication reponse to the server
-    static final int      AS_INITIAL_AUTH_SENT = 2;
+    static final int         AS_INITIAL_AUTH_SENT = 2;
 
     // We have sent the final authentication response to the server
     // (perhaps preemtively in the case of basic)
-    static final int      AS_FINAL_AUTH_SENT   = 3;
+    static final int         AS_FINAL_AUTH_SENT   = 3;
 
     // We have received an OK status after authentication, we are authenticated
-    static final int      AS_AUTHENTICATED     = 4;
+    static final int         AS_AUTHENTICATED     = 4;
 
-    int[]                 _authState           = new int[AUTH_PROXY + 1];
+    int[]                    _authState           = new int[AUTH_PROXY + 1];
 
     // True if we are reading from the connection on the pipeline
     // thread, this is used only if authentication is required, then we
     // want to process the authentication in place and then exit as if
     // we had done a write
-    protected boolean     _pipelinedReading;
+    protected boolean        _pipelinedReading;
+
+    // True if the last thing we sent was a dummy request for NTLM
+    // authentication. Used to initiate a retry in the event of a good
+    // response to that request (since we did not send the user's request
+    protected boolean        _dummyAuthRequestSent;
 
     // Thread on which the connection was created (used for pipelining)
-    protected Thread      _thread;
+    protected Thread         _thread;
 
     // Used for testing
-    protected static int  _diagSequence;
-    public static boolean _addDiagSequence;
+    protected static int     _diagSequence;
+    public static boolean    _addDiagSequence;
 
     /**
      * Maximum number of redirects to forward through.
      */
-    private int           MAX_FORWARDS         = 100;
+    private int              MAX_FORWARDS         = 100;
 
-    public Log getLog()
+    public HttpURLConnectInternal(URL urlParam)
     {
-        return _log;
+        super(urlParam);
+        _thread = Thread.currentThread();
+
+        if (_log.isDebugEnabled())
+        {
+            _log.debug(normalOrProxyToString(AUTH_NORMAL)
+                + " Type: "
+                + authTypeToString(_authenticationType[AUTH_NORMAL]));
+            _log.debug(normalOrProxyToString(AUTH_PROXY)
+                + " Type: "
+                + authTypeToString(_authenticationType[AUTH_PROXY]));
+        }
     }
 
-    public final String getName()
+    // For testing and tunnelling
+    public HttpURLConnectInternal()
     {
-        return method;
     }
 
     static String authStateToString(int authState)
@@ -200,6 +207,19 @@ public class HttpURLConnectInternal
         }
         Util.impossible("Invalid authType: " + authType);
         return null;
+    }
+
+    /**
+     * Returns true if we are sending auth requests for NTLM and thus don't want
+     * to send real data (to avoid issues with streaming or having to resend
+     * large amounts of data).
+     */
+    protected boolean useDummyAuthContent()
+    {
+        return _currentAuthType >= 0
+            && _authenticationType[_currentAuthType] == Credential.AUTH_NTLM
+            && _authState[_currentAuthType] >= AS_NEEDS_AUTH
+            && _authState[_currentAuthType] < AS_FINAL_AUTH_SENT;
     }
 
     Credential getCredentialSent(int normalOrProxy)
@@ -325,8 +345,6 @@ public class HttpURLConnectInternal
 
         // Per 19.6.1.1 of RFC 2616, it is legal for HTTP/1.0 based
         // applications to send the Host request-header.
-        // TODO: Add the ability to disable the sending of this header for
-        // HTTP/1.0 requests.
 
         if (_reqHeaders.get(HDR_HOST) == null)
         {
@@ -373,33 +391,76 @@ public class HttpURLConnectInternal
                 + _reqHeaders.get(HDR_CONTENT_LENGTH));
         }
 
-        if (_streamingChunked)
+        if (useDummyAuthContent())
         {
-            if (_reqHeaders.get(HDR_TRANSFER_ENCODING) == null)
-                _reqHeaders.add(HDR_TRANSFER_ENCODING, HDR_VALUE_CHUNKED);
+            // CL could have been sent out on an initial request and
+            // then we get back a 401, so need to remove it
+            if (_reqHeaders.get(HDR_CONTENT_LENGTH) != null)
+                _reqHeaders.remove(HDR_CONTENT_LENGTH);
+            _hasContentLengthHeader = false;
+
+            // Add the content length only if there is content
+            if (!StringUtils.equals(_authenticationDummyMethod,
+                                    HTTP_METHOD_HEAD))
+            {
+                if (_authenticationDummyContent != null)
+                {
+                    _reqHeaders.add(HDR_CONTENT_LENGTH, Integer
+                            .toString(_authenticationDummyContent.length()));
+                    _dummyAuthRequestSent = true;
+                }
+            }
         }
         else
         {
-            if (!_hasContentLengthHeader)
+            // Remove any previously added CL header
+            if (_authenticationDummyContent != null && !_hasContentLengthHeader)
             {
-                if ((_methodProperties & METHOD_PROP_ADD_CL_HEADER) != 0)
-                {
-                    // add content length
-                    int len = 0;
-                    if (null != _requestBytes)
-                    {
-                        len = _requestBytes.length;
-                    }
-                    else if (_contentLength >= 0)
-                    {
-                        len = _contentLength;
-                    }
-
-                    _reqHeaders.add(HDR_CONTENT_LENGTH, String.valueOf(len));
-                    _hasContentLengthHeader = true;
-                }
+                if (_reqHeaders.get(HDR_CONTENT_LENGTH) != null)
+                    _reqHeaders.remove(HDR_CONTENT_LENGTH);
             }
 
+            if (_streamingChunked)
+            {
+                if (_reqHeaders.get(HDR_TRANSFER_ENCODING) == null)
+                    _reqHeaders.add(HDR_TRANSFER_ENCODING, HDR_VALUE_CHUNKED);
+            }
+            else
+            {
+                if (!_hasContentLengthHeader)
+                {
+                    if ((_actualMethodPropsSent & METHOD_PROP_ADD_CL_HEADER) != 0)
+                    {
+                        // add content length
+                        int len = 0;
+                        if (null != _requestBytes)
+                        {
+                            len = _requestBytes.length;
+                        }
+                        else if (_contentLength >= 0)
+                        {
+                            len = _contentLength;
+                        }
+
+                        _reqHeaders
+                                .add(HDR_CONTENT_LENGTH, String.valueOf(len));
+                        _hasContentLengthHeader = true;
+                    }
+                }
+
+            }
+        }
+
+        // TODO - in JRE 1.5 they removed this default, look this up
+        // to see what to do about this, removing this breaks the IIS
+        // tests for example
+        if ((_actualMethodPropsSent & METHOD_PROP_SEND_CONTENT_TYPE) != 0)
+        {
+            if (_reqHeaders.get(HDR_CONTENT_TYPE) == null)
+            {
+                _reqHeaders.set(HDR_CONTENT_TYPE,
+                                "application/x-www-form-urlencoded");
+            }
         }
 
         // Add headers for HTTP 1.0 support
@@ -437,6 +498,7 @@ public class HttpURLConnectInternal
         _hdrWWWAuth = null;
         _hdrProxyAuth = null;
         _hdrLocation = null;
+        _responseCode = 0;
         _responseIsEmpty = false;
         _responseHeadersRead = false;
         _responseStream = null;
@@ -457,13 +519,13 @@ public class HttpURLConnectInternal
             // This creates the InputStream for the user to read the response;
             // the connection is released when the InputStream finishes reading.
             // For a normal response, we don't release the connection, it is
-            // done when the stream is read.  We assume the user will always
+            // done when the stream is read. We assume the user will always
             // read and close the InputStream on a normal response.
             setupResponseBody();
 
             // For a bad response, the user might not read the InputStream.
             // We thus buffer it and release the connection immediately
-            // when it is executed.  This way the user can read it or not.
+            // when it is executed. This way the user can read it or not.
             if (_responseCode >= 400)
             {
                 ByteArrayOutputStream baStream = new ByteArrayOutputStream();
@@ -761,7 +823,7 @@ public class HttpURLConnectInternal
     {
         // Does not have a response body, even though the headers suggest
         // that it does
-        if ((_methodProperties & METHOD_PROP_IGNORE_RESPONSE_BODY) != 0)
+        if ((_actualMethodPropsSent & METHOD_PROP_IGNORE_RESPONSE_BODY) != 0)
         {
             _responseIsEmpty = true;
             return;
@@ -865,6 +927,18 @@ public class HttpURLConnectInternal
         _conOutStream.write(Util.CRLF_BYTES);
         _conOutStream.flush();
 
+        if (useDummyAuthContent())
+        {
+            if (_authenticationDummyContent != null)
+            {
+                _log.debug("writeRequest - writing dummy auth content: "
+                    + _authenticationDummyContent);
+                _conOutStream.write(_authenticationDummyContent.getBytes());
+                _conOutStream.flush();
+                _dummyAuthRequestSent = true;
+            }
+        }
+
         // Resets all of the read state so we are not looking
         // at stale state while processing the write
         resetBeforeRead();
@@ -885,10 +959,28 @@ public class HttpURLConnectInternal
     {
         StringBuffer buf = new StringBuffer();
 
-        buf.append(method);
+        _dummyAuthRequestSent = false;
+
+        // We are expecting to do authentication and not actually
+        // write the data
+        if (useDummyAuthContent() && _authenticationDummyMethod != null)
+        {
+            _log.debug("writeRequestLine - setting dummy auth method to: "
+                + _authenticationDummyMethod);
+            _actualMethodPropsSent = getMethodProperties(_authenticationDummyMethod);
+            _dummyAuthRequestSent = true;
+            buf.append(_authenticationDummyMethod);
+        }
+        else
+        {
+            // Reset this incase it was changed from a previous request
+            _actualMethodPropsSent = _methodProperties;
+            buf.append(method);
+        }
+
         buf.append(" ");
 
-        if ((_methodProperties & METHOD_PROP_REQ_LINE_URL) != 0)
+        if ((_actualMethodPropsSent & METHOD_PROP_REQ_LINE_URL) != 0)
         {
             if (_connection.isProxied() && !_connection.isTransparent())
             {
@@ -909,11 +1001,11 @@ public class HttpURLConnectInternal
                 }
             }
         }
-        else if ((_methodProperties & METHOD_PROP_REQ_LINE_STAR) != 0)
+        else if ((_actualMethodPropsSent & METHOD_PROP_REQ_LINE_STAR) != 0)
         {
             buf.append("*");
         }
-        else if ((_methodProperties & METHOD_PROP_REQ_LINE_HOST_PORT) != 0)
+        else if ((_actualMethodPropsSent & METHOD_PROP_REQ_LINE_HOST_PORT) != 0)
         {
             // Put the host/port junk on the front if required
             buf.append(_connection._hostPort);
@@ -931,8 +1023,13 @@ public class HttpURLConnectInternal
         _reqHeaders.write(_conOutStream);
     }
 
+    // Returns true if the request body was sent
     protected final boolean writeRequestBody() throws IOException
     {
+        // In authentication, the body has not been sent
+        if (useDummyAuthContent())
+            return false;
+
         // Nothing to write
         if (_contentLength == 0)
             return true;
@@ -1037,11 +1134,24 @@ public class HttpURLConnectInternal
             // there is a problem getting the response
             if (_responseCode >= HttpStatus.SC_OK)
             {
+                // We got an unexpected good response from a dummy
+                // authentication attempt, indicate we are authenticated and go
+                // around again to do the user's request
+                if (_responseCode <= 299 && _dummyAuthRequestSent)
+                {
+                    String str = "Retrying request because of positive reponse to dummy auth request";
+                    _log.debug(str);
+
+                    setAuthState(AS_AUTHENTICATED, _currentAuthType);
+                    _tryCount = 0;
+                    // IOException causes retry
+                    throw new IOException(str);
+                }
+
                 if (_responseCode >= 300 && readSeparateFromWrite())
                 {
                     // Doing a pipelined read, we don't own the connection and
-                    // got a retryable
-                    // response
+                    // got a retryable response
                     if (_pipelinedReading
                         && (_responseCode <= 399
                             || _responseCode == HttpStatus.SC_UNAUTHORIZED || _responseCode == HttpStatus.SC_PROXY_AUTHENTICATION_REQUIRED))
@@ -1138,8 +1248,8 @@ public class HttpURLConnectInternal
     protected void processPreemptiveAuth(int normalOrProxy)
         throws HttpException
     {
-        if (_forwardAuthCount == 1
-            || _authState[normalOrProxy] == AS_FINAL_AUTH_SENT)
+        if ((_forwardAuthCount == 1 || _authState[normalOrProxy] == AS_FINAL_AUTH_SENT)
+            && _authState[normalOrProxy] != AS_AUTHENTICATED)
         {
             if (_log.isDebugEnabled())
             {
@@ -1225,12 +1335,12 @@ public class HttpURLConnectInternal
                     connect();
 
                     // No retry allowed (POST)
-                    if ((_methodProperties & METHOD_PROP_RETRY) == 0)
+                    if ((_actualMethodPropsSent & METHOD_PROP_RETRY) == 0)
                     {
                         _connection.checkConnection();
                         // Don't allow any retries beyond this point
                         // for a POST as its not idempotent.
-                        _maxTries = 0;
+                        _maxTries = 1;
                     }
 
                     // Should we initiate authentication? This can happen
@@ -1650,7 +1760,7 @@ public class HttpURLConnectInternal
             return;
 
         // Default is GET
-        if ((_methodProperties & METHOD_PROP_UNSPECIFIED_METHOD) != 0)
+        if ((_actualMethodPropsSent & METHOD_PROP_UNSPECIFIED_METHOD) != 0)
         {
             _log.debug("Method not specified, setting to GET");
             setRequestMethodInternal(HTTP_METHOD_GET);
@@ -1697,29 +1807,24 @@ public class HttpURLConnectInternal
     // non-streaming case
     protected final void execute() throws IOException
     {
+        _log.debug("execute");
+
+        // Reset to the real method we want, this might have been changed
+        // earlier during authentication
+        _actualMethodPropsSent = _methodProperties;
+
         boolean streaming = isStreaming();
 
         // Handle the methods that allow data
         if (!streaming
             && _outStream != null
-            && ((_methodProperties & METHOD_PROP_CALCULATE_CONTENT_LEN) != 0))
+            && ((_actualMethodPropsSent & METHOD_PROP_CALCULATE_CONTENT_LEN) != 0))
         {
             byte[] outBytes = ((ByteArrayOutputStream)_outStream).toByteArray();
             setRequestBody(outBytes);
             if (_contentLength == UNINIT_CONTENT_LENGTH)
                 _contentLength = outBytes.length;
 
-            // TODO - in JRE 1.5 they removed this default, look this up
-            // to see what to do about this, removing this breaks the IIS
-            // tests for example
-            if ((_methodProperties & METHOD_PROP_SEND_CONTENT_TYPE) != 0)
-            {
-                if (_reqHeaders.get(HDR_CONTENT_TYPE) == null)
-                {
-                    _reqHeaders.set(HDR_CONTENT_TYPE,
-                                    "application/x-www-form-urlencoded");
-                }
-            }
         }
 
         try
@@ -2258,7 +2363,7 @@ public class HttpURLConnectInternal
                 _log.debug("HTTP/1.0 - Leave OPEN - Proxy Keep-Alive");
                 result = false;
             }
-            else if (((_methodProperties & METHOD_PROP_LEAVE_OPEN) != 0)
+            else if (((_actualMethodPropsSent & METHOD_PROP_LEAVE_OPEN) != 0)
                 && (_responseCode == HttpStatus.SC_OK))
             {
                 _log.debug("HTTP/1.0 - Leave OPEN - tunneling");

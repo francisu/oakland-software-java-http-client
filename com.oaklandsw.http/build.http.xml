@@ -96,7 +96,7 @@
 		<include name="com/oaklandsw/http/Cookie.java" />
 		<include name="com/oaklandsw/http/CookieContainer.java" />
 		<include name="com/oaklandsw/http/CookiePolicy.java" />
-		<include name="com/oaklandsw/http/ntlm/Ntlm.java" />
+		<!--<include name="com/oaklandsw/http/ntlm/Ntlm.java" />-->
       </fileset>
       </javadoc>
   </target>

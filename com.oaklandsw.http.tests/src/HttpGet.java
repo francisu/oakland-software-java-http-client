@@ -5,7 +5,6 @@ import java.net.URL;
 
 import org.apache.commons.logging.Log;
 
-import com.oaklandsw.http.HttpTestEnv;
 import com.oaklandsw.util.LogUtils;
 import com.oaklandsw.util.Util;
 
@@ -20,7 +19,7 @@ public class HttpGet
 
     public static final void main(String[] args) throws Exception
     {
-        HttpTestEnv.setUp();
+        System.setProperty("java.protocol.handler.pkgs", "com.oaklandsw");
 
         String urlStr;
         if (args.length == 0)

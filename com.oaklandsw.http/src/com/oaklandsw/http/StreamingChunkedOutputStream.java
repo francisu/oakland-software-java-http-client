@@ -67,11 +67,7 @@ public class StreamingChunkedOutputStream extends OutputStream
         {
             try
             {
-                // Write the end marker
-                _stream.write(ZERO, 0, ZERO.length);
-                _stream.write(Util.CRLF_BYTES, 0, Util.CRLF_BYTES.length);
-                _stream.write(Util.CRLF_BYTES, 0, Util.CRLF_BYTES.length);
-                _stream.flush();
+                writeEndMarker(_stream);
                 _urlCon.streamWriteFinished(HttpURLConnectInternal.OK);
             }
             catch (IOException ioe)
@@ -87,6 +83,15 @@ public class StreamingChunkedOutputStream extends OutputStream
                 super.close();
             }
         }
+
+    }
+
+    public static void writeEndMarker(OutputStream stream) throws IOException
+    {
+        stream.write(ZERO, 0, ZERO.length);
+        stream.write(Util.CRLF_BYTES, 0, Util.CRLF_BYTES.length);
+        stream.write(Util.CRLF_BYTES, 0, Util.CRLF_BYTES.length);
+        stream.flush();
 
     }
 

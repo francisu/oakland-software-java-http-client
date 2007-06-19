@@ -65,7 +65,7 @@
 				<include name="com/oaklandsw/http/Cookie.java" />
 				<include name="com/oaklandsw/http/CookieContainer.java" />
 				<include name="com/oaklandsw/http/CookiePolicy.java" />
-				<include name="com/oaklandsw/http/ntlm/Ntlm.java" />
+				<!--<include name="com/oaklandsw/http/ntlm/Ntlm.java" />-->
 			</fileset>
 		</javadoc>
 	</target>
@@ -208,7 +208,6 @@
 			<fileset dir="${basedir}">
 				<include name="README" />
 				<include name="*LICENSE" />
-				<exclude name="SOURCE_LICENSE" />
 				<include name="*.sample" />
 				<include name="${package.name}.jar" />
 			</fileset>
@@ -239,7 +238,6 @@
 			</zipfileset>
 			<zipfileset dir="${basedir}" includes="build.http.xml" fullpath="build.xml" />
 			<fileset dir="${basedir}">
-				<include name="SOURCE_LICENSE" />
 				<include name="README_SOURCE" />
 			</fileset>
 			<fileset dir="../com.oaklandsw.http.jars">

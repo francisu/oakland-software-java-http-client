@@ -8,6 +8,7 @@ import junit.framework.TestSuite;
 import com.oaklandsw.http.Credential;
 import com.oaklandsw.http.HttpURLConnection;
 import com.oaklandsw.http.PipelineTester;
+import com.oaklandsw.http.TestUserAgent;
 import com.oaklandsw.http.servlet.ParamServlet;
 import com.oaklandsw.util.LogUtils;
 
@@ -61,8 +62,8 @@ public class TestAuthType extends TestWebappBase
                                              boolean preemptive,
                                              int count) throws Exception
     {
+        TestUserAgent._type = TestUserAgent.GOOD;
         HttpURLConnection.setDefaultAuthenticationType(type);
-        HttpURLConnection.setPreemptiveAuthentication(preemptive);
         testPipeliningSimple(count);
     }
 
@@ -79,6 +80,13 @@ public class TestAuthType extends TestWebappBase
     public void testAuthenticationTypeSetNtlm() throws Exception
     {
         testAuthenticationTypeSet(Credential.AUTH_NTLM, !PREEMPTIVE, 0);
+    }
+
+    public void testAuthenticationTypeSetNtlmPost() throws Exception
+    {
+        TestUserAgent._type = TestUserAgent.GOOD;
+        HttpURLConnection.setDefaultAuthenticationType(Credential.AUTH_NTLM);
+        doGetLikeMethod("POST", CHECK_CONTENT);
     }
 
     public void testAuthenticationTypeSetBasic1p() throws Exception
@@ -116,32 +124,6 @@ public class TestAuthType extends TestWebappBase
         testAuthenticationTypeSet(Credential.AUTH_BASIC, PREEMPTIVE, 0);
     }
 
-    public void testAuthenticationTypeSetDigestPre() throws Exception
-    {
-        try
-        {
-            testAuthenticationTypeSet(Credential.AUTH_DIGEST, PREEMPTIVE, 0);
-            fail("Expected exception");
-        }
-        catch (IllegalStateException ex)
-        {
-            // OK
-        }
-    }
-
-    public void testAuthenticationTypeSetNtlmPre() throws Exception
-    {
-        try
-        {
-            testAuthenticationTypeSet(Credential.AUTH_DIGEST, PREEMPTIVE, 0);
-            fail("Expected exception");
-        }
-        catch (IllegalStateException ex)
-        {
-            // OK
-        }
-    }
-
     public void testAuthenticationTypeSetBasic1pPre() throws Exception
     {
         testAuthenticationTypeSet(Credential.AUTH_BASIC, PREEMPTIVE, 1);
@@ -162,8 +144,6 @@ public class TestAuthType extends TestWebappBase
         testAuthenticationTypeSetNtlm1p();
         testAuthenticationTypeSetNtlm5();
         testAuthenticationTypeSetBasicPre();
-        testAuthenticationTypeSetDigestPre();
-        testAuthenticationTypeSetNtlmPre();
         testAuthenticationTypeSetBasic1pPre();
         testAuthenticationTypeSetBasic5Pre();
     }

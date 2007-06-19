@@ -70,7 +70,6 @@ import com.oaklandsw.http.UserCredential;
 import com.oaklandsw.util.LogUtils;
 
 import junit.framework.Test;
-import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
 /**
@@ -81,7 +80,7 @@ import junit.framework.TestSuite;
  * @version $Id: LocalTestAuthenticator.java,v 1.17 2002/09/30 19:42:13 jsdever
  *          Exp $
  */
-public class LocalTestAuthenticator extends TestCase
+public class LocalTestAuthenticator extends HttpTestBase
 {
     private static final Log _log = LogUtils.makeLogger();
 
@@ -125,16 +124,15 @@ public class LocalTestAuthenticator extends TestCase
     // ------------------------------------------------------------------- Main
     public static void main(String args[])
     {
-        String[] testCaseName = { LocalTestAuthenticator.class.getName() };
-        junit.textui.TestRunner.main(testCaseName);
+        mainRun(suite(), args);
     }
 
     // ------------------------------------------------------- Utility Methods
 
     // We assume the web server is running
-    protected void setUp()
+    public void setUp() throws Exception
     {
-        HttpTestEnv.setUp();
+        super.setUp();
         // Get local credentials
         TestUserAgent._type = TestUserAgent.LOCAL;
         TestUserAgent._proxyType = TestUserAgent.LOCAL;
@@ -310,9 +308,8 @@ public class LocalTestAuthenticator extends TestCase
 
     public void testPreemptiveAuthorizationTrueNoCreds() throws Exception
     {
-        HttpURLConnection.setPreemptiveAuthentication(true);
         SimpleHttpMethod method = new SimpleHttpMethod();
-
+        method.setAuthenticationType(Credential.AUTH_BASIC);
         TestUserAgent._type = TestUserAgent.NULL;
         assertFalse(authenticateForTests(method,
                                          null,
@@ -321,8 +318,8 @@ public class LocalTestAuthenticator extends TestCase
 
     public void testPreemptiveAuthorizationTrueWithCreds() throws Exception
     {
-        HttpURLConnection.setPreemptiveAuthentication(true);
         SimpleHttpMethod method = new SimpleHttpMethod();
+        method.setAuthenticationType(Credential.AUTH_BASIC);
 
         assertTrue(authenticateForTests(method,
                                         null,
@@ -331,17 +328,6 @@ public class LocalTestAuthenticator extends TestCase
         String expected = "Basic "
             + new String(Base64.encode("username:password".getBytes()));
         assertEquals(expected, method.getRequestProperty("Authorization"));
-    }
-
-    public void testPreemptiveAuthorizationFalse() throws Exception
-    {
-        HttpURLConnection.setPreemptiveAuthentication(false);
-        SimpleHttpMethod method = new SimpleHttpMethod();
-
-        assertTrue(!authenticateForTests(method,
-                                         null,
-                                         HttpURLConnection.AUTH_NORMAL));
-        assertTrue(null == method.getRequestProperty("Authorization"));
     }
 
     // --------------------------------- Test Methods for Digest Authentication
@@ -411,7 +397,7 @@ public class LocalTestAuthenticator extends TestCase
                                         "Digest realm=\"realm1\"",
                                         HttpURLConnection.AUTH_NORMAL));
         assertTrue(null != method.getRequestProperty("Authorization"));
-        checkAuthorization("realm1", method.getName(), method
+        checkAuthorization("realm1", method.getRequestMethod(), method
                 .getRequestProperty("Authorization"));
     }
 
@@ -422,7 +408,7 @@ public class LocalTestAuthenticator extends TestCase
                                         "Digest realm=\"realm1\"",
                                         HttpURLConnection.AUTH_NORMAL));
         assertTrue(null != method.getRequestProperty("Authorization"));
-        checkAuthorization("realm1", method.getName(), method
+        checkAuthorization("realm1", method.getRequestMethod(), method
                 .getRequestProperty("Authorization"));
     }
 
@@ -434,7 +420,7 @@ public class LocalTestAuthenticator extends TestCase
                                             "Digest realm=\"realm1\"",
                                             HttpURLConnection.AUTH_NORMAL));
             assertTrue(null != method.getRequestProperty("Authorization"));
-            checkAuthorization("realm1", method.getName(), method
+            checkAuthorization("realm1", method.getRequestMethod(), method
                     .getRequestProperty("Authorization"));
         }
         {
@@ -443,7 +429,7 @@ public class LocalTestAuthenticator extends TestCase
                                             "Digest realm=\"realm2\"",
                                             HttpURLConnection.AUTH_NORMAL));
             assertTrue(null != method.getRequestProperty("Authorization"));
-            checkAuthorization("realm2", method.getName(), method
+            checkAuthorization("realm2", method.getRequestMethod(), method
                     .getRequestProperty("Authorization"));
         }
     }

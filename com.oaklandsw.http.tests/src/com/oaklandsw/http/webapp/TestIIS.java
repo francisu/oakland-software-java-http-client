@@ -81,18 +81,21 @@ public class TestIIS extends HttpTestBase
         assertTrue("Incorrect reply", reply.indexOf("</HTML>") >= 0);
     }
 
-    public void test100Post() throws MalformedURLException, IOException
+    public void test100PostNormal() throws MalformedURLException, IOException
     {
         URL url = new URL(HttpTestEnv.TEST_URL_IIS
             + HttpTestEnv.TEST_URL_APP_IIS_FORM);
         int response = 0;
 
+        String str = "lname=lastName123&fname=firstName123";
+        
         _urlCon = (HttpURLConnection)url.openConnection();
-
+        _urlCon.setAuthenticationType(Credential.AUTH_NTLM);
+        setupStreaming(_urlCon, str.length());
         _urlCon.setRequestMethod("POST");
         _urlCon.setDoOutput(true);
         OutputStream outStr = _urlCon.getOutputStream();
-        outStr.write("lname=lastName123&fname=firstName123".getBytes("ASCII"));
+        outStr.write(str.getBytes("ASCII"));
         outStr.close();
         response = _urlCon.getResponseCode();
         assertEquals(200, response);
@@ -107,7 +110,7 @@ public class TestIIS extends HttpTestBase
 
     public void test110PostClose() throws MalformedURLException, IOException
     {
-        test100Post();
+        test100PostNormal();
         _urlCon.disconnect();
     }
 
@@ -117,9 +120,25 @@ public class TestIIS extends HttpTestBase
     {
         test110PostClose();
         test110PostClose();
-        test100Post();
+        test100PostNormal();
         test110PostClose();
-        test100Post();
+        test100PostNormal();
+    }
+
+    public void test130PostChunked() throws MalformedURLException, IOException
+    {
+        _streamingType = STREAM_CHUNKED;
+        HttpURLConnection.setDefaultAuthenticationType(Credential.AUTH_NTLM);
+        test100PostNormal();
+        _streamingType = STREAM_NONE;
+    }
+
+    public void test130PostFixed() throws MalformedURLException, IOException
+    {
+        _streamingType = STREAM_FIXED;
+        HttpURLConnection.setDefaultAuthenticationType(Credential.AUTH_NTLM);
+        test100PostNormal();
+        _streamingType = STREAM_NONE;
     }
 
     public void test200Get() throws MalformedURLException, IOException
@@ -336,11 +355,11 @@ public class TestIIS extends HttpTestBase
     public void test400MultiGetPost() throws MalformedURLException, IOException
     {
         test200Get();
-        test100Post();
+        test100PostNormal();
         test200Get();
-        test100Post();
+        test100PostNormal();
         test200Get();
-        test100Post();
+        test100PostNormal();
     }
 
     public void allTestMethods() throws Exception
@@ -352,9 +371,9 @@ public class TestIIS extends HttpTestBase
         if (false && _in10ProxyTest)
             LogUtils.logFile("/home/francis/log4j10proxy.txt");
 
-        // LogUtils.logWireOnly();
+       //LogUtils.logWireOnly();
 
-        test100Post();
+        test100PostNormal();
         test110PostClose();
         test120MultiPostClose();
         test200Get();

@@ -73,7 +73,6 @@ public class TestBasicAuth extends TestWebappBase
 
     public void testSimpleAuthPost() throws Exception
     {
-
         TestUserAgent._type = TestUserAgent.GOOD;
         URL url = new URL(_urlBase + BasicAuthServlet.NAME);
         int response = 0;

@@ -110,10 +110,6 @@ import com.oaklandsw.util.Util14Controller;
  * <code>com.oaklandsw.http.pipelining</code>- set to any value to enable
  * pipelining requests. The default is not set. See setDefaultPipelining().
  * <p>
- * <code>com.oaklandsw.http.preemptiveAuthentication</code>- set to any value
- * to enable preemtive authentication. The default is not set. See
- * setPreemptiveAuthentication().
- * <p>
  * <code>com.oaklandsw.http.authenticationType</code>- used to indicate a
  * preferred authentication mode for pipelining or streaming. Set to one of
  * "basic", "digest", or "ntlm". The default is not set. See
@@ -310,6 +306,12 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
 
     protected int                          _methodProperties;
 
+    /**
+     * The properties for the actual method sent; the method may be different
+     * than the requested method during NTLM authentication.
+     */
+    protected int                          _actualMethodPropsSent;
+
     protected boolean                      _followRedirects;
 
     /** Whether or not I should automatically processs authentication. */
@@ -425,6 +427,19 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
     protected int                          _connectionTimeout;
     protected int                          _requestTimeout;
 
+    /**
+     * Used during NTLM authentication during streaming to provide content for
+     * the requests that we know are going to be rejected during the
+     * authentication process. This allows authentication to proceed with
+     * streaming. If this is not specified, an empty message is sent.
+     */
+    protected String                       _authenticationDummyContent;
+
+    /**
+     * The method used to send this content (see above).
+     */
+    protected String                       _authenticationDummyMethod;
+
     public static final int                PIPE_NONE                         = 0x00;
 
     /**
@@ -492,11 +507,6 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
 
     private static int                     DEFAULT_RETRY_INTERVAL            = 50;
     protected static int                   _retryInterval                    = DEFAULT_RETRY_INTERVAL;
-
-    private static boolean                 DEFAULT_PREEMPTIVE_AUTHENTICATION = false;
-    protected static boolean               _defaultPreemptiveAuthentication  = DEFAULT_PREEMPTIVE_AUTHENTICATION;
-
-    protected boolean                      _preemptiveAuthentication;
 
     private static int                     DEFAULT_AUTHENTICATION_TYPE       = 0;
     protected static int                   _defaultAuthenticationType;
@@ -1000,7 +1010,7 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
         setInstanceFollowRedirects(java.net.HttpURLConnection
                 .getFollowRedirects());
 
-        _methodProperties = METHOD_PROP_UNSPECIFIED_METHOD;
+        _actualMethodPropsSent = _methodProperties = METHOD_PROP_UNSPECIFIED_METHOD;
 
         _reqHeaders = new Headers();
         _respHeaders = new Headers();
@@ -1024,7 +1034,6 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
         }
 
         _userAgent = _defaultUserAgent;
-        _preemptiveAuthentication = _defaultPreemptiveAuthentication;
 
         _connectionTimeout = _defaultConnectionTimeout;
         _requestTimeout = _defaultRequestTimeout;
@@ -1040,6 +1049,8 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
         _callback = _defaultCallback;
         _authenticationType[AUTH_NORMAL] = _defaultAuthenticationType;
         _authenticationType[AUTH_PROXY] = _defaultProxyAuthenticationType;
+        _authenticationDummyContent = null;
+        _authenticationDummyMethod = HTTP_METHOD_HEAD;
         _proxyHost = _connManager.getProxyHost();
         _proxyPort = _connManager.getProxyPort();
         _proxyUser = _connManager.getProxyUser();
@@ -1052,7 +1063,6 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
         }
 
         _connManager.recordCount(HttpConnectionManager.COUNT_ATTEMPTED);
-
     }
 
     /**
@@ -1104,7 +1114,7 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
         // we don't want to restrict the method name to anything.
         // super.setRequestMethod(meth);
 
-        _methodProperties = getMethodProperties(meth);
+        _actualMethodPropsSent = _methodProperties = getMethodProperties(meth);
         this.method = meth;
     }
 
@@ -1186,7 +1196,7 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
      */
     public final boolean getInstanceFollowRedirects()
     {
-        if ((_methodProperties & METHOD_PROP_REDIRECT) != 0)
+        if ((_actualMethodPropsSent & METHOD_PROP_REDIRECT) != 0)
             return _followRedirects;
 
         // Don't allow redirects any other time.
@@ -1215,7 +1225,7 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
             return _outStream;
 
         // Switch to post method - be compatible with JDK
-        if ((_methodProperties & (METHOD_PROP_SWITCH_TO_POST | METHOD_PROP_UNSPECIFIED_METHOD)) != 0)
+        if ((_actualMethodPropsSent & (METHOD_PROP_SWITCH_TO_POST | METHOD_PROP_UNSPECIFIED_METHOD)) != 0)
         {
             setRequestMethodInternal(HTTP_METHOD_POST);
         }
@@ -2430,7 +2440,7 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
      * <p>
      * This is by default disabled.
      * 
-     * @see #setConnectionPreemptiveAuthentication(boolean)
+     * @deprecated
      * @param enabled
      *            true if enabled
      */
@@ -2438,47 +2448,23 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
     {
         if (_log.isDebugEnabled())
             _log.debug("setPreemptiveAuthentication: " + enabled);
-        _defaultPreemptiveAuthentication = enabled;
+        throw new IllegalArgumentException("This method is no longer supported.  "
+            + "For preemptive authentication, use set[Proxy]AuthType().  Basic and Digest "
+            + "authentication are always done preemptively.  NTLM cannot be done preemptively.");
     }
 
     /**
      * Get the value of preemptive authentication enablement for all
      * connections.
      * 
-     * @see #isConnectionPreemptiveAuthentication()
+     * @deprecated
      * @return true if preemptive authentication is enabled.
      */
     public static boolean getPreemptiveAuthentication()
     {
-        return _defaultPreemptiveAuthentication;
-    }
-
-    /**
-     * Enable preemptive authentication. Preemptive authentication is used with
-     * basic and digest authentication modes to send the authentication
-     * credentials on an HTTP request without being prompted for them by the
-     * server. Doing this saves an extra round-trip to the server.
-     * <p>
-     * This is by default disabled.
-     * 
-     * @param enabled
-     *            true if enabled
-     */
-    public void setConnectionPreemptiveAuthentication(boolean enabled)
-    {
-        if (_log.isDebugEnabled())
-            _log.debug("setConnectionPreemptiveAuthentication: " + enabled);
-        _preemptiveAuthentication = enabled;
-    }
-
-    /**
-     * Get the value of preemptive authentication enablement.
-     * 
-     * @return true if preemptive authentication is enabled.
-     */
-    public boolean isConnectionPreemptiveAuthentication()
-    {
-        return _preemptiveAuthentication;
+        throw new IllegalArgumentException("This method is no longer supported.  "
+            + "For preemptive authentication, use set[Proxy]AuthType().  Basic and Digest "
+            + "authentication are always done preemptively.  NTLM cannot be done preemptively.");
     }
 
     protected static void checkAuthenticationType(int type)
@@ -2629,6 +2615,26 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
     {
         checkAuthenticationType(authenticationType);
         _authenticationType[AUTH_PROXY] = authenticationType;
+    }
+
+    public String getAuthenticationDummyContent()
+    {
+        return _authenticationDummyContent;
+    }
+
+    public void setAuthenticationDummyContent(String authenticationDummyContent)
+    {
+        _authenticationDummyContent = authenticationDummyContent;
+    }
+
+    public String getAuthenticationDummyMethod()
+    {
+        return _authenticationDummyMethod;
+    }
+
+    public void setAuthenticationDummyMethod(String authenticationDummyMethod)
+    {
+        _authenticationDummyMethod = authenticationDummyMethod;
     }
 
     /**
@@ -3465,7 +3471,7 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
     {
         _urlConReleased = false;
     }
-    
+
     protected abstract void execute() throws HttpException, IOException;
 
     protected abstract void executeStart() throws HttpException, IOException;

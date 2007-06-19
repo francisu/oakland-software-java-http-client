@@ -145,6 +145,8 @@ public class OaklandHTTPTransportSender2 extends AbstractHandler
                 throw new AxisFault("Invalid protocol for HTTP transport: "
                     + _protocol);
             }
+            if (_log.isDebugEnabled())
+                _log.debug("init - setting PROTOCOL: " + _protocol);
         }
 
         Parameter transferEncoding = transportOut
@@ -155,6 +157,8 @@ public class OaklandHTTPTransportSender2 extends AbstractHandler
                     .equals(transferEncoding.getValue()))
         {
             _chunked = true;
+            if (_log.isDebugEnabled())
+                _log.debug("init - setting chunked");
         }
 
         // Get the timeout values from the configuration
@@ -169,12 +173,17 @@ public class OaklandHTTPTransportSender2 extends AbstractHandler
             {
                 _soTimeout = Integer.parseInt((String)tempSoTimeoutParam
                         .getValue());
+                if (_log.isDebugEnabled())
+                    _log.debug("init - setting SO_TIMEOUT: " + _soTimeout);
             }
 
             if (tempConnTimeoutParam != null)
             {
                 _connectionTimeout = Integer
                         .parseInt((String)tempConnTimeoutParam.getValue());
+                if (_log.isDebugEnabled())
+                    _log.debug("init - setting CONNECTION_TIMEOUT: "
+                        + _connectionTimeout);
             }
         }
         catch (NumberFormatException nfe)
@@ -454,6 +463,23 @@ public class OaklandHTTPTransportSender2 extends AbstractHandler
                 else
                     urlCon.setDoAuthentication(false);
             }
+
+            // Setup web services for dummy authentication startup for NTLM
+            if (msgContext.isSOAP11())
+            {
+                urlCon
+                        .setAuthenticationDummyContent("<?xml version='1.0' encoding='UTF-8'?>"
+                            + "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\">"
+                            + "<soapenv:Body></soapenv:Body></soapenv:Envelope>");
+            }
+            else
+            {
+                urlCon
+                        .setAuthenticationDummyContent("<?xml version='1.0' encoding='UTF-8'?>"
+                            + "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\">"
+                            + "<soapenv:Body></soapenv:Body></soapenv:Envelope>");
+            }
+            urlCon.setAuthenticationDummyMethod(urlCon.getRequestMethod());
 
             // Content type
             String contentType = messageFormatter
@@ -1008,9 +1034,6 @@ public class OaklandHTTPTransportSender2 extends AbstractHandler
                 // We always retry automatically
                 // if(authenticator.isAllowedRetry())
 
-                urlCon.setConnectionPreemptiveAuthentication(authenticator
-                        .getPreemptiveAuthentication());
-
                 // Don't override the default specification if they are using
                 // the HttpUserAgent mechanism -- see the configuration
                 // documentation
@@ -1028,6 +1051,12 @@ public class OaklandHTTPTransportSender2 extends AbstractHandler
                     {
                         /* Credentials for Digest and Basic Authentication */
                         ua._credential = new UserCredential(username, password);
+                    }
+
+                    if (_log.isDebugEnabled())
+                    {
+                        _log.debug("Using credential from Axis2: "
+                            + ua._credential);
                     }
 
                     urlCon.setUserAgent(ua);

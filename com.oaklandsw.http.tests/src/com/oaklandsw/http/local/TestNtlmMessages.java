@@ -6,15 +6,14 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 
 import junit.framework.Test;
-import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
-import com.oaklandsw.http.HttpTestEnv;
+import com.oaklandsw.http.HttpTestBase;
 import com.oaklandsw.http.ntlm.AuthenticateMessage;
 import com.oaklandsw.http.ntlm.ChallengeMessage;
 import com.oaklandsw.http.ntlm.NegotiateMessage;
 
-public class TestNtlmMessages extends TestCase
+public class TestNtlmMessages extends HttpTestBase
 {
 
     public TestNtlmMessages(String name)
@@ -24,13 +23,13 @@ public class TestNtlmMessages extends TestCase
 
     public static void main(String[] args)
     {
-        junit.textui.TestRunner.run(suite());
+        mainRun(suite(), args);
     }
 
     // We assume the web server is running
-    protected void setUp()
+    public void setUp() throws Exception
     {
-        HttpTestEnv.setUp();
+        super.setUp();
     }
 
     public static Test suite()

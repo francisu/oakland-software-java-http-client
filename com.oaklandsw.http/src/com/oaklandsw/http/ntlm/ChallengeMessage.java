@@ -51,11 +51,11 @@ public class ChallengeMessage extends Message
         if (_log.isDebugEnabled())
         {
             _log.debug("setupOutgoing: nonce: " + HexString.dump(nonce));
-            _log.debug("targetInfo: \n" + HexString.dump(targetInfo));
-            _log.debug("targetName: \n" + targetName);
+            _log.debug("targetInfo (defaultTargetInfo): \n" + HexString.dump(targetInfo));
+            _log.debug("targetName (defaultDomain): \n" + targetName);
         }
 
-        setFlags(Message.NEGOTIATE_NTLM | Message.NEGOTIATE_NTLM2);
+        setFlags(Message.NEGOTIATE_NTLM);
 
         // target is server or domain
         setNonce(nonce);

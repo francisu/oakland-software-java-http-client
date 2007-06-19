@@ -1,6 +1,5 @@
 package com.oaklandsw.http;
 
-import java.security.Security;
 import java.io.File;
 
 /**
@@ -115,6 +114,16 @@ public class HttpTestEnv
     public static String       TEST_URL_APP_IIS_FORM             = "Form_JScript.asp";
     public static String       TEST_URL_APP_IIS_QUERY_STRING     = "QueryString_JScript.asp";
 
+    // Officeshare iceweb
+    public static String       TEST_ICEWEB_USER                     = "demo";
+    public static String       TEST_ICEWEB_PASSWORD                 = "demo";
+    public static String       TEST_ICEWEB_DOMAIN                   = "icemail";
+
+    // XsoLive
+    public static String       TEST_XSO_USER                     = "test";
+    public static String       TEST_XSO_PASSWORD                 = "Xsolive2007";
+    public static String       TEST_XSO_DOMAIN                   = "demo";
+
     // Page on local webserver
     public static String       TEST_WEBSERVER_PAGE               = "/int/index.html";
 
@@ -219,32 +228,5 @@ public class HttpTestEnv
     public static boolean      GETSERVERCERT_ENABLED             = System
                                                                          .getProperty("java.version")
                                                                          .compareTo("1.4.0") >= 0;
-
-    public static void setUp()
-    {
-        // If nothing specified assume oaklandsw implementation
-        if (System.getProperty("inno") == null
-            && System.getProperty("sun") == null)
-        {
-            System.setProperty("java.protocol.handler.pkgs", "com.oaklandsw");
-
-            com.oaklandsw.http.HttpURLConnection
-                    .setDefaultUserAgent(new com.oaklandsw.http.TestUserAgent());
-        }
-        /***********************************************************************
-         * else if (System.getProperty("inno") != null) {
-         * HTTPClient.HTTPConnection.removeDefaultModule
-         * (HTTPClient.CookieModule.class); com.oaklandsw.ntlm.Ntlm.init(new
-         * com.oaklandsw.ntlm.TestUserAgent()); //System.out.println("Using
-         * inno"); }
-         **********************************************************************/
-        else
-        {
-            System.out.println("Using sun");
-        }
-
-        Security.addProvider(new com.sun.net.ssl.internal.ssl.Provider());
-        // HTTPClient.Log.setLogging(-1, true);
-    }
 
 }

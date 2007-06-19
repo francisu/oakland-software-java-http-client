@@ -14,10 +14,14 @@ import com.oaklandsw.http.HttpURLConnection;
 
 public class Ntlm
 {
-    // For testing
-    public static boolean       _forceNtlmV2 = false;
+    public static final int     FORCE_NONE = 0;
+    public static final int     FORCE_V1   = 1;
+    public static final int     FORCE_V2   = 2;
 
-    private static final String ENCODING     = "8859_1";
+    // For testing
+    public static int           _forceNtlmType;
+
+    private static final String ENCODING   = "8859_1";
 
     /**
      * Returns the response for the given message.
@@ -56,7 +60,7 @@ public class Ntlm
             challengeMsg.decode();
 
             // Do checking of the challenge flags
-            if (_forceNtlmV2)
+            if (_forceNtlmType == FORCE_V2)
             {
                 long expectedFlags = Message.NEGOTIATE_NTLM
                     | Message.NEGOTIATE_TARGET_INFO;

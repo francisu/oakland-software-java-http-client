@@ -116,8 +116,7 @@ public class Authenticator
         String respHeader = RESP_HEADERS[normalOrProxy];
 
         int authenticationType = urlCon.getAuthenticationType(normalOrProxy);
-        boolean preemptive = urlCon.isConnectionPreemptiveAuthentication()
-            || authenticationType == Credential.AUTH_BASIC;
+        boolean preemptive = authenticationType == Credential.AUTH_BASIC;
 
         // If there is no challenge, attempt to use preemptive authorization
         if (reqAuthenticators == null)
@@ -326,6 +325,16 @@ public class Authenticator
         return serverDigest;
     }
 
+    private static void checkCredential(UserCredential cred)
+    {
+        if (null == cred || cred._user == null || cred._password == null)
+        {
+            throw new IllegalArgumentException("Either no credential available or the "
+                + "credential supplied is missing a username or password for "
+                + "authentication.");
+        }
+    }
+
     private static final String basic(String realm,
                                       HttpURLConnectInternal urlCon,
                                       int normalOrProxy) throws HttpException
@@ -341,17 +350,12 @@ public class Authenticator
         }
         catch (ClassCastException e)
         {
-            throw new HttpException("UserCredential required for "
+            throw new IllegalArgumentException("UserCredential required for "
                 + "Basic authentication.");
         }
 
-        if (null == cred)
-        {
-            throw new HttpException("No credentials available for the Basic "
-                + "authentication realm \'"
-                + realm
-                + "\'");
-        }
+        checkCredential(cred);
+
         String authString = cred.getUser() + ":" + cred.getPassword();
         urlCon.setCredentialSent(Credential.AUTH_BASIC,
                                  normalOrProxy,
@@ -387,15 +391,11 @@ public class Authenticator
         }
         catch (ClassCastException e)
         {
-            throw new HttpException("NtlmCredential required "
+            throw new IllegalArgumentException("NtlmCredential required "
                 + "for NTLM authentication.");
         }
 
-        if (null == cred)
-        {
-            throw new HttpException("No credentials available for NTLM "
-                + "authentication.");
-        }
+        checkCredential(cred);
 
         int newAuthState;
 
@@ -445,18 +445,13 @@ public class Authenticator
                 + "Digest authentication.");
         }
 
-        if (null == cred)
-        {
-            throw new HttpException("No credentials available for the Digest "
-                + "authentication realm \""
-                + realm
-                + "\"/");
-        }
+        checkCredential(cred);
+
         Map headers = getHTTPDigestCredentials(challenge);
         headers.put("cnonce", "\"" + createCnonce() + "\"");
         headers.put("nc", "00000001");
         headers.put("uri", urlCon.getPath());
-        headers.put("methodname", urlCon.getName());
+        headers.put("methodname", urlCon.getRequestMethod());
 
         String digest = createDigest(cred.getUser(),
                                      cred.getPassword(),
