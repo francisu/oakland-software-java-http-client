@@ -115,11 +115,13 @@ public class HttpTestEnv
     public static String       TEST_URL_APP_IIS_QUERY_STRING     = "QueryString_JScript.asp";
 
     // Officeshare iceweb
-    public static String       TEST_ICEWEB_USER                     = "demo";
-    public static String       TEST_ICEWEB_PASSWORD                 = "demo";
-    public static String       TEST_ICEWEB_DOMAIN                   = "icemail";
+    public static String       TEST_ICEWEB_URL                   = "http://sharepoint.iceweb.com/sites/demo/_vti_bin/Lists.asmx";
+    public static String       TEST_ICEWEB_USER                  = "demo";
+    public static String       TEST_ICEWEB_PASSWORD              = "demo";
+    public static String       TEST_ICEWEB_DOMAIN                = "icemail";
 
     // XsoLive
+    public static String       TEST_XSOLIVE_URL                  = "http://74.218.125.36/_vti_bin/Lists.asmx";
     public static String       TEST_XSO_USER                     = "test";
     public static String       TEST_XSO_PASSWORD                 = "Xsolive2007";
     public static String       TEST_XSO_DOMAIN                   = "demo";

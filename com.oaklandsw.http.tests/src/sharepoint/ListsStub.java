@@ -492,12 +492,10 @@
                         // we cannot intantiate the class - throw the original Axis fault
                         throw f;
                     }
-                }else{
-                    throw f;
                 }
-            }else{
                 throw f;
             }
+            throw f;
         }
         }
             
@@ -3517,7 +3515,6 @@
         */
         public static NewFields_type26 parse(javax.xml.stream.XMLStreamReader reader) throws java.lang.Exception{
             NewFields_type26 object = new NewFields_type26();
-            int event;
             try {
                 
                 while (!reader.isStartElement() && !reader.isEndElement())
@@ -3815,7 +3812,6 @@
         */
         public static NewDocument_type41 parse(javax.xml.stream.XMLStreamReader reader) throws java.lang.Exception{
             NewDocument_type41 object = new NewDocument_type41();
-            int event;
             try {
                 
                 while (!reader.isStartElement() && !reader.isEndElement())
@@ -4113,7 +4109,6 @@
         */
         public static UpdateFields_type27 parse(javax.xml.stream.XMLStreamReader reader) throws java.lang.Exception{
             UpdateFields_type27 object = new UpdateFields_type27();
-            int event;
             try {
                 
                 while (!reader.isStartElement() && !reader.isEndElement())
@@ -4455,7 +4450,6 @@
         */
         public static AddAttachmentResponse parse(javax.xml.stream.XMLStreamReader reader) throws java.lang.Exception{
             AddAttachmentResponse object = new AddAttachmentResponse();
-            int event;
             try {
                 
                 while (!reader.isStartElement() && !reader.isEndElement())
@@ -4736,7 +4730,6 @@
         */
         public static Guid parse(javax.xml.stream.XMLStreamReader reader) throws java.lang.Exception{
             Guid object = new Guid();
-            int event;
             try {
                 
                 while (!reader.isStartElement() && !reader.isEndElement())
@@ -5000,7 +4993,6 @@
         */
         public static UpdateFields_type19 parse(javax.xml.stream.XMLStreamReader reader) throws java.lang.Exception{
             UpdateFields_type19 object = new UpdateFields_type19();
-            int event;
             try {
                 
                 while (!reader.isStartElement() && !reader.isEndElement())
@@ -5531,7 +5523,6 @@
         */
         public static AddListFromFeature parse(javax.xml.stream.XMLStreamReader reader) throws java.lang.Exception{
             AddListFromFeature object = new AddListFromFeature();
-            int event;
             try {
                 
                 while (!reader.isStartElement() && !reader.isEndElement())
@@ -6159,7 +6150,6 @@
         */
         public static AddAttachment parse(javax.xml.stream.XMLStreamReader reader) throws java.lang.Exception{
             AddAttachment object = new AddAttachment();
-            int event;
             try {
                 
                 while (!reader.isStartElement() && !reader.isEndElement())
@@ -6468,7 +6458,6 @@
         */
         public static DeleteAttachmentResponse parse(javax.xml.stream.XMLStreamReader reader) throws java.lang.Exception{
             DeleteAttachmentResponse object = new DeleteAttachmentResponse();
-            int event;
             try {
                 
                 while (!reader.isStartElement() && !reader.isEndElement())
@@ -6734,7 +6723,6 @@
         */
         public static QueryOptions_type12 parse(javax.xml.stream.XMLStreamReader reader) throws java.lang.Exception{
             QueryOptions_type12 object = new QueryOptions_type12();
-            int event;
             try {
                 
                 while (!reader.isStartElement() && !reader.isEndElement())
@@ -7135,7 +7123,6 @@
         */
         public static UpdateListItems parse(javax.xml.stream.XMLStreamReader reader) throws java.lang.Exception{
             UpdateListItems object = new UpdateListItems();
-            int event;
             try {
                 
                 while (!reader.isStartElement() && !reader.isEndElement())
@@ -7432,7 +7419,6 @@
         */
         public static GetListContentTypesResult_type2 parse(javax.xml.stream.XMLStreamReader reader) throws java.lang.Exception{
             GetListContentTypesResult_type2 object = new GetListContentTypesResult_type2();
-            int event;
             try {
                 
                 while (!reader.isStartElement() && !reader.isEndElement())
@@ -7730,7 +7716,6 @@
         */
         public static DeleteContentTypeResult_type9 parse(javax.xml.stream.XMLStreamReader reader) throws java.lang.Exception{
             DeleteContentTypeResult_type9 object = new DeleteContentTypeResult_type9();
-            int event;
             try {
                 
                 while (!reader.isStartElement() && !reader.isEndElement())
@@ -8028,7 +8013,6 @@
         */
         public static ViewFields_type35 parse(javax.xml.stream.XMLStreamReader reader) throws java.lang.Exception{
             ViewFields_type35 object = new ViewFields_type35();
-            int event;
             try {
                 
                 while (!reader.isStartElement() && !reader.isEndElement())
@@ -8343,7 +8327,6 @@
         */
         public static GetListItemChangesSinceTokenResponse parse(javax.xml.stream.XMLStreamReader reader) throws java.lang.Exception{
             GetListItemChangesSinceTokenResponse object = new GetListItemChangesSinceTokenResponse();
-            int event;
             try {
                 
                 while (!reader.isStartElement() && !reader.isEndElement())
@@ -9046,7 +9029,6 @@
         */
         public static CreateContentType parse(javax.xml.stream.XMLStreamReader reader) throws java.lang.Exception{
             CreateContentType object = new CreateContentType();
-            int event;
             try {
                 
                 while (!reader.isStartElement() && !reader.isEndElement())
@@ -9396,7 +9378,6 @@
         */
         public static Contains_type15 parse(javax.xml.stream.XMLStreamReader reader) throws java.lang.Exception{
             Contains_type15 object = new Contains_type15();
-            int event;
             try {
                 
                 while (!reader.isStartElement() && !reader.isEndElement())
@@ -9711,7 +9692,6 @@
         */
         public static AddDiscussionBoardItemResponse parse(javax.xml.stream.XMLStreamReader reader) throws java.lang.Exception{
             AddDiscussionBoardItemResponse object = new AddDiscussionBoardItemResponse();
-            int event;
             try {
                 
                 while (!reader.isStartElement() && !reader.isEndElement())

@@ -47,6 +47,9 @@ public class TestAxis2 extends TestWebappBase
     protected String                  _user;
     protected String                  _password;
 
+    // True if SOAP 1.1 is used, false if SOAP 1.2 is used
+    protected boolean                 _soap11;
+
     protected ServiceContext          _serviceContext;
     protected TransportOutDescription _transportOut;
     protected AxisConfiguration       _axisConfig;
@@ -85,6 +88,7 @@ public class TestAxis2 extends TestWebappBase
         super.tearDown();
         _axisConfig = null;
         _serviceClient = null;
+        _soap11 = false;
     }
 
     protected TransportOutDescription setupOaklandXport(Options opt,
@@ -306,7 +310,7 @@ public class TestAxis2 extends TestWebappBase
     public void testSharepointIcewebGood() throws Exception
     {
         TestUserAgent._type = TestUserAgent.OFFICESHARE_ICEWEB;
-        String output = invokeService("http://sharepoint.iceweb.com/sites/demo/_vti_bin/Lists.asmx",
+        String output = invokeService(HttpTestEnv.TEST_ICEWEB_URL,
                                       "http://schemas.microsoft.com/sharepoint/soap/",
                                       "GetListCollection",
                                       new String[] {});
@@ -319,7 +323,7 @@ public class TestAxis2 extends TestWebappBase
     {
         TestUserAgent._type = TestUserAgent.OFFICESHARE_ICEWEB;
 
-        ListsStub ls = new ListsStub("http://sharepoint.iceweb.com/sites/demo/_vti_bin/Lists.asmx");
+        ListsStub ls = new ListsStub(HttpTestEnv.TEST_ICEWEB_URL);
 
         ServiceClient client = ls._getServiceClient();
         Options opt = client.getOptions();
@@ -331,7 +335,8 @@ public class TestAxis2 extends TestWebappBase
 
         // System.out.println(resp);
         // System.out.println(HexString.dump(output.getBytes()));
-        // assertContains(output, "GetListCollectionResponse");
+        assertContains(resp.getGetListCollectionResult().getExtraElement()
+                .toString(), "DefaultViewUrl");
     }
 
     public void testSharepointGoodStubChunked(String url,
@@ -345,13 +350,16 @@ public class TestAxis2 extends TestWebappBase
         com.oaklandsw.http.HttpURLConnection
                 .setDefaultAuthenticationType(Credential.AUTH_NTLM);
 
-        ListsStub ls = new ListsStub("http://sharepoint.iceweb.com/sites/demo/_vti_bin/Lists.asmx");
+        ListsStub ls = new ListsStub(HttpTestEnv.TEST_ICEWEB_URL);
 
         ServiceClient client = ls._getServiceClient();
         Options opt = client.getOptions();
         opt.setTimeOutInMilliSeconds(30000);
-        opt
-                .setSoapVersionURI(org.apache.axiom.soap.SOAP11Constants.SOAP_ENVELOPE_NAMESPACE_URI);
+        if (_soap11)
+        {
+            opt
+                    .setSoapVersionURI(org.apache.axiom.soap.SOAP11Constants.SOAP_ENVELOPE_NAMESPACE_URI);
+        }
 
         AxisConfiguration ac = client.getAxisService().getAxisConfiguration();
         TransportOutDescription to = setupOaklandXport(opt, ac);
@@ -374,14 +382,27 @@ public class TestAxis2 extends TestWebappBase
         ListsStub.GetListCollection req = new ListsStub.GetListCollection();
         ListsStub.GetListCollectionResponse resp = ls.GetListCollection(req);
 
+        assertContains(resp.getGetListCollectionResult().getExtraElement()
+                .toString(), "DefaultViewUrl");
         // System.out.println(resp);
         // System.out.println(HexString.dump(output.getBytes()));
         // assertContains(output, "GetListCollectionResponse");
     }
 
-    public void testSharepointIcewebGoodStubChunked() throws Exception
+    public void testSharepointIcewebGoodStubChunked11() throws Exception
     {
-        testSharepointGoodStubChunked("http://sharepoint.iceweb.com/sites/demo/_vti_bin/Lists.asmx",
+        _soap11 = true;
+        testSharepointGoodStubChunked(HttpTestEnv.TEST_ICEWEB_URL,
+                                      TestUserAgent.OFFICESHARE_ICEWEB,
+                                      HttpTestEnv.TEST_ICEWEB_DOMAIN,
+                                      HttpTestEnv.TEST_ICEWEB_USER,
+                                      HttpTestEnv.TEST_ICEWEB_PASSWORD);
+    }
+
+    public void testSharepointIcewebGoodStubChunked12() throws Exception
+    {
+        _soap11 = false;
+        testSharepointGoodStubChunked(HttpTestEnv.TEST_ICEWEB_URL,
                                       TestUserAgent.OFFICESHARE_ICEWEB,
                                       HttpTestEnv.TEST_ICEWEB_DOMAIN,
                                       HttpTestEnv.TEST_ICEWEB_USER,
@@ -390,7 +411,7 @@ public class TestAxis2 extends TestWebappBase
 
     public void testSharepointXsoGoodStubChunked() throws Exception
     {
-        testSharepointGoodStubChunked("http://74.218.125.36/_vti_bin/Lists.asmx",
+        testSharepointGoodStubChunked(HttpTestEnv.TEST_XSOLIVE_URL,
                                       TestUserAgent.OFFICESHARE_XSO,
                                       HttpTestEnv.TEST_XSO_DOMAIN,
                                       HttpTestEnv.TEST_XSO_USER,
@@ -401,7 +422,7 @@ public class TestAxis2 extends TestWebappBase
     {
         HttpURLConnection.setDefaultUserAgent(null);
 
-        ListsStub ls = new ListsStub("http://sharepoint.iceweb.com/sites/demo/_vti_bin/Lists.asmx");
+        ListsStub ls = new ListsStub(HttpTestEnv.TEST_ICEWEB_URL);
 
         ServiceClient client = ls._getServiceClient();
         Options opt = client.getOptions();
@@ -416,6 +437,8 @@ public class TestAxis2 extends TestWebappBase
         ListsStub.GetListCollection req = new ListsStub.GetListCollection();
         ListsStub.GetListCollectionResponse resp = ls.GetListCollection(req);
 
+        assertContains(resp.getGetListCollectionResult().getExtraElement()
+                .toString(), "DefaultViewUrl");
         // System.out.println(resp);
         // System.out.println(HexString.dump(output.getBytes()));
         // assertContains(output, "GetListCollectionResponse");
@@ -426,7 +449,7 @@ public class TestAxis2 extends TestWebappBase
         HttpURLConnection.setDefaultUserAgent(null);
         try
         {
-            invokeService("http://sharepoint.iceweb.com/sites/demo/_vti_bin/Lists.asmx",
+            invokeService(HttpTestEnv.TEST_ICEWEB_URL,
                           "http://schemas.microsoft.com/sharepoint/soap/",
                           "GetListCollection",
                           new String[] {});
@@ -441,11 +464,6 @@ public class TestAxis2 extends TestWebappBase
     public void testSharepointXsoLive() throws Exception
     {
         TestUserAgent._type = TestUserAgent.OFFICESHARE_XSO;
-        // xsolive.com
-        String output = invokeService("http://74.218.125.36/_vti_bin/Lists.asmx",
-                                      "http://schemas.microsoft.com/sharepoint/soap/",
-                                      "GetListCollection",
-                                      new String[] {});
 
         // System.out.println(output);
         // assertContains(output, "user-agent:Axis2");

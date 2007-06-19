@@ -42,6 +42,7 @@ import com.oaklandsw.http.Credential;
 import com.oaklandsw.http.HttpURLConnection;
 import com.oaklandsw.http.HttpUserAgent;
 import com.oaklandsw.http.UserCredential;
+import com.oaklandsw.http.axis2.OaklandHTTPTransportSender2;
 import com.oaklandsw.util.LogUtils;
 import com.oaklandsw.util.Util;
 
@@ -155,6 +156,10 @@ public class OaklandHTTPSender extends BasicHandler implements HttpUserAgent
                             .equals(HttpURLConnection.HTTP_METHOD_POST);
                 }
             }
+
+            // Setup web services for dummy authentication startup for NTLM
+            OaklandHTTPTransportSender2.setupAuthDummy(urlCon, msgContext
+                    .getSOAPConstants() == SOAPConstants.SOAP11_CONSTANTS);
 
             if (posting)
             {
@@ -350,8 +355,8 @@ public class OaklandHTTPSender extends BasicHandler implements HttpUserAgent
      * @param msgContext
      */
     public static void handleCookie(String cookieName,
-                             String cookie,
-                             MessageContext msgContext)
+                                    String cookie,
+                                    MessageContext msgContext)
     {
 
         cookie = cleanupCookie(cookie);
