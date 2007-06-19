@@ -14,7 +14,7 @@ public class HttpGetPipeline
     {
     }
 
-    public static class TestCallback implements Callback
+    public static class TestPipelineCallback implements Callback
     {
 
         public void writeRequest(HttpURLConnection urlCon, OutputStream os)
@@ -76,7 +76,7 @@ public class HttpGetPipeline
         else
             urlStr = args[0];
 
-        Callback cb = new TestCallback();
+        Callback cb = new TestPipelineCallback();
 
         HttpURLConnection.setDefaultCallback(cb);
         HttpURLConnection.setDefaultPipelining(true);
