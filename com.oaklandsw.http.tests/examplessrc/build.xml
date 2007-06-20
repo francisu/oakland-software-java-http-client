@@ -1,0 +1,27 @@
+<project default="compile-java" basedir=".">
+
+	<!-- =================================================================== -->
+	<!-- Build file for Java HTTP client examples                            -->
+	<!-- =================================================================== -->
+
+	<!-- =================================================================== -->
+	<!-- Initialization target                                               -->
+	<!-- =================================================================== -->
+	<target name="init">
+		<path id="compile.classpath">
+			<fileset dir="${basedir}/..">
+				<include name="*.jar" />
+			</fileset>
+		</path>
+	</target>
+
+	<!-- =================================================================== -->
+	<!-- Java compile                                                        -->
+	<!-- =================================================================== -->
+	<target name="compile-java" depends="init">
+		<javac srcdir="." destdir="." debug="${debug}" optimize="${optimize}" deprecation="${deprecation}" sourcepath="" includeAntRuntime="no" includeJavaRuntime="no" excludes="${compile.excludes}">
+			<classpath refid="compile.classpath" />
+		</javac>
+	</target>
+
+</project>

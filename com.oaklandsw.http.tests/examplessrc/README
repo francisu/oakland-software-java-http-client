@@ -1,0 +1,44 @@
+This directory contains the some example programs for the Java HTTP Client.
+
+
+Executable classes:
+
+HttpRequestSample - Shows how to do a GET or POST request.  Also shows how to use
+the HttpUserAgent for authentication.  You can use this to test authentication
+on a website.
+
+HttpGetPipeline - Shows how to do pipelining with an HTTP GET.
+
+TestPerf - Used to conduct performance tests comparing the Sun, Oakland, 
+and Oakland with pipelining implementations.
+
+
+
+
+Support classes:
+
+SampleUserAgent - Used to provide the authentication credentials.
+
+SamplePipelineCallback - Handles the pipelining processing.
+
+
+
+
+Building the samples:
+
+Change to the examples directory and type "ant".  You must have Apache Ant installed.
+
+
+
+Executing the samples:
+
+Run the examples from the examples directory, as they depend on the http.jar file being
+in the parent directory.
+
+runsample.sh/bat <program> <args>
+
+For example
+
+runsample.sh HttpRequestSample http://www.google.com
+
+You can do a "-h" to get the args for each example.
