@@ -211,8 +211,13 @@
 				<include name="*.sample" />
 				<include name="${package.name}.jar" />
 			</fileset>
-			<zipfileset dir="../com.oaklandsw.http.tests/src/" prefix="examples">
-				<include name="*.java" />
+			<!-- update the examples inclusion in the source kit below -->
+			<zipfileset dir="../com.oaklandsw.http.tests/examplessrc/" prefix="examples">
+				<include name="**" />
+				<exclude name="Applet**" />
+			</zipfileset>
+			<zipfileset dir="../com.oaklandsw.http.tests/src/" prefix="examples_sp">
+				<include name="sharepoint/*.java" />
 			</zipfileset>
 			<zipfileset dir="${javadocs.dir}" prefix="javadocs" />
 		</zip>
@@ -246,10 +251,14 @@
 			<fileset dir="../com.oaklandsw.util.jars">
 				<include name="commons-logging*.jar" />
 			</fileset>
-			<zipfileset dir="../com.oaklandsw.http.tests/src/" prefix="examples">
-				<include name="*.java" />
+			<zipfileset dir="../com.oaklandsw.http.tests/examplessrc/" prefix="examples">
+				<include name="**" />
+				<exclude name="Applet**" />
 			</zipfileset>
-			<zipfileset dir="../com.oaklandsw.http.tests/" includes="runsrc*" filemode="755" />
+			<zipfileset dir="../com.oaklandsw.http.tests/src/" prefix="examples_sp">
+				<include name="sharepoint/*.java" />
+			</zipfileset>
+			<zipfileset dir="${javadocs.dir}" prefix="javadocs" />
 		</zip>
 
 		<!-- source for JCIFS LGPL code normal -->
