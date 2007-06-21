@@ -11,7 +11,7 @@ import org.apache.commons.logging.Log;
 
 import com.oaklandsw.http.HttpException;
 import com.oaklandsw.util.Dump;
-import com.oaklandsw.util.HexString;
+import com.oaklandsw.util.HexFormatter;
 import com.oaklandsw.util.LogUtils;
 import com.oaklandsw.util.Util;
 
@@ -160,7 +160,7 @@ public class Message implements Dump
         if (_log.isDebugEnabled())
         {
             _log.debug("Message Bytes:");
-            _log.debug("\n" + HexString.dump(_msgBytes));
+            _log.debug("\n" + HexFormatter.dump(_msgBytes));
         }
 
         int index = 0;
@@ -280,14 +280,14 @@ public class Message implements Dump
         if (_nonce != null)
         {
             ret.append("  Nonce: \n");
-            ret.append(HexString.dump(_nonce));
+            ret.append(HexFormatter.dump(_nonce));
         }
 
         // Allow the subclasses to put their stuff here
         getMessageInfo(ret);
 
         ret.append("Full message:\n");
-        ret.append(HexString.dump(_msgBytes));
+        ret.append(HexFormatter.dump(_msgBytes));
         return ret.toString();
     }
 

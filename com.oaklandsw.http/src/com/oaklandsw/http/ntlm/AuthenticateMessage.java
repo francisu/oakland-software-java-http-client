@@ -14,7 +14,7 @@ import org.bouncycastle.crypto.digests.MD5Digest;
 import org.bouncycastle.crypto.params.DESParameters;
 
 import com.oaklandsw.http.HttpException;
-import com.oaklandsw.util.HexString;
+import com.oaklandsw.util.HexFormatter;
 import com.oaklandsw.util.LogUtils;
 import com.oaklandsw.util.SecurityHelper;
 import com.oaklandsw.util.Util;
@@ -833,12 +833,12 @@ public class AuthenticateMessage extends Message
         if (_lmResponse != null)
         {
             sb.append("  lmResponse: \n");
-            sb.append(HexString.dump(_lmResponse));
+            sb.append(HexFormatter.dump(_lmResponse));
         }
         if (_ntResponse != null)
         {
             sb.append("  ntResponse: \n");
-            sb.append(HexString.dump(_ntResponse));
+            sb.append(HexFormatter.dump(_ntResponse));
         }
     }
 

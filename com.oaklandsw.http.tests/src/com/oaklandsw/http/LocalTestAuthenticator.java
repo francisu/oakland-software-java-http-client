@@ -93,8 +93,8 @@ public class LocalTestAuthenticator extends HttpTestBase
         Headers h = new Headers();
         if (authReq != null)
         {
-            h.add(Authenticator.REQ_HEADERS[HttpURLConnection.AUTH_NORMAL],
-                  authReq);
+            h.add(Authenticator.REQ_HEADERS_LC[HttpURLConnection.AUTH_NORMAL],
+                  authReq.getBytes());
         }
         else
         {

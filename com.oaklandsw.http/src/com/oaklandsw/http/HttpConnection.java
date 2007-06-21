@@ -58,7 +58,6 @@
 
 package com.oaklandsw.http;
 
-import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -83,6 +82,7 @@ import javax.security.cert.X509Certificate;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import com.oaklandsw.util.ExposedBufferInputStream;
 import com.oaklandsw.util.LogUtils;
 import com.oaklandsw.util.Util;
 
@@ -132,7 +132,7 @@ public class HttpConnection
 
     Socket                     _socket;
 
-    BufferedInputStream        _input;
+    ExposedBufferInputStream   _input;
     BufferedOutputStream       _output;
 
     static final int           CS_VIRGIN          = 0;
@@ -1025,12 +1025,12 @@ public class HttpConnection
         if (_wireLog.isDebugEnabled())
         {
             _wireLog.debug("Enabling wire tracing");
-            _input = new WireLogInputStream(is);
+            _input = new WireLogInputStream(is, STREAM_BUFFER_SIZE);
             _output = new WireLogOutputStream(os);
         }
         else
         {
-            _input = new BufferedInputStream(is, STREAM_BUFFER_SIZE);
+            _input = new ExposedBufferInputStream(is, STREAM_BUFFER_SIZE);
             _output = new BufferedOutputStream(os, STREAM_BUFFER_SIZE);
         }
 
@@ -1041,7 +1041,7 @@ public class HttpConnection
     /**
      * Indicates if the connection is completely transparent from end to end.
      * 
-     * @return true if conncetion is not proxied or tunneled through a
+     * @return true if connection is not proxied or tunneled through a
      *         transparent proxy; false otherwise.
      */
     public boolean isTransparent()
@@ -1059,7 +1059,7 @@ public class HttpConnection
         return _output;
     }
 
-    public BufferedInputStream getInputStream()
+    public ExposedBufferInputStream getInputStream()
         throws IOException,
             IllegalStateException
     {

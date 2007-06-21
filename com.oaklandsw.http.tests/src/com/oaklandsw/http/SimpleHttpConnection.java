@@ -56,7 +56,6 @@
 
 package com.oaklandsw.http;
 
-import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -66,6 +65,7 @@ import java.util.Vector;
 import org.apache.commons.logging.Log;
 
 import com.oaklandsw.http.HttpConnection;
+import com.oaklandsw.util.ExposedBufferInputStream;
 import com.oaklandsw.util.LogUtils;
 
 /**
@@ -145,9 +145,9 @@ public class SimpleHttpConnection extends HttpConnection
         // ignore this
     }
 
-    public BufferedInputStream getInputStream()
+    public ExposedBufferInputStream getInputStream()
     {
-        return new BufferedInputStream(bodyInputStream);
+        return new ExposedBufferInputStream(bodyInputStream, 1024);
     }
 
     public BufferedOutputStream getOutputStream()

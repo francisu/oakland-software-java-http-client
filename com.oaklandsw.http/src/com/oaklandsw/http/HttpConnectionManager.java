@@ -556,6 +556,7 @@ public class HttpConnectionManager
             throw new IllegalArgumentException("The protocol must be http or https; found: "
                 + protocol);
         }
+
         String hostAndPort = URIUtil.getProtocolHostPort(url);
         String connectionKey = getConnectionKey(hostAndPort,
                                                 proxyHost,

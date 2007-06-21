@@ -10,7 +10,7 @@ package com.oaklandsw.http.ntlm;
 import org.apache.commons.logging.Log;
 
 import com.oaklandsw.http.HttpException;
-import com.oaklandsw.util.HexString;
+import com.oaklandsw.util.HexFormatter;
 import com.oaklandsw.util.LogUtils;
 import com.oaklandsw.util.Util;
 
@@ -50,8 +50,8 @@ public class ChallengeMessage extends Message
     {
         if (_log.isDebugEnabled())
         {
-            _log.debug("setupOutgoing: nonce: " + HexString.dump(nonce));
-            _log.debug("targetInfo (defaultTargetInfo): \n" + HexString.dump(targetInfo));
+            _log.debug("setupOutgoing: nonce: " + HexFormatter.dump(nonce));
+            _log.debug("targetInfo (defaultTargetInfo): \n" + HexFormatter.dump(targetInfo));
             _log.debug("targetName (defaultDomain): \n" + targetName);
         }
 
@@ -247,12 +247,12 @@ public class ChallengeMessage extends Message
         if (_context != null)
         {
             sb.append("  context: \n");
-            sb.append(HexString.dump(_context));
+            sb.append(HexFormatter.dump(_context));
         }
         if (_targetBlock != null)
         {
             sb.append("  targetBlock: \n");
-            sb.append(HexString.dump(_targetBlock));
+            sb.append(HexFormatter.dump(_targetBlock));
         }
     }
 

@@ -4,7 +4,7 @@
 package com.oaklandsw.http;
 
 /**
- * Used to tell the user that a failure occured in processing connection, but
+ * Used to tell the user that a failure occurred in processing connection, but
  * that it will be automatically retried.
  * <p>
  * This situation can occur in the pipelined connection handling when a user is

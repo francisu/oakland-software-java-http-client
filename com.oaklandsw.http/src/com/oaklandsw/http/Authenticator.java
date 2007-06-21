@@ -67,6 +67,7 @@ import org.bouncycastle.util.encoders.Base64;
 
 import com.oaklandsw.http.ntlm.Ntlm;
 import com.oaklandsw.util.LogUtils;
+import com.oaklandsw.util.Util;
 
 /**
  * Utility methods for HTTP authorization and authentication. This class
@@ -90,21 +91,26 @@ import com.oaklandsw.util.LogUtils;
  */
 public class Authenticator
 {
-    private static final Log     _log         = LogUtils.makeLogger();
+    private static final Log     _log            = LogUtils.makeLogger();
 
-    public static final String   BASIC        = "basic";
+    public static final String   BASIC           = "basic";
 
-    public static final String   DIGEST       = "digest";
+    public static final String   DIGEST          = "digest";
 
-    public static final String   NTLM         = "ntlm";
+    public static final String   NTLM            = "ntlm";
 
-    public static final String[] RESP_HEADERS = new String[] { "Authorization",
-        "Proxy-Authorization"                };
-    public static final String[] REQ_HEADERS  = new String[] {
+    public static final String[] RESP_HEADERS    = new String[] {
+        "Authorization", "Proxy-Authorization"  };
+    public static final byte[][] RESP_HEADERS_LC = new byte[][] {
+        "Authorization".getBytes(), "Proxy-Authorization".getBytes() };
+
+    public static final String[] REQ_HEADERS     = new String[] {
         "WWW-Authenticate", "Proxy-Authenticate" };
+    public static final byte[][] REQ_HEADERS_LC  = new byte[][] {
+        "www-authenticate".getBytes(), "proxy-authenticate".getBytes() };
 
-    private static final char[]  HEXADECIMAL  = { '0', '1', '2', '3', '4', '5',
-        '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f' };
+    private static final char[]  HEXADECIMAL     = { '0', '1', '2', '3', '4',
+        '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f' };
 
     public static final boolean authenticate(HttpURLConnectInternal urlCon,
                                              Headers reqAuthenticators,
@@ -508,12 +514,12 @@ public class Authenticator
         int len = authHeaders.length();
         for (int i = 0; i < len; i++)
         {
-            String key = authHeaders.getKey(i);
+            String key = Util.bytesToString(authHeaders.getKey(i));
             if (key == null)
                 continue;
             if (key.equalsIgnoreCase(authType))
             {
-                challenge = authHeaders.get(i);
+                challenge = Util.bytesToString(authHeaders.get(i));
 
                 // find the blank and parse out the scheme
                 int b = challenge.indexOf(' ');

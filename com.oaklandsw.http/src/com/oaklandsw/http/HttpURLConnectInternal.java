@@ -21,6 +21,7 @@ import java.util.Map;
 import org.apache.commons.logging.Log;
 
 import com.oaklandsw.http.cookie.MalformedCookieException;
+import com.oaklandsw.util.ExposedBufferInputStream;
 import com.oaklandsw.util.LogUtils;
 import com.oaklandsw.util.StringUtils;
 import com.oaklandsw.util.URIUtil;
@@ -72,13 +73,13 @@ public class HttpURLConnectInternal
      * 
      * NOTE: be sure to change resetBeforeRead if anything is added to this list
      */
-    protected String         _hdrContentLength;
-    protected String         _hdrConnection;
-    protected String         _hdrProxyConnection;
-    protected String         _hdrTransferEncoding;
-    protected String         _hdrWWWAuth;
-    protected String         _hdrLocation;
-    protected String         _hdrProxyAuth;
+    protected byte[]         _hdrContentLength;
+    protected byte[]         _hdrConnection;
+    protected byte[]         _hdrProxyConnection;
+    protected byte[]         _hdrTransferEncoding;
+    protected byte[]         _hdrWWWAuth;
+    protected byte[]         _hdrLocation;
+    protected byte[]         _hdrProxyAuth;
     protected int            _hdrContentLengthInt;
 
     // We have read the first character of the next line after
@@ -322,7 +323,7 @@ public class HttpURLConnectInternal
     {
         if (_respFooters == null)
             _respFooters = new Headers();
-        _respFooters.add(key, value);
+        _respFooters.add(key.getBytes(), value.getBytes());
     }
 
     protected final void addRequestHeaders() throws IOException
@@ -332,24 +333,26 @@ public class HttpURLConnectInternal
         {
             synchronized (getClass())
             {
-                _reqHeaders.remove("Sequence");
-                _reqHeaders.add("Sequence", Integer.toString(_diagSequence));
+                _reqHeaders.remove(HDR_SEQUENCE_BYTES);
+                _reqHeaders.add(HDR_SEQUENCE_BYTES, Util
+                        .toBytesAsciiInt(_diagSequence));
             }
         }
 
         // Use add() instead of set() in this method cuz its faster
         // if we know the header is not present
 
-        if (_reqHeaders.get(HDR_USER_AGENT) == null)
-            _reqHeaders.add(HDR_USER_AGENT, USER_AGENT);
+        if (_reqHeaders.get(HDR_USER_AGENT_BYTES) == null)
+            _reqHeaders.add(HDR_USER_AGENT_BYTES, USER_AGENT);
 
         // Per 19.6.1.1 of RFC 2616, it is legal for HTTP/1.0 based
         // applications to send the Host request-header.
 
-        if (_reqHeaders.get(HDR_HOST) == null)
+        if (_reqHeaders.get(HDR_HOST_BYTES) == null)
         {
             _log.debug("Adding Host request header");
-            _reqHeaders.add(HDR_HOST, _connection._hostPortURL);
+            _reqHeaders
+                    .add(HDR_HOST_BYTES, _connection._hostPortURL.getBytes());
 
         }
 
@@ -368,7 +371,7 @@ public class HttpURLConnectInternal
                 {
                     // In strict mode put all cookies on the same header
                     String s = _cookieSpec.formatCookies(cookies);
-                    _reqHeaders.add(HDR_COOKIE, s);
+                    _reqHeaders.add(HDR_COOKIE_BYTES, s.getBytes());
                 }
                 else
                 {
@@ -376,7 +379,7 @@ public class HttpURLConnectInternal
                     for (int i = 0; i < cookies.length; i++)
                     {
                         String s = _cookieSpec.formatCookie(cookies[i]);
-                        _reqHeaders.add(HDR_COOKIE, s);
+                        _reqHeaders.add(HDR_COOKIE_BYTES, s.getBytes());
                     }
                 }
             }
@@ -388,15 +391,15 @@ public class HttpURLConnectInternal
         {
             throw new HttpException("Invalid Content-Length "
                 + "request header value: "
-                + _reqHeaders.get(HDR_CONTENT_LENGTH));
+                + _reqHeaders.get(HDR_CONTENT_LENGTH_BYTES));
         }
 
         if (useDummyAuthContent())
         {
             // CL could have been sent out on an initial request and
             // then we get back a 401, so need to remove it
-            if (_reqHeaders.get(HDR_CONTENT_LENGTH) != null)
-                _reqHeaders.remove(HDR_CONTENT_LENGTH);
+            if (_reqHeaders.get(HDR_CONTENT_LENGTH_BYTES) != null)
+                _reqHeaders.remove(HDR_CONTENT_LENGTH_BYTES);
             _hasContentLengthHeader = false;
 
             // Add the content length only if there is content
@@ -405,8 +408,9 @@ public class HttpURLConnectInternal
             {
                 if (_authenticationDummyContent != null)
                 {
-                    _reqHeaders.add(HDR_CONTENT_LENGTH, Integer
-                            .toString(_authenticationDummyContent.length()));
+                    _reqHeaders.add(HDR_CONTENT_LENGTH_BYTES, Util
+                            .toBytesAsciiInt(_authenticationDummyContent
+                                    .length()));
                     _dummyAuthRequestSent = true;
                 }
             }
@@ -416,14 +420,15 @@ public class HttpURLConnectInternal
             // Remove any previously added CL header
             if (_authenticationDummyContent != null && !_hasContentLengthHeader)
             {
-                if (_reqHeaders.get(HDR_CONTENT_LENGTH) != null)
-                    _reqHeaders.remove(HDR_CONTENT_LENGTH);
+                if (_reqHeaders.get(HDR_CONTENT_LENGTH_BYTES) != null)
+                    _reqHeaders.remove(HDR_CONTENT_LENGTH_BYTES);
             }
 
             if (_streamingChunked)
             {
-                if (_reqHeaders.get(HDR_TRANSFER_ENCODING) == null)
-                    _reqHeaders.add(HDR_TRANSFER_ENCODING, HDR_VALUE_CHUNKED);
+                if (_reqHeaders.get(HDR_TRANSFER_ENCODING_BYTES) == null)
+                    _reqHeaders.add(HDR_TRANSFER_ENCODING_BYTES,
+                                    HDR_VALUE_CHUNKED_BYTES);
             }
             else
             {
@@ -442,8 +447,8 @@ public class HttpURLConnectInternal
                             len = _contentLength;
                         }
 
-                        _reqHeaders
-                                .add(HDR_CONTENT_LENGTH, String.valueOf(len));
+                        _reqHeaders.add(HDR_CONTENT_LENGTH_BYTES, Util
+                                .toBytesAsciiInt(len));
                         _hasContentLengthHeader = true;
                     }
                 }
@@ -456,10 +461,10 @@ public class HttpURLConnectInternal
         // tests for example
         if ((_actualMethodPropsSent & METHOD_PROP_SEND_CONTENT_TYPE) != 0)
         {
-            if (_reqHeaders.get(HDR_CONTENT_TYPE) == null)
+            if (_reqHeaders.get(HDR_CONTENT_TYPE_BYTES) == null)
             {
-                _reqHeaders.set(HDR_CONTENT_TYPE,
-                                "application/x-www-form-urlencoded");
+                _reqHeaders.set(HDR_CONTENT_TYPE_BYTES,
+                                HDR_VALUE_DEFAULT_CONTENT_TYPE_BYTES);
             }
         }
 
@@ -468,20 +473,22 @@ public class HttpURLConnectInternal
         {
             if (_connection.isProxied())
             {
-                if (_reqHeaders.get(HDR_PROXY_CONNECTION) == null)
+                if (_reqHeaders.get(HDR_PROXY_CONNECTION_BYTES) == null)
                 {
                     _log
                             .debug("Adding 1.0 Proxy_Connection: Keep-Alive request header");
-                    _reqHeaders.add(HDR_PROXY_CONNECTION, HDR_VALUE_KEEP_ALIVE);
+                    _reqHeaders.add(HDR_PROXY_CONNECTION_BYTES,
+                                    HDR_VALUE_KEEP_ALIVE_BYTES);
                 }
             }
             else
             {
-                if (_reqHeaders.get(HDR_CONNECTION) == null)
+                if (_reqHeaders.get(HDR_CONNECTION_BYTES) == null)
                 {
                     _log
                             .debug("Adding 1.0 Connection: Keep-Alive request header");
-                    _reqHeaders.add(HDR_CONNECTION, HDR_VALUE_KEEP_ALIVE);
+                    _reqHeaders.add(HDR_CONNECTION_BYTES,
+                                    HDR_VALUE_KEEP_ALIVE_BYTES);
                 }
             }
         }
@@ -570,173 +577,198 @@ public class HttpURLConnectInternal
             + "to avoid using connections that the server closed.");
     }
 
-    private final void readClosedPartial() throws SocketException
-    {
-        // This can be retried
-        throw new SocketException("Connection closed in the middle of sending reply "
-            + "(try #"
-            + _tryCount
-            + ")");
-    }
+    protected static final int    SL_NOTHING           = 0;
+    protected static final int    SL_HTTP              = 1;
+    protected static final int    SL_SKIP_WHITE_BEFORE = 2;
+    protected static final int    SL_RESP_CODE         = 3;
+    protected static final int    SL_SKIP_WHITE_AFTER  = 4;
+    protected static final int    SL_RESP_MSG          = 5;
+    protected static final int    SL_AFTER_RESP_MSG    = 6;
+    protected static final int    SL_FINISHED          = 7;
 
-    private final int skipSpaces() throws IOException
-    {
-        int ch = 0;
-        do
-        {
-            ch = _conInStream.read();
-            if (ch < 0)
-                readClosedPartial();
-            // System.out.println("sp: " + String.valueOf((char)ch));
-        }
-        while (ch == ' ');
-        return ch;
-    }
+    protected static final byte[] HTTP_HDR             = { 'H', 'T', 'T', 'P',
+        '/', '1', '.'                                 };
 
     protected final void readStatusLine() throws IOException
     {
         _responseCode = 0;
+        _responseTextLength = 0;
 
-        // Read HTTP/1.
-        char[] httpHdr = { 'H', 'T', 'T', 'P', '/', '1', '.' };
+        int state = SL_NOTHING;
         int httpInd = 0;
-        int ch = -1;
-        while (httpInd < httpHdr.length)
-        {
-            try
-            {
-                ch = _conInStream.read();
-            }
-            catch (SocketException sex)
-            {
-                readClosed();
-                // throws
-            }
 
-            if (ch < 0)
-            {
-                readClosed();
-            }
-            // System.out.println("hdr: " + String.valueOf((char)ch));
+        ExposedBufferInputStream is = _conInStream;
+        byte[] buffer = _conInStream._buffer;
 
-            // Start looking at the beginning again
-            if (ch != httpHdr[httpInd])
-                httpInd = 0;
-            else
-                httpInd++;
-        }
-
-        // Check the number following the point
-        ch = _conInStream.read();
-        if (ch < 0)
-            readClosedPartial();
-        // System.out.println("hdr1: " + String.valueOf((char)ch));
-        if (ch == '1')
-            _http11 = true;
-        else if (ch == '0')
-            _http11 = false;
-        else
-        {
-            // This is not recoverable
-            throw new HttpException("Unrecognized server protocol version");
-        }
-
-        ch = skipSpaces();
-
-        // Read response code
         int responseMult = 100;
-        do
+
+        try
         {
-            // System.out.println("resp: " + String.valueOf((byte)ch));
-            _responseCode += (ch - '0') * responseMult;
-            responseMult /= 10;
-            // System.out.println("resp code: " + _responseCode);
-            ch = _conInStream.read();
-            if (ch < 0)
-                readClosedPartial();
+            char ch;
+            while (state != SL_FINISHED)
+            {
+                // See if we need to fill
+                if (is._pos >= is._used)
+                {
+                    is.fill();
+                    if (is._used == -1)
+                    {
+                        readClosed();
+                        // Throws
+                    }
+                }
+
+                ch = (char)buffer[is._pos++];
+
+                switch (state)
+                {
+                    case SL_NOTHING:
+                        if (ch == HTTP_HDR[0])
+                        {
+                            httpInd = 0;
+                            state = SL_HTTP;
+                            // Fall through
+                        }
+                        else
+                        {
+                            // Look further for the beginning
+                            break;
+                        }
+                    case SL_HTTP:
+                        if (httpInd == HTTP_HDR.length)
+                        {
+                            if (ch == '1')
+                                _http11 = true;
+                            else if (ch == '0')
+                                _http11 = false;
+                            else
+                            {
+                                // This is not recoverable
+                                throw new HttpException("Unrecognized server protocol version");
+                            }
+                            state = SL_SKIP_WHITE_BEFORE;
+                        }
+                        else
+                        {
+                            if (ch != HTTP_HDR[httpInd++])
+                                state = SL_NOTHING;
+                        }
+                        break;
+
+                    case SL_SKIP_WHITE_BEFORE:
+                        if (ch == ' ' || ch == '\t')
+                            break;
+                        state = SL_RESP_CODE;
+                        // Fall through
+
+                    case SL_RESP_CODE:
+                        // Check there is something in the response code so
+                        // we don't bail the first time though this
+                        if (_responseCode > 0 && (ch < '0' || ch > '9'))
+                        {
+                            state = SL_SKIP_WHITE_AFTER;
+                            break;
+                        }
+
+                        _responseCode += (ch - '0') * responseMult;
+                        responseMult /= 10;
+                        break;
+
+                    case SL_SKIP_WHITE_AFTER:
+                        if (ch == '\r' || ch == '\n')
+                        {
+                            state = SL_AFTER_RESP_MSG;
+                            break;
+                        }
+
+                        if (ch == ' ' || ch == '\t')
+                            break;
+                        state = SL_RESP_MSG;
+                        // Fall through
+
+                    case SL_RESP_MSG:
+                        if (ch == '\r' || ch == '\n')
+                        {
+                            state = SL_AFTER_RESP_MSG;
+                            break;
+                        }
+
+                        if (_responseTextLength < MAX_RESPONSE_TEXT)
+                        {
+                            _responseTextBytes[_responseTextLength++] = (byte)ch;
+                        }
+                        break;
+
+                    case SL_AFTER_RESP_MSG:
+                        /*
+                         * At this point we have read either /r or /n, try to
+                         * read the next EOL character which should be either /r
+                         * or /n. In the case where only a single EOL character
+                         * is used, this is where we detect this (by the fact
+                         * that the next character is not /r or /n); we save
+                         * that character because that must be the result of the
+                         * next read.
+                         */
+
+                        // This means there is a single EOL char
+                        if (ch != '\n' && ch != '\r')
+                        {
+                            _savedAfterStatusNextChar = ch;
+                            _singleEolChar = true;
+                        }
+                        state = SL_FINISHED;
+                        break;
+                }
+            }
         }
-        while (ch != ' ' && ch != '\r' && ch != '\n');
+        catch (SocketException sex)
+        {
+            readClosed();
+            // throws
+        }
 
         if (_responseCode < 100 || _responseCode > 999)
         {
             throw new HttpException("Invalid response code: " + _responseCode);
         }
 
-        if (ch != '\r' && ch != '\n')
-            ch = skipSpaces();
-
-        _responseTextLength = 0;
-
-        // We have some message
-        if (ch != '\r' && ch != '\n')
-        {
-            // Read response text - up to the max size that we care about
-            do
-            {
-                if (_responseTextLength < MAX_RESPONSE_TEXT)
-                    _responseText[_responseTextLength++] = (char)ch;
-                ch = _conInStream.read();
-                // System.out.println("msg: 0x" + Integer.toHexString((int)ch));
-                if (ch < 0)
-                    readClosedPartial();
-            }
-            while (ch != '\r' && ch != '\n');
-        }
-
-        // At this point we have read either /r or /n, try to read
-        // the next EOL character which should be either /r or /n.
-        // In the case where only a single EOL character is used,
-        // this is where we detect this (by the fact that the next
-        // character is not /r or /n); we save that character because
-        // that must be the result of the next read.
-
-        ch = _conInStream.read();
-        if (ch < 0)
-            readClosedPartial();
-
-        // System.out.println("Response text length: " + _responseTextLength);
-
-        // This means there is a single EOL char
-        if (ch != '\n' && ch != '\r')
-        {
-            _savedAfterStatusNextChar = ch;
-            _singleEolChar = true;
-        }
-
     }
 
     // This is called by the Headers class when parsing each header
     // for every header value it sees
-    final void getHeadersWeNeed(String name, String value)
+    final void getHeadersWeNeed(byte[] name, byte[] value)
     {
-        char nameChar = Character.toUpperCase(name.charAt(0));
+        char nameChar = (char)name[0];
+
+        // Remember to use the _LC constants
         switch (nameChar)
         {
-            case 'C':
-                if (name.equalsIgnoreCase(HDR_CONTENT_LENGTH))
+            case 'c':
+                if (Util.bytesEqual(name, HDR_CONTENT_LENGTH_LC))
                     _hdrContentLength = value;
-                else if (name.equalsIgnoreCase(HDR_CONNECTION))
+                else if (Util.bytesEqual(name, HDR_CONNECTION_LC))
                     _hdrConnection = value;
                 break;
 
-            case 'L':
-                if (name.equalsIgnoreCase(HDR_LOCATION))
+            case 'l':
+                if (Util.bytesEqual(name, HDR_LOCATION_LC))
                     _hdrLocation = value;
                 break;
 
-            case 'P':
-                if (name
-                        .equalsIgnoreCase(Authenticator.REQ_HEADERS[AUTH_PROXY]))
+            case 'p':
+                if (Util.bytesEqual(name,
+                                    Authenticator.REQ_HEADERS_LC[AUTH_PROXY]))
                     _hdrProxyAuth = value;
-                else if (name.equalsIgnoreCase(HDR_PROXY_CONNECTION))
+                else if (Util.bytesEqual(name, HDR_PROXY_CONNECTION_LC))
                     _hdrProxyConnection = value;
                 break;
-            case 'S':
+
+            case 's':
                 if (_cookieContainer != null)
                 {
                     // Take either type of cookie header
-                    if (!name.equalsIgnoreCase("set-cookie")
-                        && !name.equalsIgnoreCase("set-cookie2"))
+                    if (!Util.bytesEqual(name, HDR_SET_COOKIE_LC)
+                        && !Util.bytesEqual(name, HDR_SET_COOKIE2_LC))
                         break;
 
                     String host = _connection._host;
@@ -749,7 +781,7 @@ public class HttpURLConnectInternal
                                                     port,
                                                     getPath(),
                                                     isSecure,
-                                                    value);
+                                                    Util.bytesToString(value));
                     }
                     catch (MalformedCookieException e)
                     {
@@ -796,13 +828,14 @@ public class HttpURLConnectInternal
                     }
                 }
                 break;
-            case 'T':
-                if (name.equalsIgnoreCase(HDR_TRANSFER_ENCODING))
+            case 't':
+                if (Util.bytesEqual(name, HDR_TRANSFER_ENCODING_LC))
                     _hdrTransferEncoding = value;
                 break;
-            case 'W':
-                if (name
-                        .equalsIgnoreCase(Authenticator.REQ_HEADERS[AUTH_NORMAL]))
+
+            case 'w':
+                if (Util.bytesEqual(name,
+                                    Authenticator.REQ_HEADERS_LC[AUTH_NORMAL]))
                     _hdrWWWAuth = value;
                 break;
         }
@@ -833,7 +866,8 @@ public class HttpURLConnectInternal
         {
             try
             {
-                _hdrContentLengthInt = Integer.parseInt(_hdrContentLength);
+                _hdrContentLengthInt = Util
+                        .fromBytesAsciiInt(_hdrContentLength);
                 // Don't bother allocating a stream if there is no data
                 if (_hdrContentLengthInt == 0)
                 {
@@ -880,7 +914,7 @@ public class HttpURLConnectInternal
         // RFC2616, 4.4 item number 3
         if (null != _hdrTransferEncoding)
         {
-            if ("chunked".equalsIgnoreCase(_hdrTransferEncoding))
+            if (Util.bytesEqual(HDR_VALUE_CHUNKED_BYTES, _hdrTransferEncoding))
             {
                 result = new ChunkedInputStream(_conInStream,
                                                 this,
@@ -957,7 +991,13 @@ public class HttpURLConnectInternal
 
     protected final void writeRequestLine() throws IOException
     {
-        StringBuffer buf = new StringBuffer();
+        // request, spaces, etc
+        final int OTHER = 50;
+
+        byte[] bytes = new byte[_pathQuery.length()
+            + (_connection._hostPortURL.length() * 2)
+            + OTHER];
+        int index = 0;
 
         _dummyAuthRequestSent = false;
 
@@ -969,52 +1009,55 @@ public class HttpURLConnectInternal
                 + _authenticationDummyMethod);
             _actualMethodPropsSent = getMethodProperties(_authenticationDummyMethod);
             _dummyAuthRequestSent = true;
-            buf.append(_authenticationDummyMethod);
+            index = Util.toByteAscii(_authenticationDummyMethod, bytes, index);
         }
         else
         {
             // Reset this incase it was changed from a previous request
             _actualMethodPropsSent = _methodProperties;
-            buf.append(method);
+            index = Util.toByteAscii(method, bytes, index);
         }
 
-        buf.append(" ");
+        index = Util.toByteAscii(" ", bytes, index);
 
         if ((_actualMethodPropsSent & METHOD_PROP_REQ_LINE_URL) != 0)
         {
             if (_connection.isProxied() && !_connection.isTransparent())
             {
                 if (_connection.isSecure())
-                    buf.append("https://");
+                    index = Util.toByteAscii("https://", bytes, index);
                 else
-                    buf.append("http://");
-                buf.append(_connection._hostPortURL);
+                    index = Util.toByteAscii("http://", bytes, index);
+                index = Util
+                        .toByteAscii(_connection._hostPortURL, bytes, index);
             }
-            buf.append(_pathQuery);
+            index = Util.toByteAscii(_pathQuery, bytes, index);
 
             // For testing, works with ParamServlet
             if (_addDiagSequence)
             {
                 synchronized (getClass())
                 {
-                    buf.append("&Sequence=" + (++_diagSequence));
+                    index = Util.toByteAscii("&Sequence=" + (++_diagSequence),
+                                             bytes,
+                                             index);
                 }
             }
         }
         else if ((_actualMethodPropsSent & METHOD_PROP_REQ_LINE_STAR) != 0)
         {
-            buf.append("*");
+            index = Util.toByteAscii("*", bytes, index);
         }
         else if ((_actualMethodPropsSent & METHOD_PROP_REQ_LINE_HOST_PORT) != 0)
         {
             // Put the host/port junk on the front if required
-            buf.append(_connection._hostPort);
+            index = Util.toByteAscii(_connection._hostPort, bytes, index);
         }
 
-        buf.append(_http11 ? " HTTP/1.1\r\n" : " HTTP/1.0\r\n");
-
-        String reqLine = buf.toString();
-        _conOutStream.write(reqLine.getBytes("ASCII"), 0, reqLine.length());
+        index = Util.toByteAscii(_http11 ? " HTTP/1.1\r\n" : " HTTP/1.0\r\n",
+                                 bytes,
+                                 index);
+        _conOutStream.write(bytes, 0, index);
     }
 
     protected final void writeRequestHeaders() throws IOException
@@ -1112,7 +1155,7 @@ public class HttpURLConnectInternal
             }
             else
             {
-                _log.warn("Received status CONTINUE but the body has already "
+                _log.info("Received status CONTINUE but the body has already "
                     + "been sent");
                 // According to RFC 2616 this respose should be ignored
             }
@@ -1505,7 +1548,7 @@ public class HttpURLConnectInternal
         URL u = null; // the new url
         try
         {
-            u = new URL(_hdrLocation);
+            u = new URL(new String(_hdrLocation));
         }
         catch (Exception ex)
         {
@@ -1519,7 +1562,7 @@ public class HttpURLConnectInternal
             try
             {
                 URL currentUrl = new URL(_urlString);
-                u = new URL(currentUrl, _hdrLocation);
+                u = new URL(currentUrl, new String(_hdrLocation));
             }
             catch (Exception ex)
             {
@@ -1532,7 +1575,7 @@ public class HttpURLConnectInternal
 
         // Get rid of the hold Host header since we are
         // going somewhere else
-        _reqHeaders.remove(HDR_HOST);
+        _reqHeaders.remove(HDR_HOST_BYTES);
         _urlString = u.toExternalForm();
 
         // change the path and query string to the redirect
@@ -1575,7 +1618,7 @@ public class HttpURLConnectInternal
         boolean authenticated = false;
 
         // remove preemptive header and reauthenticate
-        _reqHeaders.remove(Authenticator.RESP_HEADERS[_currentAuthType]);
+        _reqHeaders.remove(Authenticator.RESP_HEADERS_LC[_currentAuthType]);
         try
         {
             String reqType = Authenticator.REQ_HEADERS[_currentAuthType];
@@ -1623,11 +1666,11 @@ public class HttpURLConnectInternal
         // Either a redirection or error, we can't continue
         if (_responseCode > 300)
         {
-            HttpRetryException rte = new HttpRetryException(new String(_responseText,
-                                                                       0,
-                                                                       _responseTextLength),
+            HttpRetryException rte = new HttpRetryException(Util
+                                                                    .bytesToString(_responseTextBytes,
+                                                                                   _responseTextLength),
                                                             _responseCode);
-            rte._location = _hdrLocation;
+            rte._location = Util.bytesToString(_hdrLocation);
             if (_log.isDebugEnabled())
             {
                 _log.debug("Streaming/pipelining non-OK "
@@ -2138,9 +2181,9 @@ public class HttpURLConnectInternal
                 catch (IOException iex)
                 {
                     // We don't care about exception during close
-                    if (_log.isWarnEnabled())
+                    if (_log.isInfoEnabled())
                     {
-                        _log.warn("Exception during close of InputStream for: "
+                        _log.info("Exception during close of InputStream for: "
                             + this
                             + " conn: "
                             + _connection, iex);
@@ -2324,10 +2367,10 @@ public class HttpURLConnectInternal
             }
         }
 
-        if ((null != _hdrConnection && HDR_VALUE_CLOSE
-                .equalsIgnoreCase(_hdrConnection))
-            || (_hdrProxyConnection != null && HDR_VALUE_CLOSE
-                    .equalsIgnoreCase(_hdrProxyConnection)))
+        if ((null != _hdrConnection && Util.bytesEqual(HDR_VALUE_CLOSE_BYTES,
+                                                       _hdrConnection))
+            || (_hdrProxyConnection != null && Util
+                    .bytesEqual(HDR_VALUE_CLOSE_BYTES, _hdrProxyConnection)))
         {
             _log.debug("Will CLOSE - "
                 + "\"[Proxy-]Connection: close\" header found.");
@@ -2350,7 +2393,7 @@ public class HttpURLConnectInternal
         if (!result && !_http11)
         {
             if (null != _hdrConnection
-                && HDR_VALUE_KEEP_ALIVE.equalsIgnoreCase(_hdrConnection))
+                && Util.bytesEqual(HDR_VALUE_KEEP_ALIVE_BYTES, _hdrConnection))
             {
                 _log.debug("HTTP/1.0 - Leave OPEN - Keep-Alive");
                 result = false;
@@ -2358,7 +2401,8 @@ public class HttpURLConnectInternal
             else if (null != _hdrProxyConnection
                 && _connection != null
                 && _connection.isProxied()
-                && HDR_VALUE_KEEP_ALIVE.equalsIgnoreCase(_hdrProxyConnection))
+                && Util.bytesEqual(HDR_VALUE_KEEP_ALIVE_BYTES,
+                                   _hdrProxyConnection))
             {
                 _log.debug("HTTP/1.0 - Leave OPEN - Proxy Keep-Alive");
                 result = false;

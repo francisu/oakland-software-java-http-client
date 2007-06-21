@@ -1,21 +1,27 @@
 package com.oaklandsw.http.local;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.StringBufferInputStream;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.logging.Log;
+
 import junit.framework.Test;
-import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
 import com.oaklandsw.http.Headers;
 import com.oaklandsw.http.HttpException;
+import com.oaklandsw.http.HttpTestBase;
 import com.oaklandsw.http.HttpURLConnectInternal;
+import com.oaklandsw.util.ExposedBufferInputStream;
+import com.oaklandsw.util.LogUtils;
+import com.oaklandsw.util.Util;
 
-public class TestHeaders extends TestCase
+public class TestHeaders extends HttpTestBase
 {
+    private static final Log _log = LogUtils.makeLogger();
 
     public TestHeaders(String testName)
     {
@@ -56,21 +62,27 @@ public class TestHeaders extends TestCase
         assertEquals(text, outText);
     }
 
+    protected ExposedBufferInputStream getInputStream(String str)
+    {
+        return new ExposedBufferInputStream(new ByteArrayInputStream(str
+                .getBytes()), 1000);
+    }
+
     public void testBasic() throws Exception
     {
         Headers h = new Headers();
-        h.add("one", "oneval");
-        h.add("two", "twoval");
-        assertEquals("oneval", h.get("one"));
+        h.add("one".getBytes(), "oneval".getBytes());
+        h.add("two".getBytes(), "twoval".getBytes());
+        Util.bytesEqual("oneval".getBytes(), h.get("one".getBytes()));
         checkText("twoval", h);
     }
 
     public void testSet() throws Exception
     {
         Headers h = new Headers();
-        h.set("one", "oneval");
-        h.set("one", "onevalrevised");
-        assertEquals("onevalrevised", h.get("one"));
+        h.set("one".getBytes(), "oneval".getBytes());
+        h.set("one".getBytes(), "onevalrevised".getBytes());
+        Util.bytesEqual("onevalrevised".getBytes(), h.get("one".getBytes()));
         checkText("onevalrevised", h);
         checkTextEquals("one: onevalrevised\r\n", h);
     }
@@ -80,7 +92,7 @@ public class TestHeaders extends TestCase
         Headers h = new Headers();
         try
         {
-            h.set("one", null);
+            h.set("one".getBytes(), null);
             fail("Expected exception for null value");
         }
         catch (IllegalArgumentException ex)
@@ -92,18 +104,18 @@ public class TestHeaders extends TestCase
     public void testAdd() throws Exception
     {
         Headers h = new Headers();
-        h.add("one", "onevaloriginal");
-        h.add("one", "onevalnew");
-        h.add("one", "onevalrevised");
+        h.add("one".getBytes(), "onevaloriginal".getBytes());
+        h.add("one".getBytes(), "onevalnew".getBytes());
+        h.add("one".getBytes(), "onevalrevised".getBytes());
         // Should get the most recent one
-        assertEquals("onevalrevised", h.get("one"));
+        Util.bytesEqual("onevalrevised".getBytes(), h.get("one".getBytes()));
         checkText("onevalrevised", h);
         checkText("onevalnew", h);
         checkText("onevaloriginal", h);
 
-        h.add("one", "onevalnew2");
+        h.add("one".getBytes(), "onevalnew2".getBytes());
         // Should get the most recent one
-        assertEquals("onevalnew2", h.get("one"));
+        Util.bytesEqual("onevalnew2".getBytes(), h.get("one".getBytes()));
 
         // Bug 1440 getHeaderFields() not implemented
         Map map = h.getMap();
@@ -121,51 +133,51 @@ public class TestHeaders extends TestCase
     public void testAddIndex() throws Exception
     {
         Headers h = new Headers();
-        h.add("one", "onevaloriginal");
-        h.add("one", "onevalnew");
-        h.add("one", "onevalrevised");
+        h.add("one".getBytes(), "onevaloriginal".getBytes());
+        h.add("one".getBytes(), "onevalnew".getBytes());
+        h.add("one".getBytes(), "onevalrevised".getBytes());
 
         // Test by index
-        assertEquals("onevaloriginal", h.get(0));
-        assertEquals("onevalnew", h.get(1));
-        assertEquals("onevalrevised", h.get(2));
+        Util.bytesEqual("onevaloriginal".getBytes(), h.get(0));
+        Util.bytesEqual("onevalnew".getBytes(), h.get(1));
+        Util.bytesEqual("onevalrevised".getBytes(), h.get(2));
         assertEquals(null, h.get(3));
 
         // Test by key
-        assertEquals("one", h.getKey(0));
-        assertEquals("one", h.getKey(1));
-        assertEquals("one", h.getKey(2));
+        Util.bytesEqual("one".getBytes(), h.getKey(0));
+        Util.bytesEqual("one".getBytes(), h.getKey(1));
+        Util.bytesEqual("one".getBytes(), h.getKey(2));
         assertEquals(null, h.getKey(3));
     }
 
     public void testSetIndex() throws Exception
     {
         Headers h = new Headers();
-        h.set("One", "onevaloriginal");
-        h.set("one", "onevalnew");
-        h.set("One", "onevalrevised");
+        h.set("One".getBytes(), "onevaloriginal".getBytes());
+        h.set("one".getBytes(), "onevalnew".getBytes());
+        h.set("One".getBytes(), "onevalrevised".getBytes());
 
         // Test by index - should only have the
         // last one
-        assertEquals("onevalrevised", h.get(0));
+        Util.bytesEqual("onevalrevised".getBytes(), h.get(0));
         assertEquals(null, h.get(1));
 
         // Test by key
-        assertEquals("One", h.getKey(0));
+        Util.bytesEqual("One".getBytes(), h.getKey(0));
         assertEquals(null, h.getKey(1));
     }
 
     public void testRemove() throws Exception
     {
         Headers h = new Headers();
-        h.add("one", "onevaloriginal");
-        h.remove("one");
-        assertEquals(null, h.get("one"));
+        h.add("one".getBytes(), "onevaloriginal".getBytes());
+        h.remove("one".getBytes());
+        assertEquals(null, h.get("one".getBytes()));
 
-        h.add("one", "onevalnew");
-        h.add("one", "onevalrevised");
-        h.remove("one");
-        assertEquals(null, h.get("one"));
+        h.add("one".getBytes(), "onevalnew".getBytes());
+        h.add("one".getBytes(), "onevalrevised".getBytes());
+        h.remove("one".getBytes());
+        assertEquals(null, h.get("one".getBytes()));
     }
 
     public void testBig() throws Exception
@@ -173,20 +185,20 @@ public class TestHeaders extends TestCase
         Headers h = new Headers();
         for (int i = 0; i < 1000; i++)
         {
-            h.add("one" + i, "oneval" + i);
+            h.add(("one" + i).getBytes(), ("oneval" + i).getBytes());
         }
 
-        assertEquals("oneval1", h.get("one1"));
-        assertEquals("oneval200", h.get("one200"));
-        assertEquals("oneval999", h.get("one999"));
+        Util.bytesEqual("oneval1".getBytes(), h.get("one1".getBytes()));
+        Util.bytesEqual("oneval200".getBytes(), h.get("one200".getBytes()));
+        Util.bytesEqual("oneval999".getBytes(), h.get("one999".getBytes()));
 
-        assertEquals("oneval1", h.get(1));
-        assertEquals("oneval200", h.get(200));
-        assertEquals("oneval999", h.get(999));
+        Util.bytesEqual("oneval1".getBytes(), h.get(1));
+        Util.bytesEqual("oneval200".getBytes(), h.get(200));
+        Util.bytesEqual("oneval999".getBytes(), h.get(999));
 
-        assertEquals("one1", h.getKey(1));
-        assertEquals("one200", h.getKey(200));
-        assertEquals("one999", h.getKey(999));
+        Util.bytesEqual("one1".getBytes(), h.getKey(1));
+        Util.bytesEqual("one200".getBytes(), h.getKey(200));
+        Util.bytesEqual("one999".getBytes(), h.getKey(999));
     }
 
     public void testReadEmpty1() throws Exception
@@ -194,8 +206,7 @@ public class TestHeaders extends TestCase
         Headers h = new Headers();
 
         String str = "\n";
-        StringBufferInputStream is = new StringBufferInputStream(str);
-        h.read(is, new HttpURLConnectInternal(), true, 0);
+        h.read(getInputStream(str), new HttpURLConnectInternal(), true, 0);
     }
 
     public void testReadEmpty2() throws Exception
@@ -203,8 +214,7 @@ public class TestHeaders extends TestCase
         Headers h = new Headers();
 
         String str = "\n\n";
-        StringBufferInputStream is = new StringBufferInputStream(str);
-        h.read(is, new HttpURLConnectInternal(), true, 0);
+        h.read(getInputStream(str), new HttpURLConnectInternal(), true, 0);
     }
 
     public void testReadEmpty3() throws Exception
@@ -212,8 +222,7 @@ public class TestHeaders extends TestCase
         Headers h = new Headers();
 
         String str = "\r\n";
-        StringBufferInputStream is = new StringBufferInputStream(str);
-        h.read(is, new HttpURLConnectInternal());
+        h.read(getInputStream(str), new HttpURLConnectInternal());
     }
 
     public void testReadGood() throws Exception
@@ -226,17 +235,16 @@ public class TestHeaders extends TestCase
             + "head4: val4   \r\n"
             + "\r\n";
 
-        StringBufferInputStream is = new StringBufferInputStream(str);
-        h.read(is, new HttpURLConnectInternal());
+        h.read(getInputStream(str), new HttpURLConnectInternal());
 
-        assertEquals("val1", h.get(0));
-        assertEquals("val1", h.get("head1"));
-        assertEquals("val2", h.get(1));
-        assertEquals("val2", h.get("head2"));
-        assertEquals("val3", h.get(2));
-        assertEquals("val3", h.get("head3"));
-        assertEquals("val4", h.get(3));
-        assertEquals("val4", h.get("head4"));
+        Util.bytesEqual("val1".getBytes(), h.get(0));
+        Util.bytesEqual("val1".getBytes(), h.get("head1".getBytes()));
+        Util.bytesEqual("val2".getBytes(), h.get(1));
+        Util.bytesEqual("val2".getBytes(), h.get("head2".getBytes()));
+        Util.bytesEqual("val3".getBytes(), h.get(2));
+        Util.bytesEqual("val3".getBytes(), h.get("head3".getBytes()));
+        Util.bytesEqual("val4".getBytes(), h.get(3));
+        Util.bytesEqual("val4".getBytes(), h.get("head4".getBytes()));
     }
 
     public void testReadGoodCont() throws Exception
@@ -253,17 +261,20 @@ public class TestHeaders extends TestCase
             + "       still more value 4\r\n"
             + "\r\n";
 
-        StringBufferInputStream is = new StringBufferInputStream(str);
-        h.read(is, new HttpURLConnectInternal());
+        h.read(getInputStream(str), new HttpURLConnectInternal());
 
-        assertEquals("val1 more value 1", h.get(0));
-        assertEquals("val1 more value 1", h.get("head1"));
-        assertEquals("val2 more value 2", h.get(1));
-        assertEquals("val2 more value 2", h.get("head2"));
+        Util.bytesEqual("val1 more value 1".getBytes(), h.get(0));
+        Util.bytesEqual("val1 more value 1".getBytes(), h.get("head1"
+                .getBytes()));
+        Util.bytesEqual("val2 more value 2".getBytes(), h.get(1));
+        Util.bytesEqual("val2 more value 2".getBytes(), h.get("head2"
+                .getBytes()));
         assertEquals(null, h.get(2));
-        assertEquals(null, h.get("head3"));
-        assertEquals("val4 more value 4 still more value 4", h.get(3));
-        assertEquals("val4 more value 4 still more value 4", h.get("head4"));
+        assertEquals(null, h.get("head3".getBytes()));
+        Util.bytesEqual("val4 more value 4 still more value 4".getBytes(), h
+                .get(3));
+        Util.bytesEqual("val4 more value 4 still more value 4".getBytes(), h
+                .get("head4".getBytes()));
     }
 
     public void testReadGoodPermissive() throws Exception
@@ -282,23 +293,22 @@ public class TestHeaders extends TestCase
             + "head10 :     val10  \t \t  \r\n"
             + "\r\n";
 
-        StringBufferInputStream is = new StringBufferInputStream(str);
-        h.read(is, new HttpURLConnectInternal());
+        h.read(getInputStream(str), new HttpURLConnectInternal());
 
-        assertEquals("val1", h.get(0));
-        assertEquals("val1", h.get("head1"));
-        assertEquals("val2:val2a", h.get(1));
-        assertEquals("val2:val2a", h.get("head2"));
-        assertEquals("val3", h.get(2));
-        assertEquals("val3", h.get("head3"));
-        assertEquals("val4", h.get(3));
-        assertEquals("val4", h.get("head4"));
-        assertEquals("val5", h.get("head5"));
-        assertEquals("val6", h.get("head6"));
-        assertEquals("val7", h.get("head7"));
-        assertEquals("val8", h.get("head8"));
-        assertEquals("val9", h.get("head9"));
-        assertEquals("val10", h.get("head10"));
+        Util.bytesEqual("val1".getBytes(), h.get(0));
+        Util.bytesEqual("val1".getBytes(), h.get("head1".getBytes()));
+        Util.bytesEqual("val2:val2a".getBytes(), h.get(1));
+        Util.bytesEqual("val2:val2a".getBytes(), h.get("head2".getBytes()));
+        Util.bytesEqual("val3".getBytes(), h.get(2));
+        Util.bytesEqual("val3".getBytes(), h.get("head3".getBytes()));
+        Util.bytesEqual("val4".getBytes(), h.get(3));
+        Util.bytesEqual("val4".getBytes(), h.get("head4".getBytes()));
+        Util.bytesEqual("val5".getBytes(), h.get("head5".getBytes()));
+        Util.bytesEqual("val6".getBytes(), h.get("head6".getBytes()));
+        Util.bytesEqual("val7".getBytes(), h.get("head7".getBytes()));
+        Util.bytesEqual("val8".getBytes(), h.get("head8".getBytes()));
+        Util.bytesEqual("val9".getBytes(), h.get("head9".getBytes()));
+        Util.bytesEqual("val10".getBytes(), h.get("head10".getBytes()));
     }
 
     public void testReadGoodPermissive2() throws Exception
@@ -307,11 +317,10 @@ public class TestHeaders extends TestCase
 
         String str = "head1: val1\n" + "\n";
 
-        StringBufferInputStream is = new StringBufferInputStream(str);
-        h.read(is, new HttpURLConnectInternal());
+        h.read(getInputStream(str), new HttpURLConnectInternal());
 
-        assertEquals("val1", h.get(0));
-        assertEquals("val1", h.get("head1"));
+        Util.bytesEqual("val1".getBytes(), h.get(0));
+        Util.bytesEqual("val1".getBytes(), h.get("head1".getBytes()));
     }
 
     public void testReadBad() throws Exception
@@ -324,10 +333,9 @@ public class TestHeaders extends TestCase
             + "head4: val4   \r\n"
             + "\r\n";
 
-        StringBufferInputStream is = new StringBufferInputStream(str);
         try
         {
-            h.read(is, new HttpURLConnectInternal());
+            h.read(getInputStream(str), new HttpURLConnectInternal());
         }
         catch (HttpException ex)
         {
@@ -339,8 +347,9 @@ public class TestHeaders extends TestCase
     public void testCase() throws Exception
     {
         Headers h = new Headers();
-        h.add("One", "onevaloriginal");
-        assertEquals("onevaloriginal", h.get("one"));
+        h.add("One".getBytes(), "onevaloriginal".getBytes());
+        assertTrue(Util.bytesEqual("onevaloriginal".getBytes(), h.get("one"
+                .getBytes())));
         checkText("onevaloriginal", h);
     }
 

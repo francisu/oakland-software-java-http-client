@@ -8,15 +8,16 @@
 package com.oaklandsw.http;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.logging.Log;
 
+import com.oaklandsw.util.ExposedBufferInputStream;
 import com.oaklandsw.util.LogUtils;
 import com.oaklandsw.util.Util;
 
@@ -25,14 +26,21 @@ import com.oaklandsw.util.Util;
  */
 public class Headers
 {
-    private static final Log         _log      = LogUtils.makeLogger();
+    private static final Log         _log              = LogUtils.makeLogger();
 
-    private static final int         INIT_SIZE = 20;
+    private static final int         INIT_HEADER_COUNT = 20;
+
+    // Header keys are always encoded in ASCII, the values might or might
+    // not be ASCII
 
     // The keys/values to the headers stored in the order in which they
     // were set/added. Note that remove does not do anything with this.
-    protected String[]               _headerKeys;
-    protected String[]               _headerValues;
+    protected byte[][]               _headerKeys;
+
+    // Lower case version of the key for comparison
+    protected byte[][]               _headerKeysLc;
+
+    protected byte[][]               _headerValues;
 
     protected int                    _currentIndex;
 
@@ -51,10 +59,10 @@ public class Headers
     /**
      * Add a header with the specified key and value.
      */
-    public final void add(String key, String value)
+    public final void add(byte[] key, byte[] value)
     {
         if (_log.isTraceEnabled())
-            _log.trace("add: " + key + ": " + value);
+            _log.trace("add: " + new String(key) + ": " + new String(value));
 
         if (value == null)
         {
@@ -68,6 +76,7 @@ public class Headers
             grow();
 
         _headerKeys[_currentIndex] = key;
+        _headerKeysLc[_currentIndex] = Util.bytesToLower(key);
         _headerValues[_currentIndex] = value;
         _currentIndex++;
     }
@@ -75,10 +84,10 @@ public class Headers
     /**
      * Set the specified header to the specified key and value.
      */
-    public final void set(String key, String value)
+    public final void set(byte[] key, byte[] value)
     {
         if (_log.isTraceEnabled())
-            _log.trace("set: " + key + ": " + value);
+            _log.trace("set: " + new String(key) + ": " + new String(value));
 
         if (value == null)
         {
@@ -87,27 +96,46 @@ public class Headers
                 + " is null");
         }
 
-        // Set the one with the highest index, if it matches
-        for (int i = _currentIndex - 1; i >= 0; i--)
+        // Replace if already exists
+        int i = findIndex(key, _currentIndex - 1);
+        if (i >= 0)
         {
-            if (_headerKeys[i] != null && _headerKeys[i].equalsIgnoreCase(key))
-            {
-                _headerValues[i] = value;
-                return;
-            }
+            _headerValues[i] = value;
+            return;
         }
 
         // Newly adding
         add(key, value);
     }
 
+    // Returns the index of the specified key, or -1 if it does not exist
+    private int findIndex(byte[] key, int start)
+    {
+        byte[] checkKey = Util.bytesToLower(key);
+
+        // Set the one with the highest index, if it matches
+        for (int i = start; i >= 0; i--)
+        {
+            if (_headerKeys[i] != null
+                && Util.bytesEqual(_headerKeysLc[i], checkKey))
+            {
+                return i;
+            }
+        }
+        return -1;
+    }
+
     private final void grow()
     {
-        String temp[] = new String[_headerKeys.length * 2];
+        byte temp[][] = new byte[_headerKeys.length * 2][];
         System.arraycopy(_headerKeys, 0, temp, 0, _headerKeys.length);
         _headerKeys = temp;
 
-        temp = new String[_headerValues.length * 2];
+        temp = new byte[_headerKeysLc.length * 2][];
+        System.arraycopy(_headerKeysLc, 0, temp, 0, _headerKeysLc.length);
+        _headerKeysLc = temp;
+
+        temp = new byte[_headerValues.length * 2][];
         System.arraycopy(_headerValues, 0, temp, 0, _headerValues.length);
         _headerValues = temp;
     }
@@ -115,7 +143,7 @@ public class Headers
     /**
      * Get the key of the header given the order in which it was set.
      */
-    public final String getKey(int order)
+    public final byte[] getKey(int order)
     {
         if (order >= _currentIndex)
             return null;
@@ -125,7 +153,7 @@ public class Headers
     /**
      * Get the value of the header given the order in which it was set.
      */
-    public final String get(int order)
+    public final byte[] get(int order)
     {
         if (order >= _currentIndex)
             return null;
@@ -137,35 +165,32 @@ public class Headers
      * one value, the most recently added one is returned to be compatible with
      * the JDK.
      */
-    public final String get(String key)
+    public final byte[] get(byte[] key)
     {
         if (key == null)
             return null;
 
-        // Get the one with the highest index
-        for (int i = _currentIndex - 1; i >= 0; i--)
-        {
-            if (_headerKeys[i] != null && _headerKeys[i].equalsIgnoreCase(key))
-                return _headerValues[i];
-        }
+        int index = findIndex(key, _currentIndex - 1);
+        if (index >= 0)
+            return _headerValues[index];
         return null;
     }
 
     /**
-     * Remove the header with the specified key.
+     * Removes all headers with the specified key.
      */
-    public final void remove(String key)
+    public final void remove(byte[] key)
     {
         if (_log.isTraceEnabled())
-            _log.trace("remove: " + key);
+            _log.trace("remove: " + new String(key));
 
-        for (int i = 0; i < _currentIndex; i++)
+        int index = _currentIndex - 1;
+
+        while ((index = findIndex(key, index)) >= 0)
         {
-            if (_headerKeys[i] != null && _headerKeys[i].equalsIgnoreCase(key))
-            {
-                _headerKeys[i] = null;
-                _headerValues[i] = null;
-            }
+            _headerKeys[index] = null;
+            _headerKeysLc[index] = null;
+            _headerValues[index] = null;
         }
     }
 
@@ -181,8 +206,9 @@ public class Headers
     public final void clear()
     {
         // Initial size
-        _headerKeys = new String[INIT_SIZE];
-        _headerValues = new String[INIT_SIZE];
+        _headerKeys = new byte[INIT_HEADER_COUNT][];
+        _headerKeysLc = new byte[INIT_HEADER_COUNT][];
+        _headerValues = new byte[INIT_HEADER_COUNT][];
 
         _currentIndex = 0;
     }
@@ -195,24 +221,17 @@ public class Headers
     private static final int VALUE          = 2;
     private static final int VALUE_CONTINUE = 3;
 
-    public final void read(InputStream is, HttpURLConnectInternal urlCon)
+    public final void read(ExposedBufferInputStream is, HttpURLConnectInternal urlCon)
         throws IOException
     {
         read(is, urlCon, false, 0);
     }
 
-    int _depth;
-    
-    public final void read(InputStream is,
+    public final void read(ExposedBufferInputStream is,
                            HttpURLConnectInternal urlCon,
                            boolean singleEolChar,
                            int savedFirstChar) throws IOException
     {
-        _depth++;
-        if (_depth >1)
-            Util.impossible("depth");
-        try
-        {
         int ch = 0;
         int ind = 0;
         boolean atNewLine = true;
@@ -220,12 +239,20 @@ public class Headers
         int state = HEADER;
 
         _urlCon = urlCon;
+        byte[] buffer = is._buffer;
 
         while (true)
         {
             if (!singleEolChar || savedFirstChar == 0)
             {
-                ch = is.read();
+                // See if we need to fill
+                if (is._pos >= is._used)
+                {
+                    is.fill();
+                    if (is._used == -1)
+                        break;
+                }
+                ch = buffer[is._pos++];
             }
             else
             {
@@ -252,8 +279,16 @@ public class Headers
                     {
                         if (_currentIndex >= _headerKeys.length)
                             grow();
-                        _headerKeys[_currentIndex] = String
-                                .copyValueOf(_charBuf, 0, ind);
+
+                        // Copy directly from the char buf as the key is
+                        // always
+                        // ASCII
+                        byte[] key = new byte[ind];
+                        for (int i = 0; i < ind; i++)
+                            key[i] = (byte)_charBuf[i];
+                        _headerKeys[_currentIndex] = key;
+                        _headerKeysLc[_currentIndex] = Util.bytesToLower(key);
+
                         // System.out.println("Added header key: "
                         // + _headerKeys[_currentIndex]);
                         ind = 0;
@@ -283,7 +318,8 @@ public class Headers
                         {
                             if (ch == '\r')
                             {
-                                // Read the next line terminator (if CRLF seq)
+                                // Read the next line terminator (if CRLF
+                                // seq)
                                 ch = is.read();
                                 // Connection dropped - will retry
                                 if (ch < 0)
@@ -291,7 +327,7 @@ public class Headers
                                 if (ch != '\n')
                                 {
                                     throw new HttpException("Expected LF after CR character in header: "
-                                        + _headerKeys[_currentIndex]);
+                                        + new String(_headerKeys[_currentIndex]));
                                 }
                             }
                         }
@@ -350,12 +386,6 @@ public class Headers
                 growCharBuf();
             _charBuf[ind++] = (char)ch;
         }
-        }
-        finally
-        {
-            _depth--;
-            
-        }
     }
 
     private void setValue(int ind)
@@ -363,44 +393,80 @@ public class Headers
         // Save buffer as value
         if (ind > 0)
         {
-            _headerValues[_currentIndex] = String.copyValueOf(_charBuf, 0, ind)
-                    .trim();
+            // Attempt to copy the value as ASCII
+            byte[] value = new byte[ind];
+            int i = 0;
+            for (; i < ind; i++)
+            {
+                if (_charBuf[i] > 0x7f)
+                    break;
+                value[i] = (byte)_charBuf[i];
+            }
+
+            if (i != ind)
+            {
+                // The value is other than ASCII, convert it
+                String strValue = String.copyValueOf(_charBuf, 0, ind).trim();
+                value = strValue.getBytes();
+            }
+            else
+            {
+                // Trim
+                int len = ind;
+                int st = 0;
+
+                while ((st < len) && (value[st] <= ' '))
+                    st++;
+                while ((st < len) && (value[len - 1] <= ' '))
+                    len--;
+                if ((st > 0) || (len < ind + 1))
+                {
+                    byte[] inValue = value;
+                    value = new byte[len];
+                    System.arraycopy(inValue, st, value, 0, len);
+                }
+            }
+
+            _headerValues[_currentIndex] = value;
+
             // System.out.println("FINAL - Added header val: "
             // + _headerValues[_currentIndex]);
-            _urlCon.getHeadersWeNeed(_headerKeys[_currentIndex],
+            _urlCon.getHeadersWeNeed(_headerKeysLc[_currentIndex],
                                      _headerValues[_currentIndex]);
         }
         _currentIndex++;
     }
 
-    private void dumpHeaders()
+    public void dumpHeaders()
     {
         for (int i = 0; i < _currentIndex; i++)
         {
-            _log.debug(_headerKeys[i] + ": " + _headerValues[i]);
+            _log.debug(new String(_headerKeys[i])
+                + " ("
+                + new String(_headerKeysLc[i])
+                + ") : "
+                + new String(_headerValues[i]));
         }
     }
 
+    // Returns K(String of key) V(List of String of value)
     public Map getMap()
     {
         if (_currentIndex == 0)
-            // Change to this when we drop support for JDK 1.2
-            // JDK12
-            // return Collections.EMPTY_MAP;
-            return Util.EMPTY_MAP;
+            return Collections.EMPTY_MAP;
         Map map = new HashMap(_currentIndex);
         for (int i = 0; i < _currentIndex; i++)
         {
-            String key = _headerKeys[i];
+            byte[] key = _headerKeys[i];
             List values = new ArrayList();
 
             // Get each value for the specified key
             for (int j = 0; j < _currentIndex; j++)
             {
-                if (_headerKeys[j].equals(key))
-                    values.add(_headerValues[j]);
+                if (Util.bytesEqual(_headerKeys[j], key))
+                    values.add(new String(_headerValues[j]));
             }
-            map.put(key, values);
+            map.put(new String(key), values);
         }
         return map;
     }
@@ -412,14 +478,20 @@ public class Headers
         _charBuf = newBuf;
     }
 
-    private final void writeKeyValue(OutputStream os, String key, String value)
+    private final void writeKeyValue(OutputStream os, byte[] key, byte[] value)
         throws IOException
     {
         if (_log.isTraceEnabled())
-            _log.trace("writing: " + key + ": " + value);
-        os.write(key.getBytes());
+        {
+            _log
+                    .trace("writing: "
+                        + new String(key)
+                        + ": "
+                        + new String(value));
+        }
+        os.write(key);
         os.write(Util.COLON_SPACE_BYTES);
-        os.write(value.getBytes());
+        os.write(value);
         os.write(Util.CRLF_BYTES);
     }
 

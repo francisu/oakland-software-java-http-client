@@ -13,24 +13,29 @@ public class TestPerf
     static final Log _log    = LogUtils.makeLogger();
 
     static final int TIMES   = 1000;
-    static int       _times;
 
-    static boolean   _warmUp = true;
-    static boolean   _doPipelining;
-    static boolean   _useSun;
-    static boolean   _doClose;
+    int              _times;
 
-    static int       _pipeDepth;
-    static int       _maxConn;
+    boolean          _warmUp = true;
+    boolean          _doPipelining;
+    boolean          _useSun;
+    boolean          _doClose;
+    boolean          _quiet;
 
-    static String    _urlString;
-    static URL       _url;
+    int              _pipeDepth;
+    int              _maxConn;
+
+    String           _urlString;
+    URL              _url;
+
+    long             _totalTime;
+    float            _transTime;
 
     public TestPerf()
     {
     }
 
-    public static void main(String args[]) throws Exception
+    public void run(String args[]) throws Exception
     {
         _times = TIMES;
 
@@ -79,10 +84,18 @@ public class TestPerf
             {
                 _doClose = true;
             }
+            else if (args[i].equalsIgnoreCase("-quiet"))
+            {
+                _quiet = true;
+            }
             else if (args[i].equalsIgnoreCase("-help"))
             {
                 usage();
                 return;
+            }
+            else if (args[i].equalsIgnoreCase(""))
+            {
+                // Silently ignore empty args
             }
             else
             {
@@ -96,14 +109,12 @@ public class TestPerf
             return;
         }
 
-        if (!_useSun)
+        if (!_quiet)
         {
-            System.setProperty("java.protocol.handler.pkgs", "com.oaklandsw");
+            System.out.println("Using: "
+                + (_useSun ? "Sun" : "Oakland")
+                + " implementation");
         }
-
-        System.out.println("Using: "
-            + (_useSun ? "Sun" : "Oakland")
-            + " implementation");
 
         _url = new URL(_urlString);
 
@@ -114,31 +125,40 @@ public class TestPerf
 
         long startTime = System.currentTimeMillis();
 
-        System.out.println("Times: " + _times);
+        if (!_quiet)
+            System.out.println("Times: " + _times);
 
         if (_maxConn > 0)
         {
             com.oaklandsw.http.HttpURLConnection
                     .setMaxConnectionsPerHost(_maxConn);
-            System.out.println("Using max: " + _maxConn + " connections.");
+            if (!_quiet)
+                System.out.println("Using max: " + _maxConn + " connections.");
         }
 
         testGetMethod();
 
         long endTime = System.currentTimeMillis();
-        long totalTime = endTime - startTime;
-        float transTime = (float)totalTime / (float)_times;
+        _totalTime = endTime - startTime;
+        _transTime = (float)_totalTime / (float)_times;
 
-        System.out.println("connection pool before close");
-        com.oaklandsw.http.HttpURLConnection.dumpAll();
-        if (_doClose)
+        if (!_quiet)
         {
-            com.oaklandsw.http.HttpURLConnection.closeAllPooledConnections();
-            System.out.println("connection pool after close");
+            System.out.println("connection pool before close");
             com.oaklandsw.http.HttpURLConnection.dumpAll();
-        }
+            if (_doClose)
+            {
+                com.oaklandsw.http.HttpURLConnection
+                        .closeAllPooledConnections();
+                System.out.println("connection pool after close");
+                com.oaklandsw.http.HttpURLConnection.dumpAll();
+            }
 
-        System.out.println("Time: " + totalTime + " MS/trans: " + transTime);
+            System.out.println("Total Time (ms): "
+                + _totalTime
+                + " Time/trans (ms): "
+                + _transTime);
+        }
     }
 
     static void usage()
@@ -153,16 +173,20 @@ public class TestPerf
         System.out.println("  -times <num> - number of times (def 1000)");
         System.out.println("  -nowarm - include the initialization in timing");
         System.out.println("  -close - explicitly close all connections");
-        // System.out.println(" -dnsjava - use dnsjava name resolver");
+        System.out.println("  -quiet - don't print anything");
     }
 
-    static HttpURLConnection setupUrlCon() throws Exception
+    public HttpURLConnection setupUrlCon() throws Exception
     {
-        HttpURLConnection urlCon = (HttpURLConnection)_url.openConnection();
+        HttpURLConnection urlCon;
+        if (_useSun)
+            urlCon = (HttpURLConnection)_url.openConnection();
+        else
+            urlCon = com.oaklandsw.http.HttpURLConnection.openConnection(_url);
         return urlCon;
     }
 
-    static void doConnect() throws Exception
+    public void doConnect() throws Exception
     {
         HttpURLConnection urlCon = setupUrlCon();
         if (urlCon.getResponseCode() != 200)
@@ -171,9 +195,8 @@ public class TestPerf
         urlCon.getInputStream().close();
     }
 
-    public static void testGetMethod() throws Exception
+    public void testGetMethod() throws Exception
     {
-
         if (!_doPipelining)
         {
             for (int i = 0; i < _times; i++)
@@ -203,4 +226,11 @@ public class TestPerf
         }
 
     }
+
+    public static void main(String args[]) throws Exception
+    {
+        TestPerf tp = new TestPerf();
+        tp.run(args);
+    }
+
 }

@@ -188,7 +188,7 @@ public class TestHeaders extends TestWebappBase
         // checkReply("name=\"addrequestheader(header)\";value=\"True\"<br>");
         checkReply(urlCon, "name=\"user-agent"
             + "\";value=\""
-            + com.oaklandsw.http.HttpURLConnection.DEFAULT_USER_AGENT
+            + new String(com.oaklandsw.http.HttpURLConnection.DEFAULT_USER_AGENT)
             + "\"<br>");
 
         // checkReply closes the connection

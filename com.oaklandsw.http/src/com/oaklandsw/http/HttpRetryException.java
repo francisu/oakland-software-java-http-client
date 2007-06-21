@@ -8,7 +8,7 @@ package com.oaklandsw.http;
  * automatically because streaming mode
  * (HttpURLConnection.set[...]StreamingMode()) was enabled.
  * <p>
- * This is funtionally identical to java.net.HttpRetryException introduced in
+ * This is functionally identical to java.net.HttpRetryException introduced in
  * 1.5.
  * 
  */

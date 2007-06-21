@@ -13,44 +13,26 @@ import com.oaklandsw.util.LogUtils;
  */
 public class HttpRequestSample
 {
+    boolean               _useConnectionProxy;
+    boolean               _doLogging;
+    boolean               _doPost;
+    boolean               _interactive;
+    boolean               _nooutput;
+
+    int                   _loopCount;
+
+    String                _proxyHost;
+    int                   _proxyPort;
+
+
+    public NtlmCredential _normalCredential;
+    public NtlmCredential _proxyCredential;
 
     public HttpRequestSample()
     {
     }
 
-    static boolean               _interactive;
-    static boolean               _nooutput;
-
-    static int                   _loopCount;
-
-    static String                _proxyHost;
-    static int                   _proxyPort;
-
-    static boolean               _useConnectionProxy;
-
-    static boolean               _doLogging;
-
-    static boolean               _doPost;
-
-    public static NtlmCredential _normalCredential;
-    public static NtlmCredential _proxyCredential;
-
-    static
-    {
-        _normalCredential = new NtlmCredential();
-        _normalCredential.setUser("not set");
-        _normalCredential.setPassword("not set");
-        _normalCredential.setHost("not set");
-        _normalCredential.setDomain("not set");
-
-        _proxyCredential = new NtlmCredential();
-        _proxyCredential.setUser("not set");
-        _proxyCredential.setPassword("not set");
-        _proxyCredential.setHost("not set");
-        _proxyCredential.setDomain("not set");
-    }
-
-    static void extractProxy(String hostAndPort)
+    void extractProxy(String hostAndPort)
     {
         int ind = hostAndPort.indexOf(":");
         if (ind > 0)
@@ -72,7 +54,7 @@ public class HttpRequestSample
         }
     }
 
-    public static void usage()
+    public void usage()
     {
         System.out.println("java HttpRequestSample <url> [options]");
         System.out.println("options: ");
@@ -96,8 +78,20 @@ public class HttpRequestSample
         System.out.println(" -post - emit a POST request instead of a GET");
     }
 
-    public static final void main(String[] args) throws Exception
+    public void run(String[] args) throws Exception
     {
+        _normalCredential = new NtlmCredential();
+        _normalCredential.setUser("not set");
+        _normalCredential.setPassword("not set");
+        _normalCredential.setHost("not set");
+        _normalCredential.setDomain("not set");
+
+        _proxyCredential = new NtlmCredential();
+        _proxyCredential.setUser("not set");
+        _proxyCredential.setPassword("not set");
+        _proxyCredential.setHost("not set");
+        _proxyCredential.setDomain("not set");
+
         _loopCount = 1;
 
         if (args.length == 0 || !args[0].toLowerCase().startsWith("http"))
@@ -261,7 +255,12 @@ public class HttpRequestSample
                     break;
             }
         }
+    }
 
+    public static void main(String[] args) throws Exception
+    {
+        HttpRequestSample rs = new HttpRequestSample();
+        rs.run(args);
     }
 
 }
