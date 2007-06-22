@@ -69,17 +69,32 @@ public class HttpURLConnectInternal
      */
 
     /**
-     * Header values we are interested in
+     * Header values we are interested in. The actual data used in these arrays
+     * is not the size of the arrays, use the corresponding ...Len field.
      * 
      * NOTE: be sure to change resetBeforeRead if anything is added to this list
      */
     protected byte[]         _hdrContentLength;
+    protected int            _hdrContentLengthLen;
+
     protected byte[]         _hdrConnection;
+    protected int            _hdrConnectionLen;
+
     protected byte[]         _hdrProxyConnection;
+    protected int            _hdrProxyConnectionLen;
+
     protected byte[]         _hdrTransferEncoding;
+    protected int            _hdrTransferEncodingLen;
+
     protected byte[]         _hdrWWWAuth;
+    protected int            _hdrWWWAuthLen;
+
     protected byte[]         _hdrLocation;
+    protected int            _hdrLocationLen;
+
     protected byte[]         _hdrProxyAuth;
+    protected int            _hdrProxyAuthLen;
+
     protected int            _hdrContentLengthInt;
 
     // We have read the first character of the next line after
@@ -342,13 +357,13 @@ public class HttpURLConnectInternal
         // Use add() instead of set() in this method cuz its faster
         // if we know the header is not present
 
-        if (_reqHeaders.get(HDR_USER_AGENT_BYTES) == null)
+        if (!_reqHeaders.find(HDR_USER_AGENT_BYTES))
             _reqHeaders.add(HDR_USER_AGENT_BYTES, USER_AGENT);
 
         // Per 19.6.1.1 of RFC 2616, it is legal for HTTP/1.0 based
         // applications to send the Host request-header.
 
-        if (_reqHeaders.get(HDR_HOST_BYTES) == null)
+        if (!_reqHeaders.find(HDR_HOST_BYTES))
         {
             _log.debug("Adding Host request header");
             _reqHeaders
@@ -391,15 +406,14 @@ public class HttpURLConnectInternal
         {
             throw new HttpException("Invalid Content-Length "
                 + "request header value: "
-                + _reqHeaders.get(HDR_CONTENT_LENGTH_BYTES));
+                + _reqHeaders.getAsString(HDR_CONTENT_LENGTH_BYTES));
         }
 
         if (useDummyAuthContent())
         {
             // CL could have been sent out on an initial request and
             // then we get back a 401, so need to remove it
-            if (_reqHeaders.get(HDR_CONTENT_LENGTH_BYTES) != null)
-                _reqHeaders.remove(HDR_CONTENT_LENGTH_BYTES);
+            _reqHeaders.remove(HDR_CONTENT_LENGTH_BYTES);
             _hasContentLengthHeader = false;
 
             // Add the content length only if there is content
@@ -420,13 +434,12 @@ public class HttpURLConnectInternal
             // Remove any previously added CL header
             if (_authenticationDummyContent != null && !_hasContentLengthHeader)
             {
-                if (_reqHeaders.get(HDR_CONTENT_LENGTH_BYTES) != null)
-                    _reqHeaders.remove(HDR_CONTENT_LENGTH_BYTES);
+                _reqHeaders.remove(HDR_CONTENT_LENGTH_BYTES);
             }
 
             if (_streamingChunked)
             {
-                if (_reqHeaders.get(HDR_TRANSFER_ENCODING_BYTES) == null)
+                if (!_reqHeaders.find(HDR_TRANSFER_ENCODING_BYTES))
                     _reqHeaders.add(HDR_TRANSFER_ENCODING_BYTES,
                                     HDR_VALUE_CHUNKED_BYTES);
             }
@@ -461,7 +474,7 @@ public class HttpURLConnectInternal
         // tests for example
         if ((_actualMethodPropsSent & METHOD_PROP_SEND_CONTENT_TYPE) != 0)
         {
-            if (_reqHeaders.get(HDR_CONTENT_TYPE_BYTES) == null)
+            if (!_reqHeaders.find(HDR_CONTENT_TYPE_BYTES))
             {
                 _reqHeaders.set(HDR_CONTENT_TYPE_BYTES,
                                 HDR_VALUE_DEFAULT_CONTENT_TYPE_BYTES);
@@ -473,7 +486,7 @@ public class HttpURLConnectInternal
         {
             if (_connection.isProxied())
             {
-                if (_reqHeaders.get(HDR_PROXY_CONNECTION_BYTES) == null)
+                if (!_reqHeaders.find(HDR_PROXY_CONNECTION_BYTES))
                 {
                     _log
                             .debug("Adding 1.0 Proxy_Connection: Keep-Alive request header");
@@ -483,7 +496,7 @@ public class HttpURLConnectInternal
             }
             else
             {
-                if (_reqHeaders.get(HDR_CONNECTION_BYTES) == null)
+                if (!_reqHeaders.find(HDR_CONNECTION_BYTES))
                 {
                     _log
                             .debug("Adding 1.0 Connection: Keep-Alive request header");
@@ -736,7 +749,10 @@ public class HttpURLConnectInternal
 
     // This is called by the Headers class when parsing each header
     // for every header value it sees
-    final void getHeadersWeNeed(byte[] name, byte[] value)
+    final void getHeadersWeNeed(byte[] name,
+                                int nameLen,
+                                byte[] value,
+                                int valueLen)
     {
         char nameChar = (char)name[0];
 
@@ -744,107 +760,133 @@ public class HttpURLConnectInternal
         switch (nameChar)
         {
             case 'c':
-                if (Util.bytesEqual(name, HDR_CONTENT_LENGTH_LC))
+                if (Util.bytesEqual(HDR_CONTENT_LENGTH_LC, name, nameLen))
+                {
                     _hdrContentLength = value;
-                else if (Util.bytesEqual(name, HDR_CONNECTION_LC))
+                    _hdrContentLengthLen = valueLen;
+                }
+                else if (Util.bytesEqual(HDR_CONNECTION_LC, name, nameLen))
+                {
                     _hdrConnection = value;
+                    _hdrConnectionLen = valueLen;
+                }
                 break;
 
             case 'l':
-                if (Util.bytesEqual(name, HDR_LOCATION_LC))
+                if (Util.bytesEqual(HDR_LOCATION_LC, name, nameLen))
+                {
                     _hdrLocation = value;
+                    _hdrLocationLen = valueLen;
+                }
                 break;
 
             case 'p':
-                if (Util.bytesEqual(name,
-                                    Authenticator.REQ_HEADERS_LC[AUTH_PROXY]))
+                if (Util.bytesEqual(Authenticator.REQ_HEADERS_LC[AUTH_PROXY],
+                                    name,
+                                    nameLen))
+                {
                     _hdrProxyAuth = value;
-                else if (Util.bytesEqual(name, HDR_PROXY_CONNECTION_LC))
+                    _hdrProxyAuthLen = valueLen;
+                }
+                else if (Util
+                        .bytesEqual(HDR_PROXY_CONNECTION_LC, name, nameLen))
+                {
                     _hdrProxyConnection = value;
+                    _hdrProxyConnectionLen = valueLen;
+                }
                 break;
 
             case 's':
                 if (_cookieContainer != null)
                 {
                     // Take either type of cookie header
-                    if (!Util.bytesEqual(name, HDR_SET_COOKIE_LC)
-                        && !Util.bytesEqual(name, HDR_SET_COOKIE2_LC))
+                    if (!Util.bytesEqual(HDR_SET_COOKIE_LC, name, nameLen)
+                        && !Util.bytesEqual(HDR_SET_COOKIE2_LC, name, nameLen))
                         break;
 
-                    String host = _connection._host;
-                    int port = _connection.getPort();
-                    boolean isSecure = _connection.isSecure();
-                    Cookie[] cookies = null;
-                    try
-                    {
-                        cookies = _cookieSpec.parse(host,
-                                                    port,
-                                                    getPath(),
-                                                    isSecure,
-                                                    Util.bytesToString(value));
-                    }
-                    catch (MalformedCookieException e)
-                    {
-                        if (_log.isWarnEnabled())
-                        {
-                            _log.warn("Invalid cookie header: \""
-                                + value
-                                + "\". "
-                                + e.getMessage());
-                        }
-                    }
-
-                    if (cookies != null)
-                    {
-                        for (int j = 0; j < cookies.length; j++)
-                        {
-                            Cookie cookie = cookies[j];
-                            try
-                            {
-                                _cookieSpec.validate(host,
-                                                     port,
-                                                     getPath(),
-                                                     isSecure,
-                                                     cookie);
-                                _cookieContainer.addCookie(cookie);
-                                if (_log.isDebugEnabled())
-                                {
-                                    _log.debug("Cookie accepted: \""
-                                        + _cookieSpec.formatCookie(cookie)
-                                        + "\"");
-                                }
-                            }
-                            catch (MalformedCookieException e)
-                            {
-                                if (_log.isWarnEnabled())
-                                {
-                                    _log.warn("Cookie rejected: \""
-                                        + _cookieSpec.formatCookie(cookie)
-                                        + "\". "
-                                        + e.getMessage());
-                                }
-                            }
-                        }
-                    }
+                    recordCookie(value, valueLen);
                 }
                 break;
             case 't':
-                if (Util.bytesEqual(name, HDR_TRANSFER_ENCODING_LC))
+                if (Util.bytesEqual(HDR_TRANSFER_ENCODING_LC, name, nameLen))
+                {
                     _hdrTransferEncoding = value;
+                    _hdrTransferEncodingLen = valueLen;
+                }
                 break;
 
             case 'w':
-                if (Util.bytesEqual(name,
-                                    Authenticator.REQ_HEADERS_LC[AUTH_NORMAL]))
+                if (Util.bytesEqual(Authenticator.REQ_HEADERS_LC[AUTH_NORMAL],
+                                    name,
+                                    nameLen))
+                {
                     _hdrWWWAuth = value;
+                    _hdrWWWAuthLen = valueLen;
+                }
                 break;
         }
 
     }
 
+    protected void recordCookie(byte[] cookieValue, int cookieValueLen)
+    {
+        String host = _connection._host;
+        int port = _connection.getPort();
+        boolean isSecure = _connection.isSecure();
+        Cookie[] cookies = null;
+        try
+        {
+            cookies = _cookieSpec.parse(host, port, getPath(), isSecure, Util
+                    .bytesToString(cookieValue, cookieValueLen));
+        }
+        catch (MalformedCookieException e)
+        {
+            if (_log.isWarnEnabled())
+            {
+                _log.warn("Invalid cookie header: \""
+                    + Util.bytesToString(cookieValue, cookieValueLen)
+                    + "\". "
+                    + e.getMessage());
+            }
+        }
+
+        if (cookies != null)
+        {
+            for (int j = 0; j < cookies.length; j++)
+            {
+                Cookie cookie = cookies[j];
+                try
+                {
+                    _cookieSpec.validate(host,
+                                         port,
+                                         getPath(),
+                                         isSecure,
+                                         cookie);
+                    _cookieContainer.addCookie(cookie);
+                    if (_log.isDebugEnabled())
+                    {
+                        _log.debug("Cookie accepted: \""
+                            + _cookieSpec.formatCookie(cookie)
+                            + "\"");
+                    }
+                }
+                catch (MalformedCookieException e)
+                {
+                    if (_log.isWarnEnabled())
+                    {
+                        _log.warn("Cookie rejected: \""
+                            + _cookieSpec.formatCookie(cookie)
+                            + "\". "
+                            + e.getMessage());
+                    }
+
+                }
+            }
+        }
+    }
+
     protected final void readResponseHeaders() throws IOException
     {
-        _respHeaders.clear();
         _respHeaders.read(_conInStream,
                           this,
                           _singleEolChar,
@@ -867,7 +909,8 @@ public class HttpURLConnectInternal
             try
             {
                 _hdrContentLengthInt = Util
-                        .fromBytesAsciiInt(_hdrContentLength);
+                        .fromBytesAsciiInt(_hdrContentLength,
+                                           _hdrContentLengthLen);
                 // Don't bother allocating a stream if there is no data
                 if (_hdrContentLengthInt == 0)
                 {
@@ -914,7 +957,9 @@ public class HttpURLConnectInternal
         // RFC2616, 4.4 item number 3
         if (null != _hdrTransferEncoding)
         {
-            if (Util.bytesEqual(HDR_VALUE_CHUNKED_BYTES, _hdrTransferEncoding))
+            if (Util.bytesEqual(HDR_VALUE_CHUNKED_BYTES,
+                                _hdrTransferEncoding,
+                                _hdrTransferEncodingLen))
             {
                 result = new ChunkedInputStream(_conInStream,
                                                 this,
@@ -1670,7 +1715,7 @@ public class HttpURLConnectInternal
                                                                     .bytesToString(_responseTextBytes,
                                                                                    _responseTextLength),
                                                             _responseCode);
-            rte._location = Util.bytesToString(_hdrLocation);
+            rte._location = Util.bytesToString(_hdrLocation, _hdrLocationLen);
             if (_log.isDebugEnabled())
             {
                 _log.debug("Streaming/pipelining non-OK "
@@ -2368,9 +2413,12 @@ public class HttpURLConnectInternal
         }
 
         if ((null != _hdrConnection && Util.bytesEqual(HDR_VALUE_CLOSE_BYTES,
-                                                       _hdrConnection))
+                                                       _hdrConnection,
+                                                       _hdrConnectionLen))
             || (_hdrProxyConnection != null && Util
-                    .bytesEqual(HDR_VALUE_CLOSE_BYTES, _hdrProxyConnection)))
+                    .bytesEqual(HDR_VALUE_CLOSE_BYTES,
+                                _hdrProxyConnection,
+                                _hdrProxyConnectionLen)))
         {
             _log.debug("Will CLOSE - "
                 + "\"[Proxy-]Connection: close\" header found.");
@@ -2393,7 +2441,9 @@ public class HttpURLConnectInternal
         if (!result && !_http11)
         {
             if (null != _hdrConnection
-                && Util.bytesEqual(HDR_VALUE_KEEP_ALIVE_BYTES, _hdrConnection))
+                && Util.bytesEqual(HDR_VALUE_KEEP_ALIVE_BYTES,
+                                   _hdrConnection,
+                                   _hdrConnectionLen))
             {
                 _log.debug("HTTP/1.0 - Leave OPEN - Keep-Alive");
                 result = false;
@@ -2402,7 +2452,8 @@ public class HttpURLConnectInternal
                 && _connection != null
                 && _connection.isProxied()
                 && Util.bytesEqual(HDR_VALUE_KEEP_ALIVE_BYTES,
-                                   _hdrProxyConnection))
+                                   _hdrProxyConnection,
+                                   _hdrProxyConnectionLen))
             {
                 _log.debug("HTTP/1.0 - Leave OPEN - Proxy Keep-Alive");
                 result = false;

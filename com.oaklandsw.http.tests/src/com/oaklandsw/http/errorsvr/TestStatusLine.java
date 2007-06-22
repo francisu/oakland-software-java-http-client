@@ -100,7 +100,7 @@ public class TestStatusLine extends HttpTestBase
         catch (HttpException ex)
         {
             assertTrue("Wrong exception: " + ex.getMessage(), ex.getMessage()
-                    .indexOf("LF after CR") >= 0);
+                    .indexOf("'\\r'") >= 0);
         }
     }
 

@@ -1246,7 +1246,7 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
             _log.trace("setReqProp: " + key + ": " + value);
 
         checkRequestProp(key, value);
-        _reqHeaders.set(key.getBytes(), value.getBytes());
+        _reqHeaders.set(key, value);
     }
 
     /**
@@ -1257,7 +1257,7 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
         if (_log.isTraceEnabled())
             _log.trace("addReqProp: " + key + ": " + value);
         checkRequestProp(key, value);
-        _reqHeaders.add(key.getBytes(), value.getBytes());
+        _reqHeaders.add(key, value);
     }
 
     /**
@@ -1267,7 +1267,7 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
     {
         if (key == null)
             return null;
-        return Util.bytesToString(_reqHeaders.get(key.getBytes()));
+        return _reqHeaders.getAsString(key);
     }
 
     /**
@@ -1742,7 +1742,7 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
 
         if (name == null)
             return null;
-        return Util.bytesToString(_respHeaders.get(name.getBytes()));
+        return _respHeaders.getAsString(name);
     }
 
     /**
@@ -1771,7 +1771,7 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
             return null;
         }
 
-        return Util.bytesToString(_respHeaders.getKey(keyPosition - 1));
+        return _respHeaders.getKeyAsString(keyPosition - 1);
     }
 
     /**
@@ -1798,7 +1798,7 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
                                                 _responseTextLength)));
         }
 
-        return Util.bytesToString(_respHeaders.get(position - 1));
+        return _respHeaders.getAsString(position - 1);
     }
 
     /**

@@ -9,6 +9,7 @@ package com.oaklandsw.http;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -37,10 +38,16 @@ public class Headers
     // were set/added. Note that remove does not do anything with this.
     protected byte[][]               _headerKeys;
 
+    // The actual length of the key, it is not the length of the byte array
+    protected int[]                  _headerKeysLengths;
+
     // Lower case version of the key for comparison
     protected byte[][]               _headerKeysLc;
 
     protected byte[][]               _headerValues;
+
+    // The actual length of the value, is it not the length of the byte array
+    protected int[]                  _headerValuesLengths;
 
     protected int                    _currentIndex;
 
@@ -54,6 +61,17 @@ public class Headers
     {
         clear();
         _charBuf = new char[INIT_BUF_SIZE];
+    }
+
+    /**
+     * Add a header with the specified key and value.
+     */
+    public final void add(String key, String value)
+    {
+        if (key == null || value == null)
+            throw new IllegalArgumentException("Key or value null");
+
+        add(key.getBytes(), value.getBytes());
     }
 
     /**
@@ -76,9 +94,21 @@ public class Headers
             grow();
 
         _headerKeys[_currentIndex] = key;
+        _headerKeysLengths[_currentIndex] = key.length;
         _headerKeysLc[_currentIndex] = Util.bytesToLower(key);
         _headerValues[_currentIndex] = value;
+        _headerValuesLengths[_currentIndex] = value.length;
         _currentIndex++;
+    }
+
+    /**
+     * Set the specified header to the specified key and value.
+     */
+    public final void set(String key, String value)
+    {
+        if (key == null || value == null)
+            throw new IllegalArgumentException("Key or value null");
+        set(key.getBytes(), value.getBytes());
     }
 
     /**
@@ -101,6 +131,7 @@ public class Headers
         if (i >= 0)
         {
             _headerValues[i] = value;
+            _headerValuesLengths[i] = value.length;
             return;
         }
 
@@ -117,7 +148,9 @@ public class Headers
         for (int i = start; i >= 0; i--)
         {
             if (_headerKeys[i] != null
-                && Util.bytesEqual(_headerKeysLc[i], checkKey))
+                && Util.bytesEqual(checkKey,
+                                   _headerKeysLc[i],
+                                   _headerKeysLengths[i]))
             {
                 return i;
             }
@@ -127,9 +160,20 @@ public class Headers
 
     private final void grow()
     {
-        byte temp[][] = new byte[_headerKeys.length * 2][];
+        byte temp[][];
+        int tempInt[];
+
+        temp = new byte[_headerKeys.length * 2][];
         System.arraycopy(_headerKeys, 0, temp, 0, _headerKeys.length);
         _headerKeys = temp;
+
+        tempInt = new int[_headerKeysLengths.length * 2];
+        System.arraycopy(_headerKeysLengths,
+                         0,
+                         tempInt,
+                         0,
+                         _headerKeysLengths.length);
+        _headerKeysLengths = tempInt;
 
         temp = new byte[_headerKeysLc.length * 2][];
         System.arraycopy(_headerKeysLc, 0, temp, 0, _headerKeysLc.length);
@@ -138,26 +182,73 @@ public class Headers
         temp = new byte[_headerValues.length * 2][];
         System.arraycopy(_headerValues, 0, temp, 0, _headerValues.length);
         _headerValues = temp;
+
+        tempInt = new int[_headerValuesLengths.length * 2];
+        System.arraycopy(_headerValuesLengths,
+                         0,
+                         tempInt,
+                         0,
+                         _headerValuesLengths.length);
+        _headerValuesLengths = tempInt;
+
     }
 
     /**
      * Get the key of the header given the order in which it was set.
      */
-    public final byte[] getKey(int order)
+    public final String getKeyAsString(int order)
     {
         if (order >= _currentIndex)
             return null;
-        return _headerKeys[order];
+        try
+        {
+            return new String(_headerKeys[order],
+                              0,
+                              _headerKeysLengths[order],
+                              Util.ASCII_ENCODING);
+        }
+        catch (UnsupportedEncodingException e)
+        {
+            Util.impossible(e);
+            return null;
+        }
     }
 
     /**
      * Get the value of the header given the order in which it was set.
      */
-    public final byte[] get(int order)
+    public final String getAsString(int order)
     {
         if (order >= _currentIndex)
             return null;
-        return _headerValues[order];
+        try
+        {
+            if (_headerValuesLengths[order] == 0)
+                return null;
+            return new String(_headerValues[order],
+                              0,
+                              _headerValuesLengths[order],
+                              Util.ASCII_ENCODING);
+        }
+        catch (UnsupportedEncodingException e)
+        {
+            Util.impossible(e);
+            return null;
+        }
+    }
+
+    /**
+     * Returns true if the header exists.
+     */
+    public final boolean find(byte[] key)
+    {
+        if (key == null)
+            return false;
+
+        int index = findIndex(key, _currentIndex - 1);
+        if (index >= 0)
+            return true;
+        return false;
     }
 
     /**
@@ -165,15 +256,35 @@ public class Headers
      * one value, the most recently added one is returned to be compatible with
      * the JDK.
      */
-    public final byte[] get(byte[] key)
+    public final String getAsString(byte[] key)
     {
         if (key == null)
             return null;
 
         int index = findIndex(key, _currentIndex - 1);
         if (index >= 0)
-            return _headerValues[index];
+            return getAsString(index);
         return null;
+    }
+
+    /**
+     * Return the value associated with the specified key. If there is more than
+     * one value, the most recently added one is returned to be compatible with
+     * the JDK.
+     */
+    public final String getAsString(String key)
+    {
+        if (key == null)
+            return null;
+        return getAsString(key.getBytes());
+    }
+
+    /**
+     * Removes all headers with the specified key.
+     */
+    public final void remove(String key)
+    {
+        remove(key.getBytes());
     }
 
     /**
@@ -207,234 +318,288 @@ public class Headers
     {
         // Initial size
         _headerKeys = new byte[INIT_HEADER_COUNT][];
+        if (_headerKeysLengths == null)
+            _headerKeysLengths = new int[INIT_HEADER_COUNT];
         _headerKeysLc = new byte[INIT_HEADER_COUNT][];
         _headerValues = new byte[INIT_HEADER_COUNT][];
+        if (_headerValuesLengths == null)
+            _headerValuesLengths = new int[INIT_HEADER_COUNT];
 
         _currentIndex = 0;
     }
 
-    private static final int INIT_BUF_SIZE  = 250;
+    private static final int INIT_BUF_SIZE   = 250;
 
     // States
-    private static final int HEADER         = 0;
-    private static final int AFTER_HEADER   = 1;
-    private static final int VALUE          = 2;
-    private static final int VALUE_CONTINUE = 3;
+    private static final int ST_HEADER_START = 0;
+    private static final int ST_HEADER       = 1;
+    private static final int ST_VALUE        = 2;
+    private static final int ST_BEFORE_VALUE = 3;
+    private static final int ST_VALUE_NL     = 4;
+    private static final int ST_FINISHED     = 5;
 
-    public final void read(ExposedBufferInputStream is, HttpURLConnectInternal urlCon)
+    // We allow CR or LF alone, if singleEolChar is set, LF alone at all times,
+    // but we don't allow LFCR if singleEolChar is not set
+    private void absorbNl(int ch, ExposedBufferInputStream is)
         throws IOException
     {
-        read(is, urlCon, false, 0);
+        // We have read CR, we always expect an NL after that
+
+        // See if we need to fill
+        if (is._pos >= is._used)
+        {
+            is.fill();
+            if (is._used == -1)
+            {
+                throw new IOException("Unexpected EOF in processing headers");
+            }
+        }
+        ch = is._buffer[is._pos++];
+        if (ch != '\n')
+        {
+            throw new HttpException(Util
+                    .escapeForPrint("Expected LF for CRLF pair but got: '"
+                        + Character.toString((char)ch)
+                        + "' (0x"
+                        + Integer.toString(ch, 16)
+                        + ")"));
+        }
     }
 
     public final void read(ExposedBufferInputStream is,
+                           HttpURLConnectInternal urlCon) throws IOException
+    {
+        read(is, urlCon, !SINGLE_EOL_CHAR, 0);
+    }
+
+    public static final boolean SINGLE_EOL_CHAR = true;
+    
+    public final void read(ExposedBufferInputStream is,
                            HttpURLConnectInternal urlCon,
                            boolean singleEolChar,
-                           int savedFirstChar) throws IOException
+                           int savedChar) throws IOException
     {
+        clear();
+
         int ch = 0;
         int ind = 0;
-        boolean atNewLine = true;
-        boolean seenSpace = false;
-        int state = HEADER;
+        int state = ST_HEADER_START;
+        boolean lastCharWasWs = false;
+        boolean valueIsAscii = true;
+
+        // The buffer pointing to the current key or value
+        // being written
+        byte[] keyValueBuffer = null;
 
         _urlCon = urlCon;
         byte[] buffer = is._buffer;
 
         while (true)
         {
-            if (!singleEolChar || savedFirstChar == 0)
+            if (savedChar == 0)
             {
                 // See if we need to fill
                 if (is._pos >= is._used)
                 {
                     is.fill();
                     if (is._used == -1)
-                        break;
+                    {
+                        // We allow the end to be marked with a single EOL
+                        if (state == ST_VALUE_NL)
+                            return;
+                        throw new IOException("Unexpected EOF in processing headers");
+                    }
                 }
                 ch = buffer[is._pos++];
             }
             else
             {
-                // The first character was previously read
-                ch = savedFirstChar;
-                savedFirstChar = 0;
+                // We want to process this char
+                ch = savedChar;
+                savedChar = 0;
             }
-
-            if (ch < 0)
-                break;
-            // System.out.println("main read: " + String.valueOf((char)ch));
-
-            // Handles the case where there are no headers
-            if ((ch == '\n' || ch == '\r') && state == HEADER)
-                state = VALUE;
 
             switch (state)
             {
-                case HEADER:
+                case ST_HEADER_START:
+                    if (ch == '\n' || ch == '\r')
+                    {
+                        // No headers at all
+                        if (!singleEolChar)
+                            absorbNl(ch, is);
+                        return;
+                    }
+
+                    if (_currentIndex >= _headerKeys.length)
+                        grow();
+
+                    // Set up to read the header
+                    ind = 0;
+                    state = ST_HEADER;
+                    keyValueBuffer = _headerKeys[_currentIndex] = new byte[INIT_BUF_SIZE];
+
+                    // Fall through
+
+                case ST_HEADER:
                     // Skip any white space
-                    if (ch == ' ')
-                        continue;
+                    if (ch == ' ' || ch == '\t')
+                        break;
+
                     if (ch == ':')
                     {
-                        if (_currentIndex >= _headerKeys.length)
-                            grow();
-
-                        // Copy directly from the char buf as the key is
-                        // always
-                        // ASCII
-                        byte[] key = new byte[ind];
-                        for (int i = 0; i < ind; i++)
-                            key[i] = (byte)_charBuf[i];
-                        _headerKeys[_currentIndex] = key;
-                        _headerKeysLc[_currentIndex] = Util.bytesToLower(key);
-
-                        // System.out.println("Added header key: "
-                        // + _headerKeys[_currentIndex]);
+                        // The value starts
+                        _headerKeysLc[_currentIndex] = Util
+                                .bytesToLower(_headerKeys[_currentIndex]);
+                        _headerKeysLengths[_currentIndex] = ind;
                         ind = 0;
-                        state = AFTER_HEADER;
-                        continue;
-                    }
-                    break;
-
-                case AFTER_HEADER:
-                case VALUE_CONTINUE:
-                    // Skip leading white space
-                    if (ch == ' ' || ch == '\t')
-                    {
-                        atNewLine = false;
-                        continue;
-                    }
-
-                    state = VALUE;
-                    // Fall through to VALUE
-
-                case VALUE:
-                    if (ch == '\r' || ch == '\n')
-                    {
-                        // System.out.println("VLAUE - newline");
-
-                        if (!singleEolChar)
-                        {
-                            if (ch == '\r')
-                            {
-                                // Read the next line terminator (if CRLF
-                                // seq)
-                                ch = is.read();
-                                // Connection dropped - will retry
-                                if (ch < 0)
-                                    throw new IOException("Premature EOF reading headers");
-                                if (ch != '\n')
-                                {
-                                    throw new HttpException("Expected LF after CR character in header: "
-                                        + new String(_headerKeys[_currentIndex]));
-                                }
-                            }
-                        }
-
-                        // 2nd new line, we are done
-                        if (atNewLine)
-                        {
-                            setValue(ind);
-                            if (_log.isDebugEnabled())
-                                dumpHeaders();
-                            return;
-                        }
-
-                        atNewLine = true;
-                        continue;
-                    }
-
-                    if (atNewLine)
-                    {
-                        // Continuation of value
-                        if (ch == ' ' || ch == '\t')
-                        {
-                            state = VALUE_CONTINUE;
-                            // Add the one white space
-                            ch = ' ';
-                            // Fall through - save character
-                            break;
-                        }
-
-                        // End of value - start new header
-                        setValue(ind);
-                        ind = 0;
-                        state = HEADER;
-                        // Fall through - save character
+                        state = ST_BEFORE_VALUE;
+                        // Assume so unless proven otherwise
+                        valueIsAscii = true;
+                        keyValueBuffer = _headerValues[_currentIndex] = new byte[INIT_BUF_SIZE];
                         break;
                     }
-                    // Fall through - save character
+
+                    // Save the header byte
+                    keyValueBuffer[ind++] = (byte)ch;
+                    if (ind >= keyValueBuffer.length)
+                    {
+                        byte[] newBuf = new byte[keyValueBuffer.length * 2];
+                        System.arraycopy(keyValueBuffer,
+                                         0,
+                                         newBuf,
+                                         0,
+                                         keyValueBuffer.length);
+                        keyValueBuffer = _headerKeys[_currentIndex] = newBuf;
+                    }
+                    break;
+
+                case ST_BEFORE_VALUE:
+                    // Skip leading white space
+                    if (ch == ' ' || ch == '\t')
+                        break;
+
+                    state = ST_VALUE;
+                    // Fall through
+
+                case ST_VALUE:
+                    if (ch == '\r' || ch == '\n')
+                    {
+                        // Remove any trailing blank on the line
+                        if (ind > 0)
+                        {
+                            if (keyValueBuffer[ind - 1] == ' '
+                                || keyValueBuffer[ind - 1] == '\t')
+                                ind -= 1;
+                        }
+
+                        // This may terminate the value (multi-line values are
+                        // allowed), or this may be the start of termination of
+                        // the headers
+                        if (!singleEolChar)
+                            absorbNl(ch, is);
+                        state = ST_VALUE_NL;
+                        break;
+                    }
+
+                    // Eliminate redundant white space in value
+                    if (ch == ' ' || ch == '\t')
+                    {
+                        if (lastCharWasWs)
+                            break;
+                        lastCharWasWs = true;
+                    }
+                    else
+                    {
+                        lastCharWasWs = false;
+                    }
+
+                    // Save the value byte
+                    keyValueBuffer[ind++] = (byte)ch;
+                    if (ch > 0x7f)
+                        valueIsAscii = false;
+                    if (ind >= keyValueBuffer.length)
+                    {
+                        byte[] newBuf = new byte[keyValueBuffer.length * 2];
+                        System.arraycopy(keyValueBuffer,
+                                         0,
+                                         newBuf,
+                                         0,
+                                         keyValueBuffer.length);
+                        keyValueBuffer = _headerValues[_currentIndex] = newBuf;
+                    }
+                    break;
+
+                case ST_VALUE_NL:
+                    if (ch == ' ' || ch == '\t')
+                    {
+                        // Indicates a multi-line value, emit a single
+                        // separator and continue processing the value
+                        // Emit a single space as a separator
+                        keyValueBuffer[ind++] = ' ';
+                        if (ind >= keyValueBuffer.length)
+                        {
+                            byte[] newBuf = new byte[keyValueBuffer.length * 2];
+                            System.arraycopy(keyValueBuffer,
+                                             0,
+                                             newBuf,
+                                             0,
+                                             keyValueBuffer.length);
+                            keyValueBuffer = _headerValues[_currentIndex] = newBuf;
+                        }
+                        state = ST_BEFORE_VALUE;
+                        lastCharWasWs = true;
+                        break;
+                    }
+
+                    // The value is finished at this point
+                    if (keyValueBuffer != null)
+                    {
+                        // There can be only one trailing space since they are
+                        // condensed
+                        if (ind > 0)
+                        {
+                            if (keyValueBuffer[ind - 1] == ' '
+                                || keyValueBuffer[ind - 1] == '\t')
+                                ind -= 1;
+                        }
+
+                        if (!valueIsAscii)
+                        {
+                            String strValue = new String(keyValueBuffer, 0, ind);
+                            _headerValues[_currentIndex] = strValue.getBytes();
+                            _headerValuesLengths[_currentIndex] = _headerValues[_currentIndex].length;
+                        }
+                        else
+                        {
+                            _headerValuesLengths[_currentIndex] = ind;
+                        }
+
+                        // Let the urlCon get the header values it wants
+                        _urlCon
+                                .getHeadersWeNeed(_headerKeysLc[_currentIndex],
+                                                  _headerKeysLengths[_currentIndex],
+                                                  _headerValues[_currentIndex],
+                                                  _headerValuesLengths[_currentIndex]);
+
+                        _currentIndex++;
+                    }
+
+                    if (ch == '\r' || ch == '\n')
+                    {
+                        // This terminates everything
+                        if (!singleEolChar)
+                            absorbNl(ch, is);
+                        // We are done
+                        return;
+                    }
+
+                    // A new header
+                    state = ST_HEADER_START;
+                    // Reprocess this char for the header
+                    savedChar = ch;
                     break;
             }
-
-            // Collapse consecutive spaces
-            if (ch == ' ')
-            {
-                if (seenSpace)
-                    continue;
-                seenSpace = true;
-            }
-            else
-            {
-                seenSpace = false;
-            }
-
-            // Save character
-            atNewLine = false;
-            if (ind >= _charBuf.length)
-                growCharBuf();
-            _charBuf[ind++] = (char)ch;
         }
-    }
-
-    private void setValue(int ind)
-    {
-        // Save buffer as value
-        if (ind > 0)
-        {
-            // Attempt to copy the value as ASCII
-            byte[] value = new byte[ind];
-            int i = 0;
-            for (; i < ind; i++)
-            {
-                if (_charBuf[i] > 0x7f)
-                    break;
-                value[i] = (byte)_charBuf[i];
-            }
-
-            if (i != ind)
-            {
-                // The value is other than ASCII, convert it
-                String strValue = String.copyValueOf(_charBuf, 0, ind).trim();
-                value = strValue.getBytes();
-            }
-            else
-            {
-                // Trim
-                int len = ind;
-                int st = 0;
-
-                while ((st < len) && (value[st] <= ' '))
-                    st++;
-                while ((st < len) && (value[len - 1] <= ' '))
-                    len--;
-                if ((st > 0) || (len < ind + 1))
-                {
-                    byte[] inValue = value;
-                    value = new byte[len];
-                    System.arraycopy(inValue, st, value, 0, len);
-                }
-            }
-
-            _headerValues[_currentIndex] = value;
-
-            // System.out.println("FINAL - Added header val: "
-            // + _headerValues[_currentIndex]);
-            _urlCon.getHeadersWeNeed(_headerKeysLc[_currentIndex],
-                                     _headerValues[_currentIndex]);
-        }
-        _currentIndex++;
     }
 
     public void dumpHeaders()
@@ -463,10 +628,12 @@ public class Headers
             // Get each value for the specified key
             for (int j = 0; j < _currentIndex; j++)
             {
-                if (Util.bytesEqual(_headerKeys[j], key))
-                    values.add(new String(_headerValues[j]));
+                if (Util.bytesEqual(key, _headerKeys[j], _headerKeysLengths[j]))
+                    values.add(new String(_headerValues[j],
+                                          0,
+                                          _headerValuesLengths[j]));
             }
-            map.put(new String(key), values);
+            map.put(new String(key, 0, _headerKeysLengths[i]), values);
         }
         return map;
     }

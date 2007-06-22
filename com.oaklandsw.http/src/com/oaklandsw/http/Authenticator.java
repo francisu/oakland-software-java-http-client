@@ -67,7 +67,6 @@ import org.bouncycastle.util.encoders.Base64;
 
 import com.oaklandsw.http.ntlm.Ntlm;
 import com.oaklandsw.util.LogUtils;
-import com.oaklandsw.util.Util;
 
 /**
  * Utility methods for HTTP authorization and authentication. This class
@@ -514,12 +513,12 @@ public class Authenticator
         int len = authHeaders.length();
         for (int i = 0; i < len; i++)
         {
-            String key = Util.bytesToString(authHeaders.getKey(i));
+            String key = authHeaders.getKeyAsString(i);
             if (key == null)
                 continue;
             if (key.equalsIgnoreCase(authType))
             {
-                challenge = Util.bytesToString(authHeaders.get(i));
+                challenge = authHeaders.getAsString(i);
 
                 // find the blank and parse out the scheme
                 int b = challenge.indexOf(' ');

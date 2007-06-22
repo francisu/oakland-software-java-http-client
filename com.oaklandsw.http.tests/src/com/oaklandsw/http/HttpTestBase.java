@@ -252,7 +252,7 @@ public class HttpTestBase extends com.oaklandsw.TestCaseBase
         InputStream is = urlCon.getInputStream();
         ByteArrayOutputStream os = new ByteArrayOutputStream();
         Util.copyStreams(is, os);
-
+        
         assertEquals(compareCl, os.toByteArray().length);
         is.close();
     }

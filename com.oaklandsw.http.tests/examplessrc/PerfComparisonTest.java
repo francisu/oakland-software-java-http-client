@@ -97,7 +97,8 @@ public class PerfComparisonTest
     {
         //LogUtils.logAll();
         //runSet(CONF_OAKLANDSW_PIPE, SC_LOCAL, TYPE_SMALL, 1);
-        //runSet(CONF_SUN, SC_LOCAL, TYPE_SMALL, 5000);
+        runSet(CONF_SUN, SC_LOCAL, TYPE_SMALL, 5000);
+        Thread.sleep(1000);
         runSet(CONF_OAKLANDSW, SC_LOCAL, TYPE_SMALL, 5000);
         
         // For profiler

@@ -1,8 +1,9 @@
 package com.oaklandsw.http;
 
+import com.oaklandsw.http.errorsvr.TestStatusLine;
 import com.oaklandsw.http.local.TestConnectionManagerLocal;
 import com.oaklandsw.http.local.TestDefaults;
-import com.oaklandsw.http.local.TestHeaders;
+import com.oaklandsw.http.webapp.TestHeaders;
 import com.oaklandsw.http.local.TestHttpStatus;
 import com.oaklandsw.http.local.TestNtlmMessages;
 import com.oaklandsw.http.local.TestRequestHeaders;
@@ -12,6 +13,7 @@ import com.oaklandsw.http.local.TestTimeout;
 import com.oaklandsw.http.local.TestURIUtil;
 import com.oaklandsw.http.webapp.TestBasicAuth;
 import com.oaklandsw.http.webapp.TestRedirect;
+import com.oaklandsw.http.webext.TestHttps;
 import com.oaklandsw.http.webext.TestMethods;
 import com.oaklandsw.http.webext.TestSSL;
 import com.oaklandsw.http.webserver.TestBasicAndDigestAuth;
@@ -40,15 +42,12 @@ public class HttpTestSubset extends HttpTestBase
         // This test must run first
         // suite.addTest(TestProperties.suite());
 
-        suite.addTest(TestRedirect.suite());
-        suite.addTest(TestBasicAuth.suite());
+        if (false)
+        {
         suite.addTest(TestBasicAndDigestAuth.suite());
         suite.addTest(TestSSL.suite());
         suite.addTest(TestMethods.suite());
 
-        if (false)
-        {
-            suite.addTest(TestHeaders.suite());
             suite.addTest(TestHttpStatus.suite());
             suite.addTest(TestDefaults.suite());
             suite.addTest(LocalTestAuthenticator.suite());
@@ -60,8 +59,13 @@ public class HttpTestSubset extends HttpTestBase
             suite.addTest(TestStreams.suite());
             suite.addTest(TestNtlmMessages.suite());
             suite.addTest(TestTimeout.suite());
+            suite.addTest(TestRedirect.suite());
+            suite.addTest(TestBasicAuth.suite());
+            suite.addTest(TestHeaders.suite());
         }
 
+        suite.addTest(TestStatusLine.suite());
+        suite.addTest(TestHttps.suite());
         // suite.addTest(TestLicense.suite());
 
         // suite.addTest(AllCookieTests.suite());
