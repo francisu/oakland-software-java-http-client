@@ -1,3 +1,5 @@
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
@@ -33,6 +35,22 @@ public class TestPerf
 
     public TestPerf()
     {
+    }
+
+    // Read through the input stream
+    public static void processStream(HttpURLConnection urlCon)
+        throws IOException
+    {
+        InputStream inputStream = urlCon.getInputStream();
+        byte[] buffer = new byte[10000];
+        int nb = 0;
+        while (true)
+        {
+            nb = inputStream.read(buffer);
+            if (nb == -1)
+                break;
+        }
+        inputStream.close();
     }
 
     public void run(String args[]) throws Exception
@@ -118,10 +136,14 @@ public class TestPerf
 
         _url = new URL(_urlString);
 
+        // LogUtils.logAll();
+
         // Do one to initialize everything but don't count that
         // in the timing
         if (_warmUp)
             doConnect();
+
+        // LogUtils.logNone();
 
         long startTime = System.currentTimeMillis();
 
@@ -188,28 +210,42 @@ public class TestPerf
 
     public void doConnect() throws Exception
     {
+        // LogUtils.logAll();
         HttpURLConnection urlCon = setupUrlCon();
         if (urlCon.getResponseCode() != 200)
-            throw new RuntimeException("Bad response code");
+        {
+            throw new RuntimeException("Bad response code: "
+                + urlCon.getResponseCode());
+        }
 
-        urlCon.getInputStream().close();
+        processStream(urlCon);
+        
     }
 
     public void testGetMethod() throws Exception
     {
+        SamplePipelineCallback cb = new SamplePipelineCallback();
+        cb._quiet = true;
+
+        com.oaklandsw.http.HttpURLConnection
+                .setDefaultPipelining(_doPipelining);
+        if (_doPipelining)
+        {
+            com.oaklandsw.http.HttpURLConnection.setDefaultMaxTries(10);
+            com.oaklandsw.http.HttpURLConnection.setDefaultCallback(cb);
+        }
+        else
+        {
+            com.oaklandsw.http.HttpURLConnection.setDefaultMaxTries(3);
+            com.oaklandsw.http.HttpURLConnection.setDefaultCallback(null);
+        }
+
         if (!_doPipelining)
         {
             for (int i = 0; i < _times; i++)
                 doConnect();
             return;
         }
-
-        com.oaklandsw.http.HttpURLConnection.setDefaultMaxTries(10);
-        com.oaklandsw.http.HttpURLConnection.setDefaultPipelining(true);
-
-        SamplePipelineCallback cb = new SamplePipelineCallback();
-        cb._quiet = true;
-        com.oaklandsw.http.HttpURLConnection.setDefaultCallback(cb);
 
         for (int i = 0; i < _times; i++)
         {

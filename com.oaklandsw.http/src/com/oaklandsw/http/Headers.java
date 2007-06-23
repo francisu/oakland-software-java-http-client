@@ -354,7 +354,8 @@ public class Headers
                 throw new IOException("Unexpected EOF in processing headers");
             }
         }
-        ch = is._buffer[is._pos++];
+        // Make sure we don't get a negative value
+        ch = 0xff & is._buffer[is._pos++];
         if (ch != '\n')
         {
             throw new HttpException(Util
@@ -373,7 +374,7 @@ public class Headers
     }
 
     public static final boolean SINGLE_EOL_CHAR = true;
-    
+
     public final void read(ExposedBufferInputStream is,
                            HttpURLConnectInternal urlCon,
                            boolean singleEolChar,
@@ -410,7 +411,9 @@ public class Headers
                         throw new IOException("Unexpected EOF in processing headers");
                     }
                 }
-                ch = buffer[is._pos++];
+
+                // Make sure we don't get a negative value
+                ch = 0xff & buffer[is._pos++];
             }
             else
             {

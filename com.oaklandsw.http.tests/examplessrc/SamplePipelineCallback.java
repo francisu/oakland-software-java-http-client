@@ -34,19 +34,9 @@ public class SamplePipelineCallback implements Callback
             {
                 _responses++;
             }
-            
-            // Print the output stream
-            InputStream inputStream = urlCon.getInputStream();
-            byte[] buffer = new byte[10000];
-            int nb = 0;
-            while (true)
-            {
-                nb = inputStream.read(buffer);
-                if (nb == -1)
-                    break;
-                if (false)
-                    System.out.write(buffer, 0, nb);
-            }
+
+            // Read the input stream
+            TestPerf.processStream(urlCon);
         }
         catch (AutomaticHttpRetryException arex)
         {

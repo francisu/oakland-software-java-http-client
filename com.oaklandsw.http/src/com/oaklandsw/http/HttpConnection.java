@@ -1025,14 +1025,12 @@ public class HttpConnection
         if (_wireLog.isDebugEnabled())
         {
             _wireLog.debug("Enabling wire tracing");
-            _input = new WireLogInputStream(is, STREAM_BUFFER_SIZE);
-            _output = new WireLogOutputStream(os);
+            is = new WireLogInputStream(is);
+            os = new WireLogOutputStream(os);
         }
-        else
-        {
-            _input = new ExposedBufferInputStream(is, STREAM_BUFFER_SIZE);
-            _output = new BufferedOutputStream(os, STREAM_BUFFER_SIZE);
-        }
+
+        _input = new ExposedBufferInputStream(is, STREAM_BUFFER_SIZE);
+        _output = new BufferedOutputStream(os, STREAM_BUFFER_SIZE);
 
         _socket.setTcpNoDelay(true);
         _socket.setSoTimeout(_soTimeout);

@@ -7,7 +7,7 @@
 
 package com.oaklandsw.http;
 
-import java.io.BufferedOutputStream;
+import java.io.FilterOutputStream;
 import java.io.OutputStream;
 
 import org.apache.commons.logging.Log;
@@ -18,7 +18,7 @@ import org.apache.commons.logging.LogFactory;
  * 
  */
 
-class WireLogOutputStream extends BufferedOutputStream
+class WireLogOutputStream extends FilterOutputStream
 {
 
     private static final Log _wireLog = LogFactory
@@ -26,9 +26,9 @@ class WireLogOutputStream extends BufferedOutputStream
 
     private StringBuffer     _traceBuff;
 
-    public WireLogOutputStream(OutputStream in)
+    public WireLogOutputStream(OutputStream outStr)
     {
-        super(in);
+        super(outStr);
         _traceBuff = new StringBuffer();
     }
 

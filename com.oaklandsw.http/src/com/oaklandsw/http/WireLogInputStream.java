@@ -58,12 +58,11 @@
 
 package com.oaklandsw.http;
 
+import java.io.FilterInputStream;
 import java.io.InputStream;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
-import com.oaklandsw.util.ExposedBufferInputStream;
 
 /**
  * Logs all data read to the wire log.
@@ -73,7 +72,7 @@ import com.oaklandsw.util.ExposedBufferInputStream;
  * @since 2.0
  */
 
-class WireLogInputStream extends ExposedBufferInputStream
+class WireLogInputStream extends FilterInputStream
 {
 
     private static final Log _wireLog = LogFactory
@@ -81,9 +80,9 @@ class WireLogInputStream extends ExposedBufferInputStream
 
     private StringBuffer     _traceBuff;
 
-    public WireLogInputStream(InputStream inStr, int size)
+    public WireLogInputStream(InputStream inStr)
     {
-        super(inStr, size);
+        super(inStr);
         _traceBuff = new StringBuffer();
     }
 
