@@ -3,91 +3,119 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.PrintWriter;
 import java.text.DateFormat;
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import com.oaklandsw.http.HttpURLConnection;
-import com.oaklandsw.util.Util;
+import com.oaklandsw.util.LogUtils;
 
 /**
  * Performance comparison test script.
  */
 public class PerfComparisonTest
 {
-    public static final int      REPEAT_TIMES        = 4;
+    public static final int        REPEAT_TIMES           = 3;
 
     // Network scenarios
-    public static final int      SC_LOCAL            = 0;
-    public static final int      SC_INTRANET         = 1;
-    public static final int      SC_INTERNET         = 2;
-    public static final int      SC_LAST             = SC_INTERNET;
+    public static final int        SC_LOCAL               = 0;
+    public static final int        SC_INTRANET            = 1;
+    public static final int        SC_INTERNET            = 2;
+    public static final int        SC_LAST                = SC_INTERNET;
 
-    public static final String[] _scenarioNames      = new String[] { "Local",
-        "Intranet", "Internet"                      };
+    public static final String[]   _locationNames         = new String[] {
+        "Local", "Intranet", "Internet"                  };
 
-    // These correspond to the above scenarios
-    public static final String   _urls[]             = {
-        "http://berlioz/oaklandsw-http/", //
-        "http://repoman/noauth/wwwroot/", //
-"http://www.oaklandsoftware.com/"           };
-//    "http://host72.hrwebservices.net/~bigtivo/perftest/gfx/" };
+    // Each array element corresponds to one of the scenarios
+    public static final String[]   _sizeNames             = new String[] {
+        "0K", "3K", "20K", "100K", /*"240K"*/                               };
 
-    // Test types
-    public static final int      TYPE_3K             = 0;
-    public static final int      TYPE_100K           = 1;
+    // Size X location
+    public static final String[][] _sizeUrls              = new String[][] {
+                                                          // 0K (really 10
+        // bytes)
+        { "http://berlioz/oaklandsw-http/latency.txt", //
+        "http://repoman/noauth/wwwroot/latency.txt", //
+        "http://sfo.speakeasy.net/speedtest/latency.txt" },
 
-    public static final String[] _typeNames          = new String[] { "3K",
-        "100K"                                      };
+        // 3K
+        { "http://berlioz/oaklandsw-http/tnet_wht.jpg", //
+        "http://repoman/noauth/wwwroot/tnet_wht.jpg", //
+        "http://host72.hrwebservices.net/~bigtivo/perftest/gfx/tnet_wht.jpg" },
 
-    // Small file to read
-    public static final String   _filesSmall[]       = { "tnet_wht.jpg", //
-        "tnet_wht.jpg", //
-        "tnet_wht.jpg"                              };
+        // 20K
+        { "http://berlioz/oaklandsw-http/20k.jpg", //
+        "http://repoman/noauth/wwwroot/20k.jpg", //
+        "http://i.dslr.net/speedtest/v2/bottom.jpg" },
 
-    public static final String   _files100[]         = { "inspApp.jpg", //
-        "inspApp.jpg", //
-        "inspApp.jpg"                               };
+        // 100K
+        { "http://berlioz/oaklandsw-http/100k", //
+        "http://repoman/noauth/wwwroot/100k", //
+        "http://i.dslr.net/SpeedTests/184/v2/100k" },//  
+        
+        // 240K
+        //{ "http://berlioz/oaklandsw-http/random350x350.jpg", //
+        //"http://repoman/noauth/wwwroot/random350x350.jpg", //
+        //"http://sfo.speakeasy.net/speedtest/random350x350.jpg" },//  
+
+                                                          };
+
+    // Size x location
+    // Don't use these limits for now
+    public static final int[][]    _sizeConnLimits        = new int[][] {
+        { 0, 0, 0 }, { 0, 0, 0 }, { 0, 0, 0 },  { 0, 0, 0 }             };
+
+    // Size x location
+    public static final int[][]    _sizeCounts            = new int[][] {
+        { 1000, 1000, 500 }, { 1000, 1000, 500 }, { 1000, 1000, 500 }, { 1000, 1000, 500 } };
+
+    // Product Pipe depths
+    // Product x pipeline depth
+    public static final int[][]    _pipeDepths            = new int[][] {
+        { 0 }, // Oakland
+        { 1, 2, 50, 100, 200, 0 }, // Oakland Pipe
+        { 0 }, // Sun
+                                                          };
+    // Product Connections Limits
+    // Product x connection limit
+    public static final int[][]    _productConnections    = new int[][] {
+        { 1 }, // Oakland
+        { 2, 5, 10 }, // Oakland Pipe
+        { 1 }, // Sun
+                                                          };
 
     // Configurations
-    public static final int      CONF_OAKLANDSW      = 0;
-    public static final int      CONF_OAKLANDSW_PIPE = 1;
-    public static final int      CONF_SUN            = 2;
-    public static final int      CONF_APACHE         = 3;
+    public static final int        CONF_OAKLANDSW         = 0;
+    public static final int        CONF_OAKLANDSW_PIPE    = 1;
+    public static final int        CONF_SUN               = 2;
+    public static final int        CONF_APACHE            = 3;
 
-    public static final String[] _confNames          = new String[] {
-        "Oakland", "Oakland Pipe", "Sun", "Apache" };
+    public static final String[]   _productNames          = new String[] {
+        "Oakland", "Oakland Pipe", "Sun"                 };
 
-    public PrintWriter           _pw;
+    public PrintWriter             _pw;
 
-    public boolean               _noPrint;
+    public boolean                 _noPrint;
+
+    public int                     _currentMaxConnections;
+    public int                     _currentPipeDepth;
+    public int                     _currentProduct;
+    public int                     _currentSizeIndex;
+    public int                     _currentLocation;
+    public int                     _currentCount;
+
+    public int                     _singleSize            = -1;
+    public int                     _singleLocation        = -1;
+    public int                     _singleConnectionLimit = -1;
+    public int                     _singleProduct         = -1;
 
     // Runs a set of tests
-    public void runSet(int conf, int location, int type, int count, int pdepth)
-        throws Exception
+    public void runSet() throws Exception
     {
-        runSet(conf, location, type, count, pdepth, null);
-    }
+        String url;
 
-    // Runs a set of tests
-    public void runSet(int conf,
-                       int location,
-                       int type,
-                       int count,
-                       int pdepth,
-                       String args[]) throws Exception
-    {
-        TestPerf tp = new TestPerf();
-        String url = _urls[location];
-
-        switch (type)
-        {
-            case TYPE_3K:
-                url += _filesSmall[location];
-                break;
-            case TYPE_100K:
-                url += _files100[location];
-                break;
-        }
+        url = _sizeUrls[_currentSizeIndex][_currentLocation];
+        if (url == null)
+            return;
 
         float minPerTrans = 0;
         float maxPerTrans = 0;
@@ -95,29 +123,25 @@ public class PerfComparisonTest
         float totalPerTrans = 0;
         long totalTime = 0;
 
-        String[] baseRunArgs = new String[] { "-nowarmup", "-quiet", "-url",
-            url, "-pipedepth", Integer.toString(pdepth),
-            conf == CONF_SUN ? "-sun" : "",
-            conf == CONF_OAKLANDSW_PIPE ? "-pipe" : "", "-times",
-            Integer.toString(count) };
-
-        String[] runArgs;
-
-        if (args == null)
-        {
-            runArgs = baseRunArgs;
-        }
-        else
-        {
-            runArgs = new String[baseRunArgs.length + args.length];
-            System.arraycopy(baseRunArgs, 0, runArgs, 0, baseRunArgs.length);
-            System.arraycopy(args, 0, runArgs, baseRunArgs.length, args.length);
-        }
-
         for (int i = 0; i < REPEAT_TIMES; i++)
         {
-            tp = new TestPerf();
-            tp.run(runArgs);
+            TestPerf tp = new TestPerf();
+
+            tp._warmUp = false;
+            tp._urlString = url;
+            tp._pipeDepth = _currentPipeDepth;
+            if (_currentProduct == CONF_SUN)
+                tp._useSun = true;
+            else if (_currentProduct == CONF_OAKLANDSW_PIPE)
+                tp._doPipelining = true;
+            tp._times = _currentCount;
+            tp._maxConn = _currentMaxConnections;
+            tp._quiet = false;
+
+            com.oaklandsw.http.HttpURLConnection
+                    .setDefaultConnectionRequestLimit(_sizeConnLimits[_currentSizeIndex][_currentLocation]);
+
+            tp.run();
 
             if (tp._transTime > maxPerTrans)
                 maxPerTrans = tp._transTime;
@@ -128,16 +152,17 @@ public class PerfComparisonTest
             totalTime += tp._totalTime;
         }
 
-        String str = _scenarioNames[location]
+        String str = _locationNames[_currentLocation]
             + ","
-            + _confNames[conf]
-            + (pdepth > 0 ? "-" + pdepth : "")
+            + _productNames[_currentProduct]
             + ","
-            + _typeNames[type]
+            + _currentMaxConnections
             + ","
-            + count
+            + _sizeNames[_currentSizeIndex]
             + ","
-            + (args != null ? "\"" + Util.arrayToString(args) + "\"" : "")
+            + _currentPipeDepth
+            + ","
+            + _currentCount
             + ","
             + REPEAT_TIMES
             + ","
@@ -165,13 +190,15 @@ public class PerfComparisonTest
     {
         String str = "Where"
             + ","
-            + "Config"
+            + "Product"
             + ","
-            + "Data"
+            + "Connections"
+            + ","
+            + "Size"
+            + ","
+            + "Pipe Depth"
             + ","
             + "Count"
-            + ","
-            + "Args"
             + ","
             + "Repeats"
             + ",Avg/Trans,Min/Trans,Max/Trans,Total";
@@ -186,84 +213,75 @@ public class PerfComparisonTest
         File file = new File(dir + "run" + df.format(new Date()) + ".csv");
         _pw = new PrintWriter(new BufferedOutputStream(new FileOutputStream(file)));
 
-        HttpURLConnection.setMaxConnectionsPerHost(2);
+        printHeader();
 
-        // LogUtils.logAll();
-        if (false)
+        DecimalFormat format = new DecimalFormat("000");
+
+        int logCounter = 1;
+
+        if (!true)
+            LogUtils.logConnFile("/home/francis/logPerf" + "big" + ".txt");
+
+        // Overall looping
+        for (int i = 0; i < 1; i++)
         {
-
-            if (false)
+            for (_currentLocation = 0; _currentLocation < _locationNames.length; _currentLocation++)
             {
-                _noPrint = true;
-                runSet(CONF_SUN, SC_INTERNET, TYPE_3K, 10, 0);
-                _noPrint = false;
-                runSet(CONF_SUN, SC_INTERNET, TYPE_3K, 50, 0);
+                if (_singleLocation != -1
+                    && _currentLocation != _singleLocation)
+                    continue;
+
+                println("");
+
+                for (_currentSizeIndex = 0; _currentSizeIndex < _sizeNames.length; _currentSizeIndex++)
+                {
+                    if (_singleSize != -1 && _currentSizeIndex != _singleSize)
+                        continue;
+
+                    println("");
+
+                    for (_currentProduct = 0; _currentProduct < _productNames.length; _currentProduct++)
+                    {
+                        if (_singleProduct != -1
+                            && _currentProduct != _singleProduct)
+                            continue;
+
+                        for (int connIndex = 0; connIndex < _productConnections[_currentProduct].length; connIndex++)
+                        {
+                            if (_singleConnectionLimit != -1
+                                && connIndex != _singleConnectionLimit)
+                                continue;
+
+                            _currentMaxConnections = _productConnections[_currentProduct][connIndex];
+
+                            for (int pipeIndex = 0; pipeIndex < _pipeDepths[_currentProduct].length; pipeIndex++)
+                            {
+
+                                _currentPipeDepth = _pipeDepths[_currentProduct][pipeIndex];
+
+                                _currentCount = _sizeCounts[_currentSizeIndex][_currentLocation];
+
+                                if (false)
+                                {
+                                    String textCount = format
+                                            .format(logCounter++);
+                                    LogUtils
+                                            .logConnFile("/home/francis/logPerf"
+                                                + textCount
+                                                + ".txt");
+                                }
+
+                                runSet();
+                            }
+                        }
+                    }
+                }
             }
-
-            // Warm up
-            if (true)
-            {
-                _noPrint = true;
-                runSet(CONF_OAKLANDSW, SC_INTRANET, TYPE_100K, 10, 0);
-                _noPrint = false;
-            }
-
-            runSet(CONF_SUN, SC_INTRANET, TYPE_100K, 200, 0);
-            runSet(CONF_OAKLANDSW, SC_INTRANET, TYPE_100K, 200, 0);
-
         }
-
-        if (true)
-        {
-            println(HttpURLConnection.getMaxConnectionsPerHost()
-                + " connections/host");
-            printHeader();
-
-            println("");
-
-            testSet(SC_LOCAL, TYPE_100K, 3000);
-
-            println("");
-
-            testSet(SC_INTRANET, TYPE_100K, 3000);
-
-            println("");
-
-            testSet(SC_INTERNET, TYPE_100K, 1000);
-        }
-
         _pw.close();
 
         // For profiler
         // Thread.sleep(10000000);
-
-    }
-
-    public void testSet(int where, int type, int count) throws Exception
-    {
-        if (false)
-        {
-            runSet(CONF_OAKLANDSW_PIPE, where, type, count, 2);
-            runSet(CONF_OAKLANDSW_PIPE, where, type, count, 10);
-            runSet(CONF_OAKLANDSW_PIPE, where, type, count, 50);
-            runSet(CONF_OAKLANDSW_PIPE, where, type, count, 100);
-            runSet(CONF_OAKLANDSW_PIPE, where, type, count, 200);
-            runSet(CONF_OAKLANDSW_PIPE, where, type, count, 0);
-        }
-
-        // Warm up
-        _noPrint = true;
-        runSet(CONF_SUN, where, type, 10, 0);
-        _noPrint = false;
-
-        runSet(CONF_SUN, where, type, count, 0);
-
-        // Warm up
-        _noPrint = true;
-        runSet(CONF_OAKLANDSW, where, type, 10, 0);
-        _noPrint = false;
-
-        runSet(CONF_OAKLANDSW, where, type, count, 0);
 
     }
 

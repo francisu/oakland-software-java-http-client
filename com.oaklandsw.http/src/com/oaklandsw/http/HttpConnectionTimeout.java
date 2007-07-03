@@ -17,7 +17,7 @@ import com.oaklandsw.util.Util;
  */
 public class HttpConnectionTimeout
 {
-    private static final Log      _log          = LogUtils.makeLogger();
+    private static final Log      _log = LogUtils.makeLogger();
 
     private TimeoutThread         _timeoutThread;
 
@@ -33,13 +33,15 @@ public class HttpConnectionTimeout
     private boolean               _shutdown;
 
     // Object only for synchronization
-    private HttpConnectionManager _lock;
+    private Object                _lock;
 
     private HttpConnectionManager _connManager;
 
     HttpConnectionTimeout(HttpConnectionManager connManager)
     {
-        _lock = connManager;
+        // Don't use the connection manager for a lock, it gets too
+        // many notifies
+        _lock = this;
         _connManager = connManager;
     }
 
@@ -78,56 +80,81 @@ public class HttpConnectionTimeout
                     Util.impossible("Negative delta: " + delta);
             }
 
-            synchronized (_lock)
+            try
             {
-                try
+                boolean checkConnections;
+                long localTimeoutThreadWake = 0;
+                while (true)
                 {
-                    long currentTime = System.currentTimeMillis();
-                    while (_timeoutThreadWake > currentTime)
+                    checkConnections = false;
+                    synchronized (_lock)
                     {
-                        if (_shutdown)
+                        if (localTimeoutThreadWake != 0)
+                            _timeoutThreadWake = localTimeoutThreadWake;
+
+                        long currentTime = System.currentTimeMillis();
+                        if (_timeoutThreadWake > currentTime)
                         {
-                            _log.debug("Timeout thread ending (shutdown)");
-                            return;
-                        }
-                        try
-                        {
-                            if (_log.isDebugEnabled())
+                            if (_shutdown)
                             {
-                                _log.debug("Timeout wake time: "
-                                    + _timeoutThreadWake);
+                                _log.debug("Timeout thread ending (shutdown)");
+                                return;
                             }
-                            long waitTime = _timeoutThreadWake - currentTime;
+                            try
+                            {
+                                long waitTime = _timeoutThreadWake
+                                    - currentTime;
 
-                            // System.out.println("WAITING: currentTime: "
-                            // + currentTime
-                            // + " threadWake: "
-                            // + _timeoutThreadWake
-                            // + " waitTime: "
-                            // + waitTime);
-                            _lock.wait(waitTime);
-                        }
-                        catch (InterruptedException ex)
-                        {
-                            // Ignore
-                        }
+                                if (_log.isDebugEnabled())
+                                {
+                                    _log.debug("Timeout wake time: "
+                                        + _timeoutThreadWake
+                                        + " waitTime: "
+                                        + waitTime);
+                                }
+                                _lock.wait(waitTime);
+                            }
+                            catch (InterruptedException ex)
+                            {
+                                if (_log.isDebugEnabled())
+                                {
+                                    _log.debug("Interrupted at: "
+                                        + System.currentTimeMillis());
+                                }
+                                // Ignore
+                            }
 
-                        if (!_threadNoCheck)
-                        {
-                            _timeoutThreadWake = _connManager
-                                    .checkIdleConnections();
+                            if (!_threadNoCheck)
+                                checkConnections = true;
+                            _threadNoCheck = false;
                         }
-                        _threadNoCheck = false;
-                        currentTime = System.currentTimeMillis();
+                        else
+                        {
+                            _log.debug("Timeout thread ending - nothing to do");
+                            break;
+                        }
                     }
-                    _log.debug("Timeout thread ending - nothing to do");
+
+                    // Have to check the connections outside of the lock
+                    if (checkConnections)
+                    {
+                        localTimeoutThreadWake = _connManager
+                                .checkIdleConnections();
+                    }
+                    else
+                    {
+                        localTimeoutThreadWake = 0;
+                    }
                 }
-                finally
+            }
+            finally
+            {
+                synchronized (_lock)
                 {
                     _timeoutThread = null;
-                    // Shutdown may have been requested while this thread is up
+                    // Shutdown may have been requested while this thread is
+                    // up
                     _shutdown = false;
-
                 }
             }
         }

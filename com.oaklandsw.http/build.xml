@@ -215,6 +215,7 @@
 			<zipfileset dir="../com.oaklandsw.http.tests/examplessrc/" prefix="examples">
 				<include name="**" />
 				<exclude name="Applet**" />
+				<exclude name="PerfCompar**" />
 			</zipfileset>
 			<zipfileset dir="../com.oaklandsw.http.tests/src/" prefix="examples_sp">
 				<include name="sharepoint/*.java" />
@@ -254,6 +255,7 @@
 			<zipfileset dir="../com.oaklandsw.http.tests/examplessrc/" prefix="examples">
 				<include name="**" />
 				<exclude name="Applet**" />
+				<exclude name="PerfCompar**" />
 			</zipfileset>
 			<zipfileset dir="../com.oaklandsw.http.tests/src/" prefix="examples_sp">
 				<include name="sharepoint/*.java" />

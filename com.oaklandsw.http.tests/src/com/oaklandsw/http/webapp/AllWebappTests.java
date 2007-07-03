@@ -26,6 +26,7 @@ public class AllWebappTests extends TestCaseBase
         suite.addTest(TestMethods.suite());
         suite.addTest(TestAuthType.suite());
         suite.addTest(TestPipelining.suite());
+        suite.addTest(TestPipeliningRough.suite());
         suite.addTest(TestOutputStream.suite());
         suite.addTest(TestOutputStreamChunked.suite());
         suite.addTest(TestOutputStreamFixed.suite());

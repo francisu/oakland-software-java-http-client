@@ -409,6 +409,11 @@ public class TestRedirect extends TestWebappBase
     // For explicit close testing
     public void allTestMethods() throws Exception
     {
+        if (false)
+        {
+            LogUtils
+                    .logFile("/home/francis/log4jredir" + _testAllName + ".txt");
+        }
         testRedirectGet301();
         testRedirectGet302();
         testRedirectGet307();

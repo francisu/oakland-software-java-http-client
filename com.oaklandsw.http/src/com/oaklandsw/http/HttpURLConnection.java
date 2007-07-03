@@ -94,6 +94,11 @@ import com.oaklandsw.util.Util14Controller;
  * connection was idle for at least the number of milliseconds specified. See
  * setIdleConnectionPing() and setDefaultIdleConnectionPing().
  * <p>
+ * <code>com.oaklandsw.http.connectionRequestLimit</code>- this is used to
+ * limit the number of requests on a connection. Once this limit is reached, the
+ * connection is closed. See setConnectionRequestLimit() and
+ * setDefaultConnectionRequestLimit().
+ * <p>
  * <code>com.oaklandsw.http.maxConnectionsPerHost</code>- sets the maximum
  * number of connections allowed to a given host:port. If not specified, a
  * default of 2 is assumed. See setMaxConnectionsPerHost().
@@ -104,7 +109,7 @@ import com.oaklandsw.util.Util14Controller;
  * request if this is enabled. The default is 3. See setTries().
  * <p>
  * <code>com.oaklandsw.http.retryInterval</code>- the number of milliseconds
- * to wait before retrying an idempotent request. The default is 50ms. See
+ * to wait before retrying an idempotent request. The default is 0ms. See
  * setRetryInterval().
  * <p>
  * <code>com.oaklandsw.http.pipelining</code>- set to any value to enable
@@ -539,18 +544,8 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
      */
     public static final int                PIPE_MAX_CONNECTIONS                 = 0x02;
 
-    /**
-     * Set the connection depth to be the number of connections observed before
-     * the server closes its connection. Many servers close the socket
-     * connection after a certain number of requests. The HTTP client will note
-     * this number of requests and use this as the pipeline depth for all
-     * connections to that host/port.
-     */
-    public static final int                PIPE_USE_OBSERVED_CONN_LIMIT         = 0x04;
-
     public static final int                PIPE_STANDARD_OPTIONS                = PIPE_PIPELINE
-                                                                                    | PIPE_MAX_CONNECTIONS
-                                                                                    | PIPE_USE_OBSERVED_CONN_LIMIT;
+                                                                                    | PIPE_MAX_CONNECTIONS;
     int                                    _pipeliningOptions;
 
     /**
@@ -569,12 +564,16 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
     // For tests
     public static final int                DEFAULT_IDLE_TIMEOUT                 = 14000;
     public static final int                DEFAULT_IDLE_PING                    = 0;
+    public static final int                DEFAULT_CONNECTION_REQUEST_LIMIT     = 0;
 
     protected static int                   _defaultIdleTimeout                  = DEFAULT_IDLE_TIMEOUT;
     protected int                          _idleTimeout;
 
     protected static int                   _defaultIdlePing                     = DEFAULT_IDLE_PING;
     protected int                          _idlePing;
+
+    protected static int                   _defaultConnectionRequestLimit       = DEFAULT_CONNECTION_REQUEST_LIMIT;
+    protected int                          _connectionRequestLimit;
 
     protected static final boolean         DEFAULT_USE_10_KEEPALIVE             = true;
     protected static boolean               _use10KeepAlive                      = DEFAULT_USE_10_KEEPALIVE;
@@ -589,7 +588,7 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
     // For the connection
     protected int                          _maxTries;
 
-    private static int                     DEFAULT_RETRY_INTERVAL               = 50;
+    private static int                     DEFAULT_RETRY_INTERVAL               = 0;
     protected static int                   _retryInterval                       = DEFAULT_RETRY_INTERVAL;
 
     private static int                     DEFAULT_AUTHENTICATION_TYPE          = 0;
@@ -622,8 +621,11 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
     protected static CookieSpec            _defaultCookieSpec;
     protected CookieSpec                   _cookieSpec;
 
-    /** Whether or not I should use the HTTP/1.1 protocol. */
+    // Use HTTP 1.1?
     protected boolean                      _http11                              = true;
+
+    // Based on the response headers should the connection be closed?
+    protected boolean                      _shouldClose;
 
     private static boolean                 _inLicenseCheck;
 
@@ -727,15 +729,12 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
 
             if (System.getProperty(PROP_SKIP_ENVIRONMENT_INIT) == null)
             {
-
-                String timeoutStr = System
-                        .getProperty("com.oaklandsw.http.timeout");
-                if (timeoutStr != null)
+                String str = System.getProperty("com.oaklandsw.http.timeout");
+                if (str != null)
                 {
                     try
                     {
-                        _defaultConnectionTimeout = Integer
-                                .parseInt(timeoutStr);
+                        _defaultConnectionTimeout = Integer.parseInt(str);
                         _defaultRequestTimeout = _defaultConnectionTimeout;
                         _log.info("Default timeout: "
                             + _defaultConnectionTimeout);
@@ -743,128 +742,138 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
                     catch (Exception ex)
                     {
                         throw new RuntimeException("Invalid value specified for timeout: "
-                            + timeoutStr);
+                            + str);
                     }
                 }
 
-                timeoutStr = System
+                str = System
                         .getProperty("com.oaklandsw.http.idleConnectionTimeout");
-                if (timeoutStr != null)
+                if (str != null)
                 {
                     try
                     {
-                        _defaultIdleTimeout = Integer.parseInt(timeoutStr);
+                        _defaultIdleTimeout = Integer.parseInt(str);
                         _log.info("Default idle connection timeout: "
                             + _defaultIdleTimeout);
                     }
                     catch (Exception ex)
                     {
                         throw new RuntimeException("Invalid value specified for idleConnectionTimeout: "
-                            + timeoutStr);
+                            + str);
                     }
                 }
 
-                timeoutStr = System
+                str = System
                         .getProperty("com.oaklandsw.http.idleConnectionPing");
-                if (timeoutStr != null)
+                if (str != null)
                 {
                     try
                     {
-                        _defaultIdlePing = Integer.parseInt(timeoutStr);
+                        _defaultIdlePing = Integer.parseInt(str);
                         _log.info("Default idle connection ping: "
                             + _defaultIdlePing);
                     }
                     catch (Exception ex)
                     {
                         throw new RuntimeException("Invalid value specified for idleConnectionPing: "
-                            + timeoutStr);
+                            + str);
                     }
                 }
 
-                String followRedirects = System
-                        .getProperty("com.oaklandsw.http.followRedirects");
-                if (followRedirects != null
-                    && followRedirects.equalsIgnoreCase("false"))
+                str = System
+                        .getProperty("com.oaklandsw.http.connectionRequestLimit");
+                if (str != null)
+                {
+                    try
+                    {
+                        _defaultConnectionRequestLimit = Integer.parseInt(str);
+                        _log.info("Default connection request limit: "
+                            + _defaultConnectionRequestLimit);
+                    }
+                    catch (Exception ex)
+                    {
+                        throw new RuntimeException("Invalid value specified for connectionRequestLimit: "
+                            + str);
+                    }
+                }
+
+                str = System.getProperty("com.oaklandsw.http.followRedirects");
+                if (str != null && str.equalsIgnoreCase("false"))
                 {
                     _log.info("Turning OFF follow redirects");
                     java.net.HttpURLConnection.setFollowRedirects(false);
                 }
 
-                String maxConStr = System
+                str = System
                         .getProperty("com.oaklandsw.http.maxConnectionsPerHost");
-                if (maxConStr != null)
+                if (str != null)
                 {
                     try
                     {
-                        setMaxConnectionsPerHost(Integer.parseInt(maxConStr));
-                        _log.info("Max connections per host: " + maxConStr);
+                        setMaxConnectionsPerHost(Integer.parseInt(str));
+                        _log.info("Max connections per host: " + str);
                     }
                     catch (Exception ex)
                     {
                         throw new RuntimeException("Invalid value specified for maxConnectionsPerHost: "
-                            + maxConStr);
+                            + str);
                     }
                 }
 
-                String triesStr = System
-                        .getProperty("com.oaklandsw.http.tries");
-                if (triesStr != null)
+                str = System.getProperty("com.oaklandsw.http.tries");
+                if (str != null)
                 {
                     try
                     {
-                        setDefaultMaxTries(Integer.parseInt(triesStr));
-                        _log.info("Number of tries: " + triesStr);
+                        setDefaultMaxTries(Integer.parseInt(str));
+                        _log.info("Number of tries: " + str);
                     }
                     catch (Exception ex)
                     {
                         throw new RuntimeException("Invalid value specified for tries: "
-                            + triesStr);
+                            + str);
                     }
                 }
 
-                String retryIntervalStr = System
-                        .getProperty("com.oaklandsw.http.retryInterval");
-                if (retryIntervalStr != null)
+                str = System.getProperty("com.oaklandsw.http.retryInterval");
+                if (str != null)
                 {
                     try
                     {
-                        setRetryInterval(Integer.parseInt(retryIntervalStr));
-                        _log.info("Number of retryInterval: "
-                            + retryIntervalStr);
+                        setRetryInterval(Integer.parseInt(str));
+                        _log.info("Number of retryInterval: " + str);
                     }
                     catch (Exception ex)
                     {
                         throw new RuntimeException("Invalid value specified for retryInterval: "
-                            + retryIntervalStr);
+                            + str);
                     }
                 }
 
-                String preemptiveAuth = System
+                str = System
                         .getProperty("com.oaklandsw.http.preemptiveAuthentication");
-                if (preemptiveAuth != null)
+                if (str != null)
                 {
                     setPreemptiveAuthentication(true);
                 }
 
-                String authType = System
+                str = System
                         .getProperty("com.oaklandsw.http.authenticationType");
-                if (authType != null)
+                if (str != null)
                 {
-                    setDefaultAuthenticationType(Authenticator
-                            .schemeToInt(authType));
+                    setDefaultAuthenticationType(Authenticator.schemeToInt(str));
                 }
 
-                authType = System
+                str = System
                         .getProperty("com.oaklandsw.http.proxyAuthenticationType");
-                if (authType != null)
+                if (str != null)
                 {
                     setDefaultProxyAuthenticationType(Authenticator
-                            .schemeToInt(authType));
+                            .schemeToInt(str));
                 }
 
-                String pipelining = System
-                        .getProperty("com.oaklandsw.http.pipelining");
-                if (pipelining != null)
+                str = System.getProperty("com.oaklandsw.http.pipelining");
+                if (str != null)
                 {
                     setDefaultPipelining(true);
                 }
@@ -920,30 +929,30 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
                 }
 
                 if (getProxyHost() != null)
+                {
                     _log
                             .info("Proxy: "
                                 + getProxyHost()
                                 + ":"
                                 + getProxyPort());
+                }
 
                 setNonProxyHosts(System.getProperty("http.nonProxyHosts"));
                 if (getNonProxyHosts() != null)
                     _log.info("Non proxy hosts: " + getNonProxyHosts());
 
-                String ua = System.getProperties()
+                str = System.getProperties()
                         .getProperty("com.oaklandsw.http.userAgent");
-                if (ua != null)
-                    USER_AGENT = ua.getBytes();
+                if (str != null)
+                    USER_AGENT = str.getBytes();
 
-                String cookiePolicy = System
-                        .getProperty("com.oaklandsw.http.cookiePolicy");
-                if (cookiePolicy != null)
+                str = System.getProperty("com.oaklandsw.http.cookiePolicy");
+                if (str != null)
                 {
                     _log.info("Default cookie policy: " + _defaultCookieSpec);
                     // This validates the policy and throws if there is a
                     // problem
-                    _defaultCookieSpec = CookiePolicy
-                            .getCookieSpec(cookiePolicy);
+                    _defaultCookieSpec = CookiePolicy.getCookieSpec(str);
                 }
             }
 
@@ -1131,6 +1140,7 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
         _requestTimeout = _defaultRequestTimeout;
         _idleTimeout = _defaultIdleTimeout;
         _idlePing = _defaultIdlePing;
+        _connectionRequestLimit = _defaultConnectionRequestLimit;
         _maxTries = _defaultMaxTries;
         _cookieContainer = _defaultCookieContainer;
         _cookieSpec = _defaultCookieSpec;
@@ -1416,7 +1426,7 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
                     connected = false;
 
                     boolean closed = false;
-                    if (type == CLOSE || shouldCloseConnection())
+                    if (type == CLOSE || _shouldClose)
                     {
                         _log.debug("releaseConnection: "
                             + "closing the connection.");
@@ -1491,8 +1501,7 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
         }
         catch (MalformedURLException ex)
         {
-            // This should never happen
-            _log.error("Unexpected MalformedURLException (bug): ", ex);
+            Util.impossible("Unexpected MalformedURLException (bug): ", ex);
         }
         catch (HttpTimeoutException tex)
         {
@@ -1581,11 +1590,11 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
             _releaseConnection = release;
 
             _connection.setSoTimeout(_requestTimeout);
-            _connection.setConnectTimeout(_connectionTimeout);
 
             if (!_connection.isOpen())
             {
                 _log.debug("Opening the connection.");
+                _connection.setConnectTimeout(_connectionTimeout);
                 _connection.setSSLSocketFactory(_sslSocketFactory);
                 _connection.setHostnameVerifier(_hostnameVerifier);
                 _connection.open();
@@ -2378,6 +2387,84 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
     }
 
     /**
+     * Return the connection request limit value associated with this
+     * connection.
+     * 
+     * @see #setConnectionRequestLimit(int)
+     * @return the connection request limit value
+     */
+    public int getConnectionRequestLimit()
+    {
+        return _connectionRequestLimit;
+    }
+
+    /**
+     * Sets the number of HttpURLConnection requests that can be used on the
+     * underlying socket connection. After this number is reached, the socket
+     * connection is closed.
+     * <p>
+     * This is useful in certain pipelining situations where the connection
+     * might be closed by the server after a certain number of requests.
+     * However, if the server closes a connection after a certain number of
+     * requests using a Connection-Close header, this fact is automatically
+     * noted and pipelining will not send more than that observed number of
+     * requests on a socket connection.
+     * 
+     * @param requests
+     *            number of requests allowed for each underlying socket
+     *            connection
+     */
+    public void setConnectionRequestLimit(int requests)
+    {
+        if (_log.isDebugEnabled())
+            _log.debug("setConnectionRequestLimit: " + requests);
+        _connectionRequestLimit = requests;
+    }
+
+    /**
+     * Return the default idle connection ping value.
+     * 
+     * @return the default idle connection ping value.
+     */
+    public static int getDefaultConnectionRequestLimit()
+    {
+        return _defaultConnectionRequestLimit;
+    }
+
+    /**
+     * Set the default idle connection request limit value.
+     * 
+     * This is equivalent to setting the
+     * <code>com.oaklandsw.http.connectionRequestLimit</code> property.
+     * 
+     * @See #setConnectionRequestLimit(int).
+     * @param requests
+     *            number of requests allowed for each underlying socket
+     *            connection
+     */
+    public static void setDefaultConnectionRequestLimit(int requests)
+    {
+        if (_log.isDebugEnabled())
+            _log.debug("setDefaultConnectionRequestLimit: " + requests);
+        _defaultConnectionRequestLimit = requests;
+    }
+
+    /**
+     * Set the default idle connection ping value to its default value (0
+     * seconds).
+     * 
+     */
+    public static void setDefaultConnectionRequestLimit()
+    {
+        if (_log.isDebugEnabled())
+        {
+            _log.debug("setDefaultConnectionRequestLimit (Default): "
+                + DEFAULT_CONNECTION_REQUEST_LIMIT);
+        }
+        _defaultConnectionRequestLimit = DEFAULT_CONNECTION_REQUEST_LIMIT;
+    }
+
+    /**
      * This returns true. All connections are assumed that they will get an
      * input stream and close it if the connection succeeds.
      * 
@@ -2510,7 +2597,7 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
 
     /**
      * Set the interval to wait before each retry of a failed request. This
-     * value defaults to 50 (milliseconds).
+     * value defaults to 0 (milliseconds).
      * 
      * @param ms
      *            the interval to wait in milliseconds.
@@ -2801,8 +2888,8 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
      * response is received. This can have a substantial performance benefit if
      * you are fetching multiple objects from the same server.
      * <p>
-     * By default, the following pipeline options are set: PIPE_PIPELINE,
-     * PIPE_MAX_CONNECTIONS and PIPE_USE_OBSERVED_CONN_LIMIT
+     * By default, the following pipeline options are set: PIPE_PIPELINE and
+     * PIPE_MAX_CONNECTIONS.
      * 
      * @param enabled
      *            true if enabled for this connection
@@ -2841,8 +2928,6 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
             sb.append("PIPE_PIPELINE ");
         if ((options & PIPE_MAX_CONNECTIONS) != 0)
             sb.append("PIPE_MAX_CONNECTIONS ");
-        if ((options & PIPE_USE_OBSERVED_CONN_LIMIT) != 0)
-            sb.append("PIPE_USE_OBSERVED_CONN_LIMIT");
         return sb.toString();
     }
 
@@ -3348,6 +3433,14 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
     public static String getStatistics()
     {
         return _connManager.getStatistics();
+    }
+
+    /**
+     * Resets the statistics counters.
+     */
+    public static void resetStatistics()
+    {
+        _connManager.resetStatistics();
     }
 
     public static void dumpAll()

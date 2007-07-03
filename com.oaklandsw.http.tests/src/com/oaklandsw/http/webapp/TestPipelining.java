@@ -7,6 +7,7 @@ import org.apache.commons.logging.Log;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
+import com.oaklandsw.http.HttpConnectionManager;
 import com.oaklandsw.http.HttpURLConnection;
 import com.oaklandsw.http.PipelineTester;
 import com.oaklandsw.http.servlet.ParamServlet;
@@ -29,7 +30,7 @@ public class TestPipelining extends TestWebappBase
 
         // Netproxy seems to drop requests
         _doAuthCloseProxyTest = false;
-        
+
         //_logging = true;
     }
 
@@ -47,6 +48,8 @@ public class TestPipelining extends TestWebappBase
     public void setUp() throws Exception
     {
         super.setUp();
+        //LogUtils.logFile("/home/francis/log4jpipeALL.txt");
+
         _showStats = true;
     }
 
@@ -117,6 +120,23 @@ public class TestPipelining extends TestWebappBase
         testSimple(110);
     }
 
+    // 100 is the point where the connection is closed from the server
+    public void testSimple110ReqLimit() throws Exception
+    {
+        if (_logging)
+        {
+            LogUtils.logFile("/home/francis/log4jpipe110l"
+                + _testAllName
+                + ".txt");
+        }
+        //logAll();
+        // LogUtils.logConnOnly();
+
+        HttpURLConnection.setMaxConnectionsPerHost(1);
+        HttpURLConnection.setDefaultConnectionRequestLimit(100);
+        testSimple(110);
+    }
+
     public void testSimple500() throws Exception
     {
         if (_logging)
@@ -125,6 +145,20 @@ public class TestPipelining extends TestWebappBase
                 + _testAllName
                 + ".txt");
         }
+        testSimple(500);
+    }
+
+    public void testSimple500ReqLimit() throws Exception
+    {
+        if (_logging)
+        {
+            LogUtils.logFile("/home/francis/log4jpipe1500l"
+                + _testAllName
+                + ".txt");
+        }
+
+        HttpURLConnection.setMaxConnectionsPerHost(1);
+        HttpURLConnection.setDefaultConnectionRequestLimit(100);
         testSimple(500);
     }
 
@@ -141,7 +175,7 @@ public class TestPipelining extends TestWebappBase
 
     public void testSimple5000() throws Exception
     {
-        if (_logging)
+        if ( _logging)
         {
             LogUtils.logFile("/home/francis/log4jpipe5000"
                 + _testAllName
@@ -152,7 +186,35 @@ public class TestPipelining extends TestWebappBase
 
     public void testSimple10000() throws Exception
     {
+        if ( _logging)
+        {
+            LogUtils.logFile("/home/francis/log4jpipe10000"
+                + _testAllName
+                + ".txt");
+        }
         testSimple(10000);
+    }
+
+    // Make sure the pipeling depth limit is respected
+    public void testSimpleDepth() throws Exception
+    {
+        if (_logging)
+        {
+            LogUtils.logFile("/home/francis/log4jpipeDepth"
+                + _testAllName
+                + ".txt");
+        }
+
+        _pipelineMaxDepth = 10;
+
+        testSimple(100);
+
+        assertTrue(HttpURLConnection.getConnectionManager()
+                .getCount(HttpConnectionManager.COUNT_PIPELINE_DEPTH_HIGH) <= 10);
+
+        // For the testAll case, make sure we don't interfere
+        // with other tests
+        _pipelineMaxDepth = 0;
     }
 
     protected void testThreaded(int threadCount, final int num)
@@ -300,18 +362,38 @@ public class TestPipelining extends TestWebappBase
 
     public void allTestMethods() throws Exception
     {
-        // _showStats = false;
-        // System.out.println("---------------- All: " + _testAllName);
-        // LogUtils.logFile("/home/francis/log4jpipeProxy.txt");
+        if (false)
+        {
+            _showStats = false;
+            System.out.println("---------------- All: " + _testAllName);
+            LogUtils.logFile("/home/francis/log4jpipeAll"
+                + _testAllName
+                + ".txt");
+        }
 
         testSimple1();
         testSimple2();
         testSimple10();
         testSimple100();
+        testSimple110();
+        System.out.println("----------------    110ReqLimit");
+        testSimple110ReqLimit();
+        System.out.println("----------------    500");
         testSimple500();
+        System.out.println("----------------    500ReqLimit");
+        testSimple500ReqLimit();
+        System.out.println("----------------    Depth");
 
+        // SimpleDepth depends on reset statistics
+        HttpURLConnection.resetStatistics();
+        HttpURLConnection.closeAllPooledConnections();
+        testSimpleDepth();
+
+        System.out.println("----------------    Threaded1");
         testThreaded1();
+        System.out.println("----------------    Threaded2");
         testThreaded2();
+        System.out.println("----------------    Threaded3");
         testThreaded3();
     }
 

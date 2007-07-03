@@ -32,6 +32,12 @@ public class TestAuthType extends TestWebappBase
     {
         mainRun(suite(), args);
     }
+    
+    public void setUp() throws Exception
+    {
+        super.setUp();
+        //logAll();
+    }
 
     protected static final boolean PREEMPTIVE = true;
 

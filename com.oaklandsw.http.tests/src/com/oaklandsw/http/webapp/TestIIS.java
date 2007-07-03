@@ -88,7 +88,7 @@ public class TestIIS extends HttpTestBase
         int response = 0;
 
         String str = "lname=lastName123&fname=firstName123";
-        
+
         _urlCon = (HttpURLConnection)url.openConnection();
         _urlCon.setAuthenticationType(Credential.AUTH_NTLM);
         setupStreaming(_urlCon, str.length());
@@ -371,7 +371,7 @@ public class TestIIS extends HttpTestBase
         if (false && _in10ProxyTest)
             LogUtils.logFile("/home/francis/log4j10proxy.txt");
 
-       //LogUtils.logWireOnly();
+        // LogUtils.logWireOnly();
 
         test100PostNormal();
         test110PostClose();
@@ -383,8 +383,8 @@ public class TestIIS extends HttpTestBase
         test240GetPipeline1();
         test240GetPipeline2();
 
-        // if (_in10ProxyTest)
-        // LogUtils.logAll();
+        if (false && _in10ProxyTest)
+            LogUtils.logConnOnly();
         test240GetPipeline10();
         int count = 1;
         if (_in10ProxyTest)

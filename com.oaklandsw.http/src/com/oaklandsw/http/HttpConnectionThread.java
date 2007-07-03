@@ -4,6 +4,7 @@
 package com.oaklandsw.http;
 
 import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import com.oaklandsw.util.LogUtils;
 
@@ -17,6 +18,9 @@ import edu.emory.mathcs.backport.java.util.concurrent.TimeUnit;
 public class HttpConnectionThread extends Thread
 {
     private static final Log _log                 = LogUtils.makeLogger();
+
+    private static final Log _connLog             = LogFactory
+                                                          .getLog(HttpConnection.CONN_LOG);
 
     // Amount of time in milliseconds this connection will wait for work before
     // exiting
@@ -42,8 +46,8 @@ public class HttpConnectionThread extends Thread
 
         BlockingQueue queue = _connection._queue;
 
-        if (_log.isDebugEnabled())
-            _log.debug("starting");
+        if (_connLog.isDebugEnabled())
+            _connLog.debug("starting");
 
         try
         {
@@ -55,7 +59,7 @@ public class HttpConnectionThread extends Thread
                 obj = queue.poll(CONNECTION_WAIT_TIME, TimeUnit.MILLISECONDS);
                 if (obj instanceof HttpConnectionManager.CloseMarker)
                 {
-                    _log.debug("Exiting due to receipt of CloseMarker");
+                    _connLog.debug("Exiting due to receipt of CloseMarker");
                     return;
                 }
 
@@ -72,9 +76,9 @@ public class HttpConnectionThread extends Thread
                         if (obj == null
                             || obj instanceof HttpConnectionManager.CloseMarker)
                         {
-                            if (_log.isDebugEnabled())
+                            if (_connLog.isDebugEnabled())
                             {
-                                _log.debug(this
+                                _connLog.debug(this
                                     + " pipelined pool connection "
                                     + "timeout (or close) - terminating after "
                                     + CONNECTION_WAIT_TIME
@@ -96,8 +100,8 @@ public class HttpConnectionThread extends Thread
         }
         catch (InterruptedException e)
         {
-            if (_log.isDebugEnabled())
-                _log.debug(this + " interrupted - exiting");
+            if (_connLog.isDebugEnabled())
+                _connLog.debug(this + " interrupted - exiting");
         }
         finally
         {

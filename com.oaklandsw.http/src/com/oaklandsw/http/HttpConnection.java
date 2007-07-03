@@ -93,11 +93,13 @@ public class HttpConnection
 {
     public static final String WIRE_LOG           = LogUtils.LOG_PREFIX
                                                       + LogUtils.LOG_WIRE_PREFIX;
+    public static final String CONN_LOG           = LogUtils.LOG_PREFIX
+                                                      + LogUtils.LOG_CONN_PREFIX;
 
     private static final Log   _log               = LogUtils.makeLogger();
 
-    /** Log for any wire messages. */
     private static final Log   _wireLog           = LogFactory.getLog(WIRE_LOG);
+    private static final Log   _connLog           = LogFactory.getLog(CONN_LOG);
 
     private static final int   STREAM_BUFFER_SIZE = 16384;
 
@@ -185,7 +187,7 @@ public class HttpConnection
     // The total number of urlcons written to this connection
     int                        _totalReqUrlConCount;
 
-    // The total number of urlcons read from this connection
+    // The total number of urlcons responded on this connection
     int                        _totalResUrlConCount;
 
     // The threads accessing a connection now. In general,
@@ -219,6 +221,9 @@ public class HttpConnection
     // True when this connection is released back to the connection manager,
     // used to detect a double release
     boolean                    _released;
+
+    // REMOVEME
+    boolean                    _onAvailQueue;
 
     // The current thread reading from this connection
     Thread                     _bugCatchReadThread;
@@ -303,9 +308,9 @@ public class HttpConnection
             int proxyIncarnation,
             String handle)
     {
-        if (_log.isDebugEnabled())
+        if (_connLog.isDebugEnabled())
         {
-            _log.debug("constructor for "
+            _connLog.debug("constructor for "
                 + host
                 + ":"
                 + port
@@ -387,14 +392,15 @@ public class HttpConnection
         }
         catch (IllegalAccessException iae)
         {
-            _log.error(iae);
+            _connLog.error(iae);
             throw new RuntimeException("Unexpected exception: " + iae);
 
         }
         catch (InvocationTargetException ite)
         {
             Object targetException = ite.getTargetException();
-            _log.error("Unexpected exception: ", (Throwable)targetException);
+            _connLog
+                    .error("Unexpected exception: ", (Throwable)targetException);
             // It had better be a RuntimeException
             throw (RuntimeException)targetException;
         }
@@ -418,14 +424,15 @@ public class HttpConnection
         }
         catch (IllegalAccessException iae)
         {
-            _log.error(iae);
+            _connLog.error(iae);
             throw new RuntimeException("Unexpected exception: " + iae);
 
         }
         catch (InvocationTargetException ite)
         {
             Object targetException = ite.getTargetException();
-            _log.error("Unexpected exception: ", (Throwable)targetException);
+            _connLog
+                    .error("Unexpected exception: ", (Throwable)targetException);
             // It had better be a RuntimeException
             throw (RuntimeException)targetException;
         }
@@ -510,9 +517,9 @@ public class HttpConnection
 
     void setCredentialSent(int authType, int normalOrProxy, UserCredential cred)
     {
-        if (_log.isDebugEnabled())
+        if (_connLog.isDebugEnabled())
         {
-            _log.debug("Credential sent authType: "
+            _connLog.debug("Credential sent authType: "
                 + HttpURLConnectInternal.authTypeToString(authType)
                 + " cred: "
                 + cred
@@ -540,7 +547,7 @@ public class HttpConnection
             return;
         }
 
-        _log.trace("checkConnection - doing ping");
+        _connLog.trace("checkConnection - doing ping");
 
         _output.write(PING_MSG);
         _output.write(_hostPortURL.getBytes());
@@ -594,7 +601,7 @@ public class HttpConnection
                     }
                     if (closedInd >= CLOSED_LEN)
                     {
-                        _log
+                        _connLog
                                 .debug("Found closed connection on checkConnection");
                         throw new IOException("Connection: closed detected on checkConnection");
                     }
@@ -707,9 +714,13 @@ public class HttpConnection
         throws SocketException,
             IllegalStateException
     {
-        if (_log.isDebugEnabled())
-            _log.debug("setSoTimeout(" + timeout + ")");
+        if (_soTimeout == timeout)
+            return;
+
         _soTimeout = timeout;
+
+        if (_connLog.isDebugEnabled())
+            _connLog.debug("setSoTimeout(" + timeout + ")");
         if (_socket != null)
         {
             _socket.setSoTimeout(timeout);
@@ -720,8 +731,8 @@ public class HttpConnection
         throws SocketException,
             IllegalStateException
     {
-        if (_log.isDebugEnabled())
-            _log.debug("setConnectTimeout(" + timeout + ")");
+        if (_connLog.isDebugEnabled())
+            _connLog.debug("setConnectTimeout(" + timeout + ")");
         _connectTimeout = timeout;
     }
 
@@ -744,7 +755,7 @@ public class HttpConnection
             }
         }
 
-        _log.trace("open");
+        _connLog.trace("open");
         if (null == _socket)
             normalOpen();
     }
@@ -767,7 +778,8 @@ public class HttpConnection
             }
             catch (SocketTimeoutException tex)
             {
-                _log.debug("Connection timeout after (ms): " + _connectTimeout);
+                _connLog.debug("Connection timeout after (ms): "
+                    + _connectTimeout);
                 throw new HttpTimeoutException();
             }
 
@@ -777,7 +789,7 @@ public class HttpConnection
                     throw (IOException)ex;
                 if (ex instanceof RuntimeException)
                     throw (RuntimeException)ex;
-                _log.error(ex);
+                _connLog.error(ex);
                 throw new IOException("Unexpected exception: " + ex);
             }
 
@@ -797,7 +809,7 @@ public class HttpConnection
             // To simulate a connection timeout
             if (_testTimeout > 0)
             {
-                _log.info("Simulating test timeout: " + _testTimeout);
+                _connLog.info("Simulating test timeout: " + _testTimeout);
                 Thread.sleep(_testTimeout);
                 return;
             }
@@ -805,7 +817,7 @@ public class HttpConnection
         catch (InterruptedException ex)
         {
             // Will happen when the timeout occurs
-            _log.info("test timeout interrupted: " + hashCode());
+            _connLog.info("test timeout interrupted: " + hashCode());
             return;
         }
 
@@ -816,7 +828,7 @@ public class HttpConnection
         {
             if (isProxied())
             {
-                _log.debug("creating tunnel");
+                _connLog.debug("creating tunnel");
 
                 _tunnelCon = new HttpURLConnectInternal();
 
@@ -836,12 +848,12 @@ public class HttpConnection
             }
 
             // Switch socket to SSL
-            if (_log.isDebugEnabled())
-                _log.debug("switching to ssl: " + _hostPort);
+            if (_connLog.isDebugEnabled())
+                _connLog.debug("switching to ssl: " + _hostPort);
 
             if (_sslSocketFactory == null)
             {
-                _log.error("SSLSocketFactory not specified");
+                _connLog.error("SSLSocketFactory not specified");
                 throw new IOException("SSLSocketFactory not specified");
             }
 
@@ -849,9 +861,9 @@ public class HttpConnection
                                                      _host,
                                                      _port,
                                                      true);
-            if (_log.isDebugEnabled())
+            if (_connLog.isDebugEnabled())
             {
-                _log.debug("created socket: " + _socket);
+                _connLog.debug("created socket: " + _socket);
             }
 
             if (_socket == null)
@@ -869,9 +881,9 @@ public class HttpConnection
 
             SSLSocket sslSocket = (SSLSocket)_socket;
 
-            if (_log.isDebugEnabled())
+            if (_connLog.isDebugEnabled())
             {
-                _log.debug("socket session: " + sslSocket.getSession());
+                _connLog.debug("socket session: " + sslSocket.getSession());
             }
 
             if (sslSocket.getSession() == null)
@@ -912,13 +924,12 @@ public class HttpConnection
             _state = CS_OPEN;
         }
 
-        if (_log.isDebugEnabled())
+        if (_connLog.isDebugEnabled())
         {
-            _log
-                    .debug("opened connection to: "
-                        + this
-                        + " (socket) "
-                        + _socket);
+            _connLog.debug("opened connection to: "
+                + this
+                + " (socket) "
+                + _socket);
         }
     }
 
@@ -935,7 +946,7 @@ public class HttpConnection
             int cnStart = dnStr.indexOf("CN=");
             if (cnStart == -1)
             {
-                _log.error("Common name (CN) not found in: " + dnStr);
+                _connLog.error("Common name (CN) not found in: " + dnStr);
                 // allow the connection
                 return;
             }
@@ -950,9 +961,9 @@ public class HttpConnection
                 certHost = dnStr.substring(cnStart);
             certHost = certHost.toLowerCase();
 
-            if (_log.isDebugEnabled())
+            if (_connLog.isDebugEnabled())
             {
-                _log.debug("certHost: "
+                _connLog.debug("certHost: "
                     + certHost
                     + " prin name: "
                     + dn.getName());
@@ -961,7 +972,7 @@ public class HttpConnection
 
         catch (Exception ex)
         {
-            _log.error("Exception when getting cert name: ", ex);
+            _connLog.error("Exception when getting cert name: ", ex);
             // allow the connection
             return;
         }
@@ -974,45 +985,44 @@ public class HttpConnection
         if (!certHost.equals(hostName.toLowerCase())
             && _hostnameVerifier != null)
         {
-            _log
-                    .info("Cert host: "
-                        + certHost
-                        + " does not match: "
-                        + hostName);
+            _connLog.info("Cert host: "
+                + certHost
+                + " does not match: "
+                + hostName);
             SSLSession sess = ((SSLSocket)_socket).getSession();
             // if (_hostnameVerifier instanceof HostnameVerifier)
             // {
             try
             {
-                _log.debug("Calling oaklandsw verifier");
+                _connLog.debug("Calling oaklandsw verifier");
                 result = _hostnameVerifier.verify(hostName, sess);
             }
             catch (Exception ex)
             {
-                _log.error("Unexpected exception from verifier: ", ex);
+                _connLog.error("Unexpected exception from verifier: ", ex);
                 throw new IOException("Unexpected exception from verifier: "
                     + ex);
             }
             /*
-             * Don't need this for now } else { _log.debug("Calling 1.4
+             * Don't need this for now } else { _connLog.debug("Calling 1.4
              * verifier"); Boolean r; try {
              * 
              * r = (Boolean)HttpURLConnection._hostnameVerifierMethod.
              * invoke(_hostnameVerifier, new Object[] { hostName, sess } ); }
-             * catch (IllegalAccessException ex) { _log.error("Unexpected
+             * catch (IllegalAccessException ex) { _connLog.error("Unexpected
              * exception: " + ex); throw new IOException("Unexpected exception
              * during cert verify: " + ex); } catch (InvocationTargetException
-             * itex) { _log.error("Unexpected exception: " + itex); throw new
-             * IOException("Unexpected exception during cert verify: " + itex); }
-             * result = r.booleanValue(); }
+             * itex) { _connLog.error("Unexpected exception: " + itex); throw
+             * new IOException("Unexpected exception during cert verify: " +
+             * itex); } result = r.booleanValue(); }
              */
 
             if (!result)
             {
-                _log.debug("verifier failed");
+                _connLog.debug("verifier failed");
                 throw new IOException("Connection rejected due to failure of hostname verification");
             }
-            _log.debug("verifier passed");
+            _connLog.debug("verifier passed");
 
         }
     }
@@ -1047,23 +1057,19 @@ public class HttpConnection
         return !isProxied() || _tunnelEstablished;
     }
 
-    public BufferedOutputStream getOutputStream()
-        throws IOException,
-            IllegalStateException
+    public BufferedOutputStream getOutputStream() throws IOException
     {
-        _log.trace("getOutputStream");
+        _connLog.trace("getOutputStream");
         if (_output == null)
-            throw new IllegalStateException("Connection is not open");
+            throw new IOException("Connection is not open");
         return _output;
     }
 
-    public ExposedBufferInputStream getInputStream()
-        throws IOException,
-            IllegalStateException
+    public ExposedBufferInputStream getInputStream() throws IOException
     {
-        _log.trace("getInputStream");
+        _connLog.trace("getInputStream");
         if (_input == null)
-            throw new IllegalStateException("Connection is not open");
+            throw new IOException("Connection is not open");
         return _input;
     }
 
@@ -1081,6 +1087,7 @@ public class HttpConnection
                     + " amount: "
                     + amount);
             }
+
             if (_pipelineUrlConCount < 0)
             {
                 Util.impossible("_pipelingUrlConCount underflow: "
@@ -1098,6 +1105,13 @@ public class HttpConnection
                 }
             }
         }
+
+        // If we are freeing a pipeling slot, poke the CM so that
+        // anyone waiting on pipeline depth to be available will
+        // be woken
+        if (amount < 0)
+            _connManager.pipelineReadCompleted();
+
     }
 
     int getPipelinedUrlConCount()
@@ -1109,14 +1123,14 @@ public class HttpConnection
     }
 
     //
-    // In the 3 methods below, we use the _connManger lock because
-    // we don't want the connection to close while the connManager
-    // is working with the connections
-    //
+    // In the locking for the close wait stuff, it can be
+    // called from inside of the connection manager, so
+    // nothing should be called (in the CM or anything that calls the CM) while
+    // this close lock (this object) is locked.
 
     void startPreventClose()
     {
-        synchronized (_connManager)
+        synchronized (this)
         {
             _preventCloseList.add(Thread.currentThread());
         }
@@ -1124,7 +1138,7 @@ public class HttpConnection
 
     void endPreventClose()
     {
-        synchronized (_connManager)
+        synchronized (this)
         {
             // Could happen because we already removed ourselve when
             // closing
@@ -1135,84 +1149,97 @@ public class HttpConnection
             // the connection), that's harmless
             _preventCloseList.remove(Thread.currentThread());
             if (_preventCloseList.size() == 0)
-                _connManager.notifyAll();
+                notifyAll();
         }
     }
 
-    /**
-     * Close my socket and streams.
-     */
     public void close()
     {
-        if (_log.isDebugEnabled())
-            _log.debug("CLOSE " + this);
+        close(WAIT);
+    }
+
+    static final boolean WAIT = true;
+
+    /**
+     * Low-level close of this connection, releases the socket and stream
+     * resources. Specify wait if willing to wait to be allowed to close.
+     */
+    void close(boolean wait)
+    {
+        if (_connLog.isDebugEnabled())
+            _connLog.debug("close " + this);
 
         // This thread is allowed to close
         endPreventClose();
 
         // If there is another thread accessing the connection
         // we have to wait
-        synchronized (_connManager)
+        synchronized (this)
         {
             while (_preventCloseList.size() > 0)
             {
                 try
                 {
-                    _log.debug("Waiting to close");
-                    _connManager.wait();
+                    if (!wait)
+                    {
+                        Util
+                                .impossible("Should not wait for connection to close");
+                    }
+                    _connLog.debug("Waiting to close");
+                    wait();
                 }
                 catch (InterruptedException e)
                 {
-                    _log.warn("Closing thread interrupted");
+                    _connLog.warn("Closing thread interrupted");
                     return;
                 }
             }
 
-            _log.debug("Completing close");
-            _state = CS_CLOSED;
             _tunnelEstablished = false;
-        }
+            _state = CS_CLOSED;
+            _connLog.debug("Completing close: \n" + dump(0));
 
-        if (null != _input)
-        {
-            try
+            if (null != _input)
             {
-                _input.close();
+                try
+                {
+                    _input.close();
+                }
+                catch (Exception ex)
+                {
+                    _connLog.warn("Exception caught when closing input", ex);
+                    // ignored
+                }
+                _input = null;
             }
-            catch (Exception ex)
-            {
-                _log.warn("Exception caught when closing input", ex);
-                // ignored
-            }
-            _input = null;
-        }
 
-        if (null != _output)
-        {
-            try
+            if (null != _output)
             {
-                _output.close();
+                try
+                {
+                    _output.close();
+                }
+                catch (Exception ex)
+                {
+                    _connLog.debug("Exception caught when closing output", ex);
+                    // ignored
+                }
+                _output = null;
             }
-            catch (Exception ex)
-            {
-                _log.debug("Exception caught when closing output", ex);
-                // ignored
-            }
-            _output = null;
-        }
 
-        if (null != _socket)
-        {
-            try
+            if (null != _socket)
             {
-                _socket.close();
+                try
+                {
+                    _socket.close();
+                }
+                catch (Exception ex)
+                {
+                    _connLog.debug("Exception caught when closing socket", ex);
+                    // ignored
+                }
+                _socket = null;
             }
-            catch (Exception ex)
-            {
-                _log.debug("Exception caught when closing socket", ex);
-                // ignored
-            }
-            _socket = null;
         }
 
     }
@@ -1300,12 +1327,12 @@ public class HttpConnection
         StringBuffer sb = new StringBuffer();
 
         sb.append(Util.indent(indent));
-        sb.append("Total responded urlcons:      "
-            + _totalResUrlConCount
-            + "\n");
-        sb.append(Util.indent(indent));
         sb.append("Total requested urlcons:      "
             + _totalReqUrlConCount
+            + "\n");
+        sb.append(Util.indent(indent));
+        sb.append("Total responded urlcons:      "
+            + _totalResUrlConCount
             + "\n");
         sb.append(Util.indent(indent));
         sb.append("Current pipelined urlcons:    "

@@ -19,6 +19,7 @@ import java.net.URL;
 import java.util.Map;
 
 import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import com.oaklandsw.http.cookie.MalformedCookieException;
 import com.oaklandsw.util.ExposedBufferInputStream;
@@ -35,6 +36,9 @@ public class HttpURLConnectInternal
         com.oaklandsw.http.HttpURLConnection
 {
     private static final Log _log                 = LogUtils.makeLogger();
+
+    private static final Log _connLog             = LogFactory
+                                                          .getLog(HttpConnection.CONN_LOG);
 
     private String           _pathQuery;
 
@@ -108,6 +112,11 @@ public class HttpURLConnectInternal
     // 407, -1 indicates we have not started authentication so we don't know
     protected int            _currentAuthType     = -1;
 
+    // We requested that this connection be closed by sending a Connection:
+    // close header. In case that request is not honored, we will close the
+    // connection anyway.
+    protected boolean        _connectionCloseSent;
+
     // The credentials that were sent in the authentication. We have
     // to have them both here and in the HTTPConnection. They are here
     // because NTLM authentication closes the connection during
@@ -157,6 +166,9 @@ public class HttpURLConnectInternal
     protected static int     _diagSequence;
     public static boolean    _addDiagSequence;
 
+    // Used for testing, see TestPipelineRough
+    public static boolean    _ignoreObservedMaxCount;
+
     /**
      * Maximum number of redirects to forward through.
      */
@@ -191,12 +203,8 @@ public class HttpURLConnectInternal
                 return "AS_NONE";
             case AS_NEEDS_AUTH:
                 return "AS_NEEDS_AUTH";
-                // case AS_INITIAL_AUTH_RECD:
-                // return "AS_INITIAL_AUTH_RECD";
             case AS_INITIAL_AUTH_SENT:
                 return "AS_INITIAL_AUTH_SENT";
-                // case AS_FINAL_AUTH_RECD:
-                // return "AS_FINAL_AUTH_RECD";
             case AS_FINAL_AUTH_SENT:
                 return "AS_FINAL_AUTH_SENT";
             case AS_AUTHENTICATED:
@@ -371,6 +379,22 @@ public class HttpURLConnectInternal
 
         }
 
+        // Last request on the connection that has a limit, close it
+        if (_connectionRequestLimit != 0
+            && _connection._totalReqUrlConCount == _connectionRequestLimit)
+        {
+            if (_connection.isProxied())
+            {
+                _reqHeaders.add(HDR_PROXY_CONNECTION_BYTES,
+                                HDR_VALUE_CLOSE_BYTES);
+            }
+            else
+            {
+                _reqHeaders.add(HDR_CONNECTION_BYTES, HDR_VALUE_CLOSE_BYTES);
+            }
+            _connectionCloseSent = true;
+        }
+
         if (_cookieContainer != null && !_cookieContainer.isEmpty())
         {
             Cookie[] cookies = _cookieSpec.match(_connection._host,
@@ -482,7 +506,7 @@ public class HttpURLConnectInternal
         }
 
         // Add headers for HTTP 1.0 support
-        if (_use10KeepAlive)
+        if (_use10KeepAlive && !_connectionCloseSent)
         {
             if (_connection.isProxied())
             {
@@ -508,7 +532,7 @@ public class HttpURLConnectInternal
 
     }
 
-    protected final void resetBeforeRead()
+    protected final void resetBeforeRequest()
     {
         _hdrContentLength = null;
         _hdrContentLengthInt = 0;
@@ -524,15 +548,20 @@ public class HttpURLConnectInternal
         _responseStream = null;
         _savedAfterStatusNextChar = 0;
         _singleEolChar = false;
+        _shouldClose = false;
+        _connectionCloseSent = false;
     }
 
     protected final void readResponse() throws IOException
     {
         _connection.startReadBugCheck();
-
         readStatusLine();
         readResponseHeaders();
         isResponseEmpty();
+
+        _connection.setLastTimeUsed();
+
+        _shouldClose = shouldCloseConnection();
 
         if (!_responseIsEmpty)
         {
@@ -552,9 +581,9 @@ public class HttpURLConnectInternal
                 try
                 {
                     int count = Util.copyStreams(_responseStream, baStream);
-                    if (_log.isDebugEnabled())
+                    if (_connLog.isDebugEnabled())
                     {
-                        _log.debug("Copied "
+                        _connLog.debug("Copied "
                             + count
                             + " bytes from connection "
                             + "that's closing");
@@ -563,7 +592,7 @@ public class HttpURLConnectInternal
                 catch (IOException e)
                 {
                     // We tried
-                    _log.debug("Error while copying stream from "
+                    _connLog.debug("Error while copying stream from "
                         + "connection that's closing", e);
                 }
 
@@ -919,14 +948,14 @@ public class HttpURLConnectInternal
                 else if (_responseCode == HttpStatus.SC_NO_CONTENT
                     || _responseCode == HttpStatus.SC_NOT_MODIFIED)
                 {
-                    _log.warn("Response code 204/304 sent and non-zero "
+                    _connLog.warn("Response code 204/304 sent and non-zero "
                         + "Content-Length was specified - ignoring");
                     _responseIsEmpty = true;
                 }
             }
             catch (NumberFormatException e)
             {
-                _log.warn("Invalid Content-Length response value read: "
+                _connLog.warn("Invalid Content-Length response value read: "
                     + _hdrContentLength);
                 throw new HttpException("Invalid Content-Length "
                     + "response header value: "
@@ -950,7 +979,6 @@ public class HttpURLConnectInternal
         // In case there have been retries
         _responseStream = null;
 
-        boolean shouldClose = shouldCloseConnection();
         InputStream result = null;
 
         // We use Transfer-Encoding if present and ignore Content-Length.
@@ -982,7 +1010,7 @@ public class HttpURLConnectInternal
             // called on it.
             _responseStream = new ReleaseInputStream(_conInStream,
                                                      this,
-                                                     shouldClose);
+                                                     _shouldClose);
             // Don't wrap this in the auto close stream since it will
             // already handle that
             return;
@@ -992,7 +1020,7 @@ public class HttpURLConnectInternal
             return;
 
         // This closes the connection when the end of the data is reached
-        if (shouldClose)
+        if (_shouldClose)
             result = new AutoCloseInputStream(result, this);
 
         _responseStream = result;
@@ -1000,7 +1028,11 @@ public class HttpURLConnectInternal
 
     protected final void writeRequest() throws IOException
     {
-        _log.debug("writeRequest");
+        // Resets all of the read state so we are not looking
+        // at stale state while processing the write
+        resetBeforeRequest();
+
+        _log.trace("writeRequest");
         writeRequestLine();
         writeRequestHeaders();
         _conOutStream.write(Util.CRLF_BYTES);
@@ -1010,17 +1042,13 @@ public class HttpURLConnectInternal
         {
             if (_authenticationDummyContent != null)
             {
-                _log.debug("writeRequest - writing dummy auth content: "
+                _connLog.debug("writeRequest - writing dummy auth content: "
                     + _authenticationDummyContent);
                 _conOutStream.write(_authenticationDummyContent.getBytes());
                 _conOutStream.flush();
                 _dummyAuthRequestSent = true;
             }
         }
-
-        // Resets all of the read state so we are not looking
-        // at stale state while processing the write
-        resetBeforeRead();
 
         // We don't write the body in streaming mode, the user does
         // that
@@ -1050,7 +1078,7 @@ public class HttpURLConnectInternal
         // write the data
         if (useDummyAuthContent() && _authenticationDummyMethod != null)
         {
-            _log.debug("writeRequestLine - setting dummy auth method to: "
+            _connLog.debug("writeRequestLine - setting dummy auth method to: "
                 + _authenticationDummyMethod);
             _actualMethodPropsSent = getMethodProperties(_authenticationDummyMethod);
             _dummyAuthRequestSent = true;
@@ -1228,7 +1256,7 @@ public class HttpURLConnectInternal
                 if (_responseCode <= 299 && _dummyAuthRequestSent)
                 {
                     String str = "Retrying request because of positive reponse to dummy auth request";
-                    _log.debug(str);
+                    _connLog.debug(str);
 
                     setAuthState(AS_AUTHENTICATED, _currentAuthType);
                     _tryCount = 0;
@@ -1248,7 +1276,7 @@ public class HttpURLConnectInternal
                             + _responseCode
                             + " during pipelined read on: "
                             + this;
-                        _log.debug(str);
+                        _connLog.debug(str);
 
                         // Resent authentication state based on response
                         if (_responseCode == HttpStatus.SC_UNAUTHORIZED)
@@ -1282,7 +1310,7 @@ public class HttpURLConnectInternal
             // Reset everything before we read again, the first
             // resetBeforeRead() is called after we write the request
             if (_responseCode < HttpStatus.SC_OK)
-                resetBeforeRead();
+                resetBeforeRequest();
         }
         while (_responseCode < HttpStatus.SC_OK);
 
@@ -1403,9 +1431,9 @@ public class HttpURLConnectInternal
                         {
                             try
                             {
-                                if (_log.isDebugEnabled())
+                                if (_connLog.isDebugEnabled())
                                 {
-                                    _log.debug("Before retry sleep: "
+                                    _connLog.debug("Before retry sleep: "
                                         + _retryInterval);
                                 }
                                 Thread.sleep(_retryInterval);
@@ -1455,7 +1483,7 @@ public class HttpURLConnectInternal
                         setAuthState(AS_NEEDS_AUTH, _currentAuthType);
                         String str = "Authentication sequence interrupted "
                             + "because found authenticated connection - retry";
-                        _log.debug(str);
+                        _connLog.debug(str);
                         // FIXME we should throw something different because
                         // this will cause the connection to close and that's
                         // not what we want, we just cannot use this connection
@@ -1469,22 +1497,12 @@ public class HttpURLConnectInternal
                     {
                         if ((_pipeliningOptions & PIPE_PIPELINE) != 0)
                             _connection.startPreventClose();
-
-                        // Make sure it's still open at this point, can't close
-                        // until end prevent close
-                        if (false && !_connection.isOpen())
-                        {
-                            throw new IOException("Connection: "
-                                + _connection
-                                + " closed");
-                        }
                         writeRequest();
                     }
                     finally
                     {
                         if ((_pipeliningOptions & PIPE_PIPELINE) != 0)
                             _connection.endPreventClose();
-
                     }
 
                     // The user writes the request in streaming/pipelining mode
@@ -1493,7 +1511,6 @@ public class HttpURLConnectInternal
                         _log.debug("processRequest - "
                             + "streaming/pipelining exiting "
                             + "after request written");
-
                         return;
                     }
                 }
@@ -1510,16 +1527,16 @@ public class HttpURLConnectInternal
             catch (HttpException httpe)
             {
                 // This is non-recoverable, throw it up to the user
-                _log.info("HttpException when writing "
+                _connLog.info("HttpException when writing "
                     + "request/reading response: ", httpe);
                 // Handled at a higher level
                 throw httpe;
             }
             catch (IOException ioe)
             {
-                if (_log.isDebugEnabled())
+                if (_connLog.isDebugEnabled())
                 {
-                    _log.debug("IOException when writing "
+                    _connLog.debug("IOException when writing "
                         + "request/reading response: ", ioe);
                 }
 
@@ -1536,15 +1553,16 @@ public class HttpURLConnectInternal
                 // Pipelining and before write sent, retry here
                 if ((_pipeliningOptions & PIPE_PIPELINE) != 0 && !_requestSent)
                 {
-                    _log.debug("Retrying pipelining before request sent");
+                    _connLog.debug("Retrying pipelining before request sent");
                     // fall through and retry
                 }
                 else if (readSeparateFromWrite())
                 {
-                    if (_log.isWarnEnabled())
+                    if (_connLog.isWarnEnabled())
                     {
-                        _log.warn("Retry not allowed for a streaming urlcon: "
-                            + this);
+                        _connLog
+                                .warn("Retry not allowed for a streaming urlcon: "
+                                    + this);
                     }
                     // For pipelining in the read, retry happens at a higher
                     // level
@@ -1583,9 +1601,11 @@ public class HttpURLConnectInternal
             return false;
         }
 
-        if (_log.isDebugEnabled())
+        if (_connLog.isDebugEnabled())
         {
-            _log.debug("Redirect requested to location '" + _hdrLocation + "'");
+            _connLog.debug("Redirect requested to location '"
+                + _hdrLocation
+                + "'");
         }
 
         // rfc2616 demands the location value be a complete URI
@@ -1611,7 +1631,7 @@ public class HttpURLConnectInternal
             }
             catch (Exception ex)
             {
-                _log.error("Redirected location '"
+                _connLog.error("Redirected location '"
                     + _hdrLocation
                     + "' is malformed");
                 return false;
@@ -1625,9 +1645,9 @@ public class HttpURLConnectInternal
 
         // change the path and query string to the redirect
         String newPathQuery = URIUtil.getPathQuery(u.toExternalForm());
-        if (_log.isDebugEnabled())
+        if (_connLog.isDebugEnabled())
         {
-            _log.debug("Changing path/query from \""
+            _connLog.debug("Changing path/query from \""
                 + _pathQuery
                 + "\" to \""
                 + newPathQuery
@@ -1682,7 +1702,7 @@ public class HttpURLConnectInternal
         {
             // Don't show this to the user, just indicate that we are
             // authenticated
-            _log.warn("Exception processing authentication response: ", ex);
+            _connLog.warn("Exception processing authentication response: ", ex);
             return false;
         }
 
@@ -1690,7 +1710,7 @@ public class HttpURLConnectInternal
         {
             // won't be able to authenticate to this challenge
             // without additional information
-            _log.debug("Server demands "
+            _connLog.debug("Server demands "
                 + "authentication credentials, but none are "
                 + "available, so aborting.");
         }
@@ -1716,9 +1736,9 @@ public class HttpURLConnectInternal
                                                                                    _responseTextLength),
                                                             _responseCode);
             rte._location = Util.bytesToString(_hdrLocation, _hdrLocationLen);
-            if (_log.isDebugEnabled())
+            if (_connLog.isDebugEnabled())
             {
-                _log.debug("Streaming/pipelining non-OK "
+                _connLog.debug("Streaming/pipelining non-OK "
                     + "response, throwing", rte);
             }
             throw rte;
@@ -1791,7 +1811,7 @@ public class HttpURLConnectInternal
                     if (_forwardAuthCount == 1
                         && (isStreaming() || (_pipeliningOptions & PIPE_PIPELINE) != 0))
                     {
-                        _log.warn("setAuthenticationType() specified with "
+                        _connLog.warn("setAuthenticationType() specified with "
                             + "pipelining/streaming, but no authorization "
                             + "is required - retrying");
 
@@ -1808,9 +1828,9 @@ public class HttpURLConnectInternal
 
             }
 
-            if (shouldCloseConnection())
+            if (_shouldClose)
             {
-                closeConnection();
+                releaseConnection(CLOSE);
             }
             else
             {
@@ -1826,7 +1846,7 @@ public class HttpURLConnectInternal
 
         }
 
-        _log.error("Giving up after "
+        _connLog.error("Giving up after "
             + MAX_FORWARDS
             + " forwards/authentication restarts");
         throw new HttpException("Maximum redirects/authentication restarts ("
@@ -1862,7 +1882,7 @@ public class HttpURLConnectInternal
         catch (InterruptedIOException ioiex)
         {
             // Timeout
-            _log.info("Timeout when reading response: ", ioiex);
+            _connLog.info("Timeout when reading response: ", ioiex);
             releaseConnection(CLOSE);
             _dead = true;
             throw new HttpTimeoutException();
@@ -1876,14 +1896,14 @@ public class HttpURLConnectInternal
         }
         catch (RuntimeException re)
         {
-            _log.error("Unexpected exception processing request ", re);
+            _connLog.error("Unexpected exception processing request ", re);
             releaseConnection(CLOSE);
             _dead = true;
             throw re;
         }
         catch (Error e)
         {
-            _log.error("Unexpected error processing request ", e);
+            _connLog.error("Unexpected error processing request ", e);
             releaseConnection(CLOSE);
             _dead = true;
             throw e;
@@ -2010,12 +2030,11 @@ public class HttpURLConnectInternal
         {
             // Some problem writing, pass this to the user, we have
             // already retried if possible
-            if (_log.isDebugEnabled())
+            if (_connLog.isDebugEnabled())
             {
-                _log
-                        .debug("processPipelineWrite "
-                            + "exception writing: "
-                            + ex);
+                _connLog.debug("processPipelineWrite "
+                    + "exception writing: "
+                    + ex);
             }
 
             // We got so far as to get a connection, we need to indicate
@@ -2025,9 +2044,9 @@ public class HttpURLConnectInternal
 
             if (ex instanceof AutomaticHttpRetryException)
             {
-                if (_log.isDebugEnabled())
+                if (_connLog.isDebugEnabled())
                 {
-                    _log.debug("processPipelinedWrite "
+                    _connLog.debug("processPipelinedWrite "
                         + "AutomaticHttpRetryException thrown while writing "
                         + "Callback - attempting retry ", ex);
                 }
@@ -2041,16 +2060,18 @@ public class HttpURLConnectInternal
             }
 
             // We are done with this urlcon
-            if (_log.isDebugEnabled())
-                _log.debug("urlConWasRead (write error): " + this);
+            if (_connLog.isDebugEnabled())
+                _connLog.debug("urlConWasRead (write error): " + this);
             _connManager.urlConWasRead(_thread);
 
             // Something is really wrong, blow out of here, so the main
             // caller sees the problem
             if (ex instanceof RuntimeException)
             {
-                _log.warn("Unexpected RuntimeException, not calling callback: "
-                    + this, ex);
+                _connLog
+                        .warn("Unexpected RuntimeException, not calling callback: "
+                                  + this,
+                              ex);
                 throw (RuntimeException)ex;
             }
 
@@ -2102,12 +2123,9 @@ public class HttpURLConnectInternal
                     connection.startReadBugCheck();
 
                     // Do this check inside of the startPreventClose() block
-                    // (above)
-                    // the connection cannot be closed by another thread after
-                    // that
-                    // point, but we want to make sure it is still open before
-                    // we
-                    // try to read it
+                    // (above) the connection cannot be closed by another thread
+                    // after that point, but we want to make sure it is still
+                    // open before we try to read it
                     if (!connection.isOpen())
                         throw new IOException("Connection is closed when reading response");
 
@@ -2121,9 +2139,9 @@ public class HttpURLConnectInternal
                     {
                         _requestSent = true;
 
-                        if (_log.isDebugEnabled())
+                        if (_connLog.isDebugEnabled())
                         {
-                            _log.debug("processPipelinedRead "
+                            _connLog.debug("processPipelinedRead "
                                 + "unexpected authentication - "
                                 + "wrote authentication and returning");
                         }
@@ -2163,7 +2181,7 @@ public class HttpURLConnectInternal
                         + " is: "
                         + is);
                     if (ex != null)
-                        _log.debug("processPipelinedRead: EXCEPTION", ex);
+                        _connLog.debug("processPipelinedRead: EXCEPTION", ex);
                 }
 
                 Exception saveExc = _ioException;
@@ -2182,9 +2200,9 @@ public class HttpURLConnectInternal
                     // then do the retry
                     if (_ioException instanceof AutomaticHttpRetryException)
                     {
-                        if (_log.isDebugEnabled())
+                        if (_connLog.isDebugEnabled())
                         {
-                            _log.debug("processPipelinedRead "
+                            _connLog.debug("processPipelinedRead "
                                 + "AutomaticHttpRetryException thrown in "
                                 + "Callback - attempting retry ", _ioException);
                         }
@@ -2200,7 +2218,7 @@ public class HttpURLConnectInternal
                 catch (Throwable t)
                 {
                     // Ignore this
-                    _log.error("Exception thrown out of "
+                    _connLog.error("Exception thrown out of "
                         + "Callback.readResponse() for: "
                         + this
                         + " conn: "
@@ -2226,12 +2244,14 @@ public class HttpURLConnectInternal
                 catch (IOException iex)
                 {
                     // We don't care about exception during close
-                    if (_log.isInfoEnabled())
+                    if (_connLog.isInfoEnabled())
                     {
-                        _log.info("Exception during close of InputStream for: "
-                            + this
-                            + " conn: "
-                            + _connection, iex);
+                        _connLog
+                                .info("Exception during close of InputStream for: "
+                                          + this
+                                          + " conn: "
+                                          + _connection,
+                                      iex);
                     }
                 }
 
@@ -2246,7 +2266,12 @@ public class HttpURLConnectInternal
                     _log.debug("processPipelineRead - SUCCESS");
                     _connection.adjustPipelinedUrlConCount(-1);
                     if (_log.isDebugEnabled())
-                        _log.debug("urlConWasRead (read success): " + this);
+                    {
+                        _log.debug("urlConWasRead (read success): "
+                            + this
+                            + " total reqs/con: "
+                            + _connection._totalReqUrlConCount);
+                    }
                     _connManager.urlConWasRead(_thread);
                 }
             }
@@ -2261,11 +2286,13 @@ public class HttpURLConnectInternal
         // If allowed, give it another go
         if (_tryCount < _maxTries)
         {
-            if (_log.isDebugEnabled())
+            if (_connLog.isDebugEnabled())
             {
-                _log.debug("pipelined RETRY (exception) " + this, iex);
+                _connLog.debug("pipelined RETRY (exception) " + this, iex);
             }
-            // System.out.println("processPipelineRead RETRY " + this);
+
+            releaseConnection(CLOSE);
+
             // FIXME - make this cleanup a little more sane
             _dead = false;
             _requestSent = false;
@@ -2274,9 +2301,9 @@ public class HttpURLConnectInternal
             _connManager.recordRetry(_connManager._pipelineReadRetryCounts,
                                      _tryCount);
             processPipelinedWrite();
-            if (_log.isDebugEnabled())
+            if (_connLog.isDebugEnabled())
             {
-                _log.debug("pipelined FINISHED RETRY " + this);
+                _connLog.debug("pipelined FINISHED RETRY " + this);
             }
             return null;
         }
@@ -2301,7 +2328,7 @@ public class HttpURLConnectInternal
         if ((_pipeliningOptions & PIPE_PIPELINE) != 0)
             str += "Consider increasing maxTries. ";
 
-        _log.warn(str);
+        _connLog.warn(str);
 
         // Give it a wrapper to show how hard we tried
         HttpException retryFailed = new HttpException(str);
@@ -2345,14 +2372,14 @@ public class HttpURLConnectInternal
                 catch (InterruptedException e)
                 {
                     _dead = true;
-                    _log.warn("Thread interrupted", e);
+                    _connLog.warn("Thread interrupted", e);
                     return;
                 }
             }
         }
         else
         {
-            _log.debug("streaming write failed");
+            _connLog.debug("streaming write failed");
             // Release and close the connection since there is something wrong
             releaseConnection(CLOSE);
             _dead = true;
@@ -2391,14 +2418,7 @@ public class HttpURLConnectInternal
         }
     }
 
-    private final void closeConnection()
-    {
-        if (shouldCloseConnection())
-        {
-            releaseConnection(CLOSE);
-        }
-    }
-
+    // Returns true if should close the connection
     protected final boolean shouldCloseConnection()
     {
         boolean result = false;
@@ -2410,28 +2430,68 @@ public class HttpURLConnectInternal
                 _log.debug("shouldClose: NTLMLeaveOpen: "
                     + _connection._ntlmLeaveOpen);
             }
+
+            // REMOVEME
+            if (false
+                && _connectionRequestLimit != 0
+                && _connection._totalReqUrlConCount >= _connectionRequestLimit)
+            {
+                if (_connLog.isDebugEnabled())
+                {
+                    _connLog.debug("Will CLOSE - connReqLimit: "
+                        + _connectionRequestLimit);
+                }
+                result = true;
+
+            }
         }
 
-        if ((null != _hdrConnection && Util.bytesEqual(HDR_VALUE_CLOSE_BYTES,
-                                                       _hdrConnection,
-                                                       _hdrConnectionLen))
+        if (_connectionCloseSent
+            || (_hdrConnection != null && Util
+                    .bytesEqual(HDR_VALUE_CLOSE_BYTES,
+                                _hdrConnection,
+                                _hdrConnectionLen))
             || (_hdrProxyConnection != null && Util
                     .bytesEqual(HDR_VALUE_CLOSE_BYTES,
                                 _hdrProxyConnection,
                                 _hdrProxyConnectionLen)))
         {
-            _log.debug("Will CLOSE - "
-                + "\"[Proxy-]Connection: close\" header found.");
+            _connLog.debug("Will CLOSE - "
+                + "\"[Proxy-]Connection: close\" header found or sent.");
 
             if (_connection != null)
             {
-                if (false)
+                // Don't set the observed limits for connection closings related
+                // to authentication
+                if (_currentAuthType < 0
+                    || _authState[_currentAuthType] >= AS_AUTHENTICATED)
                 {
-                    System.out.println("Setting max url cons at close: "
-                        + _connection._totalResUrlConCount);
+                    // Record the number of urlcons allowed before this got
+                    // closed, don't count it if only one urlcon happened, as
+                    // this is the case for NTLM authentication and it's not
+                    // really the limit. Note that we can't test that we are
+                    // actually in NTLM authentication here, since this is
+                    // called before the NTLM authentication state is setup.
+                    // Also, only update the observed max if it's less, some
+                    // sites have been known to vary; let's be conservative
+                    if (_connection._totalResUrlConCount > 1
+                        && !_ignoreObservedMaxCount
+                        && (_connection._totalResUrlConCount <= _connection._connectionInfo._observedMaxUrlCons || _connection._connectionInfo._observedMaxUrlCons == 0))
+                    {
+                        // Add one because this urlcon's response is not in the
+                        // count yet (it will be later)
+                        _connection._connectionInfo._observedMaxUrlCons = _connection._totalResUrlConCount + 1;
+                        if (_connLog.isDebugEnabled())
+                        {
+                            _connLog
+                                    .debug("Recording observed max: "
+                                        + _connection._connectionInfo._observedMaxUrlCons
+                                        + " for "
+                                        + _connection);
+                        }
+
+                    }
                 }
-                // Record the number of urlcons allowed before this got closed
-                _connection._connectionInfo._observedMaxUrlCons = _connection._totalResUrlConCount;
             }
 
             result = true;
@@ -2471,7 +2531,7 @@ public class HttpURLConnectInternal
             }
             else
             {
-                _log.debug("HTTP/1.0 - Will CLOSE connection");
+                _connLog.debug("HTTP/1.0 - Will CLOSE connection");
                 result = true;
             }
         }
@@ -2501,7 +2561,7 @@ public class HttpURLConnectInternal
             releaseConnection(CLOSE);
         }
 
-        _log.info("Discarding response body - flushed " + len + " bytes ");
+        _connLog.info("Discarding response body - flushed " + len + " bytes ");
     }
 
 }

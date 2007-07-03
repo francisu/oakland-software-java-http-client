@@ -8,6 +8,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import com.oaklandsw.util.LogUtils;
 import com.oaklandsw.util.Util;
@@ -18,6 +19,9 @@ import edu.emory.mathcs.backport.java.util.concurrent.BlockingQueue;
 class ConnectionInfo
 {
     private static final Log        _log       = LogUtils.makeLogger();
+
+    private static final Log        _connLog   = LogFactory
+                                                       .getLog(HttpConnection.CONN_LOG);
 
     static final int                START_SIZE = 10;
 
@@ -51,12 +55,17 @@ class ConnectionInfo
     // The total number of connections ever created.
     int                             _totalEverCreated;
 
-    // The available connections that are not assigned. We don't keep
-    // specific track of connections that are assigned.
+    // The available connections that are not assigned.
     protected BlockingQueue         _availableConnections;
 
-    // For diagnositic purposes
+    // The currently assigned connections
     protected List                  _assignedConnections;
+
+    // Used to keep track of the time this is no longer used,
+    // we discard these only after some interval. We want to keep
+    // them in the short term so we don't lose information
+    // if we reconnect to the same host/port
+    long                            _usedTime;
 
     protected HttpConnectionManager _connManager;
 
@@ -74,6 +83,7 @@ class ConnectionInfo
     void addNewConnection(HttpConnection conn)
     {
         _assignedConnections.add(conn);
+        _usedTime = System.currentTimeMillis();
         conn._connectionInfo = this;
         conn._connManager = _connManager;
         _totalEverCreated++;
@@ -98,12 +108,20 @@ class ConnectionInfo
             _availableConnections = q;
         }
 
+        if (conn._onAvailQueue)
+            Util.impossible("putting on available when already marked so\n "
+                + dump(0));
+        conn._onAvailQueue = true;
         if (!_availableConnections.offer(conn))
             Util.impossible("BlockingQueue overflow: " + _availableConnections);
+        bugCheckCounts();
+    }
 
-        if (getActiveConnectionCount() < 0)
+    private void bugCheckCounts()
+    {
+        if (_availableConnections.size() < 0 || _assignedConnections.size() < 0)
         {
-            Util.impossible("totalActiveConnections underflow\n" + dump(0));
+            Util.impossible("connection count underflow\n" + dump(0));
         }
     }
 
@@ -116,7 +134,12 @@ class ConnectionInfo
     // Assumed to be synchronized on the HttpConnectionManager
     void removeAvailConnection(HttpConnection conn)
     {
+        if (!conn._onAvailQueue)
+            Util.impossible("removing avail connection not marked avail\n"
+                + dump(0));
+        conn._onAvailQueue = false;
         _availableConnections.remove(conn);
+        bugCheckCounts();
     }
 
     // Remove a connection that is currently assigned
@@ -124,6 +147,7 @@ class ConnectionInfo
     void removeAssignedConnection(HttpConnection conn)
     {
         _assignedConnections.remove(conn);
+        bugCheckCounts();
     }
 
     // Returns a connection that can be used for this URL connection,
@@ -156,40 +180,61 @@ class ConnectionInfo
             {
                 if (conn.isOpen())
                 {
+                    // Dequeues the conn from available connections
                     conn = (HttpConnection)_availableConnections.poll();
+                    if (!conn._onAvailQueue)
+                        Util
+                                .impossible("removing avail connection not marked avail\n"
+                                    + dump(0));
+                    if (_availableConnections.size() < 0)
+                        Util.impossible("avail conn underflow: " + dump(0));
+                    conn._onAvailQueue = false;
                     break assign;
                 }
-                if (_log.isDebugEnabled())
-                    _log.debug("getMatching - found closed connection");
+                if (_connLog.isDebugEnabled())
+                    _connLog.debug("getMatching - found closed connection");
             }
 
-            // Slow path, check them all (we already checked the first)
+            // Slow path, check them all
             Iterator it = _availableConnections.iterator();
             while (it.hasNext())
             {
                 conn = (HttpConnection)it.next();
 
+                if (!conn._onAvailQueue)
+                {
+                    Util
+                            .impossible("removing avail connection not marked avail\n"
+                                + dump(0));
+                }
+
+                boolean matched = checkMatch(conn, urlCon);
+
                 // This is possible because a connection can close during
                 // pipelined reading while it is still in the pool.
                 if (!conn.isOpen())
                 {
-                    if (_log.isDebugEnabled())
+                    if (_connLog.isDebugEnabled())
                     {
-                        _log.debug("getMatching - removing closed "
+                        _connLog.debug("getMatching - removing closed "
                             + "connection from available pool:"
                             + conn);
                     }
-                    // FIXME - does not use the shutdown return to possible
-                    // shutdown the connection timeout thread
-                    _connManager.checkConnCount(this, null);
+
                     it.remove();
+                    conn._onAvailQueue = false;
+                    if (_availableConnections.size() < 0)
+                        Util.impossible("avail conn underflow: " + dump(0));
                     continue;
                 }
 
-                if (checkMatch(conn, urlCon))
+                if (matched)
                 {
                     // Remove because it's assigned
                     it.remove();
+                    conn._onAvailQueue = false;
+                    if (_availableConnections.size() < 0)
+                        Util.impossible("avail conn underflow: " + dump(0));
                     break assign;
                 }
             }
@@ -230,22 +275,62 @@ class ConnectionInfo
 
         check:
         {
+            int limit;
+            if (urlCon.isPipelining())
+            {
+                // Limit is either observed or specified by the user
+                if (urlCon._connectionRequestLimit == 0)
+                {
+                    limit = _observedMaxUrlCons;
+                }
+                else if (_observedMaxUrlCons == 0)
+                {
+                    limit = urlCon._connectionRequestLimit;
+                }
+                else
+                {
+                    limit = Math.min(urlCon._connectionRequestLimit,
+                                     _observedMaxUrlCons);
+                }
+            }
+            else
+            {
+                // Not pipelining, it's only specified by the user
+                limit = urlCon._connectionRequestLimit;
+            }
+
+            // Don't allow on connections over the limit
+            // Need the check here because the connection may be open after
+            // all of the requests are sent and before all of the replies
+            // are received in the pipeline case
+            if (limit != 0 && conn._totalReqUrlConCount >= limit)
+            {
+                if (conn._totalReqUrlConCount == conn._totalResUrlConCount)
+                {
+                    // If the connection has no outstanding activity, close it
+                    // and show it as a match, the caller will finish disposing
+                    // if it and look for another connection
+                    conn.close();
+                    matched = 2;
+                }
+                else
+                {
+                    // The connection can't be used but has outstanding
+                    // activity, just skip it
+                    matched = -12;
+                }
+                break check;
+            }
+
             int pipelinedCount = conn.getPipelinedUrlConCount();
 
             if (urlCon.isPipelining())
             {
+                // User requested depth
                 if (urlCon._pipeliningMaxDepth > 0
-                    && pipelinedCount > urlCon._pipeliningMaxDepth)
+                    && pipelinedCount >= urlCon._pipeliningMaxDepth)
                 {
                     matched = -10;
-                    break check;
-                }
-
-                if (_observedMaxUrlCons != 0
-                    && (urlCon._pipeliningOptions & HttpURLConnection.PIPE_USE_OBSERVED_CONN_LIMIT) != 0
-                    && conn._totalReqUrlConCount > _observedMaxUrlCons)
-                {
-                    matched = -11;
                     break check;
                 }
             }
@@ -315,24 +400,29 @@ class ConnectionInfo
             matched = MATCHED;
         }
 
-        if (_log.isDebugEnabled())
+        if (_log.isDebugEnabled() || _connLog.isDebugEnabled())
         {
-            _log.debug("checking for match: result: "
+            String str = "checking for match: result: "
                 + matched
                 + " conn: "
                 + conn
                 + " url: "
-                + urlCon);
-            if (false)
+                + urlCon;
+
+            _log.debug(str);
+
+            if (_connLog.isDebugEnabled() && matched < MATCHED)
             {
-                System.out.println(" url: "
+                _connLog.debug("match failed: "
+                    + str
+                    + " pipelining: "
                     + urlCon.isPipelining()
-                    + " con: "
-                    + conn.getPipelinedUrlConCount());
+                    + " conn: \n"
+                    + conn.dump(0));
             }
         }
 
-        return matched == MATCHED;
+        return matched >= MATCHED;
     }
 
     // Assumed to be synchronized on the HttpConnectionManager
@@ -344,16 +434,16 @@ class ConnectionInfo
     // Assumed to be synchronized on the HttpConnectionManager
     void closeAllConnections()
     {
-        _log.debug("closeAllConnections");
+        _connLog.debug("closeAllConnections");
 
         HttpConnection conn;
 
-        while (true)
+        Iterator it = _availableConnections.iterator();
+        while (it.hasNext())
         {
-            conn = (HttpConnection)_availableConnections.poll();
-            if (conn == null)
-                break;
+            conn = (HttpConnection)it.next();
             conn.close();
+            it.remove();
         }
     }
 
@@ -388,6 +478,12 @@ class ConnectionInfo
         while (it.hasNext())
         {
             HttpConnection conn = (HttpConnection)it.next();
+            if (conn == null)
+            {
+                sb.append("Error - null conn");
+                continue;
+            }
+
             sb.append("    " + conn.toString());
             sb.append("\n");
             sb.append(conn.dump(6));

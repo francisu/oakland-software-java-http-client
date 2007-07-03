@@ -22,9 +22,9 @@ public class HttpTestBase extends com.oaklandsw.TestCaseBase
 
     public boolean             _showStats;
 
-    protected static final int STREAM_NONE    = 0;
-    protected static final int STREAM_CHUNKED = 1;
-    protected static final int STREAM_FIXED   = 2;
+    protected static final int STREAM_NONE      = 0;
+    protected static final int STREAM_CHUNKED   = 1;
+    protected static final int STREAM_FIXED     = 2;
 
     protected int              _streamingType;
 
@@ -157,6 +157,8 @@ public class HttpTestBase extends com.oaklandsw.TestCaseBase
             Util.impossible("Impossible called: ", Util._impossibleException);
         }
 
+        HttpURLConnectInternal._ignoreObservedMaxCount = false;
+
         HttpURLConnection.setDefaultTimeout(0);
         HttpURLConnection.setDefaultConnectionTimeout(0);
         HttpURLConnection.setDefaultRequestTimeout(0);
@@ -164,14 +166,12 @@ public class HttpTestBase extends com.oaklandsw.TestCaseBase
         HttpURLConnection.setDefaultProxyAuthenticationType(0);
         HttpURLConnection.setDefaultMaxTries(HttpURLConnection.MAX_TRIES);
         HttpURLConnection.setDefaultPipelining(false);
+        HttpURLConnection.setDefaultConnectionRequestLimit();
 
-        HttpURLConnection
-                .setDefaultIdleConnectionTimeout(HttpURLConnection.DEFAULT_IDLE_TIMEOUT);
-        HttpURLConnection
-                .setDefaultIdleConnectionPing(HttpURLConnection.DEFAULT_IDLE_PING);
+        HttpURLConnection.setDefaultIdleConnectionTimeout();
+        HttpURLConnection.setDefaultIdleConnectionPing();
         HttpURLConnection
                 .setMaxConnectionsPerHost(HttpConnectionManager.DEFAULT_MAX_CONNECTIONS);
-        HttpURLConnection.setDefaultPipelining(false);
         HttpURLConnection.closeAllPooledConnections();
     }
 
@@ -252,7 +252,7 @@ public class HttpTestBase extends com.oaklandsw.TestCaseBase
         InputStream is = urlCon.getInputStream();
         ByteArrayOutputStream os = new ByteArrayOutputStream();
         Util.copyStreams(is, os);
-        
+
         assertEquals(compareCl, os.toByteArray().length);
         is.close();
     }

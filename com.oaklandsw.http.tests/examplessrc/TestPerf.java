@@ -120,7 +120,11 @@ public class TestPerf
                 System.out.println("Arg: " + args[i] + " ignored");
             }
         }
+        run();
+    }
 
+    public void run() throws Exception
+    {
         if (_urlString == null)
         {
             System.out.println("Please specify a URL using -url");
@@ -138,6 +142,12 @@ public class TestPerf
 
         // LogUtils.logAll();
 
+        com.oaklandsw.http.HttpURLConnection.resetStatistics();
+        com.oaklandsw.http.HttpURLConnection.closeAllPooledConnections();
+
+        // Make sure we don't get stuck for a long time if a connection hangs
+        com.oaklandsw.http.HttpURLConnection.setDefaultRequestTimeout(10000);
+
         // Do one to initialize everything but don't count that
         // in the timing
         if (_warmUp)
@@ -148,7 +158,7 @@ public class TestPerf
         long startTime = System.currentTimeMillis();
 
         if (!_quiet)
-            System.out.println("Times: " + _times);
+            System.out.println("URL: " + _urlString + " times: " + _times);
 
         if (_maxConn > 0)
         {
@@ -219,7 +229,7 @@ public class TestPerf
         }
 
         processStream(urlCon);
-        
+
     }
 
     public void testGetMethod() throws Exception

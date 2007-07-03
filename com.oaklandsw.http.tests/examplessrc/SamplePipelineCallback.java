@@ -29,14 +29,15 @@ public class SamplePipelineCallback implements Callback
             if (!_quiet)
                 System.out.println("Response: " + urlCon.getResponseCode());
 
+            // Read the input stream
+            TestPerf.processStream(urlCon);
+
             // In case we are multi-threaded
             synchronized (this)
             {
                 _responses++;
             }
 
-            // Read the input stream
-            TestPerf.processStream(urlCon);
         }
         catch (AutomaticHttpRetryException arex)
         {
