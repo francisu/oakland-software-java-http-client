@@ -101,7 +101,7 @@ public class TestConnectionManagerLocal extends HttpTestBase
     {
         // Back to default
         _connManager
-                .setMaxConnectionsPerHost(HttpConnectionManager.DEFAULT_MAX_CONNECTIONS);
+                .setMaxConnectionsPerHost(HttpURLConnection.DEFAULT_MAX_CONNECTIONS);
         _connManager.setProxyHost(null);
         _connManager.setProxyPort(-1);
     }

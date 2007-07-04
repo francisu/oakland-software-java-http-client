@@ -37,6 +37,7 @@ public class HttpConnectionThread extends Thread
         _connection = connection;
         _connection._connectionThread = this;
         _connectionManager = conMgr;
+        this.setDaemon(true);
         setName("ConnReader: " + _connection);
     }
 

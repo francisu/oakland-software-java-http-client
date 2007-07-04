@@ -14,14 +14,18 @@ import com.oaklandsw.http.HttpURLConnection;
 
 public class Ntlm
 {
-    public static final int     FORCE_NONE = 0;
-    public static final int     FORCE_V1   = 1;
-    public static final int     FORCE_V2   = 2;
+    public static final int     FORCE_NONE     = 0;
+    public static final int     FORCE_V1       = 1;
+    public static final int     FORCE_V2       = 2;
 
     // For testing
     public static int           _forceNtlmType;
 
-    private static final String ENCODING   = "8859_1";
+    private static final String ENCODING       = "8859_1";
+
+    // Do something to call the HttpURLConnection so that class goes through
+    // static init and thus license checking
+    private static int          _dummyMaxTries = HttpURLConnection.MAX_TRIES;
 
     /**
      * Returns the response for the given message.

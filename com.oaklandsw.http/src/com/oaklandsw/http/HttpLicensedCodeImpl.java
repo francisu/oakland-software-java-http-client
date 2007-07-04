@@ -103,7 +103,7 @@ public class HttpLicensedCodeImpl implements LicensedCode
     {
         // Make this name kind of obscure in hopes that the user
         // does not delete it
-        return ".xmlfuoshc";
+        return ".xmlfuoshc1";
     }
 
     public URL getLicenseUrl()

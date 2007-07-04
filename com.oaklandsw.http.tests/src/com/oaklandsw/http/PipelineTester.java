@@ -37,6 +37,13 @@ public class PipelineTester
     public int                 _pipeliningOptions;
     public int                 _pipeliningMaxDepth;
 
+    public boolean             _async;
+    public boolean             _readData         = true;
+
+    public int                 _expectedResponse = 200;
+
+    public boolean             _checkResult      = true;
+
     public static final String COUNT_PROP        = "count";
 
     public PipelineTester(String url,
@@ -86,7 +93,7 @@ public class PipelineTester
                 }
 
                 response = urlCon.getResponseCode();
-                if (response != 200)
+                if (response != _expectedResponse)
                 {
                     // System.out.println("Got unexpected response: " +
                     // response);
@@ -94,41 +101,44 @@ public class PipelineTester
                     return;
                 }
 
-                String str = null;
-                try
+                if (_readData)
                 {
-                    str = Util.getStringFromInputStream(is);
-                }
-                catch (AutomaticHttpRetryException arex)
-                {
+                    String str = null;
+                    try
+                    {
+                        str = Util.getStringFromInputStream(is);
+                    }
+                    catch (AutomaticHttpRetryException arex)
+                    {
+                        synchronized (PipelineTester.this)
+                        {
+                            _readAutoRetry++;
+                        }
+                        // The read will be redriven
+                        return;
+                    }
+
+                    // Check that the response was actually received
+                    String checkStr = "name=\"count\";value=\"";
+                    int reqNumberStart = str.indexOf(checkStr)
+                        + checkStr.length();
+                    int reqNumberEnd = str.indexOf('"', reqNumberStart);
+                    String reqNumberStr = str.substring(reqNumberStart,
+                                                        reqNumberEnd);
+                    int reqNumber = Integer.parseInt(reqNumberStr);
+
+                    if (reqNumber < 1 || reqNumber > _iterations)
+                    {
+                        System.out.println("Invalid reqNumber: " + reqNumber);
+                        setFailType(9, null, 0);
+                    }
                     synchronized (PipelineTester.this)
                     {
-                        _readAutoRetry++;
+                        _readCountOk++;
+                        _log.debug("response:" + reqNumber);
+                        // System.out.println("response: " + reqNumber);
+                        _responseCounts[reqNumber]++;
                     }
-                    // The read will be redriven
-                    return;
-                }
-
-                // Check that the response was actually received
-                String checkStr = "name=\"count\";value=\"";
-                int reqNumberStart = str.indexOf(checkStr) + checkStr.length();
-                int reqNumberEnd = str.indexOf('"', reqNumberStart);
-                String reqNumberStr = str.substring(reqNumberStart,
-                                                    reqNumberEnd);
-                int reqNumber = Integer.parseInt(reqNumberStr);
-
-                if (reqNumber < 1 || reqNumber > _iterations)
-                {
-                    System.out.println("Invalid reqNumber: " + reqNumber);
-                    setFailType(9, null, 0);
-                }
-
-                synchronized (PipelineTester.this)
-                {
-                    _readCountOk++;
-                    _log.debug("response:" + reqNumber);
-                    // System.out.println("response: " + reqNumber);
-                    _responseCounts[reqNumber]++;
                 }
             }
             catch (IOException e)
@@ -141,7 +151,17 @@ public class PipelineTester
         {
             try
             {
-                setFailType(8, ex, urlCon.getResponseCode());
+                if (urlCon.getResponseCode() == _expectedResponse && ex == null)
+                {
+                    synchronized (PipelineTester.this)
+                    {
+                        _readCountOk++;
+                    }
+                }
+                else
+                {
+                    setFailType(8, ex, urlCon.getResponseCode());
+                }
             }
             catch (IOException e)
             {
@@ -218,7 +238,7 @@ public class PipelineTester
         {
             // Not in the header, add it as a query request param
             url = new URL(_url
-                + "?"
+                + (_url.endsWith("&") ? "" : "?")
                 + COUNT_PROP
                 + "="
                 + Integer.toString(i + 1)
@@ -234,6 +254,10 @@ public class PipelineTester
             urlCon.setRequestProperty(COUNT_PROP, Integer.toString(i + 1));
             urlCon.setRequestProperty("threadName", Thread.currentThread()
                     .getName());
+            if (_async)
+                urlCon.pipelineExecuteAsync();
+            else
+                urlCon.pipelineExecute();
         }
 
         if (_showStats)
@@ -250,7 +274,11 @@ public class PipelineTester
         // Process the connection
         // System.out.println(Thread.currentThread().getName()
         // + " before execute and block");
-        HttpURLConnection.executeAndBlock();
+        // For async assume it's going to be done in a second
+        if (_async)
+            Thread.sleep(1000);
+        else
+            HttpURLConnection.pipelineBlock();
         // System.out.println(Thread.currentThread().getName()
         // + " after execute and block");
 
@@ -265,7 +293,9 @@ public class PipelineTester
             System.out.println("Read auto retry count: " + _readAutoRetry);
         }
 
-        boolean results = checkResults();
+        boolean results = true;
+        if (_checkResult)
+            results = checkResults();
 
         if (_checkConnections)
         {
@@ -286,9 +316,31 @@ public class PipelineTester
         HttpURLConnectInternal._addDiagSequence = false;
     }
 
+    // Returns true if there is a failure
     public boolean checkResults()
     {
         boolean fail = false;
+
+        // This is a GET - write is not called
+        // assertEquals(number, _writeCount);
+        if (_iterations != _readCountOk)
+        {
+            System.out.println("Iterations mismatch: "
+                + _iterations
+                + " read counts: "
+                + _readCountOk);
+            fail = true;
+        }
+
+        if (_failType != 0)
+        {
+            // Reason is printed at the time the failure is recorded
+            fail = true;
+        }
+
+        if (_expectedResponse != 200)
+            return fail;
+
         int totalResponses = 0;
         for (int i = 1; i <= _iterations; i++)
         {
@@ -301,23 +353,6 @@ public class PipelineTester
                     + _responseCounts[i]);
                 fail = true;
             }
-        }
-
-        if (_failType != 0)
-        {
-            // Reason is printed at the time the failure is recorded
-            fail = true;
-        }
-
-        // This is a GET - write is not called
-        // assertEquals(number, _writeCount);
-        if (_iterations != _readCountOk)
-        {
-            System.out.println("Iterations mismatch: "
-                + _iterations
-                + " read counts: "
-                + _readCountOk);
-            fail = true;
         }
 
         if (_iterations != totalResponses)

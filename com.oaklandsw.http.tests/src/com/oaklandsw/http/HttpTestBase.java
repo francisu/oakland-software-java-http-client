@@ -171,7 +171,7 @@ public class HttpTestBase extends com.oaklandsw.TestCaseBase
         HttpURLConnection.setDefaultIdleConnectionTimeout();
         HttpURLConnection.setDefaultIdleConnectionPing();
         HttpURLConnection
-                .setMaxConnectionsPerHost(HttpConnectionManager.DEFAULT_MAX_CONNECTIONS);
+                .setMaxConnectionsPerHost(HttpURLConnection.DEFAULT_MAX_CONNECTIONS);
         HttpURLConnection.closeAllPooledConnections();
     }
 

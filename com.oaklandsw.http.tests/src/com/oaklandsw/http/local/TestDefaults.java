@@ -84,7 +84,7 @@ public class TestDefaults extends HttpTestBase
         try
         {
             // Will throw since no Callback is set
-            HttpURLConnection.executeAndBlock();
+            urlCon1.pipelineExecute();
             fail("Expected exception");
         }
         catch (IllegalStateException ex)

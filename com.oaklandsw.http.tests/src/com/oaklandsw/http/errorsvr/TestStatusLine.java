@@ -16,11 +16,11 @@ import com.oaklandsw.util.URIUtil;
 
 public class TestStatusLine extends HttpTestBase
 {
-    private static final Log _log = LogUtils.makeLogger();
+    private static final Log _log      = LogUtils.makeLogger();
 
-    protected static String _errorUrl = HttpTestEnv.TEST_URL_HOST_ERRORSVR;
+    protected static String  _errorUrl = HttpTestEnv.TEST_URL_HOST_ERRORSVR;
 
-    protected String        _extraParam;
+    protected String         _extraParam;
 
     public TestStatusLine(String testName)
     {
@@ -122,11 +122,13 @@ public class TestStatusLine extends HttpTestBase
 
     public void test404NF2() throws Exception
     {
-        String enc = URIUtil.encodeQuery("HTTP/1.1 404 Non Trouve");
+        String reason = "Non Trouv�";
+
+        String enc = URIUtil.encodeQuery("HTTP/1.1 404 " + reason);
         HttpURLConnection urlCon = getStatus(enc);
-        assertEquals("HTTP/1.1 404 Non Trouve", urlCon.getHeaderField(0));
+        assertEquals("HTTP/1.1 404 " + reason, urlCon.getHeaderField(0));
         assertEquals(404, urlCon.getResponseCode());
-        assertEquals("Non Trouve", urlCon.getResponseMessage());
+        assertEquals(reason, urlCon.getResponseMessage());
     }
 
     public void testNoMessage() throws Exception

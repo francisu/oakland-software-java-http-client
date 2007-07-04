@@ -586,7 +586,7 @@ public class HttpURLConnectInternal
                         _connLog.debug("Copied "
                             + count
                             + " bytes from connection "
-                            + "that's closing");
+                            + "because of >= 400 response");
                     }
                 }
                 catch (IOException e)
@@ -1768,6 +1768,12 @@ public class HttpURLConnectInternal
             if (!_responseHeadersRead)
                 return;
 
+            if (_responseCode >= 400)
+            {
+                _connManager
+                        .recordCount(HttpConnectionManager.COUNT_FAIL_GE_400);
+            }
+
             switch (_responseCode)
             {
                 case HttpStatus.SC_UNAUTHORIZED:
@@ -1841,7 +1847,7 @@ public class HttpURLConnectInternal
                 // For redirect, force getting a new connection, for auth
                 // we way on the same connection
                 if (redirect)
-                    releaseConnection(NORMAL);
+                    releaseConnection(READING);
             }
 
         }
@@ -1937,16 +1943,27 @@ public class HttpURLConnectInternal
 
         try
         {
-            if (streaming && !_streamingWritingFinished)
+            if (!_streamingWritingFinished)
             {
-                streamWriteFinished(!OK);
-                String msg = "Cannot execute the HTTP request "
-                    + "until the output stream is closed.";
-                IllegalStateException ex = new IllegalStateException(msg);
-                _log.debug("execute: ", ex);
-                throw ex;
-            }
+                if (streaming)
+                {
+                    streamWriteFinished(!OK);
+                    String msg = "Cannot execute the HTTP request "
+                        + "until the output stream is closed.";
+                    IllegalStateException ex = new IllegalStateException(msg);
+                    _log.debug("execute: ", ex);
+                    throw ex;
+                }
 
+                if ((_pipeliningOptions & PIPE_PIPELINE) != 0)
+                {
+                    streamWriteFinished(!OK);
+                    String msg = "This is a pipelined request, use the pipeline Callback to access the urlCon.";
+                    IllegalStateException ex = new IllegalStateException(msg);
+                    _log.debug("execute: ", ex);
+                    throw ex;
+                }
+            }
             executeStart();
         }
         finally
@@ -1962,7 +1979,7 @@ public class HttpURLConnectInternal
             // release the connection, this way the user is not
             // required to read it
             if (_responseIsEmpty || _responseCode >= 400)
-                releaseConnection(NORMAL);
+                releaseConnection(READING);
         }
 
     }
@@ -1997,15 +2014,6 @@ public class HttpURLConnectInternal
                 try
                 {
                     connection.startPreventClose();
-
-                    // Make sure it's still open at this point, can't close
-                    // until end prevent close
-                    if (!connection.isOpen())
-                    {
-                        throw new IOException("Connection: "
-                            + _connection
-                            + " closed");
-                    }
 
                     _callback.writeRequest(this, os);
                 }
@@ -2062,7 +2070,8 @@ public class HttpURLConnectInternal
             // We are done with this urlcon
             if (_connLog.isDebugEnabled())
                 _connLog.debug("urlConWasRead (write error): " + this);
-            _connManager.urlConWasRead(_thread);
+            if (_pipelineExpectBlock)
+                _connManager.urlConWasRead(_thread);
 
             // Something is really wrong, blow out of here, so the main
             // caller sees the problem
@@ -2111,9 +2120,6 @@ public class HttpURLConnectInternal
                         + this);
                 }
 
-                // Don't allow a close while we have the input stream
-                connection.startPreventClose();
-
                 // Gets or blocks for the connection, could throw
                 // if there is a problem
                 try
@@ -2122,12 +2128,8 @@ public class HttpURLConnectInternal
 
                     connection.startReadBugCheck();
 
-                    // Do this check inside of the startPreventClose() block
-                    // (above) the connection cannot be closed by another thread
-                    // after that point, but we want to make sure it is still
-                    // open before we try to read it
-                    if (!connection.isOpen())
-                        throw new IOException("Connection is closed when reading response");
+                    // Don't allow a close while we have the input stream
+                    connection.startPreventClose();
 
                     if (!_executed)
                         execute();
@@ -2272,7 +2274,8 @@ public class HttpURLConnectInternal
                             + " total reqs/con: "
                             + _connection._totalReqUrlConCount);
                     }
-                    _connManager.urlConWasRead(_thread);
+                    if (_pipelineExpectBlock)
+                        _connManager.urlConWasRead(_thread);
                 }
             }
         }

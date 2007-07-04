@@ -94,11 +94,6 @@ class ConnectionInfo
     void connectionAvail(HttpConnection conn)
     {
         _assignedConnections.remove(conn);
-
-        // Don't allow a closed connection to be returned
-        if (!conn.isOpen())
-            Util.impossible("Cannot return a closed connection:" + conn);
-
         if (_availableConnections.remainingCapacity() == 0)
         {
             _log.debug("Expanding _availableConnections");
@@ -109,8 +104,11 @@ class ConnectionInfo
         }
 
         if (conn._onAvailQueue)
+        {
             Util.impossible("putting on available when already marked so\n "
                 + dump(0));
+        }
+        
         conn._onAvailQueue = true;
         if (!_availableConnections.offer(conn))
             Util.impossible("BlockingQueue overflow: " + _availableConnections);
@@ -162,6 +160,12 @@ class ConnectionInfo
         {
             if (getActiveConnectionCount() < _connManager._maxConns)
             {
+                if (_log.isDebugEnabled())
+                {
+                    _log.debug("getMatch - force new connection - limit: "
+                        + _connManager._maxConns);
+                }
+                
                 // Force it to create a connection
                 return null;
             }

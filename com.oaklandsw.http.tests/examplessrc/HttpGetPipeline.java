@@ -39,11 +39,14 @@ public class HttpGetPipeline
         {
             // Creates and HttpURLConnection which is automatically
             // associated with the thread
-            url.openConnection();
+            HttpURLConnection urlCon = (HttpURLConnection)url.openConnection();
+
+            // Begins the execution
+            urlCon.pipelineExecute();
         }
 
-        // Executes all previously created HttpURLConnections
-        HttpURLConnection.executeAndBlock();
+        // Blocks for all connections to complete
+        HttpURLConnection.pipelineBlock();
         
         // Just for diagnostic purposes
         HttpURLConnection.dumpAll();

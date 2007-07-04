@@ -19,7 +19,7 @@ public class SamplePipelineCallback implements Callback
 
     public void writeRequest(HttpURLConnection urlCon, OutputStream os)
     {
-        System.out.println("!!! should not be called");
+        // Used only for a post request, write the data here
     }
 
     public void readResponse(HttpURLConnection urlCon, InputStream is)
@@ -30,7 +30,7 @@ public class SamplePipelineCallback implements Callback
                 System.out.println("Response: " + urlCon.getResponseCode());
 
             // Read the input stream
-            TestPerf.processStream(urlCon);
+            processStream(urlCon);
 
             // In case we are multi-threaded
             synchronized (this)
@@ -58,6 +58,28 @@ public class SamplePipelineCallback implements Callback
         ex.printStackTrace();
     }
 
+    //
+    // Utility methods, not part of the API
+    //
+    
+    // Read through the input stream
+    public static void processStream(java.net.HttpURLConnection urlCon)
+        throws IOException
+    {
+        InputStream inputStream = urlCon.getInputStream();
+        byte[] buffer = new byte[10000];
+        int nb = 0;
+        while (true)
+        {
+            nb = inputStream.read(buffer);
+            if (nb == -1)
+                break;
+        }
+        inputStream.close();
+    }
+
+    
+    
     public String toString()
     {
         return "Callback" + Thread.currentThread().getName();

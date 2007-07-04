@@ -18,7 +18,6 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.security.cert.Certificate;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import javax.net.ssl.SSLPeerUnverifiedException;
@@ -471,6 +470,10 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
     // output stream
     protected boolean                      _streamingWritingFinished;
 
+    // It is expected that pipelineBlock() will be called to block for
+    // the completion of this urlcon.
+    protected boolean                      _pipelineExpectBlock;
+
     // The request has been sent and the reply received
     protected boolean                      _executed;
 
@@ -500,6 +503,9 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
 
     // If the "Expect" request header is present
     protected boolean                      _expectContinue;
+
+    // From RFC 2616 section 8.1.4
+    public static int                      DEFAULT_MAX_CONNECTIONS              = 2;
 
     protected static int                   _defaultConnectionTimeout;
     protected static int                   _defaultRequestTimeout;
@@ -1384,29 +1390,13 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
         return false;
     }
 
-    protected static final int NORMAL  = 0;
-
     // The connection needs to be closed
-    protected static final int CLOSE   = 1;
+    protected static final int CLOSE   = 0;
 
     // The connection was released from reading (as opposed to writing)
-    protected static final int READING = 2;
+    protected static final int READING = 1;
 
-    static String relTypeToString(int type)
-    {
-        switch (type)
-        {
-            case NORMAL:
-                return "NORMAL";
-            case CLOSE:
-                return "CLOSE";
-            case READING:
-                return "READING";
-            default:
-                Util.impossible("Invalid type: " + type);
-                return null;
-        }
-    }
+    protected static final String[] _relTypes = { "CLOSE", "READING" };
 
     void releaseConnection(int type)
     {
@@ -1415,7 +1405,7 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
         synchronized (this)
         {
             if (_log.isDebugEnabled())
-                _log.debug("releaseConnection: " + relTypeToString(type));
+                _log.debug("releaseConnection: " + _relTypes[type]);
 
             if (connected)
             {
@@ -1437,7 +1427,6 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
                     // When reading and piplining the connection is not owned
                     // from the connection manager point of view
                     if (closed
-                        || type != READING
                         || (_pipeliningOptions & PIPE_PIPELINE) == 0)
                     {
                         // See the comment on this field
@@ -2877,7 +2866,7 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
      * 
      * @return an int, the options
      */
-    public int getDefaultPipeliningOptions()
+    public static int getDefaultPipeliningOptions()
     {
         return _defaultPipeliningOptions;
     }
@@ -2947,23 +2936,6 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
                 + plOptionsToString(pipeliningOptions));
         }
 
-        // We keep track of pipelined connections in the connection manger
-        // because that is how they get executed
-
-        // Remove it if we are removing pipelining
-        if ((_pipeliningOptions & PIPE_PIPELINE) != 0
-            && (pipeliningOptions & PIPE_PIPELINE) == 0)
-        {
-            _connManager.removeUrlConToExecute(this);
-        }
-
-        // Add it if we are adding pipelining
-        if ((_pipeliningOptions & PIPE_PIPELINE) == 0
-            && (pipeliningOptions & PIPE_PIPELINE) != 0)
-        {
-            _connManager.addUrlConToExecute(this);
-        }
-
         _pipeliningOptions = pipeliningOptions;
     }
 
@@ -2986,7 +2958,7 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
      *            the maximum pipelining depth.
      * 
      */
-    public void setDefaultPipeliningMaxDepth(int pipeliningMaxDepth)
+    public static void setDefaultPipeliningMaxDepth(int pipeliningMaxDepth)
     {
         _defaultPipeliningMaxDepth = pipeliningMaxDepth;
     }
@@ -2996,7 +2968,7 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
      * 
      * @return an int, the maximum pipelining depth.
      */
-    public int getDefaultPipeliningMaxDepth()
+    public static int getDefaultPipeliningMaxDepth()
     {
         return _defaultPipeliningMaxDepth;
     }
@@ -3083,50 +3055,61 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
         return _callback;
     }
 
-    /**
-     * Executes all of the pipelined connections associated with this thread and
-     * blocks until they are complete.
-     */
-    public static void executeAndBlock() throws InterruptedException
+    protected void checkPipeline()
     {
-        // This gets a copy of the list of pipelined connections created
-        // on this thread, this is synchronized in the connection manager
-        // associated with the Callback, this is synchronized in the
-        // connection manager
-        List urlCons = _connManager.getUrlConsToExecute();
-        if (urlCons == null || urlCons.size() == 0)
+        if ((_pipeliningOptions & PIPE_PIPELINE) == 0)
         {
-            if (_log.isDebugEnabled())
-            {
-                _log.debug("executeAndBlock: no connections "
-                    + "found for Thread - exiting");
-            }
-            return;
+            throw new IllegalStateException("This HttpURLConnection is not enabled for pipelining, call setPipelining(true)");
         }
 
+        if (_callback == null)
+        {
+            throw new IllegalStateException("This pipelined HttpURLConnection does not have a Callback");
+        }
+    }
+
+    /**
+     * Begins the pipelined execution of this connection.
+     * 
+     * You may subsequently call {@link #pipelineBlock()} to wait for all of the
+     * pipelined connections you have executed on this thread.
+     */
+    public void pipelineExecute() throws InterruptedException
+    {
         if (_log.isDebugEnabled())
         {
-            _log.debug("executeAndBlock: processing "
-                + urlCons.size()
-                + " connections");
+            _log.debug("pipelineExecute: " + this);
         }
 
-        int len = urlCons.size();
-        for (int i = 0; i < len; i++)
-        {
-            HttpURLConnection urlCon = (HttpURLConnection)urlCons.get(i);
-            if (urlCon._callback == null)
-            {
-                throw new IllegalStateException("A pipelined HttpURLConnection does not have a Callback set: "
-                    + urlCon);
-            }
-            if (_log.isDebugEnabled())
-                _log.debug("addUrlConToRead (start): " + urlCon);
-            _connManager.addUrlConToRead(Thread.currentThread());
-            urlCon.processPipelinedWrite();
-        }
+        checkPipeline();
+        _connManager.addUrlConToRead(Thread.currentThread());
+        _pipelineExpectBlock = true;
+        processPipelinedWrite();
+    }
 
+    /**
+     * Blocks until all pipelined HttpURLConnections are completed on this
+     * thread.
+     * 
+     */
+    public static void pipelineBlock() throws InterruptedException
+    {
         _connManager.blockForUrlCons();
+    }
+
+    /**
+     * Begins the pipelined execution of this connection, when you don't need to
+     * block for completion of the connection.
+     */
+    public void pipelineExecuteAsync() throws InterruptedException
+    {
+        if (_log.isDebugEnabled())
+        {
+            _log.debug("pipelineExecuteAsync: " + this);
+        }
+
+        checkPipeline();
+        processPipelinedWrite();
     }
 
     // /**

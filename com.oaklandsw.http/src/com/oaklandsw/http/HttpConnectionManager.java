@@ -41,9 +41,6 @@ public class HttpConnectionManager
     private static final Log      _connLog                    = LogFactory
                                                                       .getLog(HttpConnection.CONN_LOG);
 
-    // From RFC 2616 section 8.1.4
-    public static int             DEFAULT_MAX_CONNECTIONS     = 2;
-
     // See the comment about _urlConReleased in HttpURLConnection
     protected static final int    NOT_RELEASED_TIMEOUT        = 10000;
 
@@ -53,10 +50,7 @@ public class HttpConnectionManager
     // K(connection key) V(ConnectionInfo)
     private Map                   _hostMap                    = new HashMap();
 
-    // K(current Thread) V(List of urlcons)
-    private Map                   _threadUrlConMap            = new HashMap();
-
-    int                           _maxConns                   = DEFAULT_MAX_CONNECTIONS;
+    int                           _maxConns                   = HttpURLConnection.DEFAULT_MAX_CONNECTIONS;
 
     private HttpConnectionTimeout _timeout;
 
@@ -106,8 +100,8 @@ public class HttpConnectionManager
     public static final int       COUNT_SUCCESS               = 1;
     public static final int       COUNT_TOTAL_RETRY           = 2;
     public static final int       COUNT_TOTAL_PIPELINE_RETRY  = 3;
-    public static final int       COUNT_FAIL_IO               = 4;
-    public static final int       COUNT_FAIL_MAX_RETRY        = 5;
+    public static final int       COUNT_FAIL_MAX_RETRY        = 4;
+    public static final int       COUNT_FAIL_GE_400           = 5;
     public static final int       COUNT_PIPELINE_DEPTH_HIGH   = 6;
 
     public static final int       COUNT_LAST                  = COUNT_PIPELINE_DEPTH_HIGH;
@@ -118,8 +112,8 @@ public class HttpConnectionManager
         , "UrlCons Success:                " //
         , "Total retries:                  " //
         , "Total pipelined retries:        " //
-        , "UrlCons Failed IOException:     " //
         , "UrlCons Failed Max Retries:     " //
+        , "UrlCons Failed > 400:           " //
         , "Pipeline max depth (all conns): " //
                                                               };
 
@@ -365,43 +359,6 @@ public class HttpConnectionManager
     // Methods below are synchronized with the _pipelineLock
     // 
 
-    void addUrlConToExecute(HttpURLConnection urlCon)
-    {
-        Thread thread = Thread.currentThread();
-
-        synchronized (_pipelineLock)
-        {
-            List conList = (List)_threadUrlConMap.get(thread);
-            if (conList == null)
-            {
-                conList = new ArrayList();
-                _threadUrlConMap.put(thread, conList);
-            }
-            conList.add(urlCon);
-            if (_log.isDebugEnabled())
-            {
-                _log
-                        .debug("adding urlcon: "
-                            + urlCon
-                            + " to Thread: "
-                            + thread);
-            }
-        }
-    }
-
-    void removeUrlConToExecute(HttpURLConnection urlCon)
-    {
-        synchronized (_pipelineLock)
-        {
-            List conList = (List)_threadUrlConMap.get(Thread.currentThread());
-            if (conList == null)
-                return;
-            conList.remove(urlCon);
-            if (conList.isEmpty())
-                _threadUrlConMap.remove(Thread.currentThread());
-        }
-    }
-
     void addUrlConToRead(Thread thread)
     {
         synchronized (_pipelineLock)
@@ -476,20 +433,8 @@ public class HttpConnectionManager
         }
     }
 
-    // Returns the list of urlCons associated with the current thread
-    List getUrlConsToExecute()
-    {
-        synchronized (_pipelineLock)
-        {
-            Thread thread = Thread.currentThread();
-            List list = (List)_threadUrlConMap.get(thread);
-            _threadUrlConMap.remove(thread);
-            return list;
-        }
-    }
-
     //
-    // End of methods synchronized with the _pipelineLocka
+    // End of methods synchronized with the _pipelineLock
     //
 
     private int getPort(String protocol, int port)
@@ -801,11 +746,11 @@ public class HttpConnectionManager
             _log.debug("Releasing connection: " + conn);
         }
 
-        if (conn._released && conn.isOpen())
-            Util.impossible("Connection released twice: " + conn);
-
         synchronized (this)
         {
+            if (conn._released && conn.isOpen())
+                Util.impossible("Connection released twice: " + conn);
+
             ConnectionInfo ci = getConnectionInfo(conn._handle);
 
             // This connection does not belong to this ConnectionInfo
@@ -839,13 +784,15 @@ public class HttpConnectionManager
                 // This connection is already in the avail queue, remove it
                 if (conn._released)
                 {
-                    if (_connLog.isDebugEnabled())
-                    {
-                        _connLog.debug("releaseConnection - "
-                            + "removing closed conn from avail queue");
-                    }
                     if (ci.isConnectionAvail(conn))
+                    {
+                        if (_connLog.isDebugEnabled())
+                        {
+                            _connLog.debug("releaseConnection - "
+                                + "removing closed conn from avail queue");
+                        }
                         ci.removeAvailConnection(conn);
+                    }
                 }
                 else
                 {
@@ -1026,12 +973,13 @@ public class HttpConnectionManager
                 HttpConnection conn = (HttpConnection)connectionsToClose.get(i);
                 if (_connLog.isDebugEnabled())
                 {
-                    _connLog.debug("Actually closing connection (idle) " + conn);
+                    _connLog
+                            .debug("Actually closing connection (idle) " + conn);
                 }
                 conn.close();
             }
         }
-        
+
         // Time to wake up again
         if (_log.isDebugEnabled())
         {

@@ -1128,11 +1128,17 @@ public class HttpConnection
     // nothing should be called (in the CM or anything that calls the CM) while
     // this close lock (this object) is locked.
 
-    void startPreventClose()
+    void startPreventClose() throws IOException
     {
         synchronized (this)
         {
             _preventCloseList.add(Thread.currentThread());
+
+            if (!isOpen())
+            {
+                throw new IOException("Connection: " + this + " closed");
+            }
+
         }
     }
 
