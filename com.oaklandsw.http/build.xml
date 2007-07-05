@@ -93,9 +93,9 @@
 		<jar jarfile="${package.name}.jar">
 			<fileset dir="${bin.dir}" />
 			<fileset dir="../com.oaklandsw.util/bin" />
-			<zipfileset src="../com.oaklandsw.http.jars/jakarta-regexp-1.3.jar" />
-			<zipfileset src="../com.oaklandsw.http.jars/backport-util-concurrent.jar" />
-			<zipfileset src="../com.oaklandsw.util.jars/${commons.logging.jar}" />
+			<zipfileset src="../com.oaklandsw.http.jars/jakarta-regexp-1.3.jar" excludes="**/*.txt" />
+			<zipfileset src="../com.oaklandsw.http.jars/backport-util-concurrent.jar" includes="**/AtomicInteger.class,**/locks/*.class,**/helpers/*.class,**/AbstractQueue*.class,**/ArrayBlockingQueue*.class,**/BlockingQueue*.class,**/AbstractCollection*.class,**/Queue*.class,**/TimeUnit*.class" excludes="**/*.txt" />
+			<zipfileset src="../com.oaklandsw.util.jars/${commons.logging.jar}" excludes="**/*.txt" />
 			<manifest>
 				<section name="org/apache/regexp/">
 					<attribute name="Sealed" value="true" />
@@ -216,6 +216,7 @@
 				<include name="**" />
 				<exclude name="Applet**" />
 				<exclude name="PerfCompar**" />
+				<exclude name="TestPerf**" />
 			</zipfileset>
 			<zipfileset dir="../com.oaklandsw.http.tests/src/" prefix="examples_sp">
 				<include name="sharepoint/*.java" />
@@ -256,6 +257,7 @@
 				<include name="**" />
 				<exclude name="Applet**" />
 				<exclude name="PerfCompar**" />
+				<exclude name="TestPerf**" />
 			</zipfileset>
 			<zipfileset dir="../com.oaklandsw.http.tests/src/" prefix="examples_sp">
 				<include name="sharepoint/*.java" />

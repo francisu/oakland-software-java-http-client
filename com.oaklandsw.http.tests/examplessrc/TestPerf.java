@@ -50,8 +50,14 @@ public class TestPerf
     int                   _pipeDepth;
     int                   _maxConn;
 
+    // Append these in order to each url
+    int                   _suffixIndex;
     String                _urlString;
-    URL                   _url;
+
+    static final String[] _suffixes        = new String[] { "a", "b", "c", "d",
+        "e", "f", "g", "h", "i"           };
+
+    boolean               _useSuffixes;
 
     long                  _totalTime;
     float                 _transTime;
@@ -78,6 +84,10 @@ public class TestPerf
             else if (args[i].equalsIgnoreCase("-threads"))
             {
                 _threads = Integer.parseInt(args[++i]);
+            }
+            else if (args[i].equalsIgnoreCase("-suff"))
+            {
+                _useSuffixes = true;
             }
             else if (args[i].equalsIgnoreCase("-sun"))
             {
@@ -155,8 +165,6 @@ public class TestPerf
 
         if (_totalTimes != 0)
             _timesPerThread = _totalTimes / _threads;
-
-        _url = new URL(_urlString);
 
         // LogUtils.logAll();
 
@@ -284,6 +292,8 @@ public class TestPerf
                 .println("  -times <num> - number of times (per thread) (def 1000)");
         System.out.println("  -threads <num> - number of threads (def 1)");
         System.out.println("  -nowarm - include the initialization in timing");
+        System.out
+                .println("  -suff - append a suffix to each URL in a round robin fashion");
         System.out.println("  -close - explicitly close all connections");
         System.out.println("  -quiet - don't print anything");
     }
@@ -292,23 +302,34 @@ public class TestPerf
     {
         HttpURLConnection urlCon;
 
+        String urlToUse = _urlString;
+
+        if (_useSuffixes)
+        {
+            synchronized (this)
+            {
+                urlToUse += _suffixes[_suffixIndex++];
+                if (_suffixIndex >= _suffixes.length)
+                    _suffixIndex = 0;
+            }
+        }
+
+        URL url = new URL(urlToUse);
+
+        int responseCode = 0;
         switch (_implementation)
         {
             case IMP_OAKLAND:
                 urlCon = com.oaklandsw.http.HttpURLConnection
-                        .openConnection(_url);
-                if (urlCon.getResponseCode() != 200)
-                {
-                    throw new RuntimeException("Bad response code: "
-                        + urlCon.getResponseCode());
-                }
+                        .openConnection(url);
+                responseCode = urlCon.getResponseCode();
                 SamplePipelineCallback.processStream(urlCon);
                 _actualTimes++;
                 break;
 
             case IMP_OAKLAND_PIPE:
                 urlCon = com.oaklandsw.http.HttpURLConnection
-                        .openConnection(_url);
+                        .openConnection(url);
                 ((com.oaklandsw.http.HttpURLConnection)urlCon).setCallback(cb);
                 ((com.oaklandsw.http.HttpURLConnection)urlCon)
                         .pipelineExecute();
@@ -316,12 +337,8 @@ public class TestPerf
                 break;
 
             case IMP_SUN:
-                urlCon = (HttpURLConnection)_url.openConnection();
-                if (urlCon.getResponseCode() != 200)
-                {
-                    throw new RuntimeException("Bad response code: "
-                        + urlCon.getResponseCode());
-                }
+                urlCon = (HttpURLConnection)url.openConnection();
+                responseCode = urlCon.getResponseCode();
                 SamplePipelineCallback.processStream(urlCon);
                 _actualTimes++;
                 break;
@@ -329,11 +346,7 @@ public class TestPerf
             case IMP_JAKARTA:
                 GetMethod method = new GetMethod(_urlString);
                 _jakartaClient.executeMethod(method);
-                if (method.getStatusCode() != 200)
-                {
-                    throw new RuntimeException("Bad response code: "
-                        + method.getStatusCode());
-                }
+                responseCode = method.getStatusCode();
 
                 // Read the stream
                 InputStream is = method.getResponseBodyAsStream();
@@ -345,6 +358,12 @@ public class TestPerf
             default:
                 Util.impossible("Invalid implementation: " + _implementation);
                 // throws
+        }
+
+        if (responseCode != 200)
+        {
+            throw new RuntimeException("Bad response code: "
+                + responseCode);
         }
     }
 
