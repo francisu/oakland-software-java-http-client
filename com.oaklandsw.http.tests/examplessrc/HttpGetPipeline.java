@@ -35,11 +35,15 @@ public class HttpGetPipeline
 
         int count = 10;
 
+        // Creates and HttpURLConnection which is automatically
+        // associated with the thread
+        HttpURLConnection urlCon;
+
         for (int i = 0; i < count; i++)
         {
             // Creates and HttpURLConnection which is automatically
             // associated with the thread
-            HttpURLConnection urlCon = (HttpURLConnection)url.openConnection();
+            urlCon = (HttpURLConnection)url.openConnection();
 
             // Begins the execution
             urlCon.pipelineExecute();
@@ -48,8 +52,16 @@ public class HttpGetPipeline
         // Blocks for all connections to complete
         HttpURLConnection.pipelineBlock();
         
+        // Now try async
+        urlCon = (HttpURLConnection)url.openConnection();
+        urlCon.pipelineExecuteAsync();
+        
+        // Stay around for it to finish
+        Thread.sleep(1000);
+
         // Just for diagnostic purposes
         HttpURLConnection.dumpAll();
+        
 
     }
 }

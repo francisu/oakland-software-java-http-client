@@ -25,6 +25,8 @@ import com.oaklandsw.util.StringUtils;
 import com.oaklandsw.util.URIUtil;
 import com.oaklandsw.util.Util;
 
+import edu.emory.mathcs.backport.java.util.concurrent.BlockingQueue;
+import edu.emory.mathcs.backport.java.util.concurrent.LinkedBlockingQueue;
 import edu.emory.mathcs.backport.java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -90,6 +92,10 @@ public class HttpConnectionManager
     // with "this"
     protected String              _pipelineLock;
 
+    BlockingQueue                 _asyncQueue;
+
+    HttpPipelineAsyncThread       _asyncThread;
+
     // Statistics
 
     // V(AtomicInteger) - by number of tries when it succeeds
@@ -131,7 +137,15 @@ public class HttpConnectionManager
         _threadConnectionMap = new HashMap();
         _threadUrlConCountMap = new HashMap();
         _pipelineLock = new String();
+
+        initAsyncQueue();
         resetStatistics();
+    }
+
+    protected void initAsyncQueue()
+    {
+        // Create this with unlimited capacity so it never blocks
+        _asyncQueue = new LinkedBlockingQueue();
     }
 
     public void setProxyHost(String proxyHost)
@@ -139,7 +153,7 @@ public class HttpConnectionManager
         _proxyHost = proxyHost;
         // Get rid of all current connections as they are not
         // going to the right place.
-        resetConnectionPool();
+        resetConnectionPool(!IMMEDIATE);
     }
 
     public String getProxyHost()
@@ -179,7 +193,7 @@ public class HttpConnectionManager
         {
             // Get rid of all current connections as they are not
             // going to the right place.
-            resetConnectionPool();
+            resetConnectionPool(!IMMEDIATE);
 
             _nonProxyHostsString = hosts;
             if (_nonProxyHostsString == null)
@@ -237,7 +251,7 @@ public class HttpConnectionManager
     {
         // Get rid of all current connections as they are not
         // going to the right place.
-        resetConnectionPool();
+        resetConnectionPool(!IMMEDIATE);
         _proxyPort = proxyPort;
     }
 
@@ -343,6 +357,48 @@ public class HttpConnectionManager
         }
     }
 
+    // Executes the processPipelinedRead on the specified urlCon, creating
+    // the thread if necessary, also releases the connection from the urlCon
+    void enqueueAsyncUrlCon(HttpURLConnection urlCon)
+        throws InterruptedException
+    {
+        if (_log.isDebugEnabled())
+        {
+            _log.debug("enqueueAsyncUrlCon: " + " enqueued: " + urlCon);
+        }
+
+        // In contrast to the connection thread, this put() can not block
+        // because it's implemented with a LinkedBlockingQueue
+        synchronized (this)
+        {
+            _asyncQueue.put(urlCon);
+
+            if (_asyncThread == null)
+            {
+                _asyncThread = new HttpPipelineAsyncThread(this);
+                _asyncThread.start();
+                if (_connLog.isDebugEnabled())
+                {
+                    _connLog.debug("enqueueAsyncUrlCon: " + " created thread");
+                }
+            }
+        }
+    }
+
+    // Called when the pipelined async thread terminates due to lack of
+    // work
+    void asyncThreadTerminated()
+    {
+        synchronized (this)
+        {
+            if (_connLog.isDebugEnabled())
+            {
+                _connLog.debug("asyncThreadTerminated");
+            }
+            _asyncThread = null;
+        }
+    }
+
     // Called when a pipelined read is done, making a pipeline
     // slot available on the connection; wake up anyone waiting for
     // a new connection
@@ -380,15 +436,34 @@ public class HttpConnectionManager
         synchronized (_pipelineLock)
         {
             AtomicInteger ai = (AtomicInteger)_threadUrlConCountMap.get(thread);
+            // This can happen during a resetAllConnections()
             if (ai == null)
-                Util.impossible("No counter for callback: " + thread);
+                return;
             int count = ai.decrementAndGet();
             if (_log.isDebugEnabled())
                 _log.debug("urlConWasRead - count (after) " + count);
-            if (count == 0)
+            // Can have a count of < 0 during a reset
+            if (count <= 0)
             {
                 _pipelineLock.notifyAll();
                 _threadUrlConCountMap.remove(thread);
+            }
+        }
+    }
+
+    // Used during shutdown to wake everyone waiting because everything
+    // has been cancelled
+    void wakeAllBlockers()
+    {
+        synchronized (_pipelineLock)
+        {
+            Iterator it = _threadUrlConCountMap.values().iterator();
+            while (it.hasNext())
+            {
+                AtomicInteger ai = (AtomicInteger)it.next();
+                ai.set(0);
+                _pipelineLock.notifyAll();
+                it.remove();
             }
         }
     }
@@ -857,7 +932,7 @@ public class HttpConnectionManager
      * Returns the number of connections currently in use for the specified
      * host/port.
      */
-    int getTotalConnectionCount(String url)
+    public int getTotalConnectionCount(String url)
     {
         synchronized (this)
         {
@@ -988,11 +1063,13 @@ public class HttpConnectionManager
         return wakeTime;
     }
 
+    static final boolean IMMEDIATE = true;
+
     /**
      * Resets the connection pool, terminating all of the currently open
      * connections. This is called when the state of the proxy host changes.
      */
-    void resetConnectionPool()
+    void resetConnectionPool(boolean immediate)
     {
         synchronized (this)
         {
@@ -1002,25 +1079,36 @@ public class HttpConnectionManager
             // returned with a prior proxy incarnation number
             _globalProxyIncarnation++;
 
+            if (immediate)
+            {
+                // Reset all of the pipelining stuff
+                initAsyncQueue();
+
+                if (_asyncThread != null)
+                    _asyncThread.interrupt();
+                _asyncThread = null;
+
+                wakeAllBlockers();
+            }
+
             Collection hosts = _hostMap.values();
             Iterator it = hosts.iterator();
             while (it.hasNext())
             {
-                // Close all of the existing connections. If there
-                // are connections that are in use, they are closed
-                // as they are released, since the ConnectionInfo
-                // entry will not be found.
+                // Close all of the existing connections.
                 ConnectionInfo ci = (ConnectionInfo)it.next();
                 if (_connLog.isDebugEnabled())
+                {
                     _connLog.debug("Closing connections for: "
                         + ci._connectionKey);
-                ci.closeAllConnections();
+                }
+                ci.closeAllConnections(immediate);
             }
             _hostMap = new HashMap();
+
+            _timeout.shutdown();
         }
 
-        // Can't get the timeout lock while the manager is locked
-        _timeout.shutdown();
     }
 
     void dumpConnectionPool()

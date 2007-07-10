@@ -62,7 +62,6 @@ public class SamplePipelineCallback implements Callback
     // Utility methods, not part of the API
     //
     
-    // Read through the input stream
     public static void processStream(java.net.HttpURLConnection urlCon)
         throws IOException
     {

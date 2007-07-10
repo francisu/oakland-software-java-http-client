@@ -222,9 +222,6 @@ public class HttpConnection
     // used to detect a double release
     boolean                    _released;
 
-    // REMOVEME
-    boolean                    _onAvailQueue;
-
     // The current thread reading from this connection
     Thread                     _bugCatchReadThread;
     // Use a count to allow the bug check calls to be nested
@@ -334,7 +331,7 @@ public class HttpConnection
         _proxyIncarnation = proxyIncarnation;
         _handle = handle;
         setHostPort();
-        _queue = new ArrayBlockingQueue(100);
+        _queue = new ArrayBlockingQueue(200);
         _preventCloseList = new ArrayList();
     }
 
@@ -1042,6 +1039,7 @@ public class HttpConnection
         _input = new ExposedBufferInputStream(is, STREAM_BUFFER_SIZE);
         _output = new BufferedOutputStream(os, STREAM_BUFFER_SIZE);
 
+        _socket.setSoLinger(false, 0);
         _socket.setTcpNoDelay(true);
         _socket.setSoTimeout(_soTimeout);
     }
@@ -1161,16 +1159,16 @@ public class HttpConnection
 
     public void close()
     {
-        close(WAIT);
+        close(!IMMEDIATE);
     }
 
-    static final boolean WAIT = true;
+    static final boolean IMMEDIATE = true;
 
     /**
      * Low-level close of this connection, releases the socket and stream
-     * resources. Specify wait if willing to wait to be allowed to close.
+     * resources. Specify immediate if you can't wait.
      */
-    void close(boolean wait)
+    void close(boolean immediate)
     {
         if (_connLog.isDebugEnabled())
             _connLog.debug("close " + this);
@@ -1186,11 +1184,6 @@ public class HttpConnection
             {
                 try
                 {
-                    if (!wait)
-                    {
-                        Util
-                                .impossible("Should not wait for connection to close");
-                    }
                     _connLog.debug("Waiting to close");
                     wait();
                 }

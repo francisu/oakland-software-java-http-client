@@ -30,6 +30,7 @@ public class PipelineTester
     public int                 _failResponse;
 
     public int                 _iterations;
+    public boolean             _stop;
 
     public String              _url;
     public boolean             _checkConnections = true;
@@ -165,9 +166,7 @@ public class PipelineTester
             }
             catch (IOException e)
             {
-                System.out.println("Exception fail type "
-                    + "8 getting response code");
-                e.printStackTrace();
+                setFailType(9, e, 0);
             }
         }
 
@@ -181,6 +180,10 @@ public class PipelineTester
                                          Exception ex,
                                          int responseCode)
     {
+        // We don't care if we have been stopped
+        if (_stop)
+            return;
+        
         System.out.println("failure "
             + failType
             + " respCode: "
@@ -236,6 +239,9 @@ public class PipelineTester
         // Create the connections
         for (int i = 0; i < _iterations; i++)
         {
+            if (_stop)
+                break;
+
             // Not in the header, add it as a query request param
             url = new URL(_url
                 + (_url.endsWith("&") ? "" : "?")
@@ -294,8 +300,12 @@ public class PipelineTester
         }
 
         boolean results = true;
-        if (_checkResult)
+        if (_checkResult && !_stop)
             results = checkResults();
+
+        // Test passed if we interrupt it
+        if (_stop)
+            return false;
 
         if (_checkConnections)
         {

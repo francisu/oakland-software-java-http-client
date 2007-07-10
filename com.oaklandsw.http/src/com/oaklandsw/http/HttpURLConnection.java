@@ -1391,10 +1391,10 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
     }
 
     // The connection needs to be closed
-    protected static final int CLOSE   = 0;
+    protected static final int      CLOSE     = 0;
 
     // The connection was released from reading (as opposed to writing)
-    protected static final int READING = 1;
+    protected static final int      READING   = 1;
 
     protected static final String[] _relTypes = { "CLOSE", "READING" };
 
@@ -1426,8 +1426,7 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
 
                     // When reading and piplining the connection is not owned
                     // from the connection manager point of view
-                    if (closed
-                        || (_pipeliningOptions & PIPE_PIPELINE) == 0)
+                    if (closed || (_pipeliningOptions & PIPE_PIPELINE) == 0)
                     {
                         // See the comment on this field
                         _urlConReleased = true;
@@ -3090,7 +3089,6 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
     /**
      * Blocks until all pipelined HttpURLConnections are completed on this
      * thread.
-     * 
      */
     public static void pipelineBlock() throws InterruptedException
     {
@@ -3099,7 +3097,11 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
 
     /**
      * Begins the pipelined execution of this connection, when you don't need to
-     * block for completion of the connection.
+     * block for completion of the connection or if this thread cannot tolerate
+     * blocking.
+     * <p>
+     * This will never block for any reason; it moves the work of writing the
+     * HTTP request to another thread.
      */
     public void pipelineExecuteAsync() throws InterruptedException
     {
@@ -3109,7 +3111,7 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
         }
 
         checkPipeline();
-        processPipelinedWrite();
+        _connManager.enqueueAsyncUrlCon(this);
     }
 
     // /**
@@ -3396,10 +3398,22 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
 
     /**
      * Close all pooled connections that are not currently in use.
+     * <p>
+     * HTTP requests that are currently in progress will be allowed complete
+     * normally.  The connections associated with those requests will be closed
+     * when the connections complete.
      */
     public static void closeAllPooledConnections()
     {
-        _connManager.resetConnectionPool();
+        _connManager.resetConnectionPool(!HttpConnectionManager.IMMEDIATE);
+    }
+
+    /**
+     * Immediately close all connections and stop all work in progress. 
+     */
+    public static void immediateShutdown()
+    {
+        _connManager.resetConnectionPool(HttpConnectionManager.IMMEDIATE);
     }
 
     /**
@@ -3428,8 +3442,31 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
 
     public static void dumpAll()
     {
-        dumpConnectionPool();
+        System.out.println(getStaticConfiguration());
         System.out.println(getStatistics());
+        dumpConnectionPool();
+    }
+
+    public static String getStaticConfiguration()
+    {
+        StringBuffer sb = new StringBuffer();
+
+        sb.append("Max connections/host:    ");
+        sb.append(getMaxConnectionsPerHost());
+
+        sb.append("\nPipelining options:    ");
+        sb.append(plOptionsToString(getDefaultPipeliningOptions()));
+
+        sb.append("\nPipelining max depth:  ");
+        sb.append(getDefaultPipeliningMaxDepth());
+
+        sb.append("\nAuthentication Type:   ");
+        sb.append(HttpURLConnectInternal
+                .authTypeToString(getDefaultAuthenticationType()));
+
+        sb.append("\n");
+
+        return sb.toString();
     }
 
     /**

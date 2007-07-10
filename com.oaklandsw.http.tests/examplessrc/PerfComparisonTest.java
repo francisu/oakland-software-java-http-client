@@ -15,130 +15,90 @@ import com.oaklandsw.util.LogUtils;
 public class PerfComparisonTest
 {
 
-    public static final int         REPEAT_TIMES           = 1;
+    public static final int      REPEAT_TIMES           = 3;
 
-    public static final String      INTRANET_3K            = "http://repoman:8081/3k";
+    public static final String   INTRANET_3K            = "http://repoman:8081/3k";
 
     // Network scenarios
-    public static final int         SC_LOCAL               = 0;
-    public static final int         SC_INTRANET_APACHE     = 1;
-    public static final int         SC_INTRANET_IIS        = 2;
-    public static final int         SC_INTERNET            = 3;
-    public static final int         SC_LAST                = SC_INTERNET;
+    public static final int      SC_LOCAL               = 0;
+    public static final int      SC_INTRANET_APACHE     = 1;
+    public static final int      SC_INTERNET            = 2;
+    public static final int      SC_LAST                = SC_INTERNET;
 
-    public static final String[]    _locationNames         = new String[] {
-        "Local", "Intranet/Apache", "Intranet/IIS", "Internet" };
+    public static final String[] _locationNames         = new String[] {
+        "Machine", "LAN", "Internet"                   };
 
-    // Each array element corresponds to one of the scenarios
-    public static final String[]    _sizeNames             = new String[] {
-        "0K", "3K", "20K", "100K", /* "240K" */           };
+    // Each array element corresponds to one of the scenarios, these
+    // are sizes in K
+    public static final int[]    _sizes                 = new int[] { 0, 1, 2,
+        4, 8, 16, 32, 64, 128                          };
 
-    // IIS Location: "http://repoman/noauth/wwwroot/latency.txt", //
-
-    // Size X location
-    public static final String[][]  _sizeUrls              = new String[][] {
-                                                           // 0K (really 10
-        // bytes)
-        { "http://berlioz/oaklandsw-http/latency.txt", //
-        "http://repoman:8081/latency.txt", //
-        "http://repoman/noauth/wwwroot/latency.txt", //
-        "http://sfo.speakeasy.net/speedtest/latency.txt" },
-
-        // 3K
-        { "http://berlioz/oaklandsw-http/3k", //
-        INTRANET_3K, //
-        "http://repoman/noauth/wwwroot/3k", //
-        "http://host72.hrwebservices.net/~bigtivo/perftest/gfx/tnet_wht.jpg" },
-
-        // 20K
-        { "http://berlioz/oaklandsw-http/20k", //
-        "http://repoman:8081/20k", //
-        "http://repoman/noauth/wwwroot/20k", //
-        "http://i.dslr.net/speedtest/v2/bottom.jpg" },
-
-        // 100K
-        { "http://berlioz/oaklandsw-http/100k", //
-        "http://repoman:8081/100k", //
-        "http://repoman/noauth/wwwroot/100k", //
-        "http://i.dslr.net/SpeedTests/185/v2/100k" },//  
-
-                                                           // 240K
-                                                           // {
-                                                           // "http://berlioz/oaklandsw-http/random350x350.jpg",
-                                                           // //
-                                                           // "http://repoman/noauth/wwwroot/random350x350.jpg",
-                                                           // //
-                                                           // "http://sfo.speakeasy.net/speedtest/random350x350.jpg"
-                                                           // },//
-
-                                                           };
-
-    // Size x location
-    public static final boolean[][] _useSuffixes           = new boolean[][] {
-        { false, false, false, false },//
-        { false, true, true, false },//
-        { false, false, false, false },//
-        { false, false, false, false },//
-                                                           };
+    // Location
+    public static final String[] _locationUrls          = new String[] {
+        "http://berlioz/oaklandsw-http/", //
+        "http://repoman:8081/", //
+        "http://francisupton.com/"                     };
 
     // Size x location
     // Don't use these limits for now
-    public static final int[][]     _sizeConnLimits        = new int[][] {
-        { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 } };
+    public static final int[][]  _sizeConnLimits        = new int[][] {
+        { 0, 0, 0 }, { 0, 0, 0 }, { 0, 0, 0 }, { 0, 0, 0 }, { 0, 0, 0 },
+        { 0, 0, 0 }, { 0, 0, 0 }, { 0, 0, 0 }, { 0, 0, 0 } };
 
     // Size x location
-    public static final int[][]     _sizeCounts            = new int[][] {
-        { 1000, 1000, 1000, 200 }, { 1000, 1000, 1000, 200 },
-        { 1000, 1000, 1000, 200 }, { 1000, 1000, 1000, 200 } };
+    public static final int[][]  _sizeCounts            = new int[][] {
+        { 2000, 2000, 200 }, { 2000, 2000, 200 }, { 2000, 2000, 200 },
+        { 2000, 2000, 200 }, { 2000, 2000, 200 }, { 2000, 2000, 200 },
+        { 2000, 2000, 200 }, { 2000, 2000, 200 }, { 2000, 2000, 200 } };
 
     // Product Pipe depths
     // Product x pipeline depth
     // WARNING - the order of these is defined by the values in TestPerf
-    public static final int[][]     _pipeDepths            = new int[][] {
-        { 0 }, // Oakland
+    public static final int[][]  _pipeDepths            = new int[][] {//
+                                                        { 0 }, // Oakland
         { 0 }, // Sun
         { 0 }, // Apache
         { 1, 2, 50, 100, 200, 0 }, // Oakland Pipe
-                                                           };
+                                                        };
     // Product Connections Limits
     // Product x connection limit
     // WARNING - the order of these is defined by the values in TestPerf
-    public static final int[][]     _productConnections    = new int[][] {
-        { 1, 2, 5, 10 }, // Oakland
-        { 1, 2, 5, 10 }, // Sun
-        { 1, 2, 5, 10 }, // Apache
-        { 2, 5, 10 }, // Oakland Pipe
-                                                           };
+    public static final int[][]  _productConnections    = new int[][] {
+        { 1, 2, 5, 10, 20 }, // Oakland
+        { 1 }, // Sun (Note, in the Sun implementation the number of
+        // connections is the number of threads)
+        { 1, 2, 5, 10, 20 }, // Apache
+        { 1, 2, 5, 10, 20 }, // Oakland Pipe
+                                                        };
+
     // Counts of the number of threads to use
-    public static final int[]       _threadCounts          = new int[] { 1, 5,
-        10                                                };
+    public static final int[]    _threadCounts          = new int[] { 1, 2, 5,
+        10, 20                                         };
 
-    public PrintWriter              _pw;
+    public PrintWriter           _pw;
 
-    public boolean                  _noPrint;
+    public boolean               _noPrint;
 
-    public int                      _currentMaxConnections;
-    public int                      _currentPipeDepth;
-    public int                      _currentProduct;
-    public int                      _currentSizeIndex;
-    public int                      _currentLocation;
-    public int                      _currentCount;
-    public int                      _currentCountPerThread;
-    public int                      _currentThreads;
+    public int                   _currentMaxConnections;
+    public int                   _currentPipeDepth;
+    public int                   _currentProduct;
+    public int                   _currentSizeIndex;
+    public int                   _currentLocation;
+    public int                   _currentCount;
+    public int                   _currentCountPerThread;
+    public int                   _currentThreads;
 
-    public boolean                 _currentUseSuffixes;
-
-    public int                      _singleSize            = -1;
-    public int                      _singleLocation        = -1;
-    public int                      _singleConnectionLimit = -1;
-    public int                      _singleProduct         = -1;
+    public int                   _singleSize            = -1;
+    public int                   _singleLocation        = 1;
+    public int                   _singleConnectionLimit = -1;
+    public int                   _singleProduct         = -1;
 
     // Runs a set of tests
     public void runSet() throws Exception
     {
         String url;
 
-        url = _sizeUrls[_currentSizeIndex][_currentLocation];
+        url = _locationUrls[_currentLocation] + _sizes[_currentSizeIndex] + "k";
         if (url == null)
             return;
 
@@ -158,7 +118,7 @@ public class PerfComparisonTest
             tp._implementation = _currentProduct;
             tp._totalTimes = _currentCount;
             tp._threads = _currentThreads;
-            tp._useSuffixes = _currentUseSuffixes;
+            tp._useSuffixes = false;
             tp._maxConn = _currentMaxConnections;
             tp._quiet = false;
 
@@ -180,20 +140,20 @@ public class PerfComparisonTest
             + ","
             + TestPerf._impNames[_currentProduct]
             + ","
+            + _sizes[_currentSizeIndex]
+            + ","
+            + totalPerTrans
+            / REPEAT_TIMES
+            + ","
             + _currentMaxConnections
             + ","
-            + _sizeNames[_currentSizeIndex]
+            + _currentThreads
             + ","
             + _currentPipeDepth
             + ","
             + _currentCount
             + ","
-            + _currentThreads
-            + ","
             + REPEAT_TIMES
-            + ","
-            + totalPerTrans
-            / REPEAT_TIMES
             + ","
             + minPerTrans
             + ","
@@ -215,21 +175,17 @@ public class PerfComparisonTest
     public void printHeader()
     {
         String str = "Where"
-            + ","
-            + "Product"
-            + ","
-            + "Connections"
-            + ","
-            + "Size"
-            + ","
-            + "Pipe Depth"
-            + ","
-            + "Count"
-            + ","
-            + "Threads"
-            + ","
-            + "Repeats"
-            + ",Avg/Trans,Min/Trans,Max/Trans,Total";
+            + ",Product"
+            + ",Size (K)"
+            + ",Avg ms/Trans"
+            + ",Connections"
+            + ",Threads"
+            + ",Pipe Depth"
+            + ",Count"
+            + ",Repeats"
+            + ",Min ms/Trans"
+            + ",Max ms/Trans"
+            + ",Total ms";
         println(str);
     }
 
@@ -261,12 +217,10 @@ public class PerfComparisonTest
 
                 println("");
 
-                for (_currentSizeIndex = 0; _currentSizeIndex < _sizeNames.length; _currentSizeIndex++)
+                for (_currentSizeIndex = 0; _currentSizeIndex < _sizes.length; _currentSizeIndex++)
                 {
                     if (_singleSize != -1 && _currentSizeIndex != _singleSize)
                         continue;
-
-                    _currentUseSuffixes = _useSuffixes[_currentLocation][_currentSizeIndex];
 
                     println("");
 
@@ -296,7 +250,14 @@ public class PerfComparisonTest
                                     _currentCountPerThread = _currentCount
                                         / _currentThreads;
 
-                                    if (true)
+                                    // Sun implementation always as many
+                                    // connections needed by the number
+                                    // of threads, regardless of the setting of
+                                    // the http.maxConnections
+                                    if (_currentProduct == TestPerf.IMP_SUN)
+                                        _currentMaxConnections = _currentThreads;
+
+                                    if (!true)
                                     {
                                         String textCount = format
                                                 .format(logCounter++);

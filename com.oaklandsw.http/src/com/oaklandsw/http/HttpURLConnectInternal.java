@@ -2433,20 +2433,6 @@ public class HttpURLConnectInternal
                 _log.debug("shouldClose: NTLMLeaveOpen: "
                     + _connection._ntlmLeaveOpen);
             }
-
-            // REMOVEME
-            if (false
-                && _connectionRequestLimit != 0
-                && _connection._totalReqUrlConCount >= _connectionRequestLimit)
-            {
-                if (_connLog.isDebugEnabled())
-                {
-                    _connLog.debug("Will CLOSE - connReqLimit: "
-                        + _connectionRequestLimit);
-                }
-                result = true;
-
-            }
         }
 
         if (_connectionCloseSent

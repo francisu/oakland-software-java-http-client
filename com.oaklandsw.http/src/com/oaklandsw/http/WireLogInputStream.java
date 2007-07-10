@@ -97,6 +97,7 @@ class WireLogInputStream extends FilterInputStream
     {
         int b = super.read();
         traceChar((char)b);
+        dumpBuff();
         return b;
     }
 
@@ -107,6 +108,7 @@ class WireLogInputStream extends FilterInputStream
         {
             for (int i = 0; i < l; i++)
                 traceChar((char)b[off + i]);
+            dumpBuff();
         }
         return l;
     }

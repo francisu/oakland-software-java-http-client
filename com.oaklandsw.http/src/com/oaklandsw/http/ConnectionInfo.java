@@ -103,13 +103,6 @@ class ConnectionInfo
             _availableConnections = q;
         }
 
-        if (conn._onAvailQueue)
-        {
-            Util.impossible("putting on available when already marked so\n "
-                + dump(0));
-        }
-        
-        conn._onAvailQueue = true;
         if (!_availableConnections.offer(conn))
             Util.impossible("BlockingQueue overflow: " + _availableConnections);
         bugCheckCounts();
@@ -132,10 +125,6 @@ class ConnectionInfo
     // Assumed to be synchronized on the HttpConnectionManager
     void removeAvailConnection(HttpConnection conn)
     {
-        if (!conn._onAvailQueue)
-            Util.impossible("removing avail connection not marked avail\n"
-                + dump(0));
-        conn._onAvailQueue = false;
         _availableConnections.remove(conn);
         bugCheckCounts();
     }
@@ -165,7 +154,7 @@ class ConnectionInfo
                     _log.debug("getMatch - force new connection - limit: "
                         + _connManager._maxConns);
                 }
-                
+
                 // Force it to create a connection
                 return null;
             }
@@ -186,13 +175,8 @@ class ConnectionInfo
                 {
                     // Dequeues the conn from available connections
                     conn = (HttpConnection)_availableConnections.poll();
-                    if (!conn._onAvailQueue)
-                        Util
-                                .impossible("removing avail connection not marked avail\n"
-                                    + dump(0));
                     if (_availableConnections.size() < 0)
                         Util.impossible("avail conn underflow: " + dump(0));
-                    conn._onAvailQueue = false;
                     break assign;
                 }
                 if (_connLog.isDebugEnabled())
@@ -204,13 +188,6 @@ class ConnectionInfo
             while (it.hasNext())
             {
                 conn = (HttpConnection)it.next();
-
-                if (!conn._onAvailQueue)
-                {
-                    Util
-                            .impossible("removing avail connection not marked avail\n"
-                                + dump(0));
-                }
 
                 boolean matched = checkMatch(conn, urlCon);
 
@@ -226,7 +203,6 @@ class ConnectionInfo
                     }
 
                     it.remove();
-                    conn._onAvailQueue = false;
                     if (_availableConnections.size() < 0)
                         Util.impossible("avail conn underflow: " + dump(0));
                     continue;
@@ -236,7 +212,6 @@ class ConnectionInfo
                 {
                     // Remove because it's assigned
                     it.remove();
-                    conn._onAvailQueue = false;
                     if (_availableConnections.size() < 0)
                         Util.impossible("avail conn underflow: " + dump(0));
                     break assign;
@@ -436,7 +411,7 @@ class ConnectionInfo
     }
 
     // Assumed to be synchronized on the HttpConnectionManager
-    void closeAllConnections()
+    void closeAllConnections(boolean immediate)
     {
         _connLog.debug("closeAllConnections");
 
@@ -448,6 +423,20 @@ class ConnectionInfo
             conn = (HttpConnection)it.next();
             conn.close();
             it.remove();
+        }
+
+        // Kill everything right now
+        if (immediate)
+        {
+            it = _assignedConnections.iterator();
+            while (it.hasNext())
+            {
+                conn = (HttpConnection)it.next();
+                if (conn._connectionThread != null)
+                    conn._connectionThread.interrupt();
+                conn.close(HttpConnection.IMMEDIATE);
+                it.remove();
+            }
         }
     }
 

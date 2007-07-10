@@ -10,6 +10,7 @@ import org.apache.commons.logging.Log;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
+import com.oaklandsw.http.AbstractCallback;
 import com.oaklandsw.http.Callback;
 import com.oaklandsw.http.HttpConnectionManager;
 import com.oaklandsw.http.HttpTestEnv;
@@ -27,17 +28,25 @@ public class TestPipelining extends TestWebappBase
 
     protected String         _threadTestName;
 
+    protected PipelineTester _pt;
+
+    protected String         _urlString;
+
+    protected boolean        _failed;
+
     public TestPipelining(String testName)
     {
         super(testName);
 
-        //.._extended = true;
+        // .._extended = true;
 
         // This runs with explicit close anyway, no need to do this special test
         _doExplicitTest = false;
 
         // Netproxy seems to drop requests
         _doAuthCloseProxyTest = false;
+
+        _urlString = _urlBase + ParamServlet.NAME;
 
         // _logging = true;
     }
@@ -70,11 +79,11 @@ public class TestPipelining extends TestWebappBase
     // Tests with two requests, make a single request test
     protected void testSimple(int number) throws Exception
     {
-        PipelineTester pt = new PipelineTester(_urlBase + ParamServlet.NAME,
-                                               number,
-                                               _pipelineOptions,
-                                               _pipelineMaxDepth);
-        assertFalse(pt.runTest());
+        _pt = new PipelineTester(_urlString,
+                                 number,
+                                 _pipelineOptions,
+                                 _pipelineMaxDepth);
+        assertFalse(_pt.runTest());
         HttpURLConnection.dumpAll();
     }
 
@@ -82,7 +91,7 @@ public class TestPipelining extends TestWebappBase
     {
         HttpURLConnection.setDefaultPipelining(true);
         HttpURLConnection urlCon = HttpURLConnection
-                .openConnection(new URL(_urlBase + ParamServlet.NAME));
+                .openConnection(new URL(_urlString));
         try
         {
             urlCon.getResponseCode();
@@ -92,6 +101,35 @@ public class TestPipelining extends TestWebappBase
         {
             // Expected
         }
+    }
+
+    class SimpleCallback extends AbstractCallback
+    {
+        public boolean _read;
+
+        public void readResponse(HttpURLConnection urlCon, InputStream is)
+        {
+            _read = true;
+        }
+    }
+
+    public void testPipelineMix() throws Exception
+    {
+        SimpleCallback cb = new SimpleCallback();
+
+        HttpURLConnection.setDefaultPipelining(true);
+        HttpURLConnection.setDefaultCallback(cb);
+        HttpURLConnection urlCon = HttpURLConnection
+                .openConnection(new URL(_urlString));
+
+        urlCon.pipelineExecute();
+
+        urlCon = HttpURLConnection.openConnection(new URL(_urlString));
+        urlCon.setPipelining(false);
+        assertEquals(200, urlCon.getResponseCode());
+
+        HttpURLConnection.pipelineBlock();
+        assertTrue(cb._read);
     }
 
     public void testSimple1() throws Exception
@@ -128,7 +166,7 @@ public class TestPipelining extends TestWebappBase
                 + _testAllName
                 + ".txt");
         }
-        PipelineTester pt = new PipelineTester(_urlBase + ParamServlet.NAME,
+        PipelineTester pt = new PipelineTester(_urlString,
                                                10,
                                                _pipelineOptions,
                                                _pipelineMaxDepth);
@@ -140,7 +178,7 @@ public class TestPipelining extends TestWebappBase
     // Bug 1972 connection released twice
     public void testSimple10Async404() throws Exception
     {
-        if (_logging)
+        if (true || _logging)
         {
             LogUtils.logFile("/home/francis/log4jpipe10Async404"
                 + _testAllName
@@ -211,8 +249,7 @@ public class TestPipelining extends TestWebappBase
         HttpURLConnection urlCon;
         for (int i = 0; i < 200; i++)
         {
-            urlCon = HttpURLConnection.openConnection(new URL(_urlBase
-                + ParamServlet.NAME));
+            urlCon = HttpURLConnection.openConnection(new URL(_urlString));
             urlCon.setCallback(cb);
             urlCon.pipelineExecute();
         }
@@ -238,6 +275,64 @@ public class TestPipelining extends TestWebappBase
     public void testCallbackGetInput() throws Exception
     {
         testCallbackActions(OPT_GET_INPUT);
+    }
+
+    public void testShutdown1() throws Exception
+    {
+        testSimple(10);
+        HttpURLConnection.immediateShutdown();
+        HttpURLConnection.dumpAll();
+        testSimple(10);
+        HttpURLConnection.dumpAll();
+
+    }
+
+    public void testShutdown2() throws Exception
+    {
+        //logAll();
+
+        _failed = false;
+        // Run this a few times and make sure everything is OK
+        for (int i = 1; i <= 10; i++)
+        {
+            Runnable run = new Runnable()
+            {
+                public void run()
+                {
+                    try
+                    {
+                        testSimple(1000);
+                    }
+                    catch (InterruptedException e)
+                    {
+                        // Expected
+                    }
+                    catch (Exception e)
+                    {
+                        System.err.println(e);
+                        _failed = true;
+                        // Expected
+                    }
+                }
+            };
+
+            Thread t = new Thread(run);
+            t.start();
+            Thread.sleep(100 * i);
+
+            // Stop making new connections
+            t.interrupt();
+            _pt._stop = true;
+            HttpURLConnection.immediateShutdown();
+            HttpURLConnection.getConnectionManager().checkEverythingEmpty();
+            assertEquals(0, HttpURLConnection.getConnectionManager()
+                    .getTotalConnectionCount(_urlString));
+            HttpURLConnection.dumpAll();
+
+            assertFalse(_failed);
+        }
+        
+        testSimple(100);
     }
 
     public void testSimple100() throws Exception
@@ -365,10 +460,7 @@ public class TestPipelining extends TestWebappBase
 
     protected void testThreaded(int threadCount, int num) throws Exception
     {
-        testThreaded(threadCount,
-                     _urlBase + ParamServlet.NAME,
-                     num,
-                     CHECK_RESULT);
+        testThreaded(threadCount, _urlString, num, CHECK_RESULT);
     }
 
     protected void testThreaded(int threadCount,
@@ -559,8 +651,8 @@ public class TestPipelining extends TestWebappBase
         testThreaded2();
         System.out.println("----------------    Threaded3");
         testThreaded3();
-        //System.out.println("----------------    Threaded4");
-        //testThreaded4();
+        // System.out.println("---------------- Threaded4");
+        // testThreaded4();
     }
 
 }

@@ -32,7 +32,9 @@ public class HttpConnectionTimeout
 
     private boolean               _shutdown;
 
-    // Object only for synchronization
+    // Object only for synchronization, this lock may be locked
+    // when the connection manager lock is locked, however, you may
+    // not call the connection manager when you have this lock
     private Object                _lock;
 
     private HttpConnectionManager _connManager;
