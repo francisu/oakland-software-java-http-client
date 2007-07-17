@@ -14,40 +14,34 @@ import edu.emory.mathcs.backport.java.util.concurrent.BlockingQueue;
 import edu.emory.mathcs.backport.java.util.concurrent.TimeUnit;
 
 /**
- * Thread that services an HttpConnection, there can be at most one thread per
- * connection.
+ * Thread that runs any executeAsync pipelined urlcons.
  */
-public class HttpConnectionThread extends Thread
+public class HttpPipelineAsyncThread extends Thread
 {
-    private static final Log _log                 = LogUtils.makeLogger();
+    private static final Log _log      = LogUtils.makeLogger();
 
-    private static final Log _connLog             = LogFactory
-                                                          .getLog(HttpConnection.CONN_LOG);
+    private static final Log _connLog  = LogFactory
+                                               .getLog(HttpConnection.CONN_LOG);
 
-    // Amount of time in milliseconds this connection will wait for work before
-    // exiting
-    static final int         CONNECTION_WAIT_TIME = 5000;
-
-    HttpConnection           _connection;
+    // Amount of time in milliseconds this thread will wait before terminating
+    static final int         WAIT_TIME = 5000;
 
     HttpConnectionManager    _connectionManager;
 
-    public HttpConnectionThread(HttpConnection connection,
-            HttpConnectionManager conMgr)
+    public HttpPipelineAsyncThread(HttpConnectionManager conMgr)
     {
         super();
-        _connection = connection;
-        _connection._connectionThread = this;
         _connectionManager = conMgr;
+        _connectionManager._asyncThread = this;
         this.setDaemon(true);
-        setName("ConnReader: " + _connection);
+        setName("PipelineAsync");
     }
 
     public void run()
     {
         HttpURLConnection urlCon;
 
-        BlockingQueue queue = _connection._queue;
+        BlockingQueue queue = _connectionManager._asyncQueue;
 
         if (_connLog.isDebugEnabled())
             _connLog.debug("starting");
@@ -59,7 +53,8 @@ public class HttpConnectionThread extends Thread
                 Object obj;
 
                 // Don't wait with the lock
-                obj = queue.poll(CONNECTION_WAIT_TIME, TimeUnit.MILLISECONDS);
+                obj = queue.poll(WAIT_TIME, TimeUnit.MILLISECONDS);
+
                 // Nothing found after the wait
                 if (obj == null)
                 {
@@ -75,9 +70,9 @@ public class HttpConnectionThread extends Thread
                             if (_connLog.isDebugEnabled())
                             {
                                 _connLog.debug(this
-                                    + " pipelined pool connection "
-                                    + "timeout (or close) - terminating after "
-                                    + CONNECTION_WAIT_TIME
+                                    + " pipelined async "
+                                    + "timeout - terminating after "
+                                    + WAIT_TIME
                                     + "ms");
                             }
                             return;
@@ -86,18 +81,13 @@ public class HttpConnectionThread extends Thread
                 }
 
                 urlCon = (HttpURLConnection)obj;
-
-                if (_log.isDebugEnabled())
-                    _log.debug("starting: " + _connection);
-                urlCon.processPipelinedRead();
-                if (_log.isDebugEnabled())
-                    _log.debug("end: " + _connection);
+                urlCon.processPipelinedWrite();
             }
         }
         catch (InterruptedException e)
         {
             if (_connLog.isDebugEnabled())
-                _connLog.debug(this + " interrupted - exiting", e);
+                _connLog.debug(this + " interrupted - exiting",e);
         }
         catch (InterruptedIOException e)
         {
@@ -109,9 +99,8 @@ public class HttpConnectionThread extends Thread
             synchronized (_connectionManager)
             {
                 // Just terminate
-                _connectionManager.connectionThreadTerminated(_connection);
+                _connectionManager.asyncThreadTerminated();
             }
         }
     }
-
 }

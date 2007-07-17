@@ -48,7 +48,7 @@ public class TestPerf
     int                   _implementation;
 
     static final String[] _impNames        = { "Oakland", "Sun", "Jakarta",
-        "Oak/Pipe"                        };
+        "Oakland"                         };
 
     boolean               _doClose;
     boolean               _quiet;
@@ -58,6 +58,8 @@ public class TestPerf
     boolean               _pipeRr          = true;
     int                   _maxConn;
     int                   _reqsPerConn;
+
+    int                   _actualPipeMaxDepth;
 
     // Append these in order to each url
     int                   _suffixIndex;
@@ -406,6 +408,10 @@ public class TestPerf
         {
             _transTime = (float)_totalTime / (float)_actualTimes;
         }
+
+        _actualPipeMaxDepth = com.oaklandsw.http.HttpURLConnection
+                .getConnectionManager()
+                .getCount(com.oaklandsw.http.HttpConnectionManager.COUNT_PIPELINE_DEPTH_HIGH);
 
         if (!_quiet)
         {

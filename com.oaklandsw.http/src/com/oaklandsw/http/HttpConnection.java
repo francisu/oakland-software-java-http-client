@@ -1171,7 +1171,7 @@ public class HttpConnection
     void close(boolean immediate)
     {
         if (_connLog.isDebugEnabled())
-            _connLog.debug("close " + this);
+            _connLog.debug("close " + this + " immediate: " + immediate);
 
         // This thread is allowed to close
         endPreventClose();
@@ -1192,6 +1192,18 @@ public class HttpConnection
                     _connLog.warn("Closing thread interrupted");
                     return;
                 }
+            }
+
+            if (immediate)
+            {
+                if (_connectionThread != null)
+                    _connectionThread.interrupt();
+                // Clear out the queue since we don't guarantee
+                // notifications in this case
+                _queue.clear();
+
+                if (_connLog.isDebugEnabled())
+                    _connLog.debug("close - finished interrupt of conn thread");
             }
 
             _tunnelEstablished = false;
@@ -1241,6 +1253,8 @@ public class HttpConnection
             }
         }
 
+        if (_connLog.isDebugEnabled())
+            _connLog.debug("close " + this + " FINISHED");
     }
 
     boolean isOpen()

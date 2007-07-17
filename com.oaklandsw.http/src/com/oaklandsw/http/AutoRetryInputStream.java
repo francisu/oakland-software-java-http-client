@@ -6,6 +6,7 @@ package com.oaklandsw.http;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InterruptedIOException;
+import java.net.SocketTimeoutException;
 
 import org.apache.commons.logging.Log;
 
@@ -65,7 +66,7 @@ public abstract class AutoRetryInputStream extends InputStream
 
     protected abstract void closeSubclass(boolean closeConn) throws IOException;
 
-    protected void processIOException(IOException ex) throws IOException
+    protected void processIOException(IOException ex) throws IOException, InterruptedIOException
     {
         if (_log.isDebugEnabled())
             _log.debug("IOException on read", ex);
@@ -81,7 +82,11 @@ public abstract class AutoRetryInputStream extends InputStream
             _urlCon._ioException.initCause(ex);
             throw _urlCon._ioException;
         }
-        if (ex instanceof InterruptedIOException)
+
+        // Note we want to handle this as an HttpTimeoutException, because this
+        // does not mean the thread was interrupted (despite it being a subclass
+        // if InterruptedIOException)
+        if (ex instanceof SocketTimeoutException)
             throw new HttpTimeoutException();
         throw ex;
 

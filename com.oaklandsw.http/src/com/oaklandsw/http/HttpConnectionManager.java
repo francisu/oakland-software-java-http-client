@@ -123,14 +123,6 @@ public class HttpConnectionManager
         , "Pipeline max depth (all conns): " //
                                                               };
 
-    // Just a dummy class to enqueue to get a connection thread to close
-    static class CloseMarker
-    {
-    }
-
-    // Used to tell a connection thread to close
-    static CloseMarker _closeMarker = new CloseMarker();
-
     public HttpConnectionManager()
     {
         _timeout = new HttpConnectionTimeout(this);
@@ -337,12 +329,6 @@ public class HttpConnectionManager
         }
     }
 
-    void enqueueCloseForConnection(HttpConnection conn)
-        throws InterruptedException
-    {
-        conn._queue.put(_closeMarker);
-    }
-
     // Called when the connection thread is going to terminate
     // because of lack of work
     void connectionThreadTerminated(HttpConnection conn)
@@ -535,6 +521,13 @@ public class HttpConnectionManager
      */
     public String getProxyHost(String host)
     {
+        if (isNonProxyHost(host))
+            return null;
+        return _proxyHost;
+    }
+
+    public boolean isNonProxyHost(String host)
+    {
         // This should be OK, as we never lock the connection
         // info while we have the lock on this.
         synchronized (this)
@@ -555,12 +548,12 @@ public class HttpConnectionManager
                                 + " because of host rule: "
                                 + re.toString());
                         }
-                        return null;
+                        return true;
                     }
                 }
             }
         }
-        return _proxyHost;
+        return false;
     }
 
     /**
@@ -581,6 +574,7 @@ public class HttpConnectionManager
      */
     public HttpConnection getConnection(HttpURLConnection urlCon)
         throws HttpException,
+            InterruptedException,
             MalformedURLException
     {
         long connectionTimeout = urlCon.getConnectionTimeout();
@@ -589,6 +583,20 @@ public class HttpConnectionManager
         long idlePing = urlCon.getIdleConnectionPing();
         String proxyHost = urlCon.getConnectionProxyHost();
         int proxyPort = urlCon.getConnectionProxyPort();
+
+        // Make sure this is not on the non-proxy list
+        if (_nonProxyHostsString != null && proxyHost != null)
+        {
+            // Only applies if the proxy was set globally, if the proxy
+            // is set directly, then it goes on the proxy even if it's in
+            // the non-proxy hosts list
+            if (proxyHost.equals(_proxyHost)
+                && isNonProxyHost(URIUtil.getHost(url)))
+            {
+                proxyHost = null;
+                proxyPort = -1;
+            }
+        }
 
         if (!HttpURLConnection._urlConReleased)
             connectionTimeout = NOT_RELEASED_TIMEOUT;
@@ -619,71 +627,62 @@ public class HttpConnectionManager
 
             while (true)
             {
-                try
+                // Found one
+                conn = ci.getMatchingConnection(urlCon);
+                if (conn != null)
+                    break;
+
+                // Can create one
+                if (_maxConns <= 0 || ci.getActiveConnectionCount() < _maxConns)
+                    break;
+
+                // Have to wait for an existing one to be freed
+                if (_connLog.isDebugEnabled())
                 {
-                    // Found one
-                    conn = ci.getMatchingConnection(urlCon);
-                    if (conn != null)
-                        break;
-
-                    // Can create one
-                    if (_maxConns <= 0
-                        || ci.getActiveConnectionCount() < _maxConns)
-                        break;
-
-                    // Have to wait for an existing one to be freed
-                    if (_connLog.isDebugEnabled())
-                    {
-                        _connLog.debug("Waiting for: "
-                            + connectionKey
-                            + " waiting for: "
-                            + connectionTimeout
-                            + "\n"
-                            + ci.dump(0));
-                    }
-
-                    long startTime = System.currentTimeMillis();
-
-                    wait(connectionTimeout);
-
-                    // Need to refetch this as it might have changed since
-                    // the wait unlocked
-                    ci = getConnectionInfo(connectionKey);
-
-                    // Add the 32ms because wait seems to wake a little early
-                    // sometimes
-                    long waitTime = (System.currentTimeMillis() - startTime) + 32;
-
-                    if (connectionTimeout > 0
-                        && (waitTime >= connectionTimeout))
-                    {
-                        if (!HttpURLConnection._urlConReleased
-                            && connectionTimeout == NOT_RELEASED_TIMEOUT)
-                        {
-                            throw new IllegalStateException("Possible programming error: "
-                                + "You have timed out waiting for a "
-                                + "connection and our records indicate you have not "
-                                + "called getInputStream() and read the results yet.  If "
-                                + "the response code is successful (20x), "
-                                + "and there is data returned, you must call "
-                                + "getInputStream() and close the stream. ");
-                        }
-
-                        _connLog.info("Timed out waiting for connection");
-                        throw new HttpTimeoutException();
-                    }
-
-                    if (_connLog.isDebugEnabled())
-                    {
-                        _connLog.debug("Waiting END: "
-                            + connectionKey
-                            + " waited: "
-                            + waitTime);
-                    }
+                    _connLog.debug("Waiting for: "
+                        + connectionKey
+                        + " waiting for: "
+                        + connectionTimeout
+                        + "\n"
+                        + ci.dump(0));
                 }
-                catch (InterruptedException ex)
+
+                long startTime = System.currentTimeMillis();
+
+                wait(connectionTimeout);
+
+                // Need to refetch this as it might have changed since
+                // the wait unlocked
+                ci = getConnectionInfo(connectionKey);
+
+                // Add the 32ms because wait seems to wake a little early
+                // sometimes
+                long waitTime = (System.currentTimeMillis() - startTime) + 32;
+
+                if (connectionTimeout > 0 && (waitTime >= connectionTimeout))
                 {
-                    throw new HttpException("Thread killed while waiting");
+                    if (!HttpURLConnection._urlConReleased
+                        && connectionTimeout == NOT_RELEASED_TIMEOUT)
+                    {
+                        throw new IllegalStateException("Possible programming error: "
+                            + "You have timed out waiting for a "
+                            + "connection and our records indicate you have not "
+                            + "called getInputStream() and read the results yet.  If "
+                            + "the response code is successful (20x), "
+                            + "and there is data returned, you must call "
+                            + "getInputStream() and close the stream. ");
+                    }
+
+                    _connLog.info("Timed out waiting for connection");
+                    throw new HttpTimeoutException();
+                }
+
+                if (_connLog.isDebugEnabled())
+                {
+                    _connLog.debug("Waiting END: "
+                        + connectionKey
+                        + " waited: "
+                        + waitTime);
                 }
             }
 
@@ -721,12 +720,6 @@ public class HttpConnectionManager
                     host = hostAndPort.substring(start);
                     port = getPort(protocol, -1);
                 }
-
-                // If the proxy info was not explicitly specified
-                if (proxyHost == null)
-                    proxyHost = getProxyHost(host);
-                if (proxyPort <= 0)
-                    proxyPort = _proxyPort;
 
                 // Make a new connection, note that this does not open
                 // the connection, it only creates it, so this takes
@@ -1073,7 +1066,7 @@ public class HttpConnectionManager
     {
         synchronized (this)
         {
-            _connLog.debug("resetConnectionPool");
+            _connLog.debug("resetConnectionPool - immediate: " + immediate);
 
             // Use this to make sure we destroy any connections
             // returned with a prior proxy incarnation number
@@ -1089,6 +1082,8 @@ public class HttpConnectionManager
                 _asyncThread = null;
 
                 wakeAllBlockers();
+                _connLog
+                        .debug("resetConnectionPool - finished immediate async/pipeline");
             }
 
             Collection hosts = _hostMap.values();
@@ -1107,8 +1102,8 @@ public class HttpConnectionManager
             _hostMap = new HashMap();
 
             _timeout.shutdown();
+            _connLog.debug("resetConnectionPool - FINISHED");
         }
-
     }
 
     void dumpConnectionPool()
@@ -1122,7 +1117,9 @@ public class HttpConnectionManager
             while (it.hasNext())
             {
                 ConnectionInfo ci = (ConnectionInfo)it.next();
-                System.out.println(ci.dump(0));
+                String s = ci.dump(0);
+                System.out.println(s);
+                _connLog.debug(s);
             }
         }
     }
@@ -1219,6 +1216,7 @@ public class HttpConnectionManager
         sb.append(getRetryStatistics(_pipelineReadRetryCounts));
         sb.append("Counts: \n");
         sb.append(getCountStatistics());
+        _connLog.debug(sb.toString());
         return sb.toString();
     }
 

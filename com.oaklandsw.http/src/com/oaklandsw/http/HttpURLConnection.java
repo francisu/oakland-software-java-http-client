@@ -12,6 +12,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.FilterInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InterruptedIOException;
 import java.io.OutputStream;
 import java.lang.reflect.Method;
 import java.net.MalformedURLException;
@@ -1502,6 +1503,14 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
             releaseConnection(CLOSE);
             _log.error("HttpURL.getConn: ", hex);
             throw hex;
+        }
+        catch (InterruptedException ex)
+        {
+            // No need to release the connection because if we got
+            // this, the connection was not assigned
+            InterruptedIOException iex = new InterruptedIOException();
+            iex.initCause(ex);
+            throw iex;
         }
     }
 
@@ -3073,7 +3082,9 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
      * You may subsequently call {@link #pipelineBlock()} to wait for all of the
      * pipelined connections you have executed on this thread.
      */
-    public void pipelineExecute() throws InterruptedException
+    public void pipelineExecute()
+        throws InterruptedException,
+            InterruptedIOException
     {
         if (_log.isDebugEnabled())
         {
@@ -3369,13 +3380,24 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
     }
 
     /**
-     * Sets the hosts to be excluded from the proxy mechanism.
+     * Sets the hosts to be excluded from the proxy mechanism.  
+     * 
+     * This applies to all connections whose proxy host is set using global means
+     * (that is with a System.property or the static {@link #setProxyHost(String)}
+     * method.
+     * 
+     * This does <i>not</i> apply if you set the proxy host on the connection 
+     * directly using {@link #setConnectionProxyHost(String)}.  This allows you to
+     * override the proxy setting for a connection without regard to the setting
+     * of the global non-proxy hosts.
      * 
      * @param hosts
      *            a list of hosts separated by the pipe <code>("|")</code>
-     *            character. Each host is a regular expression that is matched
-     *            against the host being connected to. If the host matches the
-     *            regular expression, it is not proxyed.
+     *            character. Each host is a string containing either a hostname or
+     *            IP address.  The "*" character may be used within this string to
+     *            provide wildcarding.
+     * @see #isNonProxyHost(String)
+     * 
      */
     public static void setNonProxyHosts(String hosts)
     {
@@ -3397,10 +3419,20 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
     }
 
     /**
+     * Returns true if the specified host is treated as a non-proxy host.
+     * 
+     * @return true if the specified host is treated as a non-proxy host.
+     */
+    public static boolean isNonProxyHost(String hostName)
+    {
+        return _connManager.isNonProxyHost(hostName);
+    }
+
+    /**
      * Close all pooled connections that are not currently in use.
      * <p>
      * HTTP requests that are currently in progress will be allowed complete
-     * normally.  The connections associated with those requests will be closed
+     * normally. The connections associated with those requests will be closed
      * when the connections complete.
      */
     public static void closeAllPooledConnections()
@@ -3409,7 +3441,7 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
     }
 
     /**
-     * Immediately close all connections and stop all work in progress. 
+     * Immediately close all connections and stop all work in progress.
      */
     public static void immediateShutdown()
     {
@@ -3466,6 +3498,7 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
 
         sb.append("\n");
 
+        _log.debug(sb.toString());
         return sb.toString();
     }
 
@@ -3686,9 +3719,13 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
 
     protected abstract void executeStart() throws HttpException, IOException;
 
-    protected abstract void processPipelinedWrite() throws InterruptedException;
+    protected abstract void processPipelinedWrite()
+        throws InterruptedException,
+            InterruptedIOException;
 
-    protected abstract void processPipelinedRead() throws InterruptedException;
+    protected abstract void processPipelinedRead()
+        throws InterruptedException,
+            InterruptedIOException;
 
     abstract void streamWriteFinished(boolean ok);
 

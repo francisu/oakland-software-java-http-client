@@ -53,7 +53,7 @@ public interface Callback
 
     /**
      * Some error happened that caused the connection to fail. This could either
-     * be an IOException or one of its subclasses or an invalid response code
+     * be an IOException or one of its subclasses or an bad (>= 400) response code
      * from the server.
      * 
      * @param urlCon
@@ -62,7 +62,8 @@ public interface Callback
      *            the InputStream on which to read the data, if there is any
      *            data to report.
      * @param ex
-     *            an Exception.
+     *            an Exception.  The Exception can be null if this is being
+     *            called because of an bad response code.
      */
     public void error(HttpURLConnection urlCon, InputStream is, Exception ex);
 

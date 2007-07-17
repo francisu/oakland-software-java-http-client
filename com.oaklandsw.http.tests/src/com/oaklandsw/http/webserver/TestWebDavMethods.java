@@ -195,6 +195,7 @@ public class TestWebDavMethods extends HttpTestBase
         // Get the original resource - should not be found
         urlCon = (HttpURLConnection)resourceUrl.openConnection();
         urlCon.setRequestMethod("GET");
+        urlCon.setRequestProperty("Cache-Control", "no-cache");
         response = urlCon.getResponseCode();
         assertEquals(404, response);
 

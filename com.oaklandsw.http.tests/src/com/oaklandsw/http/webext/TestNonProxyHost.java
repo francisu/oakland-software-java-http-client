@@ -13,6 +13,8 @@ import com.oaklandsw.http.HttpURLConnection;
 public class TestNonProxyHost extends HttpTestBase
 {
 
+    protected boolean _perConnection;
+
     public TestNonProxyHost(String testName)
     {
         super(testName);
@@ -31,8 +33,13 @@ public class TestNonProxyHost extends HttpTestBase
     public void setUp() throws Exception
     {
         super.setUp();
-        com.oaklandsw.http.HttpURLConnection.setProxyHost(HttpTestEnv.TEST_PROXY_HOST);
-        com.oaklandsw.http.HttpURLConnection.setProxyPort(HttpTestEnv.TEST_PROXY_PORT);
+        if (!_perConnection)
+        {
+            com.oaklandsw.http.HttpURLConnection
+                    .setProxyHost(HttpTestEnv.TEST_PROXY_HOST);
+            com.oaklandsw.http.HttpURLConnection
+                    .setProxyPort(HttpTestEnv.TEST_PROXY_PORT);
+        }
     }
 
     public void tearDown() throws Exception
@@ -50,14 +57,36 @@ public class TestNonProxyHost extends HttpTestBase
         URL url = new URL("http://" + connectHost + "/");
 
         HttpURLConnection urlCon = (HttpURLConnection)url.openConnection();
+        if (_perConnection)
+        {
+            urlCon.setConnectionProxyHost(HttpTestEnv.TEST_PROXY_HOST);
+            urlCon.setConnectionProxyPort(HttpTestEnv.TEST_PROXY_PORT);
+        }
+
         urlCon.setRequestMethod("GET");
         urlCon.connect();
         response = urlCon.getResponseCode();
         assertEquals(200, response);
+
+        boolean urlConUsingProxy = !HttpURLConnection
+                .isNonProxyHost(connectHost);
+        boolean connUsingProxy = urlCon.getConnection().isProxied();
+
+        // We ignore the non proxy host mechanism when the proxy is set per-connection
+        if (_perConnection)
+        {
+            urlConUsingProxy = true;
+            proxied = true;
+        }
+
+        assertEquals("Disagreement on using proxy",
+                     urlConUsingProxy,
+                     connUsingProxy);
+
         if (proxied)
-            assertTrue("Unexpectedly using proxy", urlCon.usingProxy());
+            assertTrue("Unexpectedly using proxy", connUsingProxy);
         else
-            assertFalse("Unexpectedly using proxy", urlCon.usingProxy());
+            assertFalse("Unexpectedly NOT using proxy", connUsingProxy);
 
         String data = HttpTestBase.getReply(urlCon);
         assertTrue("No data returned.", (data.length() > 0));
@@ -90,7 +119,8 @@ public class TestNonProxyHost extends HttpTestBase
     {
         try
         {
-            com.oaklandsw.http.HttpURLConnection.setNonProxyHosts("(**^^.*.com");
+            com.oaklandsw.http.HttpURLConnection
+                    .setNonProxyHosts("(**^^.*.com");
             fail("Did not get expected exception");
         }
         catch (RuntimeException ex)

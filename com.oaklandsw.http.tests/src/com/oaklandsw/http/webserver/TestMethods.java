@@ -169,7 +169,8 @@ public class TestMethods extends HttpTestBase
         urlCon.setRequestMethod("HEAD");
         urlCon.connect();
         response = urlCon.getResponseCode();
-        assertEquals(200, response);
+        // Can be a 304 after a previous recent HEAD request
+        assertTrue(response == 200 || response == 304);
 
         url = new URL("http://"
             + _host
@@ -181,8 +182,7 @@ public class TestMethods extends HttpTestBase
         urlCon.setRequestMethod("HEAD");
         urlCon.connect();
         response = urlCon.getResponseCode();
-        assertEquals(200, response);
-        checkNoActiveConns(url);
+        assertTrue(response == 200 || response == 304);
     }
 
     public void allTestMethods() throws Exception

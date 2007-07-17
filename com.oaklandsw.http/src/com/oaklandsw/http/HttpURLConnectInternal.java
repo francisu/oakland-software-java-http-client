@@ -1036,8 +1036,8 @@ public class HttpURLConnectInternal
         writeRequestLine();
         writeRequestHeaders();
         _conOutStream.write(Util.CRLF_BYTES);
-        _conOutStream.flush();
-
+        // No flush until we have written all we are going to write
+        
         if (useDummyAuthContent())
         {
             if (_authenticationDummyContent != null)
@@ -1045,9 +1045,9 @@ public class HttpURLConnectInternal
                 _connLog.debug("writeRequest - writing dummy auth content: "
                     + _authenticationDummyContent);
                 _conOutStream.write(_authenticationDummyContent.getBytes());
-                _conOutStream.flush();
                 _dummyAuthRequestSent = true;
             }
+            _conOutStream.flush();
         }
 
         // We don't write the body in streaming mode, the user does
@@ -1140,24 +1140,31 @@ public class HttpURLConnectInternal
     }
 
     // Returns true if the request body was sent
+    // This is required to flush the output stream even if there is nothing
+    // to send, as the output stream has not been flushed before this point
     protected final boolean writeRequestBody() throws IOException
     {
         // In authentication, the body has not been sent
         if (useDummyAuthContent())
+        {
             return false;
+        }
 
         // Nothing to write
         if (_contentLength == 0)
+        {
+            _conOutStream.flush();
             return true;
+        }
 
         if (_expectContinue && _responseCode != HttpStatus.SC_CONTINUE)
         {
             return false;
         }
 
-        // We already have the bytes
         if (_requestBytes != null)
         {
+            // We already have the bytes
             if (_contentLength > _requestBytes.length)
             {
                 throw new HttpException("Data length ("
@@ -1172,48 +1179,41 @@ public class HttpURLConnectInternal
             _conOutStream.write(_requestBytes, 0, size);
             if (_log.isDebugEnabled())
                 _log.debug("wrote (from saved bytes): " + size);
-            _conOutStream.flush();
-            return true;
         }
-
-        // We have to read from the stream, this will be the typical
-        // case the first time
-        InputStream inputStream = null;
-
-        if (_requestBody != null)
-            inputStream = _requestBody;
-        else
-            return true;
-
-        int total;
-
-        if (_log.isDebugEnabled())
-            _log.debug("should write (Content-Length): " + _contentLength);
-
-        // The content length may be smaller than the size of
-        // the data
-        _requestBytes = new byte[_contentLength];
-        total = Util.copyStreams(inputStream,
-                                 _conOutStream,
-                                 _requestBytes,
-                                 _contentLength);
-
-        if (_log.isDebugEnabled())
-            _log.debug("wrote: " + total);
-
-        inputStream.close();
-        _conOutStream.flush();
-
-        if (total != _contentLength)
+        else if (_requestBody != null)
         {
-            throw new HttpException("Data length ("
-                + total
-                + ") does not match specified "
-                + "Content-Length of ("
-                + _contentLength
-                + ")");
+            // We have to read from the stream, this will be the typical
+            // case the first time
+            int total;
+
+            if (_log.isDebugEnabled())
+                _log.debug("should write (Content-Length): " + _contentLength);
+
+            // The content length may be smaller than the size of
+            // the data
+            _requestBytes = new byte[_contentLength];
+            total = Util.copyStreams(_requestBody,
+                                     _conOutStream,
+                                     _requestBytes,
+                                     _contentLength);
+
+            if (_log.isDebugEnabled())
+                _log.debug("wrote: " + total);
+
+            _requestBody.close();
+
+            if (total != _contentLength)
+            {
+                throw new HttpException("Data length ("
+                    + total
+                    + ") does not match specified "
+                    + "Content-Length of ("
+                    + _contentLength
+                    + ")");
+            }
         }
 
+        _conOutStream.flush();
         return true;
     }
 
@@ -1863,7 +1863,9 @@ public class HttpURLConnectInternal
 
     // Called by execute() and also called in getOutputStream() in the streaming
     // case, this starts the request and leaves it executing.
-    protected final void executeStart() throws IOException
+    protected final void executeStart()
+        throws IOException,
+            InterruptedIOException
     {
         if (_log.isDebugEnabled())
         {
@@ -1891,7 +1893,7 @@ public class HttpURLConnectInternal
             _connLog.info("Timeout when reading response: ", ioiex);
             releaseConnection(CLOSE);
             _dead = true;
-            throw new HttpTimeoutException();
+            throw ioiex;
         }
         catch (IOException httpe)
         {
@@ -1987,15 +1989,14 @@ public class HttpURLConnectInternal
     // Does the write for a pipelined connection. This can happen
     // on any thread, but is synchronized because it must obtain
     // the connection exclusively from the connection manager
-    protected void processPipelinedWrite() throws InterruptedException
+    protected void processPipelinedWrite()
+        throws InterruptedException,
+            InterruptedIOException
     {
         if (_log.isDebugEnabled())
         {
             _log.debug("processPipelinedWrite " + this);
         }
-
-        // We want direct access to the output stream
-        setExplicitClose(true);
 
         try
         {
@@ -2084,6 +2085,11 @@ public class HttpURLConnectInternal
                 throw (RuntimeException)ex;
             }
 
+            if (ex instanceof InterruptedIOException)
+                throw (InterruptedIOException)ex;
+            if (ex instanceof InterruptedException)
+                throw (InterruptedException)ex;
+
             // Tell the user what went wrong
             _callback.error(this, null, ex);
             return;
@@ -2093,7 +2099,9 @@ public class HttpURLConnectInternal
     // Process the pipelined read, this is executed on the HttpConnectionThread,
     // that guarantees that each connection is accessed by only one thread for
     // reading.
-    protected void processPipelinedRead() throws InterruptedException
+    protected void processPipelinedRead()
+        throws InterruptedException,
+            InterruptedIOException
     {
         Exception ex = null;
         InputStream is = null;
@@ -2153,6 +2161,10 @@ public class HttpURLConnectInternal
 
                     // Gets the input stream if we actually read
                     is = getResponseStream();
+                }
+                catch (InterruptedIOException iiex)
+                {
+                    throw iiex;
                 }
                 catch (IOException iex)
                 {
@@ -2284,7 +2296,8 @@ public class HttpURLConnectInternal
     // Returns null if retry is possible, otherwise returns the exception to
     // throw
     protected Exception attemptPipelinedRetry(IOException iex)
-        throws InterruptedException
+        throws InterruptedException,
+            InterruptedIOException
     {
         // If allowed, give it another go
         if (_tryCount < _maxTries)

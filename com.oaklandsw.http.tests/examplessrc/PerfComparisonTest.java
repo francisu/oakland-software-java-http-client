@@ -89,7 +89,7 @@ public class PerfComparisonTest
     public int                   _currentThreads;
 
     public int                   _singleSize            = -1;
-    public int                   _singleLocation        = 1;
+    public int                   _singleLocation        = 2;
     public int                   _singleConnectionLimit = -1;
     public int                   _singleProduct         = -1;
 
@@ -107,6 +107,7 @@ public class PerfComparisonTest
         float times[] = new float[REPEAT_TIMES];
         float totalPerTrans = 0;
         long totalTime = 0;
+        int totalPipeDepth = 0;
 
         for (int i = 0; i < REPEAT_TIMES; i++)
         {
@@ -134,6 +135,15 @@ public class PerfComparisonTest
             times[i] = tp._transTime;
             totalPerTrans += tp._transTime;
             totalTime += tp._totalTime;
+
+            totalPipeDepth += _currentPipeDepth;
+            // Compute the depth based on what was observed
+            if (_currentPipeDepth == 0
+                && _currentProduct == TestPerf.IMP_OAKLAND_PIPE)
+            {
+                totalPipeDepth += tp._actualPipeMaxDepth;
+            }
+
         }
 
         String str = _locationNames[_currentLocation]
@@ -149,7 +159,8 @@ public class PerfComparisonTest
             + ","
             + _currentThreads
             + ","
-            + _currentPipeDepth
+            + (totalPipeDepth == 0 ? "" : Integer
+                    .toString((totalPipeDepth / REPEAT_TIMES)))
             + ","
             + _currentCount
             + ","

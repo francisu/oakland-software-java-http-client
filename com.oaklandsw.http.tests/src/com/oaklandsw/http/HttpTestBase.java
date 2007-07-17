@@ -497,6 +497,7 @@ public class HttpTestBase extends com.oaklandsw.TestCaseBase
         HttpURLConnection.setProxyPort(HttpTestEnv.TEST_10_PROXY_PORT);
         try
         {
+            //LogUtils.logFile("/home/francis/log4j10proxy.txt");
             allTestMethods();
         }
         finally

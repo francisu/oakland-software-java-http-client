@@ -12,6 +12,7 @@ import com.oaklandsw.http.local.TestStreams;
 import com.oaklandsw.http.local.TestTimeout;
 import com.oaklandsw.http.local.TestURIUtil;
 import com.oaklandsw.http.webapp.TestBasicAuth;
+import com.oaklandsw.http.webapp.TestPipelining;
 import com.oaklandsw.http.webapp.TestRedirect;
 import com.oaklandsw.http.webext.TestHttps;
 import com.oaklandsw.http.webext.TestMethods;
@@ -59,13 +60,11 @@ public class HttpTestSubset extends HttpTestBase
             suite.addTest(TestStreams.suite());
             suite.addTest(TestNtlmMessages.suite());
             suite.addTest(TestTimeout.suite());
-            suite.addTest(TestRedirect.suite());
-            suite.addTest(TestBasicAuth.suite());
             suite.addTest(TestHeaders.suite());
+            suite.addTest(TestStatusLine.suite());
+            suite.addTest(TestHttps.suite());
         }
 
-        suite.addTest(TestStatusLine.suite());
-        suite.addTest(TestHttps.suite());
         // suite.addTest(TestLicense.suite());
 
         // suite.addTest(AllCookieTests.suite());
@@ -73,7 +72,9 @@ public class HttpTestSubset extends HttpTestBase
 
         // suite.addTest(TestAxis1.suite());
         // suite.addTest(TestAxis2.suite());
-        // suite.addTest(TestPipelining.suite());
+         suite.addTest(TestPipelining.suite());
+         suite.addTest(TestRedirect.suite());
+        //suite.addTest(TestBasicAuth.suite());
         // suite.addTest(TestIIS.suite());
         // suite.addTest(TestJCIFS.suite());
         // suite.addTest(TestMultiThread.suite());

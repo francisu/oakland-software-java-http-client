@@ -413,7 +413,7 @@ class ConnectionInfo
     // Assumed to be synchronized on the HttpConnectionManager
     void closeAllConnections(boolean immediate)
     {
-        _connLog.debug("closeAllConnections");
+        _connLog.debug("closeAllConnections - immediate: " + immediate);
 
         HttpConnection conn;
 
@@ -421,9 +421,11 @@ class ConnectionInfo
         while (it.hasNext())
         {
             conn = (HttpConnection)it.next();
-            conn.close();
+            conn.close(immediate);
             it.remove();
         }
+
+        _connLog.debug("closeAllConnections - finished avail conns");
 
         // Kill everything right now
         if (immediate)
@@ -432,11 +434,10 @@ class ConnectionInfo
             while (it.hasNext())
             {
                 conn = (HttpConnection)it.next();
-                if (conn._connectionThread != null)
-                    conn._connectionThread.interrupt();
-                conn.close(HttpConnection.IMMEDIATE);
+                conn.close(immediate);
                 it.remove();
             }
+            _connLog.debug("closeAllConnections - finished assigned conns");
         }
     }
 

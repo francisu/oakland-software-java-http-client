@@ -91,6 +91,7 @@ public class AllWebextTests extends TestCaseBase
         suite.addTest(TestTimeout.suite());
         suite.addTest(TestProxyHost.suite());
         suite.addTest(TestNonProxyHost.suite());
+        suite.addTest(TestNonProxyHostConnection.suite());
         return suite;
     }
 

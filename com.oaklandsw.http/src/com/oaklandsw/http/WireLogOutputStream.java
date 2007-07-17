@@ -7,18 +7,12 @@
 
 package com.oaklandsw.http;
 
-import java.io.FilterOutputStream;
 import java.io.OutputStream;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-/**
- * Logs all data read to the wire log.
- * 
- */
-
-class WireLogOutputStream extends FilterOutputStream
+class WireLogOutputStream extends OutputStream
 {
 
     private static final Log _wireLog = LogFactory
@@ -26,35 +20,40 @@ class WireLogOutputStream extends FilterOutputStream
 
     private StringBuffer     _traceBuff;
 
+    protected OutputStream   _out;
+
     public WireLogOutputStream(OutputStream outStr)
     {
-        super(outStr);
+        super();
+        _out = outStr;
         _traceBuff = new StringBuffer();
     }
 
-    public void write(byte b) throws java.io.IOException
+    public void write(int b) throws java.io.IOException
     {
         traceChar(_traceBuff, (char)b);
-        super.write(b);
+        dumpBuff();
+        _out.write(b);
     }
 
     public void write(byte[] b, int off, int len) throws java.io.IOException
     {
         for (int i = 0; i < len; i++)
             traceChar(_traceBuff, (char)b[i]);
-        super.write(b, off, len);
+        dumpBuff();
+        _out.write(b, off, len);
     }
 
     public void flush() throws java.io.IOException
     {
         dumpBuff();
-        super.flush();
+        _out.flush();
     }
 
     public void close() throws java.io.IOException
     {
         dumpBuff();
-        super.close();
+        _out.close();
     }
 
     public static void traceChar(StringBuffer traceBuff, char b)
@@ -81,5 +80,6 @@ class WireLogOutputStream extends FilterOutputStream
             _traceBuff = new StringBuffer();
         }
     }
+
 
 }

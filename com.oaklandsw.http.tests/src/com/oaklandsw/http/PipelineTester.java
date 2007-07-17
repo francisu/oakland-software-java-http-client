@@ -183,7 +183,7 @@ public class PipelineTester
         // We don't care if we have been stopped
         if (_stop)
             return;
-        
+
         System.out.println("failure "
             + failType
             + " respCode: "
@@ -240,7 +240,10 @@ public class PipelineTester
         for (int i = 0; i < _iterations; i++)
         {
             if (_stop)
+            {
+                _log.debug("stopped as requested");
                 break;
+            }
 
             // Not in the header, add it as a query request param
             url = new URL(_url
