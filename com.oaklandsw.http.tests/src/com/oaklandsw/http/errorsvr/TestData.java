@@ -1,6 +1,5 @@
 package com.oaklandsw.http.errorsvr;
 
-import java.net.HttpURLConnection;
 import java.net.URL;
 
 import org.apache.commons.logging.Log;
@@ -10,6 +9,7 @@ import junit.framework.TestSuite;
 
 import com.oaklandsw.http.HttpTestBase;
 import com.oaklandsw.http.HttpTestEnv;
+import com.oaklandsw.http.HttpURLConnection;
 import com.oaklandsw.util.LogUtils;
 
 public class TestData extends HttpTestBase
@@ -39,8 +39,7 @@ public class TestData extends HttpTestBase
     {
         URL url = new URL(_errorUrl + serverArgs + _errorDebug);
 
-        com.oaklandsw.http.HttpURLConnection urlCon = (com.oaklandsw.http.HttpURLConnection)url
-                .openConnection();
+        HttpURLConnection urlCon = HttpURLConnection.openConnection(url);
         urlCon.setRequestMethod("GET");
         urlCon.connect();
 

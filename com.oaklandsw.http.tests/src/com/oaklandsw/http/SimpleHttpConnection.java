@@ -85,26 +85,39 @@ public class SimpleHttpConnection extends HttpConnection
 
     ByteArrayOutputStream    _bitBucket      = new ByteArrayOutputStream();
 
+    static GlobalState       _globalState;
+    HttpConnectionManager    _connManager;
+
+    static
+    {
+        _globalState = new GlobalState();
+    }
+
     public void addResponse(String body)
     {
         _log.debug("addResponse: " + body);
         bodies.add(body);
     }
 
+    protected void setup()
+    {
+        _connManager = new HttpConnectionManager(_globalState);
+        _globalState._connManager = _connManager;
+    }
+
     public SimpleHttpConnection()
     {
         super(null, -1, "localhost", 80, false, 0, "none");
-        _connectionInfo = new ConnectionInfo(new HttpConnectionManager(),
-                                             "localhost",
-                                             1);
+        setup();
+        _connectionInfo = new ConnectionInfo(_connManager, "localhost", 1);
+        _output = new BufferedOutputStream(new ByteArrayOutputStream());
     }
 
     public SimpleHttpConnection(String host, int port, boolean isSecure)
     {
         super(null, -1, host, port, isSecure, 0, "none");
-        _connectionInfo = new ConnectionInfo(new HttpConnectionManager(),
-                                             host,
-                                             1);
+        setup();
+        _connectionInfo = new ConnectionInfo(_connManager, host, 1);
     }
 
     public void open() throws IOException

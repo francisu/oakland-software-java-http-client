@@ -4,6 +4,7 @@ import junit.framework.Test;
 import junit.framework.TestSuite;
 
 import com.oaklandsw.http.HttpTestBase;
+import com.oaklandsw.http.HttpURLConnection;
 
 public class TestProperties extends HttpTestBase
 {
@@ -55,24 +56,29 @@ public class TestProperties extends HttpTestBase
 
     }
 
+    public static void resetProperties()
+    {
+        System.getProperties().remove("http.proxyHost");
+        System.getProperties().remove("http.proxyPort");
+        System.getProperties().remove("http.nonProxyHosts");
+        System.getProperties().remove("com.oaklandsw.http.pipelining");
+    }
+
     public void setUp() throws Exception
     {
-        setProperties();
         super.setUp();
     }
 
     public void tearDown() throws Exception
     {
         super.tearDown();
-
-        // Reset everything
-        com.oaklandsw.http.HttpURLConnection.setProxyPort(-1);
-        com.oaklandsw.http.HttpURLConnection.setProxyHost(null);
-        com.oaklandsw.http.HttpURLConnection.setNonProxyHosts(null);
+        resetProperties();
     }
 
     public void testProps() throws Exception
     {
+        setProperties();
+        HttpURLConnection.resetGlobalState();
         if (System.getProperty("com.oaklandsw.http.skipEnvironmentInit") == null)
         {
             assertEquals(proxyHost, com.oaklandsw.http.HttpURLConnection
@@ -82,7 +88,7 @@ public class TestProperties extends HttpTestBase
             assertEquals(nonProxyHosts, com.oaklandsw.http.HttpURLConnection
                     .getNonProxyHosts());
             assertEquals(true, com.oaklandsw.http.HttpURLConnection
-                         .isDefaultPipelining());
+                    .isDefaultPipelining());
         }
         else
         {

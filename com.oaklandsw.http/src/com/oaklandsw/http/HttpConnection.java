@@ -137,6 +137,9 @@ public class HttpConnection
     ExposedBufferInputStream   _input;
     BufferedOutputStream       _output;
 
+    // A request has been written but not flushed
+    boolean                    _needsFlush;
+
     static final int           CS_VIRGIN          = 0;
     static final int           CS_OPEN            = 1;
     static final int           CS_CLOSED          = 2;
@@ -526,6 +529,47 @@ public class HttpConnection
 
         _credential[normalOrProxy] = cred;
         _authProtocol[normalOrProxy] = authType;
+    }
+
+    void unconditionalFlush() throws IOException
+    {
+        _log.debug("Flushing connection");
+        _output.flush();
+        toggleNeedsFlush(false);
+        _connManager.recordCount(HttpConnectionManager.COUNT_FLUSHES);
+    }
+
+    void conditionalFlush(HttpURLConnection urlCon) throws IOException
+    {
+        int outstanding = _connManager.getOutstandingWrites();
+
+        // This is a rather crude heuristic to determine if the connection
+        // should be flushed, this will flush too few times by itself, however
+        // there is an additional check when all of the outstanding
+        // connections have been written to make sure they are all flushed
+        if (outstanding <= 1 || _connectionInfo.needsFlush(this, urlCon))
+        {
+            unconditionalFlush();
+        }
+        else
+        {
+            toggleNeedsFlush(true);
+            _connManager
+                    .recordCount(HttpConnectionManager.COUNT_AVOIDED_FLUSHES);
+            if (_log.isDebugEnabled())
+            {
+                _log.debug("Avoiding flush - outstanding: " + outstanding);
+            }
+        }
+    }
+
+    protected void toggleNeedsFlush(boolean needs)
+    {
+        if (needs != _needsFlush)
+        {
+            _needsFlush = needs;
+            _connManager.toggleNeedsFlush(this);
+        }
     }
 
     /**
@@ -1039,6 +1083,9 @@ public class HttpConnection
         _input = new ExposedBufferInputStream(is, STREAM_BUFFER_SIZE);
         _output = new BufferedOutputStream(os, STREAM_BUFFER_SIZE);
 
+        // System.out.println("sendbuf: " + _socket.getSendBufferSize());
+        // System.out.println("recvbuf: " + _socket.getReceiveBufferSize());
+
         _socket.setSoLinger(false, 0);
         _socket.setTcpNoDelay(true);
         _socket.setSoTimeout(_soTimeout);
@@ -1157,7 +1204,7 @@ public class HttpConnection
         }
     }
 
-    public void close()
+    public void close() throws InterruptedException
     {
         close(!IMMEDIATE);
     }
@@ -1168,7 +1215,9 @@ public class HttpConnection
      * Low-level close of this connection, releases the socket and stream
      * resources. Specify immediate if you can't wait.
      */
-    void close(boolean immediate)
+    // WARNING - do not lock the connection manager lock here, it may
+    // be held when this is called
+    void close(boolean immediate) throws InterruptedException
     {
         if (_connLog.isDebugEnabled())
             _connLog.debug("close " + this + " immediate: " + immediate);
@@ -1180,18 +1229,25 @@ public class HttpConnection
         // we have to wait
         synchronized (this)
         {
+            // Close the socket so that any reads complete immediately
+            // Don't close the streams at this point, because we don't
+            // want to cause NPEs and other problems
+            try
+            {
+                if (_socket != null)
+                    _socket.close();
+            }
+            catch (Exception ex)
+            {
+                _connLog.debug("Exception caught when closing socket", ex);
+                // ignored
+            }
+            _socket = null;
+
             while (_preventCloseList.size() > 0)
             {
-                try
-                {
-                    _connLog.debug("Waiting to close");
-                    wait();
-                }
-                catch (InterruptedException e)
-                {
-                    _connLog.warn("Closing thread interrupted");
-                    return;
-                }
+                _connLog.debug("Waiting to close");
+                wait();
             }
 
             if (immediate)
@@ -1209,6 +1265,9 @@ public class HttpConnection
             _tunnelEstablished = false;
             _state = CS_CLOSED;
             _connLog.debug("Completing close: \n" + dump(0));
+
+            // Let the connection manager we don't need to flush
+            toggleNeedsFlush(false);
 
             if (null != _input)
             {
@@ -1236,20 +1295,6 @@ public class HttpConnection
                     // ignored
                 }
                 _output = null;
-            }
-
-            if (null != _socket)
-            {
-                try
-                {
-                    _socket.close();
-                }
-                catch (Exception ex)
-                {
-                    _connLog.debug("Exception caught when closing socket", ex);
-                    // ignored
-                }
-                _socket = null;
             }
         }
 

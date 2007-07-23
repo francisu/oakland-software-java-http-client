@@ -32,16 +32,17 @@ public class TestAuthType extends TestWebappBase
     {
         mainRun(suite(), args);
     }
-    
+
     public void setUp() throws Exception
     {
         super.setUp();
-        //logAll();
+        // logAll();
     }
 
     protected static final boolean PREEMPTIVE = true;
 
-    public void testPipeliningSimple(int number) throws Exception
+    public void testPipeliningSimple(int number, Class expectedEx)
+        throws Exception
     {
         if (number == 0)
         {
@@ -58,7 +59,13 @@ public class TestAuthType extends TestWebappBase
                                                    number,
                                                    _pipelineOptions,
                                                    _pipelineMaxDepth);
-            assertFalse(pt.runTest());
+            if (expectedEx != null)
+                pt._checkResult = false;
+            boolean result = pt.runTest();
+            if (expectedEx != null)
+                assertEquals(expectedEx, pt._failException.getClass());
+            else
+                assertFalse(result);
         }
     }
 
@@ -68,9 +75,20 @@ public class TestAuthType extends TestWebappBase
                                              boolean preemptive,
                                              int count) throws Exception
     {
+        testAuthenticationTypeSet(type, preemptive, count, null);
+    }
+
+    // Check that having the auth type set will work even
+    // though there is no authentication
+    protected void testAuthenticationTypeSet(int type,
+                                             boolean preemptive,
+                                             int count,
+                                             Class expectedException)
+        throws Exception
+    {
         TestUserAgent._type = TestUserAgent.GOOD;
         HttpURLConnection.setDefaultAuthenticationType(type);
-        testPipeliningSimple(count);
+        testPipeliningSimple(count, expectedException);
     }
 
     public void testAuthenticationTypeSetBasic() throws Exception
@@ -103,16 +121,10 @@ public class TestAuthType extends TestWebappBase
     public void testAuthenticationTypeSetDigest1p() throws Exception
     {
         // We don't allow digest with pipelining
-        try
-        {
-            testAuthenticationTypeSet(Credential.AUTH_DIGEST, !PREEMPTIVE, 1);
-            if (!_inAuthCloseProxyTest)
-                fail("Did not get expected exception");
-        }
-        catch (IllegalStateException ex)
-        {
-            // expected
-        }
+        testAuthenticationTypeSet(Credential.AUTH_DIGEST,
+                                  !PREEMPTIVE,
+                                  1,
+                                  IllegalStateException.class);
     }
 
     public void testAuthenticationTypeSetNtlm1p() throws Exception

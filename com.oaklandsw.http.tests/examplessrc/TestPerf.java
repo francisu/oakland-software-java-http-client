@@ -70,6 +70,8 @@ public class TestPerf
     static final String[] _suffixes        = new String[] { "a", "b", "c", "d",
         "e", "f", "g", "h", "i"           };
 
+    boolean               _doLog;
+
     boolean               _useSuffixes;
 
     long                  _totalTime;
@@ -200,7 +202,7 @@ public class TestPerf
             }
             else if (args[i].equalsIgnoreCase("-log"))
             {
-                LogUtils.logAll();
+                _doLog = true;
             }
             else if (args[i].equalsIgnoreCase("-nowarmup"))
             {
@@ -261,6 +263,8 @@ public class TestPerf
         com.oaklandsw.http.HttpURLConnection.resetStatistics();
         com.oaklandsw.http.HttpURLConnection.closeAllPooledConnections();
 
+        if (_doLog)
+            LogUtils.logAll();
         // LogUtils.logNone();
 
         // Implementation specific setup

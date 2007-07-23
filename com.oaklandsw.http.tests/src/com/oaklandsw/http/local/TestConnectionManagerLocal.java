@@ -56,6 +56,7 @@ package com.oaklandsw.http.local;
 
 import java.net.URL;
 
+import com.oaklandsw.http.GlobalState;
 import com.oaklandsw.http.HttpConnection;
 import com.oaklandsw.http.HttpConnectionManager;
 import com.oaklandsw.http.HttpTestBase;
@@ -75,6 +76,7 @@ public class TestConnectionManagerLocal extends HttpTestBase
 {
 
     HttpConnectionManager _connManager;
+    GlobalState           _globalState;
 
     public TestConnectionManagerLocal(String testName)
     {
@@ -94,40 +96,39 @@ public class TestConnectionManagerLocal extends HttpTestBase
 
     public void setUp()
     {
-        _connManager = new HttpConnectionManager();
+        _globalState = new GlobalState();
+        _connManager = new HttpConnectionManager(_globalState);
+        _globalState._connManager = _connManager;
     }
 
     public void tearDown()
     {
         // Back to default
-        _connManager
-                .setMaxConnectionsPerHost(HttpURLConnection.DEFAULT_MAX_CONNECTIONS);
-        _connManager.setProxyHost(null);
-        _connManager.setProxyPort(-1);
+        _globalState._maxConns = HttpURLConnection.DEFAULT_MAX_CONNECTIONS;
+        _globalState.setProxyHost(null);
+        _globalState.setProxyPort(-1);
     }
 
     // Test the accessor methods
     public void testProxyHostAccessors()
     {
-        _connManager.setProxyHost("proxyhost");
-        assertEquals("Proxy Host", "proxyhost", _connManager.getProxyHost());
+        _globalState.setProxyHost("proxyhost");
+        assertEquals("Proxy Host", "proxyhost", _globalState._proxyHost);
     }
 
     public void testProxyPortAccessors()
     {
-        _connManager.setProxyPort(8888);
-        assertEquals("Proxy Port", 8888, _connManager.getProxyPort());
+        _globalState.setProxyPort(8888);
+        assertEquals("Proxy Port", 8888, _globalState._proxyPort);
     }
 
     public void testMaxConnectionsAccessors()
     {
         // First test the default value (s/b 2 - don't use the constant)
-        assertEquals("Default MaxConnections", 2, _connManager
-                .getMaxConnectionsPerHost());
+        assertEquals("Default MaxConnections", 2, _globalState._maxConns);
 
-        _connManager.setMaxConnectionsPerHost(10);
-        assertEquals("MaxConnections", 10, _connManager
-                .getMaxConnectionsPerHost());
+        _globalState._maxConns = 10;
+        assertEquals("MaxConnections", 10, _globalState._maxConns);
     }
 
     public void testGetConnection() throws Exception

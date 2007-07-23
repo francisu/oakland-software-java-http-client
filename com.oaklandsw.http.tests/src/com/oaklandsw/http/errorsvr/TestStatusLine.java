@@ -52,7 +52,7 @@ public class TestStatusLine extends HttpTestBase
             + _extraParam
             + _errorDebug);
 
-        HttpURLConnection urlCon = (HttpURLConnection)url.openConnection();
+        HttpURLConnection urlCon = HttpURLConnection.openConnection(url);
         urlCon.setRequestMethod("GET");
         urlCon.connect();
         urlCon.getResponseCode();

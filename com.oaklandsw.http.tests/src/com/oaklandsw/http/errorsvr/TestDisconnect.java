@@ -109,7 +109,7 @@ public class TestDisconnect extends HttpTestBase
     {
         URL url = makeUrl(when, lines);
 
-        HttpURLConnection urlCon = (HttpURLConnection)url.openConnection();
+        HttpURLConnection urlCon = HttpURLConnection.openConnection(url);
         urlCon.setRequestMethod("GET");
         urlCon.connect();
 
@@ -141,7 +141,7 @@ public class TestDisconnect extends HttpTestBase
     {
         URL url = makeUrl(when, lines);
 
-        HttpURLConnection urlCon = (HttpURLConnection)url.openConnection();
+        HttpURLConnection urlCon = HttpURLConnection.openConnection(url);
         urlCon.setRequestMethod("GET");
         urlCon.connect();
 

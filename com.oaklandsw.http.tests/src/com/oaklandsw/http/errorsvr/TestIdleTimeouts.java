@@ -19,7 +19,7 @@ import com.oaklandsw.util.LogUtils;
  */
 public class TestIdleTimeouts extends HttpTestBase
 {
-    private static final Log   _log         = LogUtils.makeLogger();
+    private static final Log _log = LogUtils.makeLogger();
 
     public TestIdleTimeouts(String testName)
     {
@@ -62,7 +62,7 @@ public class TestIdleTimeouts extends HttpTestBase
     {
         URL url = getTimeoutUrl(1000);
 
-        HttpURLConnection urlCon = (HttpURLConnection)url.openConnection();
+        HttpURLConnection urlCon = HttpURLConnection.openConnection(url);
         urlCon.getResponseCode();
         urlCon.getInputStream().close();
 
@@ -71,7 +71,7 @@ public class TestIdleTimeouts extends HttpTestBase
 
         HttpURLConnection.setDefaultMaxTries(1);
         url = getNormalUrl();
-        urlCon = (HttpURLConnection)url.openConnection();
+        urlCon = HttpURLConnection.openConnection(url);
 
         try
         {
@@ -89,7 +89,7 @@ public class TestIdleTimeouts extends HttpTestBase
     {
         URL url = getTimeoutUrl(2000);
 
-        HttpURLConnection urlCon = (HttpURLConnection)url.openConnection();
+        HttpURLConnection urlCon = HttpURLConnection.openConnection(url);
         urlCon.setIdleConnectionTimeout(1000);
         urlCon.getResponseCode();
 
@@ -99,17 +99,18 @@ public class TestIdleTimeouts extends HttpTestBase
         // Should work since it's on a new connection
         HttpURLConnection.setDefaultMaxTries(1);
         url = getNormalUrl();
-        urlCon = (HttpURLConnection)url.openConnection();
+        urlCon = HttpURLConnection.openConnection(url);
 
         assertEquals(200, urlCon.getResponseCode());
     }
 
     // client timesout idle connection and we hit it
-    public void testClientIdleConnPing(int numTries, int serverTimeout) throws Exception
+    public void testClientIdleConnPing(int numTries, int serverTimeout)
+        throws Exception
     {
         URL url = getTimeoutUrl(serverTimeout);
 
-        HttpURLConnection urlCon = (HttpURLConnection)url.openConnection();
+        HttpURLConnection urlCon = HttpURLConnection.openConnection(url);
         urlCon.getResponseCode();
         urlCon.getInputStream().close();
 
@@ -122,7 +123,7 @@ public class TestIdleTimeouts extends HttpTestBase
             + "?"
             + ErrorServer.POST_NO_DATA);
         HttpURLConnection.setDefaultMaxTries(numTries);
-        urlCon = (HttpURLConnection)url.openConnection();
+        urlCon = HttpURLConnection.openConnection(url);
         urlCon.setIdleConnectionPing(500);
         urlCon.setRequestMethod("POST");
 
@@ -149,7 +150,7 @@ public class TestIdleTimeouts extends HttpTestBase
         testClientIdleConnPing(1, 1000);
     }
 
-    // Bug 1439 idle connection ping kills connection 
+    // Bug 1439 idle connection ping kills connection
     public void testClientIdleConnPing1NoTimeout() throws Exception
     {
         testClientIdleConnPing(1, 0);

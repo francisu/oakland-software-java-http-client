@@ -6,6 +6,7 @@
 //
 package com.oaklandsw.http;
 
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -13,15 +14,11 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.StringTokenizer;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.regexp.RE;
-import org.apache.regexp.RESyntaxException;
 
 import com.oaklandsw.util.LogUtils;
-import com.oaklandsw.util.StringUtils;
 import com.oaklandsw.util.URIUtil;
 import com.oaklandsw.util.Util;
 
@@ -49,10 +46,10 @@ public class HttpConnectionManager
     // Keep the connection info around for 10 mins
     protected static final int    CONNECTION_INFO_RETAIN_TIME = 600000;
 
+    protected GlobalState         _globalState;
+
     // K(connection key) V(ConnectionInfo)
     private Map                   _hostMap                    = new HashMap();
-
-    int                           _maxConns                   = HttpURLConnection.DEFAULT_MAX_CONNECTIONS;
 
     private HttpConnectionTimeout _timeout;
 
@@ -66,26 +63,15 @@ public class HttpConnectionManager
     // this connection was created.
     private int                   _globalProxyIncarnation;
 
-    private String                _proxyHost;
-    private int                   _proxyPort                  = -1;
-    private String                _proxyUser;
-    private String                _proxyPassword;
+    // The total number of urlCons that need to be written,
+    // Synchronized by the connection manager; this is used to help
+    // track flushing connections
+    int                           _outstandingWrites;
 
-    private String                _nonProxyHostsString;
-
-    private ArrayList             _nonProxyHosts;
-
-    // The maximum number of pipelined urlcons for a connection
-    int                           _pipelineMaxDepth;
-
-    static final int              PCONN_MAX_CONNECTIONS       = 0;
-    static final int              PCONN_FIXED_NUMBER          = 1;
-    static final int              PCONN_MAX_PER_CALLBACK      = 2;
-
-    int                           _pipelineConnectionUseType;
-
-    // If the connection use type is FIXED_NUMBER
-    int                           _pipelineFixedLimit;
+    // The total number of connections that have unflushed data,
+    // this is a count of the number of connections that have the
+    // _needsFlush flag set
+    int                           _unflushedConnections;
 
     // Used to synchronize the pipeline related methods, as distinct
     // from the connection management methods which are synchronized
@@ -109,8 +95,11 @@ public class HttpConnectionManager
     public static final int       COUNT_FAIL_MAX_RETRY        = 4;
     public static final int       COUNT_FAIL_GE_400           = 5;
     public static final int       COUNT_PIPELINE_DEPTH_HIGH   = 6;
+    public static final int       COUNT_FLUSHES               = 7;
+    public static final int       COUNT_AVOIDED_FLUSHES       = 8;
+    public static final int       COUNT_FLUSH_IO_ERRORS       = 9;
 
-    public static final int       COUNT_LAST                  = COUNT_PIPELINE_DEPTH_HIGH;
+    public static final int       COUNT_LAST                  = COUNT_FLUSH_IO_ERRORS;
 
     int[]                         _requestCounts;
     String[]                      _requestCountNames          = new String[] { //
@@ -121,10 +110,14 @@ public class HttpConnectionManager
         , "UrlCons Failed Max Retries:     " //
         , "UrlCons Failed > 400:           " //
         , "Pipeline max depth (all conns): " //
+        , "Flushes:                        " //
+        , "Avoided Flushes:                " //
+        , "Flush IOExceptions:             " //
                                                               };
 
-    public HttpConnectionManager()
+    public HttpConnectionManager(GlobalState globalState)
     {
+        _globalState = globalState;
         _timeout = new HttpConnectionTimeout(this);
         _threadConnectionMap = new HashMap();
         _threadUrlConCountMap = new HashMap();
@@ -138,128 +131,6 @@ public class HttpConnectionManager
     {
         // Create this with unlimited capacity so it never blocks
         _asyncQueue = new LinkedBlockingQueue();
-    }
-
-    public void setProxyHost(String proxyHost)
-    {
-        _proxyHost = proxyHost;
-        // Get rid of all current connections as they are not
-        // going to the right place.
-        resetConnectionPool(!IMMEDIATE);
-    }
-
-    public String getProxyHost()
-    {
-        return _proxyHost;
-    }
-
-    public String getProxyPassword()
-    {
-        return _proxyPassword;
-    }
-
-    public void setProxyPassword(String proxyPassword)
-    {
-        _proxyPassword = proxyPassword;
-    }
-
-    public String getProxyUser()
-    {
-        return _proxyUser;
-    }
-
-    public void setProxyUser(String proxyUser)
-    {
-        _proxyUser = proxyUser;
-    }
-
-    /**
-     * Set the proxy host to use for all connections.
-     * 
-     * @param proxyHost -
-     *            the proxy host name
-     */
-    void setNonProxyHosts(String hosts)
-    {
-        synchronized (this)
-        {
-            // Get rid of all current connections as they are not
-            // going to the right place.
-            resetConnectionPool(!IMMEDIATE);
-
-            _nonProxyHostsString = hosts;
-            if (_nonProxyHostsString == null)
-            {
-                _nonProxyHosts = null;
-                return;
-            }
-
-            _nonProxyHosts = new ArrayList();
-            StringTokenizer stringtokenizer = new StringTokenizer(_nonProxyHostsString,
-                                                                  "|",
-                                                                  false);
-            while (stringtokenizer.hasMoreTokens())
-            {
-                String host = stringtokenizer.nextToken().toLowerCase().trim();
-
-                // The syntax for a non-proxy host only allows a "*" as
-                // wildcard,
-                // so we need to fix it up to be a correct RE.
-                host = StringUtils.replace(host, ".", "\\.");
-                host = StringUtils.replace(host, "*", ".*");
-
-                RE re;
-                try
-                {
-                    re = new RE(host);
-                }
-                catch (RESyntaxException rex)
-                {
-                    throw new RuntimeException("Invalid syntax for nonProxyHosts: '"
-                        + hosts
-                        + "' on host '"
-                        + host
-                        + "': "
-                        + rex.getMessage());
-                }
-
-                re.setMatchFlags(RE.MATCH_CASEINDEPENDENT);
-                if (_connLog.isDebugEnabled())
-                    _connLog.debug("Non proxy host: " + host);
-                _nonProxyHosts.add(re);
-            }
-        }
-    }
-
-    String getNonProxyHosts()
-    {
-        synchronized (this)
-        {
-            return _nonProxyHostsString;
-        }
-    }
-
-    public void setProxyPort(int proxyPort)
-    {
-        // Get rid of all current connections as they are not
-        // going to the right place.
-        resetConnectionPool(!IMMEDIATE);
-        _proxyPort = proxyPort;
-    }
-
-    public int getProxyPort()
-    {
-        return _proxyPort;
-    }
-
-    public void setMaxConnectionsPerHost(int maxConnections)
-    {
-        _maxConns = maxConnections;
-    }
-
-    public int getMaxConnectionsPerHost()
-    {
-        return _maxConns;
     }
 
     // Executes the processPipelinedRead on the specified urlCon, creating
@@ -353,6 +224,8 @@ public class HttpConnectionManager
             _log.debug("enqueueAsyncUrlCon: " + " enqueued: " + urlCon);
         }
 
+        addUrlConToWrite(urlCon);
+
         // In contrast to the connection thread, this put() can not block
         // because it's implemented with a LinkedBlockingQueue
         synchronized (this)
@@ -360,15 +233,21 @@ public class HttpConnectionManager
             _asyncQueue.put(urlCon);
 
             if (_asyncThread == null)
-            {
-                _asyncThread = new HttpPipelineAsyncThread(this);
-                _asyncThread.start();
-                if (_connLog.isDebugEnabled())
-                {
-                    _connLog.debug("enqueueAsyncUrlCon: " + " created thread");
-                }
-            }
+                startAsyncThread();
         }
+    }
+
+    protected void startAsyncThread()
+    {
+        _asyncThread = new HttpPipelineAsyncThread(this);
+        _asyncThread.start();
+        if (_connLog.isDebugEnabled())
+        {
+            _connLog.debug("enqueueAsyncUrlCon: "
+                + " created thread: "
+                + _asyncThread);
+        }
+
     }
 
     // Called when the pipelined async thread terminates due to lack of
@@ -379,9 +258,13 @@ public class HttpConnectionManager
         {
             if (_connLog.isDebugEnabled())
             {
-                _connLog.debug("asyncThreadTerminated");
+                _connLog.debug("asyncThreadTerminated: " + _asyncThread);
             }
             _asyncThread = null;
+
+            // Still work to do, start up another thread to handle it
+            if (!_asyncQueue.isEmpty())
+                startAsyncThread();
         }
     }
 
@@ -398,7 +281,9 @@ public class HttpConnectionManager
     }
 
     //
-    // Methods below are synchronized with the _pipelineLock
+    // Methods below are synchronized with the _pipelineLock;
+    // they cannot use the conn manager lock because of issues
+    // with the order of locking
     // 
 
     void addUrlConToRead(Thread thread)
@@ -414,6 +299,83 @@ public class HttpConnectionManager
             int count = ai.incrementAndGet();
             if (_log.isDebugEnabled())
                 _log.debug("addUrlConToRead - count (after) " + count);
+        }
+    }
+
+    void addUrlConToWrite(HttpURLConnection urlCon)
+    {
+        synchronized (_pipelineLock)
+        {
+            _outstandingWrites++;
+            if (_log.isDebugEnabled())
+            {
+                _log.debug("addUrlConToWrite - "
+                    + _outstandingWrites
+                    + " outstandingWrites after");
+            }
+            urlCon._pipelineQueuedForWrite = true;
+        }
+    }
+
+    void urlConWasWritten(HttpURLConnection urlCon) throws IOException
+    {
+        // We can be called sometimes (in error conditions) when the
+        // urlcon is not actually pipelined
+        if (!urlCon._pipelineQueuedForWrite)
+            return;
+
+        urlCon._pipelineQueuedForWrite = false;
+
+        synchronized (_pipelineLock)
+        {
+            _outstandingWrites--;
+            if (_log.isDebugEnabled())
+            {
+                _log.debug("urlConWasWritten - "
+                    + _outstandingWrites
+                    + " outstandingWrites after");
+            }
+            if (_outstandingWrites == 0)
+            {
+                // Make sure all connections are flushed
+                if (_unflushedConnections > 0)
+                    flushAllConnections();
+            }
+            else if (_outstandingWrites < 0)
+            {
+                _outstandingWrites = 0;
+                // REMOVEME - the false check
+                if (false)
+                {
+                    Util.impossible("outstandingWrites underflow: "
+                        + _outstandingWrites);
+                }
+            }
+
+        }
+    }
+
+    int getOutstandingWrites()
+    {
+        synchronized (_pipelineLock)
+        {
+            return _outstandingWrites;
+        }
+    }
+
+    void toggleNeedsFlush(HttpConnection conn)
+    {
+        synchronized (_pipelineLock)
+        {
+            if (conn._needsFlush)
+                _unflushedConnections++;
+            else
+                _unflushedConnections--;
+            if (_connLog.isDebugEnabled())
+            {
+                _connLog.debug("toggleNeedsFlush - unflushed: "
+                    + _unflushedConnections);
+            }
         }
     }
 
@@ -517,46 +479,6 @@ public class HttpConnectionManager
     }
 
     /**
-     * Returns the proxy host for the specified host.
-     */
-    public String getProxyHost(String host)
-    {
-        if (isNonProxyHost(host))
-            return null;
-        return _proxyHost;
-    }
-
-    public boolean isNonProxyHost(String host)
-    {
-        // This should be OK, as we never lock the connection
-        // info while we have the lock on this.
-        synchronized (this)
-        {
-            // Look for hosts to not proxy for
-            if (_nonProxyHosts != null)
-            {
-                int len = _nonProxyHosts.size();
-                for (int i = 0; i < len; i++)
-                {
-                    RE re = (RE)_nonProxyHosts.get(i);
-                    if (re.match(host))
-                    {
-                        if (_log.isDebugEnabled())
-                        {
-                            _log.debug("Not proxying host: "
-                                + host
-                                + " because of host rule: "
-                                + re.toString());
-                        }
-                        return true;
-                    }
-                }
-            }
-        }
-        return false;
-    }
-
-    /**
      * Get an HttpConnection for a given URL. The URL must be fully specified
      * (i.e. contain a protocol and a host (and optional port number). If the
      * maximum number of connections for the host has been reached, this method
@@ -585,13 +507,13 @@ public class HttpConnectionManager
         int proxyPort = urlCon.getConnectionProxyPort();
 
         // Make sure this is not on the non-proxy list
-        if (_nonProxyHostsString != null && proxyHost != null)
+        if (_globalState._nonProxyHostsString != null && proxyHost != null)
         {
             // Only applies if the proxy was set globally, if the proxy
             // is set directly, then it goes on the proxy even if it's in
             // the non-proxy hosts list
-            if (proxyHost.equals(_proxyHost)
-                && isNonProxyHost(URIUtil.getHost(url)))
+            if (proxyHost.equals(_globalState._proxyHost)
+                && _globalState.isNonProxyHost(URIUtil.getHost(url)))
             {
                 proxyHost = null;
                 proxyPort = -1;
@@ -633,7 +555,8 @@ public class HttpConnectionManager
                     break;
 
                 // Can create one
-                if (_maxConns <= 0 || ci.getActiveConnectionCount() < _maxConns)
+                if (_globalState._maxConns <= 0
+                    || ci.getActiveConnectionCount() < _globalState._maxConns)
                     break;
 
                 // Have to wait for an existing one to be freed
@@ -806,8 +729,10 @@ public class HttpConnectionManager
      * 
      * @param conn -
      *            The HttpConnection to make available.
+     * @throws InterruptedException
      */
     public void releaseConnection(HttpConnection conn)
+        throws InterruptedException
     {
         if (_log.isDebugEnabled())
         {
@@ -879,6 +804,28 @@ public class HttpConnectionManager
             _log.debug("releaseConnection: released = true");
             // Wake all waiters
             notifyAll();
+        }
+    }
+
+    protected void flushAllConnections() throws IOException
+    {
+        _connLog.debug("flushAllConnections");
+
+        synchronized (this)
+        {
+            Collection hosts = _hostMap.values();
+            Iterator it = hosts.iterator();
+            while (it.hasNext())
+            {
+                // Close all of the existing connections.
+                ConnectionInfo ci = (ConnectionInfo)it.next();
+                if (_connLog.isDebugEnabled())
+                {
+                    _connLog.debug("Flushing connections for: "
+                        + ci._connectionKey);
+                }
+                ci.flushAllAvailConnections();
+            }
         }
     }
 
@@ -958,8 +905,9 @@ public class HttpConnectionManager
      * idle timeout time.
      * 
      * @return the number of milliseconds when the next connection will timeout
+     * @throws InterruptedException
      */
-    long checkIdleConnections()
+    long checkIdleConnections() throws InterruptedException
     {
         _log.trace("checkIdleConnections");
 
@@ -1061,9 +1009,14 @@ public class HttpConnectionManager
     /**
      * Resets the connection pool, terminating all of the currently open
      * connections. This is called when the state of the proxy host changes.
+     * 
+     * @throws InterruptedException
      */
-    void resetConnectionPool(boolean immediate)
+    void resetConnectionPool(boolean immediate) throws InterruptedException
     {
+        // No longer use this connection manager
+        HttpURLConnection.resetConnectionManager();
+
         synchronized (this)
         {
             _connLog.debug("resetConnectionPool - immediate: " + immediate);
@@ -1077,9 +1030,9 @@ public class HttpConnectionManager
                 // Reset all of the pipelining stuff
                 initAsyncQueue();
 
+                // This will cause the thread to end and the pointer to reset
                 if (_asyncThread != null)
                     _asyncThread.interrupt();
-                _asyncThread = null;
 
                 wakeAllBlockers();
                 _connLog
@@ -1099,6 +1052,7 @@ public class HttpConnectionManager
                 }
                 ci.closeAllConnections(immediate);
             }
+
             _hostMap = new HashMap();
 
             _timeout.shutdown();

@@ -372,7 +372,11 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
     public static final int                NTLM_ENCODING_UNICODE                = 1;
     public static final int                NTLM_ENCODING_OEM                    = 2;
 
+    // Can be reset
     protected static HttpConnectionManager _connManager;
+
+    // Created only once; stores all of the user's persistent parameters
+    protected static GlobalState           _globalState;
 
     /**
      * This is a heuristic to prevent a programming problem. If you create a
@@ -455,7 +459,6 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
     // Actual length of the response text in bytes
     protected int                          _responseTextLength;
 
-    protected static HttpUserAgent         _defaultUserAgent;
     protected HttpUserAgent                _userAgent;
 
     // The request has been sent, but we have not done the read for the reply.
@@ -477,6 +480,10 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
 
     // The request has been sent and the reply received
     protected boolean                      _executed;
+
+    // This has been queued by the pipeline mechanism to write, so it
+    // occupies an outstandingWrite count in the connection manager
+    boolean                                _pipelineQueuedForWrite;
 
     // If the connection died due to an I/O exception, it is recorded here.
     // If getResponseCode() is called after the connection is dead and we
@@ -506,19 +513,9 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
     protected boolean                      _expectContinue;
 
     // From RFC 2616 section 8.1.4
-    public static int                      DEFAULT_MAX_CONNECTIONS              = 2;
+    public static int                      DEFAULT_MAX_CONNECTIONS              = GlobalState.DEFAULT_MAX_CONNECTIONS;
 
-    protected static int                   _defaultConnectionTimeout;
-    protected static int                   _defaultRequestTimeout;
-
-    protected static Callback              _defaultCallback;
     protected Callback                     _callback;
-
-    public static final int                DEFAULT_PIPELINING_OPTIONS           = 0;
-    protected static int                   _defaultPipeliningOptions            = DEFAULT_PIPELINING_OPTIONS;
-
-    public static final int                DEFAULT_PIPELINING_MAX_DEPTH         = 0;
-    protected static int                   _defaultPipeliningMaxDepth           = DEFAULT_PIPELINING_MAX_DEPTH;
 
     protected int                          _connectionTimeout;
     protected int                          _requestTimeout;
@@ -566,41 +563,14 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
     protected String                       _proxyUser;
     protected String                       _proxyPassword;
 
-    protected static int                   _ntlmPreferredEncoding               = NTLM_ENCODING_UNICODE;
-
-    // For tests
-    public static final int                DEFAULT_IDLE_TIMEOUT                 = 14000;
-    public static final int                DEFAULT_IDLE_PING                    = 0;
-    public static final int                DEFAULT_CONNECTION_REQUEST_LIMIT     = 0;
-
-    protected static int                   _defaultIdleTimeout                  = DEFAULT_IDLE_TIMEOUT;
     protected int                          _idleTimeout;
 
-    protected static int                   _defaultIdlePing                     = DEFAULT_IDLE_PING;
     protected int                          _idlePing;
 
-    protected static int                   _defaultConnectionRequestLimit       = DEFAULT_CONNECTION_REQUEST_LIMIT;
     protected int                          _connectionRequestLimit;
 
-    protected static final boolean         DEFAULT_USE_10_KEEPALIVE             = true;
-    protected static boolean               _use10KeepAlive                      = DEFAULT_USE_10_KEEPALIVE;
-
-    /**
-     * The maximum number of attempts to attempt recovery from a recoverable
-     * IOException.
-     */
-    public static int                      MAX_TRIES                            = 3;
-    protected static int                   _defaultMaxTries                     = MAX_TRIES;
-
-    // For the connection
+    public static int                      MAX_TRIES                            = GlobalState.MAX_TRIES;
     protected int                          _maxTries;
-
-    private static int                     DEFAULT_RETRY_INTERVAL               = 0;
-    protected static int                   _retryInterval                       = DEFAULT_RETRY_INTERVAL;
-
-    private static int                     DEFAULT_AUTHENTICATION_TYPE          = 0;
-    protected static int                   _defaultAuthenticationType;
-    protected static int                   _defaultProxyAuthenticationType;
 
     protected int[]                        _authenticationType                  = new int[AUTH_PROXY + 1];
 
@@ -616,16 +586,12 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
     static Method                          _sslGetLocalCertMethod;
     static Method                          _sslGetServerCertMethod;
 
-    protected static SSLSocketFactory      _defaultSSLSocketFactory;
     protected SSLSocketFactory             _sslSocketFactory;
 
-    protected static HostnameVerifier      _defaultHostnameVerifier;
     protected HostnameVerifier             _hostnameVerifier;
 
-    protected static CookieContainer       _defaultCookieContainer;
     protected CookieContainer              _cookieContainer;
 
-    protected static CookieSpec            _defaultCookieSpec;
     protected CookieSpec                   _cookieSpec;
 
     // Use HTTP 1.1?
@@ -635,6 +601,8 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
     protected boolean                      _shouldClose;
 
     private static boolean                 _inLicenseCheck;
+
+    private static boolean                 _inInit;
 
     // Used only for testing purposes
     private static URL                     _testURL;
@@ -671,7 +639,9 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
 
         try
         {
-            _connManager = new HttpConnectionManager();
+            _inInit = true;
+            if (_connManager == null)
+                _connManager = new HttpConnectionManager(_globalState);
 
             //
             // Standard HTTP methods
@@ -741,10 +711,10 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
                 {
                     try
                     {
-                        _defaultConnectionTimeout = Integer.parseInt(str);
-                        _defaultRequestTimeout = _defaultConnectionTimeout;
+                        setDefaultConnectionTimeout(Integer.parseInt(str));
+                        setDefaultRequestTimeout(getDefaultConnectionTimeout());
                         _log.info("Default timeout: "
-                            + _defaultConnectionTimeout);
+                            + getDefaultConnectionTimeout());
                     }
                     catch (Exception ex)
                     {
@@ -759,9 +729,9 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
                 {
                     try
                     {
-                        _defaultIdleTimeout = Integer.parseInt(str);
+                        setDefaultIdleConnectionTimeout(Integer.parseInt(str));
                         _log.info("Default idle connection timeout: "
-                            + _defaultIdleTimeout);
+                            + getDefaultIdleConnectionTimeout());
                     }
                     catch (Exception ex)
                     {
@@ -776,9 +746,9 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
                 {
                     try
                     {
-                        _defaultIdlePing = Integer.parseInt(str);
+                        setDefaultIdleConnectionPing(Integer.parseInt(str));
                         _log.info("Default idle connection ping: "
-                            + _defaultIdlePing);
+                            + getDefaultIdleConnectionPing());
                     }
                     catch (Exception ex)
                     {
@@ -793,9 +763,9 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
                 {
                     try
                     {
-                        _defaultConnectionRequestLimit = Integer.parseInt(str);
+                        setDefaultConnectionRequestLimit(Integer.parseInt(str));
                         _log.info("Default connection request limit: "
-                            + _defaultConnectionRequestLimit);
+                            + getDefaultConnectionRequestLimit());
                     }
                     catch (Exception ex)
                     {
@@ -944,9 +914,13 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
                                 + getProxyPort());
                 }
 
-                setNonProxyHosts(System.getProperty("http.nonProxyHosts"));
-                if (getNonProxyHosts() != null)
-                    _log.info("Non proxy hosts: " + getNonProxyHosts());
+                str = System.getProperty("http.nonProxyHosts");
+                if (str != null)
+                {
+                    setNonProxyHosts(str);
+                    if (getNonProxyHosts() != null)
+                        _log.info("Non proxy hosts: " + getNonProxyHosts());
+                }
 
                 str = System.getProperties()
                         .getProperty("com.oaklandsw.http.userAgent");
@@ -956,10 +930,12 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
                 str = System.getProperty("com.oaklandsw.http.cookiePolicy");
                 if (str != null)
                 {
-                    _log.info("Default cookie policy: " + _defaultCookieSpec);
+                    _log.info("Default cookie policy: "
+                        + _globalState._defaultCookieSpec);
                     // This validates the policy and throws if there is a
                     // problem
-                    _defaultCookieSpec = CookiePolicy.getCookieSpec(str);
+                    _globalState._defaultCookieSpec = CookiePolicy
+                            .getCookieSpec(str);
                 }
             }
 
@@ -1024,6 +1000,7 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
         finally
         {
             _inLicenseCheck = false;
+            _inInit = false;
         }
     }
 
@@ -1086,8 +1063,8 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
 
         if (_isSSLAvailable)
         {
-            _defaultSSLSocketFactory = (SSLSocketFactory)SSLSocketFactory
-                    .getDefault();
+            setDefaultSSLSocketFactory((SSLSocketFactory)SSLSocketFactory
+                    .getDefault());
             setDefaultHostnameVerifier(new DefaultHostnameVerifier());
         }
 
@@ -1095,12 +1072,37 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
 
     static
     {
-        init();
+        resetGlobalState();
+
+        // Causes init() to run
+        checkConnectionManager();
     }
 
     public HttpURLConnection()
     {
         this(_testURL);
+    }
+
+    static void checkConnectionManager()
+    {
+        synchronized (HttpURLConnection.class)
+        {
+            if (_connManager == null)
+            {
+                // init() creates a new cm
+                init();
+            }
+        }
+    }
+
+    static void resetConnectionManager()
+    {
+        synchronized (HttpURLConnection.class)
+        {
+            // Use the same CM through the init() method
+            if (!_inInit)
+                _connManager = null;
+        }
     }
 
     /**
@@ -1110,6 +1112,10 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
     public HttpURLConnection(URL urlParam)
     {
         super(urlParam);
+
+        // The connection manager might have been reset, see if we need to
+        // create a new one
+        checkConnectionManager();
 
         if (_log.isDebugEnabled())
             _log.debug("constructor - url: " + urlParam);
@@ -1141,34 +1147,34 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
                 + ex);
         }
 
-        _userAgent = _defaultUserAgent;
+        _userAgent = _globalState._defaultUserAgent;
 
-        _connectionTimeout = _defaultConnectionTimeout;
-        _requestTimeout = _defaultRequestTimeout;
-        _idleTimeout = _defaultIdleTimeout;
-        _idlePing = _defaultIdlePing;
-        _connectionRequestLimit = _defaultConnectionRequestLimit;
-        _maxTries = _defaultMaxTries;
-        _cookieContainer = _defaultCookieContainer;
-        _cookieSpec = _defaultCookieSpec;
+        _connectionTimeout = _globalState._defaultConnectionTimeout;
+        _requestTimeout = _globalState._defaultRequestTimeout;
+        _idleTimeout = _globalState._defaultIdleTimeout;
+        _idlePing = _globalState._defaultIdlePing;
+        _connectionRequestLimit = _globalState._defaultConnectionRequestLimit;
+        _maxTries = _globalState._defaultMaxTries;
+        _cookieContainer = _globalState._defaultCookieContainer;
+        _cookieSpec = _globalState._defaultCookieSpec;
         // Don't use direct assignment because there is other
         // processing in this call
-        setPipeliningOptions(_defaultPipeliningOptions);
-        setPipeliningMaxDepth(_defaultPipeliningMaxDepth);
-        _callback = _defaultCallback;
-        _authenticationType[AUTH_NORMAL] = _defaultAuthenticationType;
-        _authenticationType[AUTH_PROXY] = _defaultProxyAuthenticationType;
+        setPipeliningOptions(_globalState._defaultPipeliningOptions);
+        setPipeliningMaxDepth(_globalState._defaultPipeliningMaxDepth);
+        _callback = _globalState._defaultCallback;
+        _authenticationType[AUTH_NORMAL] = _globalState._defaultAuthenticationType;
+        _authenticationType[AUTH_PROXY] = _globalState._defaultProxyAuthenticationType;
         _authenticationDummyContent = null;
         _authenticationDummyMethod = HTTP_METHOD_HEAD;
-        _proxyHost = _connManager.getProxyHost();
-        _proxyPort = _connManager.getProxyPort();
-        _proxyUser = _connManager.getProxyUser();
-        _proxyPassword = _connManager.getProxyPassword();
+        _proxyHost = _globalState._proxyHost;
+        _proxyPort = _globalState._proxyPort;
+        _proxyUser = _globalState._proxyUser;
+        _proxyPassword = _globalState._proxyPassword;
 
         if (_isSSLAvailable)
         {
-            _sslSocketFactory = _defaultSSLSocketFactory;
-            _hostnameVerifier = _defaultHostnameVerifier;
+            _sslSocketFactory = _globalState._defaultSSLSocketFactory;
+            _hostnameVerifier = _globalState._defaultHostnameVerifier;
         }
 
         _connManager.recordCount(HttpConnectionManager.COUNT_ATTEMPTED);
@@ -1198,7 +1204,14 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
     {
         // Close the underlying connection if it's associated
         // since we can't be sure if its state.
-        releaseConnection(CLOSE);
+        try
+        {
+            releaseConnection(CLOSE);
+        }
+        catch (InterruptedIOException e)
+        {
+            _log.warn("finalize() - interrupted", e);
+        }
     }
 
     // Request side
@@ -1386,7 +1399,8 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
      */
     public boolean usingProxy()
     {
-        if (_connManager.getProxyHost(url.getHost()) != null)
+        checkConnectionManager();
+        if (_globalState.getProxyHost(url.getHost()) != null)
             return true;
         return false;
     }
@@ -1399,7 +1413,7 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
 
     protected static final String[] _relTypes = { "CLOSE", "READING" };
 
-    void releaseConnection(int type)
+    void releaseConnection(int type) throws InterruptedIOException
     {
         // Need to synchronize for updating the connection state because
         // multiple thread access is possible
@@ -1408,68 +1422,79 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
             if (_log.isDebugEnabled())
                 _log.debug("releaseConnection: " + _relTypes[type]);
 
-            if (connected)
+            try
             {
-                if (_releaseConnection)
+                if (connected)
                 {
-                    if (_log.isDebugEnabled())
-                        _log.debug("releaseConnection: now connected = FALSE");
-                    connected = false;
-
-                    boolean closed = false;
-                    if (type == CLOSE || _shouldClose)
+                    if (_releaseConnection)
                     {
-                        _log.debug("releaseConnection: "
-                            + "closing the connection.");
-                        _connection.close();
-                        closed = true;
-                    }
+                        if (_log.isDebugEnabled())
+                            _log
+                                    .debug("releaseConnection: now connected = FALSE");
+                        connected = false;
 
-                    // When reading and piplining the connection is not owned
-                    // from the connection manager point of view
-                    if (closed || (_pipeliningOptions & PIPE_PIPELINE) == 0)
-                    {
-                        // See the comment on this field
-                        _urlConReleased = true;
-                        _connManager.releaseConnection(_connection);
-                    }
-
-                    // Never reset these because the connection might be in
-                    // use in another thread (with this same urlcon)
-                    // _connection = null;
-                    // _conInStream = null;
-                    // _conOutStream = null;
-
-                }
-                else
-                {
-                    _log.debug("releaseConnection: "
-                        + "no _release (CONNECT case).");
-
-                    // This happens on a CONNECT request when
-                    // the connection has already been closed,
-                    // just re-open the same connection using
-                    // the low-level interface
-                    // This also happens when the connection
-                    // was explicitly allocated
-                    if (type == CLOSE)
-                    {
-                        try
+                        boolean closed = false;
+                        if (type == CLOSE || _shouldClose)
                         {
                             _log.debug("releaseConnection: "
-                                + "reopening after CLOSE");
+                                + "closing the connection.");
                             _connection.close();
-                            _connection.openSocket();
-                            setStreams();
-                            _log.debug("releaseConnection:  WORKED");
+                            closed = true;
                         }
-                        catch (IOException ex)
+
+                        // When reading and piplining the connection is not
+                        // owned
+                        // from the connection manager point of view
+                        if (closed || (_pipeliningOptions & PIPE_PIPELINE) == 0)
                         {
-                            _log.warn("Exception re-opening "
-                                + "closed socket for CONNECT: ", ex);
+                            // See the comment on this field
+                            _urlConReleased = true;
+                            _connManager.releaseConnection(_connection);
+                        }
+
+                        // Never reset these because the connection might be in
+                        // use in another thread (with this same urlcon)
+                        // _connection = null;
+                        // _conInStream = null;
+                        // _conOutStream = null;
+
+                    }
+                    else
+                    {
+                        _log.debug("releaseConnection: "
+                            + "no _release (CONNECT case).");
+
+                        // This happens on a CONNECT request when
+                        // the connection has already been closed,
+                        // just re-open the same connection using
+                        // the low-level interface
+                        // This also happens when the connection
+                        // was explicitly allocated
+                        if (type == CLOSE)
+                        {
+                            try
+                            {
+                                _log.debug("releaseConnection: "
+                                    + "reopening after CLOSE");
+                                _connection.close();
+                                _connection.openSocket();
+                                setStreams();
+                                _log.debug("releaseConnection:  WORKED");
+                            }
+                            catch (IOException ex)
+                            {
+                                _log.warn("Exception re-opening "
+                                    + "closed socket for CONNECT: ", ex);
+                            }
                         }
                     }
                 }
+            }
+            catch (InterruptedException ex)
+            {
+                InterruptedIOException ioex = new InterruptedIOException();
+                ioex.initCause(ex);
+                throw ioex;
             }
         }
     }
@@ -1519,6 +1544,7 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
      */
     public static HttpConnectionManager getConnectionManager()
     {
+        checkConnectionManager();
         return _connManager;
     }
 
@@ -1841,8 +1867,8 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
     public static void setDefaultCookieSupport(CookieContainer container,
                                                String policy)
     {
-        _defaultCookieContainer = container;
-        _defaultCookieSpec = CookiePolicy.getCookieSpec(policy);
+        _globalState._defaultCookieContainer = container;
+        _globalState._defaultCookieSpec = CookiePolicy.getCookieSpec(policy);
     }
 
     /**
@@ -2006,7 +2032,15 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
             // Here we make sure and return the connection
             // to get the counts adjusted
             _releaseConnection = true;
-            releaseConnection(CLOSE);
+            try
+            {
+                releaseConnection(CLOSE);
+            }
+            catch (InterruptedIOException e)
+            {
+                // Can't throw it, just have to swallow it
+                _log.warn("InterruptedException during disconnect()", e);
+            }
         }
     }
 
@@ -2015,7 +2049,7 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
      */
     public static void setDefaultUserAgent(HttpUserAgent userAgent)
     {
-        _defaultUserAgent = userAgent;
+        _globalState._defaultUserAgent = userAgent;
     }
 
     /**
@@ -2023,7 +2057,7 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
      */
     public static HttpUserAgent getDefaultUserAgent()
     {
-        return _defaultUserAgent;
+        return _globalState._defaultUserAgent;
     }
 
     /**
@@ -2167,7 +2201,7 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
      */
     public static int getDefaultTimeout()
     {
-        return _defaultConnectionTimeout;
+        return _globalState._defaultConnectionTimeout;
     }
 
     /**
@@ -2186,8 +2220,8 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
     {
         if (_log.isDebugEnabled())
             _log.debug("setDefaultTimeout: " + ms);
-        _defaultConnectionTimeout = ms;
-        _defaultRequestTimeout = ms;
+        _globalState._defaultConnectionTimeout = ms;
+        _globalState._defaultRequestTimeout = ms;
     }
 
     /**
@@ -2197,7 +2231,7 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
      */
     public static int getDefaultConnectionTimeout()
     {
-        return _defaultConnectionTimeout;
+        return _globalState._defaultConnectionTimeout;
     }
 
     /**
@@ -2213,7 +2247,7 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
     {
         if (_log.isDebugEnabled())
             _log.debug("setDefaultConnectionTimeout: " + ms);
-        _defaultConnectionTimeout = ms;
+        _globalState._defaultConnectionTimeout = ms;
     }
 
     /**
@@ -2223,7 +2257,7 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
      */
     public static int getDefaultRequestTimeout()
     {
-        return _defaultRequestTimeout;
+        return _globalState._defaultRequestTimeout;
     }
 
     /**
@@ -2238,7 +2272,7 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
     {
         if (_log.isDebugEnabled())
             _log.debug("setDefaultRequestTimeout: " + ms);
-        _defaultRequestTimeout = ms;
+        _globalState._defaultRequestTimeout = ms;
     }
 
     /**
@@ -2275,7 +2309,7 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
      */
     public static int getDefaultIdleConnectionTimeout()
     {
-        return _defaultIdleTimeout;
+        return _globalState._defaultIdleTimeout;
     }
 
     /**
@@ -2294,7 +2328,7 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
     {
         if (_log.isDebugEnabled())
             _log.debug("setDefaultIdleConnectionTimeout: " + ms);
-        _defaultIdleTimeout = ms;
+        _globalState._defaultIdleTimeout = ms;
     }
 
     /**
@@ -2307,9 +2341,9 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
         if (_log.isDebugEnabled())
         {
             _log.debug("setDefaultIdleConnectionTimeout (Default): "
-                + DEFAULT_IDLE_TIMEOUT);
+                + GlobalState.DEFAULT_IDLE_TIMEOUT);
         }
-        _defaultIdleTimeout = DEFAULT_IDLE_TIMEOUT;
+        _globalState._defaultIdleTimeout = GlobalState.DEFAULT_IDLE_TIMEOUT;
     }
 
     /**
@@ -2350,7 +2384,7 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
      */
     public static int getDefaultIdleConnectionPing()
     {
-        return _defaultIdlePing;
+        return _globalState._defaultIdlePing;
     }
 
     /**
@@ -2365,7 +2399,7 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
     {
         if (_log.isDebugEnabled())
             _log.debug("setDefaultIdleConnectionPing: " + ms);
-        _defaultIdlePing = ms;
+        _globalState._defaultIdlePing = ms;
     }
 
     /**
@@ -2378,9 +2412,9 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
         if (_log.isDebugEnabled())
         {
             _log.debug("setDefaultIdleConnectionPing (Default): "
-                + DEFAULT_IDLE_PING);
+                + GlobalState.DEFAULT_IDLE_PING);
         }
-        _defaultIdlePing = DEFAULT_IDLE_PING;
+        _globalState._defaultIdlePing = GlobalState.DEFAULT_IDLE_PING;
     }
 
     /**
@@ -2425,7 +2459,7 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
      */
     public static int getDefaultConnectionRequestLimit()
     {
-        return _defaultConnectionRequestLimit;
+        return _globalState._defaultConnectionRequestLimit;
     }
 
     /**
@@ -2443,7 +2477,7 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
     {
         if (_log.isDebugEnabled())
             _log.debug("setDefaultConnectionRequestLimit: " + requests);
-        _defaultConnectionRequestLimit = requests;
+        _globalState._defaultConnectionRequestLimit = requests;
     }
 
     /**
@@ -2456,9 +2490,9 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
         if (_log.isDebugEnabled())
         {
             _log.debug("setDefaultConnectionRequestLimit (Default): "
-                + DEFAULT_CONNECTION_REQUEST_LIMIT);
+                + GlobalState.DEFAULT_CONNECTION_REQUEST_LIMIT);
         }
-        _defaultConnectionRequestLimit = DEFAULT_CONNECTION_REQUEST_LIMIT;
+        _globalState._defaultConnectionRequestLimit = GlobalState.DEFAULT_CONNECTION_REQUEST_LIMIT;
     }
 
     /**
@@ -2501,7 +2535,7 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
     {
         if (_log.isDebugEnabled())
             _log.debug("setMaxConnectionsPerHost: " + maxConnections);
-        _connManager.setMaxConnectionsPerHost(maxConnections);
+        _globalState._maxConns = maxConnections;
     }
 
     /**
@@ -2511,7 +2545,7 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
      */
     public static int getMaxConnectionsPerHost()
     {
-        return _connManager.getMaxConnectionsPerHost();
+        return _globalState._maxConns;
     }
 
     /**
@@ -2523,7 +2557,7 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
      */
     public static void setUse10KeepAlive(boolean use)
     {
-        _use10KeepAlive = use;
+        _globalState._use10KeepAlive = use;
     }
 
     /**
@@ -2534,7 +2568,7 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
      */
     public static boolean getUse10KeepAlive()
     {
-        return _use10KeepAlive;
+        return _globalState._use10KeepAlive;
     }
 
     /**
@@ -2568,7 +2602,7 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
             _log.debug("setDefaultMaxTries: " + tries);
         if (tries < 1)
             throw new IllegalArgumentException("You must allow at least one try");
-        _defaultMaxTries = tries;
+        _globalState._defaultMaxTries = tries;
     }
 
     /**
@@ -2589,7 +2623,7 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
      */
     public static int getDefaultMaxTries()
     {
-        return _defaultMaxTries;
+        return _globalState._defaultMaxTries;
     }
 
     /**
@@ -2603,7 +2637,7 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
     {
         if (_log.isDebugEnabled())
             _log.debug("setRetryInterval: " + ms);
-        _retryInterval = ms;
+        _globalState._retryInterval = ms;
     }
 
     /**
@@ -2613,7 +2647,7 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
      */
     public static int getRetryInterval()
     {
-        return _retryInterval;
+        return _globalState._retryInterval;
     }
 
     /**
@@ -2673,7 +2707,7 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
         if (_log.isDebugEnabled())
             _log.debug("setDefaultAuthenticationType: " + type);
         checkAuthenticationType(type);
-        _defaultAuthenticationType = type;
+        _globalState._defaultAuthenticationType = type;
     }
 
     /**
@@ -2684,7 +2718,7 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
      */
     public static int getDefaultAuthenticationType()
     {
-        return _defaultAuthenticationType;
+        return _globalState._defaultAuthenticationType;
     }
 
     /**
@@ -2759,7 +2793,7 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
         if (_log.isDebugEnabled())
             _log.debug("setDefaultProxyAuthenticationType: " + type);
         checkAuthenticationType(type);
-        _defaultProxyAuthenticationType = type;
+        _globalState._defaultProxyAuthenticationType = type;
     }
 
     /**
@@ -2770,7 +2804,7 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
      */
     public static int getDefaultProxyAuthenticationType()
     {
-        return _defaultProxyAuthenticationType;
+        return _globalState._defaultProxyAuthenticationType;
     }
 
     /**
@@ -2835,9 +2869,9 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
         if (_log.isDebugEnabled())
             _log.debug("setDefaultPipelining: " + enabled);
         if (enabled)
-            _defaultPipeliningOptions = PIPE_STANDARD_OPTIONS;
+            _globalState._defaultPipeliningOptions = PIPE_STANDARD_OPTIONS;
         else
-            _defaultPipeliningOptions = 0;
+            _globalState._defaultPipeliningOptions = 0;
     }
 
     /**
@@ -2847,7 +2881,7 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
      */
     public static boolean isDefaultPipelining()
     {
-        return (_defaultPipeliningOptions & PIPE_PIPELINE) != 0;
+        return (_globalState._defaultPipeliningOptions & PIPE_PIPELINE) != 0;
     }
 
     /**
@@ -2866,7 +2900,7 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
                 + plOptionsToString(pipeliningOptions));
         }
 
-        _defaultPipeliningOptions = pipeliningOptions;
+        _globalState._defaultPipeliningOptions = pipeliningOptions;
     }
 
     /**
@@ -2876,7 +2910,7 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
      */
     public static int getDefaultPipeliningOptions()
     {
-        return _defaultPipeliningOptions;
+        return _globalState._defaultPipeliningOptions;
     }
 
     /**
@@ -2968,7 +3002,7 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
      */
     public static void setDefaultPipeliningMaxDepth(int pipeliningMaxDepth)
     {
-        _defaultPipeliningMaxDepth = pipeliningMaxDepth;
+        _globalState._defaultPipeliningMaxDepth = pipeliningMaxDepth;
     }
 
     /**
@@ -2978,7 +3012,7 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
      */
     public static int getDefaultPipeliningMaxDepth()
     {
-        return _defaultPipeliningMaxDepth;
+        return _globalState._defaultPipeliningMaxDepth;
     }
 
     /**
@@ -3027,7 +3061,7 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
      */
     public static void setDefaultCallback(Callback cb)
     {
-        _defaultCallback = cb;
+        _globalState._defaultCallback = cb;
     }
 
     /**
@@ -3037,7 +3071,7 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
      */
     public static Callback getDefaultCallback()
     {
-        return _defaultCallback;
+        return _globalState._defaultCallback;
     }
 
     /**
@@ -3094,7 +3128,10 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
         checkPipeline();
         _connManager.addUrlConToRead(Thread.currentThread());
         _pipelineExpectBlock = true;
-        processPipelinedWrite();
+        // Execute this on the async thread, this way we can have
+        // everything we need to do queued so which will help us
+        // to manage how often to actually flush
+        _connManager.enqueueAsyncUrlCon(this);
     }
 
     /**
@@ -3103,6 +3140,7 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
      */
     public static void pipelineBlock() throws InterruptedException
     {
+        checkConnectionManager();
         _connManager.blockForUrlCons();
     }
 
@@ -3171,7 +3209,7 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
     {
         if (_log.isDebugEnabled())
             _log.debug("setProxyHost: " + host);
-        _connManager.setProxyHost(host);
+        _globalState.setProxyHost(host);
     }
 
     /**
@@ -3181,7 +3219,7 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
      */
     public static String getProxyHost()
     {
-        return _connManager.getProxyHost();
+        return _globalState._proxyHost;
     }
 
     /**
@@ -3224,7 +3262,7 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
     {
         if (_log.isDebugEnabled())
             _log.debug("setProxyPort: " + port);
-        _connManager.setProxyPort(port);
+        _globalState.setProxyPort(port);
     }
 
     /**
@@ -3234,7 +3272,7 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
      */
     public static int getProxyPort()
     {
-        return _connManager.getProxyPort();
+        return _globalState._proxyPort;
     }
 
     /**
@@ -3278,7 +3316,7 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
     {
         if (_log.isDebugEnabled())
             _log.debug("setProxyUser: " + user);
-        _connManager.setProxyUser(user);
+        _globalState._proxyUser = user;
     }
 
     /**
@@ -3288,7 +3326,7 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
      */
     public static String getProxyUser()
     {
-        return _connManager.getProxyUser();
+        return _globalState._proxyUser;
     }
 
     /**
@@ -3335,7 +3373,7 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
     {
         if (_log.isDebugEnabled())
             _log.debug("setProxyPassword: " + password);
-        _connManager.setProxyPassword(password);
+        _globalState._proxyPassword = password;
     }
 
     /**
@@ -3345,7 +3383,7 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
      */
     public static String getProxyPassword()
     {
-        return _connManager.getProxyPassword();
+        return _globalState._proxyPassword;
     }
 
     /**
@@ -3380,22 +3418,22 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
     }
 
     /**
-     * Sets the hosts to be excluded from the proxy mechanism.  
+     * Sets the hosts to be excluded from the proxy mechanism.
      * 
-     * This applies to all connections whose proxy host is set using global means
-     * (that is with a System.property or the static {@link #setProxyHost(String)}
-     * method.
+     * This applies to all connections whose proxy host is set using global
+     * means (that is with a System.property or the static
+     * {@link #setProxyHost(String)} method.
      * 
-     * This does <i>not</i> apply if you set the proxy host on the connection 
-     * directly using {@link #setConnectionProxyHost(String)}.  This allows you to
-     * override the proxy setting for a connection without regard to the setting
-     * of the global non-proxy hosts.
+     * This does <i>not</i> apply if you set the proxy host on the connection
+     * directly using {@link #setConnectionProxyHost(String)}. This allows you
+     * to override the proxy setting for a connection without regard to the
+     * setting of the global non-proxy hosts.
      * 
      * @param hosts
      *            a list of hosts separated by the pipe <code>("|")</code>
-     *            character. Each host is a string containing either a hostname or
-     *            IP address.  The "*" character may be used within this string to
-     *            provide wildcarding.
+     *            character. Each host is a string containing either a hostname
+     *            or IP address. The "*" character may be used within this
+     *            string to provide wildcarding.
      * @see #isNonProxyHost(String)
      * 
      */
@@ -3404,7 +3442,7 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
         // It is validated by the connection manager
         if (_log.isDebugEnabled())
             _log.debug("setNonProxyHosts: " + hosts);
-        _connManager.setNonProxyHosts(hosts);
+        _globalState.setNonProxyHosts(hosts);
     }
 
     /**
@@ -3415,7 +3453,7 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
      */
     public static String getNonProxyHosts()
     {
-        return _connManager.getNonProxyHosts();
+        return _globalState.getNonProxyHosts();
     }
 
     /**
@@ -3425,7 +3463,7 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
      */
     public static boolean isNonProxyHost(String hostName)
     {
-        return _connManager.isNonProxyHost(hostName);
+        return _globalState.isNonProxyHost(hostName);
     }
 
     /**
@@ -3434,17 +3472,23 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
      * HTTP requests that are currently in progress will be allowed complete
      * normally. The connections associated with those requests will be closed
      * when the connections complete.
+     * 
+     * @throws InterruptedException
      */
-    public static void closeAllPooledConnections()
+    public static void closeAllPooledConnections() throws InterruptedException
     {
+        checkConnectionManager();
         _connManager.resetConnectionPool(!HttpConnectionManager.IMMEDIATE);
     }
 
     /**
      * Immediately close all connections and stop all work in progress.
+     * 
+     * @throws InterruptedException
      */
-    public static void immediateShutdown()
+    public static void immediateShutdown() throws InterruptedException
     {
+        checkConnectionManager();
         _connManager.resetConnectionPool(HttpConnectionManager.IMMEDIATE);
     }
 
@@ -3453,6 +3497,7 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
      */
     public static void dumpConnectionPool()
     {
+        checkConnectionManager();
         _connManager.dumpConnectionPool();
     }
 
@@ -3461,6 +3506,7 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
      */
     public static String getStatistics()
     {
+        checkConnectionManager();
         return _connManager.getStatistics();
     }
 
@@ -3469,6 +3515,7 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
      */
     public static void resetStatistics()
     {
+        checkConnectionManager();
         _connManager.resetStatistics();
     }
 
@@ -3568,7 +3615,7 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
      */
     public static HostnameVerifier getDefaultHostnameVerifier()
     {
-        return _defaultHostnameVerifier;
+        return _globalState._defaultHostnameVerifier;
     }
 
     /**
@@ -3577,7 +3624,7 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
      */
     public static void setDefaultHostnameVerifier(HostnameVerifier verifier)
     {
-        _defaultHostnameVerifier = verifier;
+        _globalState._defaultHostnameVerifier = verifier;
     }
 
     /**
@@ -3606,7 +3653,7 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
      */
     public static SSLSocketFactory getDefaultSSLSocketFactory()
     {
-        return _defaultSSLSocketFactory;
+        return _globalState._defaultSSLSocketFactory;
     }
 
     /**
@@ -3614,7 +3661,7 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
      */
     public static void setDefaultSSLSocketFactory(SSLSocketFactory factory)
     {
-        _defaultSSLSocketFactory = factory;
+        _globalState._defaultSSLSocketFactory = factory;
     }
 
     /**
@@ -3649,7 +3696,7 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
             default:
                 throw new IllegalArgumentException("Encoding must be either NTLM_ENCODING_OEM or NTLM_ENCODING_DEFAULT");
         }
-        _ntlmPreferredEncoding = encoding;
+        _globalState._ntlmPreferredEncoding = encoding;
     }
 
     /**
@@ -3659,7 +3706,7 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
      */
     public static int getNtlmPreferredEncoding()
     {
-        return _ntlmPreferredEncoding;
+        return _globalState._ntlmPreferredEncoding;
     }
 
     /**
@@ -3715,6 +3762,21 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
         _urlConReleased = false;
     }
 
+    /**
+     * Resets the global persistent state. This is the state set by all of the
+     * setDefaultxxx() methods as well as that set by the System.setProperty()
+     * methods.
+     */
+    public static void resetGlobalState()
+    {
+        // The only time this gets created
+        _globalState = new GlobalState();
+        // Make sure we have a conn manager to start with
+        _globalState._connManager = new HttpConnectionManager(_globalState);
+
+        init();
+    }
+
     protected abstract void execute() throws HttpException, IOException;
 
     protected abstract void executeStart() throws HttpException, IOException;
@@ -3727,7 +3789,9 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
         throws InterruptedException,
             InterruptedIOException;
 
-    abstract void streamWriteFinished(boolean ok);
+    abstract void streamWriteFinished(boolean ok)
+        throws IOException,
+            InterruptedIOException;
 
     protected abstract void setUrl(String urlParam)
         throws MalformedURLException;

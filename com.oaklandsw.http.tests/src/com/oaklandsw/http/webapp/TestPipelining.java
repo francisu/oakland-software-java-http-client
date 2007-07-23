@@ -1,7 +1,6 @@
 package com.oaklandsw.http.webapp;
 
 import java.io.InputStream;
-import java.io.InterruptedIOException;
 import java.io.OutputStream;
 import java.net.URL;
 import java.util.ArrayList;
@@ -179,12 +178,16 @@ public class TestPipelining extends TestWebappBase
     // Bug 1972 connection released twice
     public void testSimple10Async404() throws Exception
     {
-        if (true || _logging)
+        if (!true || _logging)
         {
             LogUtils.logFile("/home/francis/log4jpipe10Async404"
                 + _testAllName
                 + ".txt");
         }
+
+        // May do a log of retries due to pipelining and the error
+        HttpURLConnection.setDefaultMaxTries(100);
+
         PipelineTester pt = new PipelineTester(HttpTestEnv.TEST_URL_HOST_ERRORSVR
                                                    + "?error=404&",
                                                10,
@@ -287,9 +290,13 @@ public class TestPipelining extends TestWebappBase
         HttpURLConnection.dumpAll();
 
     }
-
+    // REMOVEME
+/*
+    
     public void testShutdown2Base() throws Exception
     {
+        LogUtils.logFile("/home/francis/log4jshutdown.txt");
+
         _failed = false;
         // Run this a few times and make sure everything is OK
         for (int i = 1; i <= 10; i++)
@@ -352,7 +359,7 @@ public class TestPipelining extends TestWebappBase
             Thread.sleep(500);
         }
     }
-
+**/
     public void testSimple100() throws Exception
     {
         if (_logging)
@@ -443,7 +450,7 @@ public class TestPipelining extends TestWebappBase
 
     public void testSimple10000() throws Exception
     {
-        if (_logging)
+        if (!true || _logging)
         {
             LogUtils.logFile("/home/francis/log4jpipe10000"
                 + _testAllName
@@ -610,9 +617,6 @@ public class TestPipelining extends TestWebappBase
     {
         HttpURLConnection.setMaxConnectionsPerHost(10);
         HttpURLConnection.setDefaultRequestTimeout(5000);
-
-        // String url =
-        // "http://host72.hrwebservices.net/~bigtivo/perftest/gfx/tnet_wht.jpg";
 
         int count = _extended ? 10 : 1;
         for (int i = 0; i < count; i++)

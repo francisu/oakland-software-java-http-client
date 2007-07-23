@@ -149,6 +149,11 @@ public class HttpConnectionTimeout
                     }
                 }
             }
+            catch (InterruptedException e)
+            {
+                _log.debug("Interrupted - exiting", e);
+                return;
+            }
             finally
             {
                 synchronized (_lock)

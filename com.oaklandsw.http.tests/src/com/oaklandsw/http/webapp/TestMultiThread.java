@@ -100,7 +100,7 @@ public class TestMultiThread extends TestWebappBase
                 + " "
                 + servletName);
 
-            HttpURLConnection urlCon = (HttpURLConnection)url.openConnection();
+            HttpURLConnection urlCon = HttpURLConnection.openConnection(url);
             urlCon.setRequestMethod(method);
 
             urlCon.setRequestProperty("emit-text", String.valueOf(TEXT_TIMES));

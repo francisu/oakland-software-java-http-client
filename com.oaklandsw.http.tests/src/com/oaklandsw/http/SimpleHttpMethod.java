@@ -143,6 +143,7 @@ public class SimpleHttpMethod extends HttpURLConnectInternal
             IOException
     {
         _saveConnection = connection;
+        connection._connManager = _connManager;
     }
 
     public void testAddRequestHeaders(HttpConnection connection)

@@ -132,7 +132,7 @@ public class TestMethodsNoHost extends HttpTestBase
         // Bad location
         URL url = new URL("http://localhost:55555");
 
-        HttpURLConnection urlCon = (HttpURLConnection)url.openConnection();
+        HttpURLConnection urlCon = HttpURLConnection.openConnection(url);
         urlCon.setRequestMethod("GET");
         try
         {
@@ -154,7 +154,7 @@ public class TestMethodsNoHost extends HttpTestBase
     {
         URL url = new URL("http://doesnotmatter");
 
-        HttpURLConnection urlCon = (HttpURLConnection)url.openConnection();
+        HttpURLConnection urlCon = HttpURLConnection.openConnection(url);
 
         // These should all work
         urlCon.setChunkedStreamingMode(-1);
@@ -166,7 +166,7 @@ public class TestMethodsNoHost extends HttpTestBase
     {
         URL url = new URL("http://doesnotmatter");
 
-        HttpURLConnection urlCon = (HttpURLConnection)url.openConnection();
+        HttpURLConnection urlCon = HttpURLConnection.openConnection(url);
 
         try
         {

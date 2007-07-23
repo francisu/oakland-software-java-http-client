@@ -53,7 +53,7 @@ public class TestNonProxyHost extends HttpTestBase
         throws IOException
     {
         int response = 0;
-        com.oaklandsw.http.HttpURLConnection.setNonProxyHosts(hosts);
+        HttpURLConnection.setNonProxyHosts(hosts);
         URL url = new URL("http://" + connectHost + "/");
 
         HttpURLConnection urlCon = (HttpURLConnection)url.openConnection();

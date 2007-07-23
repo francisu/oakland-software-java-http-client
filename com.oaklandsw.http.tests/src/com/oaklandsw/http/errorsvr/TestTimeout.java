@@ -11,6 +11,7 @@ import junit.framework.TestSuite;
 import com.oaklandsw.http.HttpTimeoutException;
 import com.oaklandsw.http.HttpTestBase;
 import com.oaklandsw.http.HttpTestEnv;
+import com.oaklandsw.http.HttpURLConnection;
 import com.oaklandsw.util.LogUtils;
 
 public class TestTimeout extends HttpTestBase
@@ -47,8 +48,7 @@ public class TestTimeout extends HttpTestBase
             + "&sec=5"
             + _errorDebug);
 
-        com.oaklandsw.http.HttpURLConnection urlCon = (com.oaklandsw.http.HttpURLConnection)url
-                .openConnection();
+        HttpURLConnection urlCon = HttpURLConnection.openConnection(url);
         setupConnTimeout(urlCon, type, 1000);
 
         urlCon.setRequestMethod("GET");

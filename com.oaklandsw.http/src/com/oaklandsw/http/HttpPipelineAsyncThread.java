@@ -26,15 +26,16 @@ public class HttpPipelineAsyncThread extends Thread
     // Amount of time in milliseconds this thread will wait before terminating
     static final int         WAIT_TIME = 5000;
 
+    private static int       _threadCount;
+
     HttpConnectionManager    _connectionManager;
 
     public HttpPipelineAsyncThread(HttpConnectionManager conMgr)
     {
         super();
         _connectionManager = conMgr;
-        _connectionManager._asyncThread = this;
         this.setDaemon(true);
-        setName("PipelineAsync");
+        setName("PipelineAsync" + _threadCount++);
     }
 
     public void run()
@@ -87,7 +88,7 @@ public class HttpPipelineAsyncThread extends Thread
         catch (InterruptedException e)
         {
             if (_connLog.isDebugEnabled())
-                _connLog.debug(this + " interrupted - exiting",e);
+                _connLog.debug(this + " interrupted - exiting", e);
         }
         catch (InterruptedIOException e)
         {
@@ -96,11 +97,11 @@ public class HttpPipelineAsyncThread extends Thread
         }
         finally
         {
-            synchronized (_connectionManager)
-            {
-                // Just terminate
-                _connectionManager.asyncThreadTerminated();
-            }
+            if (_connLog.isDebugEnabled())
+                _connLog.debug("terminating");
+
+            // Just terminate
+            _connectionManager.asyncThreadTerminated();
         }
     }
 }

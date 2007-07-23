@@ -37,7 +37,12 @@ public class PerfComparisonTest
     public static final String[] _locationUrls          = new String[] {
         "http://berlioz/oaklandsw-http/", //
         "http://repoman:8081/", //
-        "http://francisupton.com/"                     };
+        "http://67.121.125.19/oaklandsw-http/", //
+                                                        // "http://oaklandswint.page.us/oaklandsw-http/"
+                                                        // //
+                                                        // "http://francisupton.com/"
+                                                        // //
+                                                        };
 
     // Size x location
     // Don't use these limits for now
@@ -47,9 +52,9 @@ public class PerfComparisonTest
 
     // Size x location
     public static final int[][]  _sizeCounts            = new int[][] {
-        { 2000, 2000, 200 }, { 2000, 2000, 200 }, { 2000, 2000, 200 },
-        { 2000, 2000, 200 }, { 2000, 2000, 200 }, { 2000, 2000, 200 },
-        { 2000, 2000, 200 }, { 2000, 2000, 200 }, { 2000, 2000, 200 } };
+        { 4000, 2000, 200 }, { 4000, 2000, 200 }, { 4000, 2000, 200 },
+        { 4000, 2000, 200 }, { 4000, 2000, 200 }, { 4000, 2000, 200 },
+        { 4000, 2000, 200 }, { 4000, 2000, 200 }, { 4000, 2000, 200 } };
 
     // Product Pipe depths
     // Product x pipeline depth
@@ -89,7 +94,7 @@ public class PerfComparisonTest
     public int                   _currentThreads;
 
     public int                   _singleSize            = -1;
-    public int                   _singleLocation        = 2;
+    public int                   _singleLocation        = -1;
     public int                   _singleConnectionLimit = -1;
     public int                   _singleProduct         = -1;
 
@@ -202,7 +207,7 @@ public class PerfComparisonTest
 
     public void run(String args[]) throws Exception
     {
-        String dir = "/tmp/perf/";
+        String dir = "/home/francis/d/com.oaklandsw.http.tests/perfResults/";
 
         DateFormat df = new SimpleDateFormat("yyyyMMMdd-HHmm");
         File file = new File(dir + "run" + df.format(new Date()) + ".csv");
@@ -226,14 +231,10 @@ public class PerfComparisonTest
                     && _currentLocation != _singleLocation)
                     continue;
 
-                println("");
-
                 for (_currentSizeIndex = 0; _currentSizeIndex < _sizes.length; _currentSizeIndex++)
                 {
                     if (_singleSize != -1 && _currentSizeIndex != _singleSize)
                         continue;
-
-                    println("");
 
                     for (_currentProduct = 0; _currentProduct < TestPerf._impNames.length; _currentProduct++)
                     {

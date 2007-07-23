@@ -109,8 +109,7 @@ public class HttpTestBase extends com.oaklandsw.TestCaseBase
                 else
                     url = new URL(_url);
 
-                HttpURLConnection urlCon = (HttpURLConnection)url
-                        .openConnection();
+                HttpURLConnection urlCon = HttpURLConnection.openConnection(url);
 
                 // Turn off the timeout for the connection since the
                 // default timeout has been set in the main thread
@@ -131,6 +130,8 @@ public class HttpTestBase extends com.oaklandsw.TestCaseBase
         super.setUp();
 
         System.setProperty("java.protocol.handler.pkgs", "com.oaklandsw");
+
+        HttpURLConnection.resetGlobalState();
 
         HttpURLConnection.setDefaultUserAgent(new TestUserAgent());
 
@@ -159,19 +160,6 @@ public class HttpTestBase extends com.oaklandsw.TestCaseBase
 
         HttpURLConnectInternal._ignoreObservedMaxCount = false;
 
-        HttpURLConnection.setDefaultTimeout(0);
-        HttpURLConnection.setDefaultConnectionTimeout(0);
-        HttpURLConnection.setDefaultRequestTimeout(0);
-        HttpURLConnection.setDefaultAuthenticationType(0);
-        HttpURLConnection.setDefaultProxyAuthenticationType(0);
-        HttpURLConnection.setDefaultMaxTries(HttpURLConnection.MAX_TRIES);
-        HttpURLConnection.setDefaultPipelining(false);
-        HttpURLConnection.setDefaultConnectionRequestLimit();
-
-        HttpURLConnection.setDefaultIdleConnectionTimeout();
-        HttpURLConnection.setDefaultIdleConnectionPing();
-        HttpURLConnection
-                .setMaxConnectionsPerHost(HttpURLConnection.DEFAULT_MAX_CONNECTIONS);
         HttpURLConnection.closeAllPooledConnections();
     }
 
@@ -333,7 +321,7 @@ public class HttpTestBase extends com.oaklandsw.TestCaseBase
         URL url = new URL(_urlBase + ParamServlet.NAME);
         int response = 0;
 
-        HttpURLConnection urlCon = (HttpURLConnection)url.openConnection();
+        HttpURLConnection urlCon = HttpURLConnection.openConnection(url);
         urlCon.setRequestMethod("GET");
         urlCon.setRequestProperty(ParamServlet.HOST_IP_ADDRESS, "get");
         urlCon.connect();
@@ -369,7 +357,7 @@ public class HttpTestBase extends com.oaklandsw.TestCaseBase
         URL url = new URL(urlStr);
         int response = 0;
 
-        HttpURLConnection urlCon = (HttpURLConnection)url.openConnection();
+        HttpURLConnection urlCon = HttpURLConnection.openConnection(url);
         urlCon.setRequestMethod(methodType);
         urlCon.connect();
         response = urlCon.getResponseCode();
@@ -467,7 +455,7 @@ public class HttpTestBase extends com.oaklandsw.TestCaseBase
 
         // Bug 954 setProxyHost/setProxyPort had no effect
         URL url = new URL(_urlBase);
-        HttpURLConnection urlCon = (HttpURLConnection)url.openConnection();
+        HttpURLConnection urlCon = HttpURLConnection.openConnection(url);
         assertEquals(HttpTestEnv.TEST_PROXY_HOST, urlCon
                 .getConnectionProxyHost());
         assertEquals(HttpTestEnv.TEST_PROXY_PORT, urlCon

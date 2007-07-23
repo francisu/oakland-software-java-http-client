@@ -3,6 +3,7 @@
  */
 package com.oaklandsw.http;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -67,6 +68,7 @@ class ConnectionInfo
     // if we reconnect to the same host/port
     long                            _usedTime;
 
+    protected GlobalState           _globalState;
     protected HttpConnectionManager _connManager;
 
     ConnectionInfo(HttpConnectionManager connManager,
@@ -78,6 +80,7 @@ class ConnectionInfo
         _availableConnections = new ArrayBlockingQueue(START_SIZE);
         _assignedConnections = new ArrayList();
         _connManager = connManager;
+        _globalState = _connManager._globalState;
     }
 
     void addNewConnection(HttpConnection conn)
@@ -141,18 +144,19 @@ class ConnectionInfo
     // delinks the returned connection
     // Assumed to be synchronized on the HttpConnectionManager
     HttpConnection getMatchingConnection(HttpURLConnection urlCon)
+        throws InterruptedException
     {
         // Only pay attention to this option if there is a limit on the max
         // number of connections, for obvious reasons
         if ((urlCon._pipeliningOptions & HttpURLConnection.PIPE_MAX_CONNECTIONS) != 0
-            && _connManager._maxConns >= 0)
+            && _globalState._maxConns >= 0)
         {
-            if (getActiveConnectionCount() < _connManager._maxConns)
+            if (getActiveConnectionCount() < _globalState._maxConns)
             {
                 if (_log.isDebugEnabled())
                 {
                     _log.debug("getMatch - force new connection - limit: "
-                        + _connManager._maxConns);
+                        + _globalState._maxConns);
                 }
 
                 // Force it to create a connection
@@ -246,9 +250,51 @@ class ConnectionInfo
         return MATCHED;
     }
 
+    // Returns the limit of the number of urlCons we will put
+    // on this connection
+    int getPipelineConnectionLimit(HttpURLConnection urlCon)
+    {
+        int limit;
+
+        // Limit is either observed or specified by the user
+        if (urlCon._connectionRequestLimit == 0)
+        {
+            limit = _observedMaxUrlCons;
+        }
+        else if (_observedMaxUrlCons == 0)
+        {
+            limit = urlCon._connectionRequestLimit;
+        }
+        else
+        {
+            limit = Math.min(urlCon._connectionRequestLimit,
+                             _observedMaxUrlCons);
+        }
+        return limit;
+    }
+
+    // Called only for a pipelined connection to determine if
+    // it needs to flush for reasons related to to the total connection limit
+    // or the pipeline depth. This is called after the data has been
+    // written to the connection.
+    boolean needsFlush(HttpConnection conn, HttpURLConnection urlCon)
+    {
+        // User requested depth
+        if (urlCon._pipeliningMaxDepth > 0
+            && conn.getPipelinedUrlConCount() == urlCon._pipeliningMaxDepth)
+        {
+            return true;
+        }
+
+        if (getPipelineConnectionLimit(urlCon) == conn._totalReqUrlConCount)
+            return true;
+        return false;
+    }
+
     // See if this connection has a matching credential if required or
     // other criteria
     private boolean checkMatch(HttpConnection conn, HttpURLConnection urlCon)
+        throws InterruptedException
     {
         int matched = 0;
 
@@ -257,20 +303,7 @@ class ConnectionInfo
             int limit;
             if (urlCon.isPipelining())
             {
-                // Limit is either observed or specified by the user
-                if (urlCon._connectionRequestLimit == 0)
-                {
-                    limit = _observedMaxUrlCons;
-                }
-                else if (_observedMaxUrlCons == 0)
-                {
-                    limit = urlCon._connectionRequestLimit;
-                }
-                else
-                {
-                    limit = Math.min(urlCon._connectionRequestLimit,
-                                     _observedMaxUrlCons);
-                }
+                limit = getPipelineConnectionLimit(urlCon);
             }
             else
             {
@@ -410,8 +443,18 @@ class ConnectionInfo
         return _assignedConnections.size() + _availableConnections.size();
     }
 
+    void flushAllAvailConnections() throws IOException
+    {
+        Iterator it = _availableConnections.iterator();
+        while (it.hasNext())
+        {
+            HttpConnection conn = (HttpConnection)it.next();
+            conn.unconditionalFlush();
+        }
+    }
+
     // Assumed to be synchronized on the HttpConnectionManager
-    void closeAllConnections(boolean immediate)
+    void closeAllConnections(boolean immediate) throws InterruptedException
     {
         _connLog.debug("closeAllConnections - immediate: " + immediate);
 

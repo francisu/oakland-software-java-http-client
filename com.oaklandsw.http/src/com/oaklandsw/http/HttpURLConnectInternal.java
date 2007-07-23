@@ -506,7 +506,7 @@ public class HttpURLConnectInternal
         }
 
         // Add headers for HTTP 1.0 support
-        if (_use10KeepAlive && !_connectionCloseSent)
+        if (_globalState._use10KeepAlive && !_connectionCloseSent)
         {
             if (_connection.isProxied())
             {
@@ -1037,7 +1037,7 @@ public class HttpURLConnectInternal
         writeRequestHeaders();
         _conOutStream.write(Util.CRLF_BYTES);
         // No flush until we have written all we are going to write
-        
+
         if (useDummyAuthContent())
         {
             if (_authenticationDummyContent != null)
@@ -1153,7 +1153,7 @@ public class HttpURLConnectInternal
         // Nothing to write
         if (_contentLength == 0)
         {
-            _conOutStream.flush();
+            _connection.conditionalFlush(this);
             return true;
         }
 
@@ -1213,7 +1213,7 @@ public class HttpURLConnectInternal
             }
         }
 
-        _conOutStream.flush();
+        _connection.conditionalFlush(this);
         return true;
     }
 
@@ -1427,16 +1427,16 @@ public class HttpURLConnectInternal
                         // them considered for authentication
                         _respHeaders.clear();
 
-                        if (_retryInterval != 0)
+                        if (_globalState._retryInterval != 0)
                         {
                             try
                             {
                                 if (_connLog.isDebugEnabled())
                                 {
                                     _connLog.debug("Before retry sleep: "
-                                        + _retryInterval);
+                                        + _globalState._retryInterval);
                                 }
-                                Thread.sleep(_retryInterval);
+                                Thread.sleep(_globalState._retryInterval);
                             }
                             catch (InterruptedException ex)
                             {
@@ -1925,6 +1925,13 @@ public class HttpURLConnectInternal
     {
         _log.debug("execute");
 
+        if (_dead)
+        {
+            if (_connLog.isDebugEnabled())
+                _connLog.debug("execute - ignoring dead urlcon");
+            return;
+        }
+
         // Reset to the real method we want, this might have been changed
         // earlier during authentication
         _actualMethodPropsSent = _methodProperties;
@@ -2041,9 +2048,27 @@ public class HttpURLConnectInternal
             // already retried if possible
             if (_connLog.isDebugEnabled())
             {
-                _connLog.debug("processPipelineWrite "
-                    + "exception writing: "
-                    + ex);
+                _connLog.debug("processPipelineWrite " + "exception writing: ",
+                               ex);
+            }
+
+            // The write is not going to happen for this time (it may
+            // with a retry, but then the count will be incremented again
+            try
+            {
+                _connManager.urlConWasWritten(this);
+            }
+            catch (IOException e)
+            {
+                if (_connLog.isDebugEnabled())
+                {
+                    _connLog.debug("processPipelinedWrite: "
+                        + "IOException when recording write - ignoring", e);
+                }
+                // Ignore it, this was caused by a problem flushing
+                // something, possibly on an unrelated connection. The
+                // urlcon involved will get the appropriate exception
+                // it trie to read
             }
 
             // We got so far as to get a connection, we need to indicate
@@ -2068,31 +2093,21 @@ public class HttpURLConnectInternal
                 // Continue
             }
 
+            _dead = true;
+
+            // Tell the user what went wrong
+            callPipelineError(null, ex);
+
             // We are done with this urlcon
             if (_connLog.isDebugEnabled())
                 _connLog.debug("urlConWasRead (write error): " + this);
             if (_pipelineExpectBlock)
                 _connManager.urlConWasRead(_thread);
 
-            // Something is really wrong, blow out of here, so the main
-            // caller sees the problem
-            if (ex instanceof RuntimeException)
-            {
-                _connLog
-                        .warn("Unexpected RuntimeException, not calling callback: "
-                                  + this,
-                              ex);
-                throw (RuntimeException)ex;
-            }
-
             if (ex instanceof InterruptedIOException)
                 throw (InterruptedIOException)ex;
             if (ex instanceof InterruptedException)
                 throw (InterruptedException)ex;
-
-            // Tell the user what went wrong
-            _callback.error(this, null, ex);
-            return;
         }
     }
 
@@ -2162,12 +2177,17 @@ public class HttpURLConnectInternal
                     // Gets the input stream if we actually read
                     is = getResponseStream();
                 }
-                catch (InterruptedIOException iiex)
-                {
-                    throw iiex;
-                }
                 catch (IOException iex)
                 {
+                    // This represents an actual thread interrupt, since
+                    // this specific exception was thrown from below. Note
+                    // that this has to be the exact class because
+                    // there are exceptions that are a subclass
+                    // (SocketTimeoutException)
+                    // which should be treated as a normal IOException
+                    if (iex.getClass() == InterruptedIOException.class)
+                        throw (InterruptedIOException)iex;
+
                     // We are not reading during a retry
                     _pipelinedReading = false;
 
@@ -2204,7 +2224,7 @@ public class HttpURLConnectInternal
                     // Call the user
                     if (ex != null
                         || _responseCode >= HttpStatus.SC_REDIRECTION)
-                        _callback.error(this, is, ex);
+                        callPipelineError(is, ex);
                     else
                         _callback.readResponse(this, is);
 
@@ -2293,6 +2313,15 @@ public class HttpURLConnectInternal
         }
     }
 
+    protected void callPipelineError(InputStream is, Exception ex)
+    {
+        if (_connLog.isDebugEnabled())
+        {
+            _connLog.debug("pipeling error callback: " + this, ex);
+        }
+        _callback.error(this, is, ex);
+    }
+
     // Returns null if retry is possible, otherwise returns the exception to
     // throw
     protected Exception attemptPipelinedRetry(IOException iex)
@@ -2316,6 +2345,7 @@ public class HttpURLConnectInternal
             _ioException = null;
             _connManager.recordRetry(_connManager._pipelineReadRetryCounts,
                                      _tryCount);
+            _connManager.addUrlConToWrite(this);
             processPipelinedWrite();
             if (_connLog.isDebugEnabled())
             {
@@ -2369,12 +2399,15 @@ public class HttpURLConnectInternal
     }
 
     // Called when the streaming I/O is either done or if there
-    // was a problem.
+    // was a problem and it can never be done.
 
     static final boolean OK = true;
 
     void streamWriteFinished(boolean ok)
+        throws IOException,
+            InterruptedIOException
     {
+
         if (ok)
         {
             _log.debug("streaming write finished");
@@ -2383,13 +2416,28 @@ public class HttpURLConnectInternal
             {
                 try
                 {
+                    _connManager.urlConWasWritten(this);
+                }
+                catch (IOException ex)
+                {
+                    // We don't care about this, since this could apply to many
+                    // urlcons, so just continue and do the read. The exception
+                    // will show up in the read.
+                    _connManager
+                            .recordCount(HttpConnectionManager.COUNT_FLUSH_IO_ERRORS);
+                }
+
+                try
+                {
                     _connManager.enqueueWorkForConnection(this);
                 }
                 catch (InterruptedException e)
                 {
+                    _connLog.debug("streamWriteFinished - thread interrupted");
                     _dead = true;
-                    _connLog.warn("Thread interrupted", e);
-                    return;
+                    InterruptedIOException ex = new InterruptedIOException();
+                    ex.initCause(e);
+                    throw ex;
                 }
             }
         }
