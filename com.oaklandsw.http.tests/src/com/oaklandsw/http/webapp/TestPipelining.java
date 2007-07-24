@@ -1,6 +1,7 @@
 package com.oaklandsw.http.webapp;
 
 import java.io.InputStream;
+import java.io.InterruptedIOException;
 import java.io.OutputStream;
 import java.net.URL;
 import java.util.ArrayList;
@@ -290,16 +291,14 @@ public class TestPipelining extends TestWebappBase
         HttpURLConnection.dumpAll();
 
     }
-    // REMOVEME
-/*
     
     public void testShutdown2Base() throws Exception
     {
-        LogUtils.logFile("/home/francis/log4jshutdown.txt");
+        //LogUtils.logFile("/home/francis/log4jshutdown.txt");
 
         _failed = false;
         // Run this a few times and make sure everything is OK
-        for (int i = 1; i <= 10; i++)
+        for (int i = 1; i <= 5; i++)
         {
             Runnable run = new Runnable()
             {
@@ -334,7 +333,7 @@ public class TestPipelining extends TestWebappBase
             t.interrupt();
             _pt._stop = true;
             // Wait for it to die
-            Thread.sleep(500);
+            Thread.sleep(100);
 
             HttpURLConnection.immediateShutdown();
             HttpURLConnection.getConnectionManager().checkEverythingEmpty();
@@ -356,10 +355,10 @@ public class TestPipelining extends TestWebappBase
         for (int i = 0; i < 5; i++)
         {
             testShutdown2Base();
-            Thread.sleep(500);
+            Thread.sleep(50);
         }
     }
-**/
+
     public void testSimple100() throws Exception
     {
         if (_logging)

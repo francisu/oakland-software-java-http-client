@@ -9,7 +9,6 @@ package com.oaklandsw.http;
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.FilterInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InterruptedIOException;
@@ -22,7 +21,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import javax.net.ssl.SSLPeerUnverifiedException;
-import javax.net.ssl.SSLSession;
 import javax.net.ssl.SSLSocketFactory;
 
 import org.apache.commons.logging.Log;
@@ -163,220 +161,217 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
         Util14Controller._dontLoad14 = true;
     }
 
-    private static final Log               _log                                 = LogUtils
-                                                                                        .makeLogger();
+    private static final Log           _log                                 = LogUtils
+                                                                                    .makeLogger();
 
-    public static final String             HTTP_METHOD_GET                      = "GET";
-    public static final String             HTTP_METHOD_POST                     = "POST";
-    public static final String             HTTP_METHOD_PUT                      = "PUT";
-    public static final String             HTTP_METHOD_OPTIONS                  = "OPTIONS";
-    public static final String             HTTP_METHOD_DELETE                   = "DELETE";
-    public static final String             HTTP_METHOD_HEAD                     = "HEAD";
-    public static final String             HTTP_METHOD_TRACE                    = "TRACE";
-    public static final String             HTTP_METHOD_CONNECT                  = "CONNECT";
+    public static final String         HTTP_METHOD_GET                      = "GET";
+    public static final String         HTTP_METHOD_POST                     = "POST";
+    public static final String         HTTP_METHOD_PUT                      = "PUT";
+    public static final String         HTTP_METHOD_OPTIONS                  = "OPTIONS";
+    public static final String         HTTP_METHOD_DELETE                   = "DELETE";
+    public static final String         HTTP_METHOD_HEAD                     = "HEAD";
+    public static final String         HTTP_METHOD_TRACE                    = "TRACE";
+    public static final String         HTTP_METHOD_CONNECT                  = "CONNECT";
 
-    public static final String             WEBDAV_METHOD_PROPFIND               = "PROPFIND";
-    public static final String             WEBDAV_METHOD_PROPPATCH              = "PROPPATCH";
-    public static final String             WEBDAV_METHOD_MKCOL                  = "MKCOL";
-    public static final String             WEBDAV_METHOD_COPY                   = "COPY";
-    public static final String             WEBDAV_METHOD_MOVE                   = "MOVE";
-    public static final String             WEBDAV_METHOD_DELETE                 = "DELETE";
-    public static final String             WEBDAV_METHOD_LOCK                   = "LOCK";
-    public static final String             WEBDAV_METHOD_UNLOCK                 = "UNLOCK";
+    public static final String         WEBDAV_METHOD_PROPFIND               = "PROPFIND";
+    public static final String         WEBDAV_METHOD_PROPPATCH              = "PROPPATCH";
+    public static final String         WEBDAV_METHOD_MKCOL                  = "MKCOL";
+    public static final String         WEBDAV_METHOD_COPY                   = "COPY";
+    public static final String         WEBDAV_METHOD_MOVE                   = "MOVE";
+    public static final String         WEBDAV_METHOD_DELETE                 = "DELETE";
+    public static final String         WEBDAV_METHOD_LOCK                   = "LOCK";
+    public static final String         WEBDAV_METHOD_UNLOCK                 = "UNLOCK";
 
-    public static final String             WEBDAV_METHOD_SEARCH                 = "SEARCH";
-    public static final String             WEBDAV_METHOD_VERSION_CONTROL        = "VERSION-CONTROL";
-    public static final String             WEBDAV_METHOD_BASELINE_CONTROL       = "BASELINE-CONTROL";
-    public static final String             WEBDAV_METHOD_REPORT                 = "REPORT";
-    public static final String             WEBDAV_METHOD_CHECKOUT               = "CHECKOUT";
-    public static final String             WEBDAV_METHOD_CHECKIN                = "CHECKIN";
-    public static final String             WEBDAV_METHOD_UNCHECKOUT             = "UNCHECKOUT";
-    public static final String             WEBDAV_METHOD_MKWORKSPACE            = "MKWORKSPACE";
-    public static final String             WEBDAV_METHOD_MERGE                  = "MERGE";
-    public static final String             WEBDAV_METHOD_UPDATE                 = "UPDATE";
-    public static final String             WEBDAV_METHOD_ACL                    = "ACL";
+    public static final String         WEBDAV_METHOD_SEARCH                 = "SEARCH";
+    public static final String         WEBDAV_METHOD_VERSION_CONTROL        = "VERSION-CONTROL";
+    public static final String         WEBDAV_METHOD_BASELINE_CONTROL       = "BASELINE-CONTROL";
+    public static final String         WEBDAV_METHOD_REPORT                 = "REPORT";
+    public static final String         WEBDAV_METHOD_CHECKOUT               = "CHECKOUT";
+    public static final String         WEBDAV_METHOD_CHECKIN                = "CHECKIN";
+    public static final String         WEBDAV_METHOD_UNCHECKOUT             = "UNCHECKOUT";
+    public static final String         WEBDAV_METHOD_MKWORKSPACE            = "MKWORKSPACE";
+    public static final String         WEBDAV_METHOD_MERGE                  = "MERGE";
+    public static final String         WEBDAV_METHOD_UPDATE                 = "UPDATE";
+    public static final String         WEBDAV_METHOD_ACL                    = "ACL";
 
     /**
      * This method will be retried automatically.
      */
-    public static final int                METHOD_PROP_RETRY                    = 0x0001;
+    public static final int            METHOD_PROP_RETRY                    = 0x0001;
 
     /**
      * This method will follow redirects.
      */
-    public static final int                METHOD_PROP_REDIRECT                 = 0x0002;
+    public static final int            METHOD_PROP_REDIRECT                 = 0x0002;
 
     /**
      * This is used for an HTTP GET method. If a GET method was specified, and
      * getOutputStream() is subsequently called, this changes the method to a
      * POST method. This is for JDK compatibility.
      */
-    public static final int                METHOD_PROP_SWITCH_TO_POST           = 0x0004;
+    public static final int            METHOD_PROP_SWITCH_TO_POST           = 0x0004;
 
     /**
      * Add the content-length header if not already specified. Used for the POST
      * and PUT methods.
      */
-    public static final int                METHOD_PROP_ADD_CL_HEADER            = 0x0008;
+    public static final int            METHOD_PROP_ADD_CL_HEADER            = 0x0008;
 
     /**
      * The response body is ignored. Used for the HEAD method.
      */
-    public static final int                METHOD_PROP_IGNORE_RESPONSE_BODY     = 0x0010;
+    public static final int            METHOD_PROP_IGNORE_RESPONSE_BODY     = 0x0010;
 
     /**
      * The request line has a URL (most HTTP methods)
      */
-    public static final int                METHOD_PROP_REQ_LINE_URL             = 0x0020;
+    public static final int            METHOD_PROP_REQ_LINE_URL             = 0x0020;
 
     /**
      * The request line consists of only a "*" (for OPTIONS)
      */
-    public static final int                METHOD_PROP_REQ_LINE_STAR            = 0x0040;
+    public static final int            METHOD_PROP_REQ_LINE_STAR            = 0x0040;
 
     /**
      * The request line has only the host/port (CONNECT)
      */
-    public static final int                METHOD_PROP_REQ_LINE_HOST_PORT       = 0x0080;
+    public static final int            METHOD_PROP_REQ_LINE_HOST_PORT       = 0x0080;
 
     /**
      * The content length value is calculated (for potentially adding a
      * content-length header) (POST/PUT).
      */
-    public static final int                METHOD_PROP_CALCULATE_CONTENT_LEN    = 0x0100;
+    public static final int            METHOD_PROP_CALCULATE_CONTENT_LEN    = 0x0100;
 
     /**
      * A content-type header is automatically added (PUT). This is only used is
      * the METHOD_PROP_CALCULATE_CONTENT_LEN is also set.
      */
-    public static final int                METHOD_PROP_SEND_CONTENT_TYPE        = 0x0200;
+    public static final int            METHOD_PROP_SEND_CONTENT_TYPE        = 0x0200;
 
     /**
      * The connection is left open for this method (CONNECT)
      */
-    public static final int                METHOD_PROP_LEAVE_OPEN               = 0x0400;
+    public static final int            METHOD_PROP_LEAVE_OPEN               = 0x0400;
 
     /**
      * This is what the method properties are set to initially, this value
      * indicates no method was specified. If this is the case, then the GET
      * method is assumed.
      */
-    public static final int                METHOD_PROP_UNSPECIFIED_METHOD       = 0x10000;
+    public static final int            METHOD_PROP_UNSPECIFIED_METHOD       = 0x10000;
 
     /**
      * A method was specified, but is not known (in the table of methods)
      */
-    public static final int                METHOD_PROP_UNKNOWN_METHOD           = 0x20000;
+    public static final int            METHOD_PROP_UNKNOWN_METHOD           = 0x20000;
 
-    static final String                    PROP_PROXY_HOST                      = "http.proxyHost";
-    static final String                    PROP_PROXY_PORT                      = "http.proxyPort";
-    static final String                    PROP_PROXY_USER                      = "http.proxyUser";
-    static final String                    PROP_PROXY_PASSWORD                  = "http.proxyPassword";
-    static final String                    PROP_SKIP_ENVIRONMENT_INIT           = "com.oaklandsw.http.skipEnvironmentInit";
+    static final String                PROP_PROXY_HOST                      = "http.proxyHost";
+    static final String                PROP_PROXY_PORT                      = "http.proxyPort";
+    static final String                PROP_PROXY_USER                      = "http.proxyUser";
+    static final String                PROP_PROXY_PASSWORD                  = "http.proxyPassword";
+    static final String                PROP_SKIP_ENVIRONMENT_INIT           = "com.oaklandsw.http.skipEnvironmentInit";
 
-    static final String                    HDR_USER_AGENT                       = "User-Agent";
-    static final String                    HDR_CONTENT_LENGTH                   = "Content-Length";
-    static final String                    HDR_CONTENT_TYPE                     = "Content-Type";
-    static final String                    HDR_HOST                             = "Host";
-    static final String                    HDR_TRANSFER_ENCODING                = "Transfer-Encoding";
-    static final String                    HDR_LOCATION                         = "Location";
-    static final String                    HDR_EXPECT                           = "Expect";
-    static final String                    HDR_CONNECTION                       = "Connection";
-    static final String                    HDR_COOKIE                           = "Cookie";
-    static final String                    HDR_SET_COOKIE                       = "Set-Cookie";
-    static final String                    HDR_SET_COOKIE2                      = "Set-Cookie2";
-    static final String                    HDR_PROXY_CONNECTION                 = "Proxy-Connection";
-    static final String                    HDR_SEQUENCE                         = "Sequence";
+    static final String                HDR_USER_AGENT                       = "User-Agent";
+    static final String                HDR_CONTENT_LENGTH                   = "Content-Length";
+    static final String                HDR_CONTENT_TYPE                     = "Content-Type";
+    static final String                HDR_HOST                             = "Host";
+    static final String                HDR_TRANSFER_ENCODING                = "Transfer-Encoding";
+    static final String                HDR_LOCATION                         = "Location";
+    static final String                HDR_EXPECT                           = "Expect";
+    static final String                HDR_CONNECTION                       = "Connection";
+    static final String                HDR_COOKIE                           = "Cookie";
+    static final String                HDR_SET_COOKIE                       = "Set-Cookie";
+    static final String                HDR_SET_COOKIE2                      = "Set-Cookie2";
+    static final String                HDR_PROXY_CONNECTION                 = "Proxy-Connection";
+    static final String                HDR_SEQUENCE                         = "Sequence";
 
-    static final byte[]                    HDR_USER_AGENT_BYTES                 = HDR_USER_AGENT
-                                                                                        .getBytes();
-    static final byte[]                    HDR_CONTENT_LENGTH_BYTES             = HDR_CONTENT_LENGTH
-                                                                                        .getBytes();
-    static final byte[]                    HDR_CONTENT_TYPE_BYTES               = HDR_CONTENT_TYPE
-                                                                                        .getBytes();
-    static final byte[]                    HDR_HOST_BYTES                       = HDR_HOST
-                                                                                        .getBytes();
-    static final byte[]                    HDR_TRANSFER_ENCODING_BYTES          = HDR_TRANSFER_ENCODING
-                                                                                        .getBytes();
-    static final byte[]                    HDR_LOCATION_BYTES                   = HDR_LOCATION
-                                                                                        .getBytes();
-    static final byte[]                    HDR_EXPECT_BYTES                     = HDR_EXPECT
-                                                                                        .getBytes();
-    static final byte[]                    HDR_CONNECTION_BYTES                 = HDR_CONNECTION
-                                                                                        .getBytes();
-    static final byte[]                    HDR_COOKIE_BYTES                     = HDR_COOKIE
-                                                                                        .getBytes();
-    static final byte[]                    HDR_SET_COOKIE_BYTES                 = HDR_SET_COOKIE
-                                                                                        .getBytes();
-    static final byte[]                    HDR_SET_COOKIE2_BYTES                = HDR_SET_COOKIE2
-                                                                                        .getBytes();
-    static final byte[]                    HDR_PROXY_CONNECTION_BYTES           = HDR_PROXY_CONNECTION
-                                                                                        .getBytes();
-    static final byte[]                    HDR_SEQUENCE_BYTES                   = HDR_SEQUENCE
-                                                                                        .getBytes();
+    static final byte[]                HDR_USER_AGENT_BYTES                 = HDR_USER_AGENT
+                                                                                    .getBytes();
+    static final byte[]                HDR_CONTENT_LENGTH_BYTES             = HDR_CONTENT_LENGTH
+                                                                                    .getBytes();
+    static final byte[]                HDR_CONTENT_TYPE_BYTES               = HDR_CONTENT_TYPE
+                                                                                    .getBytes();
+    static final byte[]                HDR_HOST_BYTES                       = HDR_HOST
+                                                                                    .getBytes();
+    static final byte[]                HDR_TRANSFER_ENCODING_BYTES          = HDR_TRANSFER_ENCODING
+                                                                                    .getBytes();
+    static final byte[]                HDR_LOCATION_BYTES                   = HDR_LOCATION
+                                                                                    .getBytes();
+    static final byte[]                HDR_EXPECT_BYTES                     = HDR_EXPECT
+                                                                                    .getBytes();
+    static final byte[]                HDR_CONNECTION_BYTES                 = HDR_CONNECTION
+                                                                                    .getBytes();
+    static final byte[]                HDR_COOKIE_BYTES                     = HDR_COOKIE
+                                                                                    .getBytes();
+    static final byte[]                HDR_SET_COOKIE_BYTES                 = HDR_SET_COOKIE
+                                                                                    .getBytes();
+    static final byte[]                HDR_SET_COOKIE2_BYTES                = HDR_SET_COOKIE2
+                                                                                    .getBytes();
+    static final byte[]                HDR_PROXY_CONNECTION_BYTES           = HDR_PROXY_CONNECTION
+                                                                                    .getBytes();
+    static final byte[]                HDR_SEQUENCE_BYTES                   = HDR_SEQUENCE
+                                                                                    .getBytes();
 
-    static final byte[]                    HDR_USER_AGENT_LC                    = HDR_USER_AGENT
-                                                                                        .toLowerCase()
-                                                                                        .getBytes();
-    static final byte[]                    HDR_CONTENT_LENGTH_LC                = HDR_CONTENT_LENGTH
-                                                                                        .toLowerCase()
-                                                                                        .getBytes();
-    static final byte[]                    HDR_CONTENT_TYPE_LC                  = HDR_CONTENT_TYPE
-                                                                                        .toLowerCase()
-                                                                                        .getBytes();
-    static final byte[]                    HDR_HOST_LC                          = HDR_HOST
-                                                                                        .toLowerCase()
-                                                                                        .getBytes();
-    static final byte[]                    HDR_TRANSFER_ENCODING_LC             = HDR_TRANSFER_ENCODING
-                                                                                        .toLowerCase()
-                                                                                        .getBytes();
-    static final byte[]                    HDR_LOCATION_LC                      = HDR_LOCATION
-                                                                                        .toLowerCase()
-                                                                                        .getBytes();
-    static final byte[]                    HDR_EXPECT_LC                        = HDR_EXPECT
-                                                                                        .toLowerCase()
-                                                                                        .getBytes();
-    static final byte[]                    HDR_CONNECTION_LC                    = HDR_CONNECTION
-                                                                                        .toLowerCase()
-                                                                                        .getBytes();
-    static final byte[]                    HDR_COOKIE_LC                        = HDR_COOKIE
-                                                                                        .toLowerCase()
-                                                                                        .getBytes();
-    static final byte[]                    HDR_SET_COOKIE_LC                    = HDR_SET_COOKIE
-                                                                                        .toLowerCase()
-                                                                                        .getBytes();
-    static final byte[]                    HDR_SET_COOKIE2_LC                   = HDR_SET_COOKIE2
-                                                                                        .toLowerCase()
-                                                                                        .getBytes();
-    static final byte[]                    HDR_PROXY_CONNECTION_LC              = HDR_PROXY_CONNECTION
-                                                                                        .toLowerCase()
-                                                                                        .getBytes();
-    static final byte[]                    HDR_SEQUENCE_LC                      = HDR_SEQUENCE
-                                                                                        .toLowerCase()
-                                                                                        .getBytes();
+    static final byte[]                HDR_USER_AGENT_LC                    = HDR_USER_AGENT
+                                                                                    .toLowerCase()
+                                                                                    .getBytes();
+    static final byte[]                HDR_CONTENT_LENGTH_LC                = HDR_CONTENT_LENGTH
+                                                                                    .toLowerCase()
+                                                                                    .getBytes();
+    static final byte[]                HDR_CONTENT_TYPE_LC                  = HDR_CONTENT_TYPE
+                                                                                    .toLowerCase()
+                                                                                    .getBytes();
+    static final byte[]                HDR_HOST_LC                          = HDR_HOST
+                                                                                    .toLowerCase()
+                                                                                    .getBytes();
+    static final byte[]                HDR_TRANSFER_ENCODING_LC             = HDR_TRANSFER_ENCODING
+                                                                                    .toLowerCase()
+                                                                                    .getBytes();
+    static final byte[]                HDR_LOCATION_LC                      = HDR_LOCATION
+                                                                                    .toLowerCase()
+                                                                                    .getBytes();
+    static final byte[]                HDR_EXPECT_LC                        = HDR_EXPECT
+                                                                                    .toLowerCase()
+                                                                                    .getBytes();
+    static final byte[]                HDR_CONNECTION_LC                    = HDR_CONNECTION
+                                                                                    .toLowerCase()
+                                                                                    .getBytes();
+    static final byte[]                HDR_COOKIE_LC                        = HDR_COOKIE
+                                                                                    .toLowerCase()
+                                                                                    .getBytes();
+    static final byte[]                HDR_SET_COOKIE_LC                    = HDR_SET_COOKIE
+                                                                                    .toLowerCase()
+                                                                                    .getBytes();
+    static final byte[]                HDR_SET_COOKIE2_LC                   = HDR_SET_COOKIE2
+                                                                                    .toLowerCase()
+                                                                                    .getBytes();
+    static final byte[]                HDR_PROXY_CONNECTION_LC              = HDR_PROXY_CONNECTION
+                                                                                    .toLowerCase()
+                                                                                    .getBytes();
+    static final byte[]                HDR_SEQUENCE_LC                      = HDR_SEQUENCE
+                                                                                    .toLowerCase()
+                                                                                    .getBytes();
 
-    static final String                    HDR_VALUE_KEEP_ALIVE                 = "keep-alive";
-    static final String                    HDR_VALUE_CLOSE                      = "close";
-    static final String                    HDR_VALUE_CHUNKED                    = "chunked";
-    static final String                    HDR_VALUE_DEFAULT_CONTENT_TYPE       = "application/x-www-form-urlencoded";
+    static final String                HDR_VALUE_KEEP_ALIVE                 = "keep-alive";
+    static final String                HDR_VALUE_CLOSE                      = "close";
+    static final String                HDR_VALUE_CHUNKED                    = "chunked";
+    static final String                HDR_VALUE_DEFAULT_CONTENT_TYPE       = "application/x-www-form-urlencoded";
 
-    static final byte[]                    HDR_VALUE_KEEP_ALIVE_BYTES           = HDR_VALUE_KEEP_ALIVE
-                                                                                        .getBytes();
-    static final byte[]                    HDR_VALUE_CLOSE_BYTES                = HDR_VALUE_CLOSE
-                                                                                        .getBytes();
-    static final byte[]                    HDR_VALUE_CHUNKED_BYTES              = HDR_VALUE_CHUNKED
-                                                                                        .getBytes();
-    static final byte[]                    HDR_VALUE_DEFAULT_CONTENT_TYPE_BYTES = HDR_VALUE_DEFAULT_CONTENT_TYPE
-                                                                                        .getBytes();
+    static final byte[]                HDR_VALUE_KEEP_ALIVE_BYTES           = HDR_VALUE_KEEP_ALIVE
+                                                                                    .getBytes();
+    static final byte[]                HDR_VALUE_CLOSE_BYTES                = HDR_VALUE_CLOSE
+                                                                                    .getBytes();
+    static final byte[]                HDR_VALUE_CHUNKED_BYTES              = HDR_VALUE_CHUNKED
+                                                                                    .getBytes();
+    static final byte[]                HDR_VALUE_DEFAULT_CONTENT_TYPE_BYTES = HDR_VALUE_DEFAULT_CONTENT_TYPE
+                                                                                    .getBytes();
 
-    public static final int                NTLM_ENCODING_UNICODE                = 1;
-    public static final int                NTLM_ENCODING_OEM                    = 2;
-
-    // Can be reset
-    protected static HttpConnectionManager _connManager;
+    public static final int            NTLM_ENCODING_UNICODE                = 1;
+    public static final int            NTLM_ENCODING_OEM                    = 2;
 
     // Created only once; stores all of the user's persistent parameters
-    protected static GlobalState           _globalState;
+    protected static GlobalState       _globalState;
 
     /**
      * This is a heuristic to prevent a programming problem. If you create a
@@ -390,135 +385,137 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
      * connection wait times out, there is a good chance it's a programming
      * error, so we give a message with that information.
      */
-    static boolean                         _urlConReleased;
+    static boolean                     _urlConReleased;
+
+    protected HttpConnectionManager    _connManager;
 
     // Stores the properties associated with each method
     // K(Method name) V(Method property)
-    protected static Map                   _methodPropertyMap;
+    protected static Map               _methodPropertyMap;
 
-    protected int                          _methodProperties;
+    protected int                      _methodProperties;
 
     /**
      * The properties for the actual method sent; the method may be different
      * than the requested method during NTLM authentication.
      */
-    protected int                          _actualMethodPropsSent;
+    protected int                      _actualMethodPropsSent;
 
-    protected boolean                      _followRedirects;
+    protected boolean                  _followRedirects;
 
     /** Whether or not I should automatically processs authentication. */
-    protected boolean                      _doAuthentication                    = true;
+    protected boolean                  _doAuthentication                    = true;
 
-    protected boolean                      _executing;
+    protected boolean                  _executing;
 
-    protected Headers                      _reqHeaders;
-    protected Headers                      _respHeaders;
-    protected Headers                      _respFooters;
+    protected Headers                  _reqHeaders;
+    protected Headers                  _respHeaders;
+    protected Headers                  _respFooters;
 
-    protected String                       _urlString;
+    protected String                   _urlString;
 
     // The output stream contains the data to be submitted on the HTTP request,
     // this could be a ByteArrayOutputStream, or for the streaming case
     // one of the Streaming* streams
-    protected OutputStream                 _outStream;
+    protected OutputStream             _outStream;
 
-    protected HttpConnection               _connection;
+    protected HttpConnection           _connection;
 
     // The streams associated with the connection we are bound to
-    protected ExposedBufferInputStream     _conInStream;
-    protected BufferedOutputStream         _conOutStream;
+    protected ExposedBufferInputStream _conInStream;
+    protected BufferedOutputStream     _conOutStream;
 
     // The connection should be released when finished. This is
     // not the case for a CONNECT request
-    protected boolean                      _releaseConnection;
+    protected boolean                  _releaseConnection;
 
     // The actual count of tries, per destination, this is reset
     // on a redirect or when authentication is required
-    protected int                          _tryCount;
+    protected int                      _tryCount;
 
     // The number of times this request has been retried due
     // to redirection or authentication
-    protected int                          _forwardAuthCount;
+    protected int                      _forwardAuthCount;
 
     // This is the stream from which the resonse is read
-    protected InputStream                  _responseStream;
+    protected InputStream              _responseStream;
 
     // Indicates there is no data in the response (for whatever reason)
     // this allows the connection to be released immediately
     // of waiting for the getInputStream().close()
-    protected boolean                      _responseIsEmpty;
+    protected boolean                  _responseIsEmpty;
 
-    protected static final int             MAX_RESPONSE_TEXT                    = 120;
+    protected static final int         MAX_RESPONSE_TEXT                    = 120;
 
     // This is populated as soon as the response code is known
-    protected int                          _responseCode;
+    protected int                      _responseCode;
 
     // Where the response text is initially stored
-    protected byte[]                       _responseTextBytes                   = new byte[MAX_RESPONSE_TEXT];
+    protected byte[]                   _responseTextBytes                   = new byte[MAX_RESPONSE_TEXT];
 
     // Actual length of the response text in bytes
-    protected int                          _responseTextLength;
+    protected int                      _responseTextLength;
 
-    protected HttpUserAgent                _userAgent;
+    protected HttpUserAgent            _userAgent;
 
     // The request has been sent, but we have not done the read for the reply.
     // This is the state we are in when streaming and the user just
     // called getOutputStream(). This is used only for streaming mode and
     // pipelined mode
-    protected boolean                      _requestSent;
+    protected boolean                  _requestSent;
 
     // The response headers have been read and can be processed
-    protected boolean                      _responseHeadersRead;
+    protected boolean                  _responseHeadersRead;
 
     // The user has completed their streaming writing and closed the
     // output stream
-    protected boolean                      _streamingWritingFinished;
+    protected boolean                  _streamingWritingFinished;
 
     // It is expected that pipelineBlock() will be called to block for
     // the completion of this urlcon.
-    protected boolean                      _pipelineExpectBlock;
+    protected boolean                  _pipelineExpectBlock;
 
     // The request has been sent and the reply received
-    protected boolean                      _executed;
+    protected boolean                  _executed;
 
     // This has been queued by the pipeline mechanism to write, so it
     // occupies an outstandingWrite count in the connection manager
-    boolean                                _pipelineQueuedForWrite;
+    boolean                            _pipelineQueuedForWrite;
 
     // If the connection died due to an I/O exception, it is recorded here.
     // If getResponseCode() is called after the connection is dead and we
     // threw somewhere else, we need to throw this same exception
-    protected IOException                  _ioException;
+    protected IOException              _ioException;
 
     // The request has failed
-    protected boolean                      _dead;
+    protected boolean                  _dead;
 
-    protected static final int             BAD_CONTENT_LENGTH                   = -2;
-    protected static final int             UNINIT_CONTENT_LENGTH                = -1;
+    protected static final int         BAD_CONTENT_LENGTH                   = -2;
+    protected static final int         UNINIT_CONTENT_LENGTH                = -1;
 
-    protected int                          _contentLength;
+    protected int                      _contentLength;
 
-    protected boolean                      _hasContentLengthHeader;
+    protected boolean                  _hasContentLengthHeader;
 
-    protected static final int             DEFAULT_CHUNK_LEN                    = 4096;
+    protected static final int         DEFAULT_CHUNK_LEN                    = 4096;
 
     // Enables streaming (no buffering) the request with chunked encoding. -1 if
     // this is disabled.
-    protected boolean                      _streamingChunked;
+    protected boolean                  _streamingChunked;
 
     // Enables streaming the request in one fixed block
-    protected int                          _streamingFixedLen                   = -1;
+    protected int                      _streamingFixedLen                   = -1;
 
     // If the "Expect" request header is present
-    protected boolean                      _expectContinue;
+    protected boolean                  _expectContinue;
 
     // From RFC 2616 section 8.1.4
-    public static int                      DEFAULT_MAX_CONNECTIONS              = GlobalState.DEFAULT_MAX_CONNECTIONS;
+    public static int                  DEFAULT_MAX_CONNECTIONS              = GlobalState.DEFAULT_MAX_CONNECTIONS;
 
-    protected Callback                     _callback;
+    protected Callback                 _callback;
 
-    protected int                          _connectionTimeout;
-    protected int                          _requestTimeout;
+    protected int                      _connectionTimeout;
+    protected int                      _requestTimeout;
 
     /**
      * Used during NTLM authentication during streaming to provide content for
@@ -526,19 +523,19 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
      * authentication process. This allows authentication to proceed with
      * streaming. If this is not specified, an empty message is sent.
      */
-    protected String                       _authenticationDummyContent;
+    protected String                   _authenticationDummyContent;
 
     /**
      * The method used to send this content (see above).
      */
-    protected String                       _authenticationDummyMethod;
+    protected String                   _authenticationDummyMethod;
 
-    public static final int                PIPE_NONE                            = 0x00;
+    public static final int            PIPE_NONE                            = 0x00;
 
     /**
      * Use pipelining
      */
-    public static final int                PIPE_PIPELINE                        = 0x01;
+    public static final int            PIPE_PIPELINE                        = 0x01;
 
     /**
      * Use as many connections as possible (up to the maximum number of
@@ -546,89 +543,69 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
      * connections evenly. If this is not set, a single connection will be used
      * for all requests.
      */
-    public static final int                PIPE_MAX_CONNECTIONS                 = 0x02;
+    public static final int            PIPE_MAX_CONNECTIONS                 = 0x02;
 
-    public static final int                PIPE_STANDARD_OPTIONS                = PIPE_PIPELINE
-                                                                                    | PIPE_MAX_CONNECTIONS;
-    int                                    _pipeliningOptions;
+    public static final int            PIPE_STANDARD_OPTIONS                = PIPE_PIPELINE
+                                                                                | PIPE_MAX_CONNECTIONS;
+    int                                _pipeliningOptions;
 
     /**
      * The maximum number of simitaneous requests that can be outstanding on a
      * pipelined connection. If this is zero, then the number is unlimited.
      */
-    int                                    _pipeliningMaxDepth;
+    int                                _pipeliningMaxDepth;
 
-    protected String                       _proxyHost;
-    protected int                          _proxyPort;
-    protected String                       _proxyUser;
-    protected String                       _proxyPassword;
+    protected String                   _proxyHost;
+    protected int                      _proxyPort;
+    protected String                   _proxyUser;
+    protected String                   _proxyPassword;
 
-    protected int                          _idleTimeout;
+    protected int                      _idleTimeout;
 
-    protected int                          _idlePing;
+    protected int                      _idlePing;
 
-    protected int                          _connectionRequestLimit;
+    protected int                      _connectionRequestLimit;
 
-    public static int                      MAX_TRIES                            = GlobalState.MAX_TRIES;
-    protected int                          _maxTries;
+    public static int                  MAX_TRIES                            = GlobalState.MAX_TRIES;
+    protected int                      _maxTries;
 
-    protected int[]                        _authenticationType                  = new int[AUTH_PROXY + 1];
+    protected int[]                    _authenticationType                  = new int[AUTH_PROXY + 1];
 
-    // Indicates some form of the SSL libraries are available
-    public static boolean                  _isSSLAvailable;
+    protected SSLSocketFactory         _sslSocketFactory;
 
-    // We use reflection for this since we need to support the JSSE libraries
-    // that don't include this class, we compile on JDK 1.2
-    static Class                           _hostnameVerifierClass;
-    static Class                           _sslSessionClass;
+    protected HostnameVerifier         _hostnameVerifier;
 
-    static Method                          _hostnameVerifierMethod;
-    static Method                          _sslGetLocalCertMethod;
-    static Method                          _sslGetServerCertMethod;
+    protected CookieContainer          _cookieContainer;
 
-    protected SSLSocketFactory             _sslSocketFactory;
-
-    protected HostnameVerifier             _hostnameVerifier;
-
-    protected CookieContainer              _cookieContainer;
-
-    protected CookieSpec                   _cookieSpec;
+    protected CookieSpec               _cookieSpec;
 
     // Use HTTP 1.1?
-    protected boolean                      _http11                              = true;
+    protected boolean                  _http11                              = true;
 
     // Based on the response headers should the connection be closed?
-    protected boolean                      _shouldClose;
+    protected boolean                  _shouldClose;
 
-    private static boolean                 _inLicenseCheck;
+    private static boolean             _inLicenseCheck;
 
-    private static boolean                 _inInit;
+    private static boolean             _inInit;
 
     // Used only for testing purposes
-    private static URL                     _testURL;
+    private static URL                 _testURL;
 
     // Indexes into the arrays that distinguish normal or proxy
-    static final int                       AUTH_NORMAL                          = 0;
-    static final int                       AUTH_PROXY                           = 1;
+    static final int                   AUTH_NORMAL                          = 0;
+    static final int                   AUTH_PROXY                           = 1;
 
-    protected static byte[]                USER_AGENT;
+    protected static byte[]            USER_AGENT;
 
     // This userAgent string is necessary for NTLM/IIS
-    public static String                   DEFAULT_USER_AGENT                   = "oaklandsoftware-HttpClient/"
-                                                                                    + Version.VERSION
-                                                                                    + " Mozilla/4.0 (compatible; "
-                                                                                    + "MSIE 6.0; Windows NT 5.0)";
+    public static String               DEFAULT_USER_AGENT                   = "oaklandsoftware-HttpClient/"
+                                                                                + Version.VERSION
+                                                                                + " Mozilla/4.0 (compatible; "
+                                                                                + "MSIE 6.0; Windows NT 5.0)";
 
-    static byte[]                          DEFAULT_USER_AGENT_BYTES             = DEFAULT_USER_AGENT
-                                                                                        .getBytes();
-
-    private static class DefaultHostnameVerifier implements HostnameVerifier
-    {
-        public boolean verify(String hostName, SSLSession session)
-        {
-            return false;
-        }
-    }
+    static byte[]                      DEFAULT_USER_AGENT_BYTES             = DEFAULT_USER_AGENT
+                                                                                    .getBytes();
 
     private static void init()
     {
@@ -640,8 +617,8 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
         try
         {
             _inInit = true;
-            if (_connManager == null)
-                _connManager = new HttpConnectionManager(_globalState);
+            if (_globalState._connManager == null)
+                _globalState._connManager = new HttpConnectionManager(_globalState);
 
             //
             // Standard HTTP methods
@@ -930,11 +907,12 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
                 str = System.getProperty("com.oaklandsw.http.cookiePolicy");
                 if (str != null)
                 {
-                    _log.info("Default cookie policy: "
-                        + _globalState._defaultCookieSpec);
+                    _log
+                            .info("Default cookie policy: "
+                                + checkConnectionManager()._globalState._defaultCookieSpec);
                     // This validates the policy and throws if there is a
                     // problem
-                    _globalState._defaultCookieSpec = CookiePolicy
+                    checkConnectionManager()._globalState._defaultCookieSpec = CookiePolicy
                             .getCookieSpec(str);
                 }
             }
@@ -957,8 +935,6 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
 
         if (USER_AGENT == null)
             USER_AGENT = DEFAULT_USER_AGENT_BYTES;
-
-        initSSL();
 
         // Do the license check last to make sure we are fully up, because
         // the license check can cause a use of the HTTP client (in the
@@ -1004,72 +980,6 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
         }
     }
 
-    private static void initSSL()
-    {
-        _log.debug("initSSL");
-        // See if we have SSL at all
-        try
-        {
-            Class.forName("javax.net.ssl.SSLSocketFactory");
-            _log.debug("SSL is available");
-            _isSSLAvailable = true;
-
-            // Ok, we have it, see if we have the 1.4 stuff
-            try
-            {
-                // Don't do this for now, unless we really have to, it just
-                // adds complexity to testing
-                // _hostnameVerifierClass =
-                // Class.forName("javax.net.ssl.HostnameVerifier");
-                // _log.debug("SSL 1.4 HostnameVerifier FOUND");
-                _sslSessionClass = Class.forName("javax.net.ssl.SSLSession");
-                _log.debug("SSL 1.4 Session class FOUND");
-                try
-                {
-                    // _hostnameVerifierMethod =
-                    // _hostnameVerifierClass.getDeclaredMethod
-                    // ("verify", new Class[] { String.class, _sslSessionClass
-                    // });
-                    _sslGetLocalCertMethod = _sslSessionClass
-                            .getDeclaredMethod("getLocalCertificates",
-                                               new Class[] {});
-                    _sslGetServerCertMethod = _sslSessionClass
-                            .getDeclaredMethod("getPeerCertificates",
-                                               new Class[] {});
-                    _log.debug("SSL 1.4 cert methods FOUND");
-                }
-                catch (NoSuchMethodException cnf)
-                {
-                    _log
-                            .debug("NOT FOUND - SSL 1.4 session cert/hostname verify methods",
-                                   cnf);
-                }
-            }
-            catch (ClassNotFoundException cnf)
-            {
-                _log.debug("SSL 1.4 implementation NOT FOUND", cnf);
-            }
-
-        }
-        catch (ClassNotFoundException cnf)
-        {
-            _log.debug("SSL implementation not found", cnf);
-        }
-
-        catch (SecurityException sex)
-        {
-            _log.debug("Probably in applet: ", sex);
-        }
-
-        if (_isSSLAvailable)
-        {
-            setDefaultSSLSocketFactory((SSLSocketFactory)SSLSocketFactory
-                    .getDefault());
-            setDefaultHostnameVerifier(new DefaultHostnameVerifier());
-        }
-
-    }
-
     static
     {
         resetGlobalState();
@@ -1083,15 +993,17 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
         this(_testURL);
     }
 
-    static void checkConnectionManager()
+    // Always returns a conn mgr
+    static HttpConnectionManager checkConnectionManager()
     {
         synchronized (HttpURLConnection.class)
         {
-            if (_connManager == null)
+            if (_globalState._connManager == null)
             {
                 // init() creates a new cm
                 init();
             }
+            return _globalState._connManager;
         }
     }
 
@@ -1101,7 +1013,7 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
         {
             // Use the same CM through the init() method
             if (!_inInit)
-                _connManager = null;
+                _globalState._connManager = null;
         }
     }
 
@@ -1115,7 +1027,9 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
 
         // The connection manager might have been reset, see if we need to
         // create a new one
-        checkConnectionManager();
+        // Make a local copy so that this connection uses the same conn mgr
+        // for its entire life
+        _connManager = checkConnectionManager();
 
         if (_log.isDebugEnabled())
             _log.debug("constructor - url: " + urlParam);
@@ -1147,35 +1061,34 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
                 + ex);
         }
 
-        _userAgent = _globalState._defaultUserAgent;
+        GlobalState gs = _connManager._globalState;
 
-        _connectionTimeout = _globalState._defaultConnectionTimeout;
-        _requestTimeout = _globalState._defaultRequestTimeout;
-        _idleTimeout = _globalState._defaultIdleTimeout;
-        _idlePing = _globalState._defaultIdlePing;
-        _connectionRequestLimit = _globalState._defaultConnectionRequestLimit;
-        _maxTries = _globalState._defaultMaxTries;
-        _cookieContainer = _globalState._defaultCookieContainer;
-        _cookieSpec = _globalState._defaultCookieSpec;
+        _userAgent = gs._defaultUserAgent;
+
+        _connectionTimeout = gs._defaultConnectionTimeout;
+        _requestTimeout = gs._defaultRequestTimeout;
+        _idleTimeout = gs._defaultIdleTimeout;
+        _idlePing = gs._defaultIdlePing;
+        _connectionRequestLimit = gs._defaultConnectionRequestLimit;
+        _maxTries = gs._defaultMaxTries;
+        _cookieContainer = gs._defaultCookieContainer;
+        _cookieSpec = gs._defaultCookieSpec;
         // Don't use direct assignment because there is other
         // processing in this call
-        setPipeliningOptions(_globalState._defaultPipeliningOptions);
-        setPipeliningMaxDepth(_globalState._defaultPipeliningMaxDepth);
-        _callback = _globalState._defaultCallback;
-        _authenticationType[AUTH_NORMAL] = _globalState._defaultAuthenticationType;
-        _authenticationType[AUTH_PROXY] = _globalState._defaultProxyAuthenticationType;
+        setPipeliningOptions(gs._defaultPipeliningOptions);
+        setPipeliningMaxDepth(gs._defaultPipeliningMaxDepth);
+        _callback = gs._defaultCallback;
+        _authenticationType[AUTH_NORMAL] = gs._defaultAuthenticationType;
+        _authenticationType[AUTH_PROXY] = gs._defaultProxyAuthenticationType;
         _authenticationDummyContent = null;
         _authenticationDummyMethod = HTTP_METHOD_HEAD;
-        _proxyHost = _globalState._proxyHost;
-        _proxyPort = _globalState._proxyPort;
-        _proxyUser = _globalState._proxyUser;
-        _proxyPassword = _globalState._proxyPassword;
+        _proxyHost = gs._proxyHost;
+        _proxyPort = gs._proxyPort;
+        _proxyUser = gs._proxyUser;
+        _proxyPassword = gs._proxyPassword;
 
-        if (_isSSLAvailable)
-        {
-            _sslSocketFactory = _globalState._defaultSSLSocketFactory;
-            _hostnameVerifier = _globalState._defaultHostnameVerifier;
-        }
+        _sslSocketFactory = gs._defaultSSLSocketFactory;
+        _hostnameVerifier = gs._defaultHostnameVerifier;
 
         _connManager.recordCount(HttpConnectionManager.COUNT_ATTEMPTED);
     }
@@ -1399,8 +1312,7 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
      */
     public boolean usingProxy()
     {
-        checkConnectionManager();
-        if (_globalState.getProxyHost(url.getHost()) != null)
+        if (_connManager._globalState.getProxyHost(url.getHost()) != null)
             return true;
         return false;
     }
@@ -1544,8 +1456,7 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
      */
     public static HttpConnectionManager getConnectionManager()
     {
-        checkConnectionManager();
-        return _connManager;
+        return checkConnectionManager();
     }
 
     /**
@@ -1867,8 +1778,9 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
     public static void setDefaultCookieSupport(CookieContainer container,
                                                String policy)
     {
-        _globalState._defaultCookieContainer = container;
-        _globalState._defaultCookieSpec = CookiePolicy.getCookieSpec(policy);
+        checkConnectionManager()._globalState._defaultCookieContainer = container;
+        checkConnectionManager()._globalState._defaultCookieSpec = CookiePolicy
+                .getCookieSpec(policy);
     }
 
     /**
@@ -1958,48 +1870,7 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
         if (_responseStream == null)
             return new ByteArrayInputStream(new byte[] {});
 
-        if ((_pipeliningOptions & PIPE_PIPELINE) != 0)
-        {
-            // If there is trouble reading due to a close, this will be
-            // retried
-            is = new FilterInputStream(_responseStream)
-            {
-                public int read() throws IOException
-                {
-                    try
-                    {
-                        return super.read();
-                    }
-                    catch (IOException ex)
-                    {
-                        _ioException = new AutomaticHttpRetryException(ex
-                                .getMessage());
-                        _ioException.initCause(ex);
-                        throw _ioException;
-                    }
-                }
-
-                public int read(byte b[], int off, int len) throws IOException
-                {
-                    try
-                    {
-                        return super.read(b, off, len);
-                    }
-                    catch (IOException ex)
-                    {
-                        _ioException = new AutomaticHttpRetryException(ex
-                                .getMessage());
-                        _ioException.initCause(ex);
-                        throw _ioException;
-                    }
-                }
-
-            };
-        }
-        else
-        {
-            is = _responseStream;
-        }
+        is = _responseStream;
 
         if (_log.isDebugEnabled())
         {
@@ -2049,7 +1920,7 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
      */
     public static void setDefaultUserAgent(HttpUserAgent userAgent)
     {
-        _globalState._defaultUserAgent = userAgent;
+        checkConnectionManager()._globalState._defaultUserAgent = userAgent;
     }
 
     /**
@@ -2057,7 +1928,7 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
      */
     public static HttpUserAgent getDefaultUserAgent()
     {
-        return _globalState._defaultUserAgent;
+        return checkConnectionManager()._globalState._defaultUserAgent;
     }
 
     /**
@@ -2201,7 +2072,7 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
      */
     public static int getDefaultTimeout()
     {
-        return _globalState._defaultConnectionTimeout;
+        return checkConnectionManager()._globalState._defaultConnectionTimeout;
     }
 
     /**
@@ -2220,8 +2091,8 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
     {
         if (_log.isDebugEnabled())
             _log.debug("setDefaultTimeout: " + ms);
-        _globalState._defaultConnectionTimeout = ms;
-        _globalState._defaultRequestTimeout = ms;
+        checkConnectionManager()._globalState._defaultConnectionTimeout = ms;
+        checkConnectionManager()._globalState._defaultRequestTimeout = ms;
     }
 
     /**
@@ -2231,7 +2102,7 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
      */
     public static int getDefaultConnectionTimeout()
     {
-        return _globalState._defaultConnectionTimeout;
+        return checkConnectionManager()._globalState._defaultConnectionTimeout;
     }
 
     /**
@@ -2247,7 +2118,7 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
     {
         if (_log.isDebugEnabled())
             _log.debug("setDefaultConnectionTimeout: " + ms);
-        _globalState._defaultConnectionTimeout = ms;
+        checkConnectionManager()._globalState._defaultConnectionTimeout = ms;
     }
 
     /**
@@ -2257,7 +2128,7 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
      */
     public static int getDefaultRequestTimeout()
     {
-        return _globalState._defaultRequestTimeout;
+        return checkConnectionManager()._globalState._defaultRequestTimeout;
     }
 
     /**
@@ -2272,7 +2143,7 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
     {
         if (_log.isDebugEnabled())
             _log.debug("setDefaultRequestTimeout: " + ms);
-        _globalState._defaultRequestTimeout = ms;
+        checkConnectionManager()._globalState._defaultRequestTimeout = ms;
     }
 
     /**
@@ -2309,7 +2180,7 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
      */
     public static int getDefaultIdleConnectionTimeout()
     {
-        return _globalState._defaultIdleTimeout;
+        return checkConnectionManager()._globalState._defaultIdleTimeout;
     }
 
     /**
@@ -2328,7 +2199,7 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
     {
         if (_log.isDebugEnabled())
             _log.debug("setDefaultIdleConnectionTimeout: " + ms);
-        _globalState._defaultIdleTimeout = ms;
+        checkConnectionManager()._globalState._defaultIdleTimeout = ms;
     }
 
     /**
@@ -2343,7 +2214,7 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
             _log.debug("setDefaultIdleConnectionTimeout (Default): "
                 + GlobalState.DEFAULT_IDLE_TIMEOUT);
         }
-        _globalState._defaultIdleTimeout = GlobalState.DEFAULT_IDLE_TIMEOUT;
+        checkConnectionManager()._globalState._defaultIdleTimeout = GlobalState.DEFAULT_IDLE_TIMEOUT;
     }
 
     /**
@@ -2384,7 +2255,7 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
      */
     public static int getDefaultIdleConnectionPing()
     {
-        return _globalState._defaultIdlePing;
+        return checkConnectionManager()._globalState._defaultIdlePing;
     }
 
     /**
@@ -2399,7 +2270,7 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
     {
         if (_log.isDebugEnabled())
             _log.debug("setDefaultIdleConnectionPing: " + ms);
-        _globalState._defaultIdlePing = ms;
+        checkConnectionManager()._globalState._defaultIdlePing = ms;
     }
 
     /**
@@ -2414,7 +2285,7 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
             _log.debug("setDefaultIdleConnectionPing (Default): "
                 + GlobalState.DEFAULT_IDLE_PING);
         }
-        _globalState._defaultIdlePing = GlobalState.DEFAULT_IDLE_PING;
+        checkConnectionManager()._globalState._defaultIdlePing = GlobalState.DEFAULT_IDLE_PING;
     }
 
     /**
@@ -2459,7 +2330,7 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
      */
     public static int getDefaultConnectionRequestLimit()
     {
-        return _globalState._defaultConnectionRequestLimit;
+        return checkConnectionManager()._globalState._defaultConnectionRequestLimit;
     }
 
     /**
@@ -2477,7 +2348,7 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
     {
         if (_log.isDebugEnabled())
             _log.debug("setDefaultConnectionRequestLimit: " + requests);
-        _globalState._defaultConnectionRequestLimit = requests;
+        checkConnectionManager()._globalState._defaultConnectionRequestLimit = requests;
     }
 
     /**
@@ -2492,7 +2363,7 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
             _log.debug("setDefaultConnectionRequestLimit (Default): "
                 + GlobalState.DEFAULT_CONNECTION_REQUEST_LIMIT);
         }
-        _globalState._defaultConnectionRequestLimit = GlobalState.DEFAULT_CONNECTION_REQUEST_LIMIT;
+        checkConnectionManager()._globalState._defaultConnectionRequestLimit = GlobalState.DEFAULT_CONNECTION_REQUEST_LIMIT;
     }
 
     /**
@@ -2535,7 +2406,7 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
     {
         if (_log.isDebugEnabled())
             _log.debug("setMaxConnectionsPerHost: " + maxConnections);
-        _globalState._maxConns = maxConnections;
+        checkConnectionManager()._globalState._maxConns = maxConnections;
     }
 
     /**
@@ -2545,7 +2416,7 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
      */
     public static int getMaxConnectionsPerHost()
     {
-        return _globalState._maxConns;
+        return checkConnectionManager()._globalState._maxConns;
     }
 
     /**
@@ -2557,7 +2428,7 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
      */
     public static void setUse10KeepAlive(boolean use)
     {
-        _globalState._use10KeepAlive = use;
+        checkConnectionManager()._globalState._use10KeepAlive = use;
     }
 
     /**
@@ -2568,7 +2439,7 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
      */
     public static boolean getUse10KeepAlive()
     {
-        return _globalState._use10KeepAlive;
+        return checkConnectionManager()._globalState._use10KeepAlive;
     }
 
     /**
@@ -2602,7 +2473,7 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
             _log.debug("setDefaultMaxTries: " + tries);
         if (tries < 1)
             throw new IllegalArgumentException("You must allow at least one try");
-        _globalState._defaultMaxTries = tries;
+        checkConnectionManager()._globalState._defaultMaxTries = tries;
     }
 
     /**
@@ -2623,7 +2494,7 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
      */
     public static int getDefaultMaxTries()
     {
-        return _globalState._defaultMaxTries;
+        return checkConnectionManager()._globalState._defaultMaxTries;
     }
 
     /**
@@ -2637,7 +2508,7 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
     {
         if (_log.isDebugEnabled())
             _log.debug("setRetryInterval: " + ms);
-        _globalState._retryInterval = ms;
+        checkConnectionManager()._globalState._retryInterval = ms;
     }
 
     /**
@@ -2647,7 +2518,7 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
      */
     public static int getRetryInterval()
     {
-        return _globalState._retryInterval;
+        return checkConnectionManager()._globalState._retryInterval;
     }
 
     /**
@@ -2707,7 +2578,7 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
         if (_log.isDebugEnabled())
             _log.debug("setDefaultAuthenticationType: " + type);
         checkAuthenticationType(type);
-        _globalState._defaultAuthenticationType = type;
+        checkConnectionManager()._globalState._defaultAuthenticationType = type;
     }
 
     /**
@@ -2718,7 +2589,7 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
      */
     public static int getDefaultAuthenticationType()
     {
-        return _globalState._defaultAuthenticationType;
+        return checkConnectionManager()._globalState._defaultAuthenticationType;
     }
 
     /**
@@ -2793,7 +2664,7 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
         if (_log.isDebugEnabled())
             _log.debug("setDefaultProxyAuthenticationType: " + type);
         checkAuthenticationType(type);
-        _globalState._defaultProxyAuthenticationType = type;
+        checkConnectionManager()._globalState._defaultProxyAuthenticationType = type;
     }
 
     /**
@@ -2804,7 +2675,7 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
      */
     public static int getDefaultProxyAuthenticationType()
     {
-        return _globalState._defaultProxyAuthenticationType;
+        return checkConnectionManager()._globalState._defaultProxyAuthenticationType;
     }
 
     /**
@@ -2869,9 +2740,9 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
         if (_log.isDebugEnabled())
             _log.debug("setDefaultPipelining: " + enabled);
         if (enabled)
-            _globalState._defaultPipeliningOptions = PIPE_STANDARD_OPTIONS;
+            checkConnectionManager()._globalState._defaultPipeliningOptions = PIPE_STANDARD_OPTIONS;
         else
-            _globalState._defaultPipeliningOptions = 0;
+            checkConnectionManager()._globalState._defaultPipeliningOptions = 0;
     }
 
     /**
@@ -2881,7 +2752,7 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
      */
     public static boolean isDefaultPipelining()
     {
-        return (_globalState._defaultPipeliningOptions & PIPE_PIPELINE) != 0;
+        return (checkConnectionManager()._globalState._defaultPipeliningOptions & PIPE_PIPELINE) != 0;
     }
 
     /**
@@ -2900,7 +2771,7 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
                 + plOptionsToString(pipeliningOptions));
         }
 
-        _globalState._defaultPipeliningOptions = pipeliningOptions;
+        checkConnectionManager()._globalState._defaultPipeliningOptions = pipeliningOptions;
     }
 
     /**
@@ -2910,7 +2781,7 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
      */
     public static int getDefaultPipeliningOptions()
     {
-        return _globalState._defaultPipeliningOptions;
+        return checkConnectionManager()._globalState._defaultPipeliningOptions;
     }
 
     /**
@@ -3002,7 +2873,7 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
      */
     public static void setDefaultPipeliningMaxDepth(int pipeliningMaxDepth)
     {
-        _globalState._defaultPipeliningMaxDepth = pipeliningMaxDepth;
+        checkConnectionManager()._globalState._defaultPipeliningMaxDepth = pipeliningMaxDepth;
     }
 
     /**
@@ -3012,7 +2883,7 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
      */
     public static int getDefaultPipeliningMaxDepth()
     {
-        return _globalState._defaultPipeliningMaxDepth;
+        return checkConnectionManager()._globalState._defaultPipeliningMaxDepth;
     }
 
     /**
@@ -3061,7 +2932,7 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
      */
     public static void setDefaultCallback(Callback cb)
     {
-        _globalState._defaultCallback = cb;
+        checkConnectionManager()._globalState._defaultCallback = cb;
     }
 
     /**
@@ -3071,7 +2942,7 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
      */
     public static Callback getDefaultCallback()
     {
-        return _globalState._defaultCallback;
+        return checkConnectionManager()._globalState._defaultCallback;
     }
 
     /**
@@ -3140,8 +3011,7 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
      */
     public static void pipelineBlock() throws InterruptedException
     {
-        checkConnectionManager();
-        _connManager.blockForUrlCons();
+        checkConnectionManager().blockForUrlCons();
     }
 
     /**
@@ -3209,7 +3079,7 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
     {
         if (_log.isDebugEnabled())
             _log.debug("setProxyHost: " + host);
-        _globalState.setProxyHost(host);
+        checkConnectionManager()._globalState.setProxyHost(host);
     }
 
     /**
@@ -3219,7 +3089,7 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
      */
     public static String getProxyHost()
     {
-        return _globalState._proxyHost;
+        return checkConnectionManager()._globalState._proxyHost;
     }
 
     /**
@@ -3262,7 +3132,7 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
     {
         if (_log.isDebugEnabled())
             _log.debug("setProxyPort: " + port);
-        _globalState.setProxyPort(port);
+        checkConnectionManager()._globalState.setProxyPort(port);
     }
 
     /**
@@ -3272,7 +3142,7 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
      */
     public static int getProxyPort()
     {
-        return _globalState._proxyPort;
+        return checkConnectionManager()._globalState._proxyPort;
     }
 
     /**
@@ -3316,7 +3186,7 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
     {
         if (_log.isDebugEnabled())
             _log.debug("setProxyUser: " + user);
-        _globalState._proxyUser = user;
+        checkConnectionManager()._globalState._proxyUser = user;
     }
 
     /**
@@ -3326,7 +3196,7 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
      */
     public static String getProxyUser()
     {
-        return _globalState._proxyUser;
+        return checkConnectionManager()._globalState._proxyUser;
     }
 
     /**
@@ -3373,7 +3243,7 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
     {
         if (_log.isDebugEnabled())
             _log.debug("setProxyPassword: " + password);
-        _globalState._proxyPassword = password;
+        checkConnectionManager()._globalState._proxyPassword = password;
     }
 
     /**
@@ -3383,7 +3253,7 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
      */
     public static String getProxyPassword()
     {
-        return _globalState._proxyPassword;
+        return checkConnectionManager()._globalState._proxyPassword;
     }
 
     /**
@@ -3442,7 +3312,7 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
         // It is validated by the connection manager
         if (_log.isDebugEnabled())
             _log.debug("setNonProxyHosts: " + hosts);
-        _globalState.setNonProxyHosts(hosts);
+        checkConnectionManager()._globalState.setNonProxyHosts(hosts);
     }
 
     /**
@@ -3453,7 +3323,7 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
      */
     public static String getNonProxyHosts()
     {
-        return _globalState.getNonProxyHosts();
+        return checkConnectionManager()._globalState.getNonProxyHosts();
     }
 
     /**
@@ -3463,7 +3333,7 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
      */
     public static boolean isNonProxyHost(String hostName)
     {
-        return _globalState.isNonProxyHost(hostName);
+        return checkConnectionManager()._globalState.isNonProxyHost(hostName);
     }
 
     /**
@@ -3477,8 +3347,8 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
      */
     public static void closeAllPooledConnections() throws InterruptedException
     {
-        checkConnectionManager();
-        _connManager.resetConnectionPool(!HttpConnectionManager.IMMEDIATE);
+        checkConnectionManager()
+                .resetConnectionPool(!HttpConnectionManager.IMMEDIATE);
     }
 
     /**
@@ -3488,8 +3358,9 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
      */
     public static void immediateShutdown() throws InterruptedException
     {
-        checkConnectionManager();
-        _connManager.resetConnectionPool(HttpConnectionManager.IMMEDIATE);
+        checkConnectionManager()
+                .resetConnectionPool(HttpConnectionManager.IMMEDIATE);
+
     }
 
     /**
@@ -3497,8 +3368,7 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
      */
     public static void dumpConnectionPool()
     {
-        checkConnectionManager();
-        _connManager.dumpConnectionPool();
+        checkConnectionManager().dumpConnectionPool();
     }
 
     /**
@@ -3506,8 +3376,7 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
      */
     public static String getStatistics()
     {
-        checkConnectionManager();
-        return _connManager.getStatistics();
+        return checkConnectionManager().getStatistics();
     }
 
     /**
@@ -3515,8 +3384,7 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
      */
     public static void resetStatistics()
     {
-        checkConnectionManager();
-        _connManager.resetStatistics();
+        checkConnectionManager().resetStatistics();
     }
 
     public static void dumpAll()
@@ -3584,8 +3452,6 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
     {
         if (!connected)
             throw new IllegalStateException("Connection has not been established");
-        if (_sslGetLocalCertMethod == null)
-            throw new IllegalStateException(_sslmethmsg);
         return _connection.getLocalCertificates();
     }
 
@@ -3603,8 +3469,6 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
     {
         if (!connected)
             throw new IllegalStateException("Connection has not been established");
-        if (_sslGetServerCertMethod == null)
-            throw new IllegalStateException(_sslmethmsg);
         return _connection.getServerCertificates();
     }
 
@@ -3615,7 +3479,7 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
      */
     public static HostnameVerifier getDefaultHostnameVerifier()
     {
-        return _globalState._defaultHostnameVerifier;
+        return checkConnectionManager()._globalState._defaultHostnameVerifier;
     }
 
     /**
@@ -3624,7 +3488,7 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
      */
     public static void setDefaultHostnameVerifier(HostnameVerifier verifier)
     {
-        _globalState._defaultHostnameVerifier = verifier;
+        checkConnectionManager()._globalState._defaultHostnameVerifier = verifier;
     }
 
     /**
@@ -3653,7 +3517,7 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
      */
     public static SSLSocketFactory getDefaultSSLSocketFactory()
     {
-        return _globalState._defaultSSLSocketFactory;
+        return checkConnectionManager()._globalState._defaultSSLSocketFactory;
     }
 
     /**
@@ -3661,7 +3525,7 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
      */
     public static void setDefaultSSLSocketFactory(SSLSocketFactory factory)
     {
-        _globalState._defaultSSLSocketFactory = factory;
+        checkConnectionManager()._globalState._defaultSSLSocketFactory = factory;
     }
 
     /**
@@ -3696,7 +3560,7 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
             default:
                 throw new IllegalArgumentException("Encoding must be either NTLM_ENCODING_OEM or NTLM_ENCODING_DEFAULT");
         }
-        _globalState._ntlmPreferredEncoding = encoding;
+        checkConnectionManager()._globalState._ntlmPreferredEncoding = encoding;
     }
 
     /**
@@ -3706,7 +3570,7 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
      */
     public static int getNtlmPreferredEncoding()
     {
-        return _globalState._ntlmPreferredEncoding;
+        return checkConnectionManager()._globalState._ntlmPreferredEncoding;
     }
 
     /**

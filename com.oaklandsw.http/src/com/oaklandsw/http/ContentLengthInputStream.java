@@ -99,7 +99,7 @@ public class ContentLengthInputStream extends AutoRetryInputStream
             boolean throwAutoRetry)
     {
         super(inStr, urlCon, throwAutoRetry);
-        this._contentLength = cl;
+        _contentLength = cl;
     }
 
     public int read() throws IOException

@@ -62,7 +62,6 @@ import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.lang.reflect.InvocationTargetException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.Socket;
@@ -101,7 +100,8 @@ public class HttpConnection
     private static final Log   _wireLog           = LogFactory.getLog(WIRE_LOG);
     private static final Log   _connLog           = LogFactory.getLog(CONN_LOG);
 
-    private static final int   STREAM_BUFFER_SIZE = 16384;
+    // private static final int STREAM_BUFFER_SIZE = 16384;
+    private static final int   STREAM_BUFFER_SIZE = 16436;
 
     public String              _host;
     public int                 _port              = -1;
@@ -385,25 +385,7 @@ public class HttpConnection
             throw new IllegalStateException("Called on a connection that is not an SSL connection");
         }
 
-        try
-        {
-            return (Certificate[])HttpURLConnection._sslGetLocalCertMethod
-                    .invoke(((SSLSocket)_socket).getSession(), null);
-        }
-        catch (IllegalAccessException iae)
-        {
-            _connLog.error(iae);
-            throw new RuntimeException("Unexpected exception: " + iae);
-
-        }
-        catch (InvocationTargetException ite)
-        {
-            Object targetException = ite.getTargetException();
-            _connLog
-                    .error("Unexpected exception: ", (Throwable)targetException);
-            // It had better be a RuntimeException
-            throw (RuntimeException)targetException;
-        }
+        return ((SSLSocket)_socket).getSession().getLocalCertificates();
     }
 
     /**
@@ -417,25 +399,8 @@ public class HttpConnection
         {
             throw new IllegalStateException("Called on a connection that is not an SSL connection");
         }
-        try
-        {
-            return (Certificate[])HttpURLConnection._sslGetServerCertMethod
-                    .invoke(((SSLSocket)_socket).getSession(), null);
-        }
-        catch (IllegalAccessException iae)
-        {
-            _connLog.error(iae);
-            throw new RuntimeException("Unexpected exception: " + iae);
-
-        }
-        catch (InvocationTargetException ite)
-        {
-            Object targetException = ite.getTargetException();
-            _connLog
-                    .error("Unexpected exception: ", (Throwable)targetException);
-            // It had better be a RuntimeException
-            throw (RuntimeException)targetException;
-        }
+        
+        return ((SSLSocket)_socket).getSession().getPeerCertificates();        
     }
 
     void setHost(String host) throws IllegalStateException

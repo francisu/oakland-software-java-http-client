@@ -24,11 +24,17 @@ import com.oaklandsw.util.Util;
  */
 public class TestPerf
 {
-    static final Log      _log             = LogUtils.makeLogger();
+    static final Log      _log             = LogUtils
+                                                   .makeLogger("com.oaklandsw.http.TestPerf");
+
+    byte[]                _buffer          = new byte[16384];
 
     int                   _timesPerThread;
     int                   _totalTimes;
     int                   _threads         = 1;
+
+    int                   _repeatTestTimes = 1;
+    int                   _repeatIndex     = 0;
 
     int                   _actualTimes;
 
@@ -148,6 +154,10 @@ public class TestPerf
             {
                 _totalTimes = Integer.parseInt(args[++i]);
             }
+            else if (args[i].equalsIgnoreCase("-repeat"))
+            {
+                _repeatTestTimes = Integer.parseInt(args[++i]);
+            }
             else if (args[i].equalsIgnoreCase("-threads"))
             {
                 _threads = Integer.parseInt(args[++i]);
@@ -230,6 +240,7 @@ public class TestPerf
                 System.out.println("Arg: " + args[i] + " ignored");
             }
         }
+
         run();
         // For profiling
         // Thread.sleep(1000000);
@@ -237,13 +248,26 @@ public class TestPerf
 
     public void run() throws Exception
     {
+        // LogUtils.logFile("/home/francis/log4jperf.txt");
+
+        for (int i = 0; i < _repeatTestTimes; i++)
+        {
+            runSingleTest();
+            _repeatIndex++;
+        }
+    }
+
+    public void runSingleTest() throws Exception
+    {
         if (_urlString == null)
         {
             System.out.println("Please specify a URL using -url");
             return;
         }
 
-        if (_timesPerThread != 0 && _totalTimes != 0)
+        if (_timesPerThread != 0
+            && _totalTimes != 0
+            && _timesPerThread != _totalTimes / _threads)
         {
             System.out
                     .println("Specify either -times or -timesThread, but not both");
@@ -257,8 +281,6 @@ public class TestPerf
 
         if (_totalTimes != 0)
             _timesPerThread = _totalTimes / _threads;
-
-        // LogUtils.logAll();
 
         com.oaklandsw.http.HttpURLConnection.resetStatistics();
         com.oaklandsw.http.HttpURLConnection.closeAllPooledConnections();
@@ -390,14 +412,21 @@ public class TestPerf
             runOneThread(1);
         }
 
+        // Start clean
+        System.gc();
+        
+        System.out.println("Test starting");
+
         _actualTimes = 0;
 
         long startTime = System.currentTimeMillis();
+        _log.debug("START time: " + startTime);
 
         runAllThreads();
 
         long endTime = System.currentTimeMillis();
         _totalTime = endTime - startTime;
+        _log.debug("END/Total time: " + endTime + "/" + _totalTime);
 
         if (_actualTimes != _timesPerThread * _threads)
         {
@@ -455,9 +484,11 @@ public class TestPerf
         System.out.println("  -pipedepth <depth> - set max pipeline depth");
         System.out
                 .println("  -times <num> - total number of times (all threads) (def 1)");
+        System.out.println("  -repeat <num> - run test num times (def 1)");
         System.out
                 .println("  -timesThread <num> - number of times per thread (def 1)");
         System.out.println("  -threads <num> - number of threads (def 1)");
+        System.out.println("  -repeat <num> - run test num times (def 1)");
         System.out.println("  -nowarm - include the initialization in timing");
         System.out
                 .println("  -suff - append a suffix to each URL in a round robin fashion");
@@ -469,71 +500,76 @@ public class TestPerf
                 .println("  -dump <num> - dump the statistics at this interval");
     }
 
-    void runOne(PipelineCallback cb) throws Exception
+    void runOne(PipelineCallback cb, int times) throws Exception
     {
-        HttpURLConnection urlCon;
-
-        String urlToUse = _urlString;
-
-        if (_useSuffixes)
+        for (int i = 0; i < times; i++)
         {
-            synchronized (this)
+            HttpURLConnection urlCon;
+
+            String urlToUse = _urlString;
+
+            if (_useSuffixes)
             {
-                urlToUse += _suffixes[_suffixIndex++];
-                if (_suffixIndex >= _suffixes.length)
-                    _suffixIndex = 0;
+                synchronized (this)
+                {
+                    urlToUse += _suffixes[_suffixIndex++];
+                    if (_suffixIndex >= _suffixes.length)
+                        _suffixIndex = 0;
+                }
             }
-        }
 
-        URL url = new URL(urlToUse);
+            //URL url = new URL(urlToUse + "?rep=" + _repeatIndex + "&seq=" + i);
+            URL url = new URL(urlToUse);
 
-        int responseCode = 0;
-        switch (_implementation)
-        {
-            case IMP_OAKLAND:
-                urlCon = com.oaklandsw.http.HttpURLConnection
-                        .openConnection(url);
-                responseCode = urlCon.getResponseCode();
-                processStream(urlCon.getInputStream());
-                incrementActualtimes();
-                break;
+            int responseCode = 0;
+            switch (_implementation)
+            {
+                case IMP_OAKLAND:
+                    urlCon = com.oaklandsw.http.HttpURLConnection
+                            .openConnection(url);
+                    responseCode = urlCon.getResponseCode();
+                    processStream(urlCon.getInputStream());
+                    incrementActualtimes();
+                    break;
 
-            case IMP_OAKLAND_PIPE:
-                urlCon = com.oaklandsw.http.HttpURLConnection
-                        .openConnection(url);
-                ((com.oaklandsw.http.HttpURLConnection)urlCon).setCallback(cb);
-                ((com.oaklandsw.http.HttpURLConnection)urlCon)
-                        .pipelineExecute();
-                // This is executed later
-                break;
+                case IMP_OAKLAND_PIPE:
+                    urlCon = com.oaklandsw.http.HttpURLConnection
+                            .openConnection(url);
+                    ((com.oaklandsw.http.HttpURLConnection)urlCon)
+                            .setCallback(cb);
+                    ((com.oaklandsw.http.HttpURLConnection)urlCon)
+                            .pipelineExecute();
+                    break;
 
-            case IMP_SUN:
-                urlCon = (HttpURLConnection)url.openConnection();
-                responseCode = urlCon.getResponseCode();
-                processStream(urlCon.getInputStream());
-                incrementActualtimes();
-                break;
+                case IMP_SUN:
+                    urlCon = (HttpURLConnection)url.openConnection();
+                    responseCode = urlCon.getResponseCode();
+                    processStream(urlCon.getInputStream());
+                    incrementActualtimes();
+                    break;
 
-            case IMP_JAKARTA:
-                GetMethod method = new GetMethod(_urlString);
-                _jakartaClient.executeMethod(method);
-                responseCode = method.getStatusCode();
+                case IMP_JAKARTA:
+                    GetMethod method = new GetMethod(_urlString);
+                    _jakartaClient.executeMethod(method);
+                    responseCode = method.getStatusCode();
 
-                // Read the stream
-                InputStream is = method.getResponseBodyAsStream();
-                processStream(is);
-                method.releaseConnection();
-                incrementActualtimes();
-                break;
+                    // Read the stream
+                    InputStream is = method.getResponseBodyAsStream();
+                    processStream(is);
+                    method.releaseConnection();
+                    incrementActualtimes();
+                    break;
 
-            default:
-                Util.impossible("Invalid implementation: " + _implementation);
-                // throws
-        }
+                default:
+                    Util.impossible("Invalid implementation: "
+                        + _implementation);
+                    // throws
+            }
 
-        if (_implementation != IMP_OAKLAND_PIPE && responseCode != 200)
-        {
-            throw new RuntimeException("Bad response code: " + responseCode);
+            if (_implementation != IMP_OAKLAND_PIPE && responseCode != 200)
+            {
+                throw new RuntimeException("Bad response code: " + responseCode);
+            }
         }
     }
 
@@ -548,8 +584,7 @@ public class TestPerf
                 cb = new PipelineCallback();
             }
 
-            for (int i = 0; i < times; i++)
-                runOne(cb);
+            runOne(cb, times);
 
             if (_implementation == IMP_OAKLAND_PIPE)
             {
@@ -611,14 +646,13 @@ public class TestPerf
             System.out.println("One or more threads failed");
     }
 
-    public static void processStream(InputStream inputStream)
+    public void processStream(InputStream inputStream)
         throws IOException
     {
-        byte[] buffer = new byte[16384];
         int nb = 0;
         while (true)
         {
-            nb = inputStream.read(buffer);
+            nb = inputStream.read(_buffer);
             if (nb == -1)
                 break;
         }

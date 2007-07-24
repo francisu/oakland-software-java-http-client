@@ -31,13 +31,15 @@ public class PerfComparisonTest
     // Each array element corresponds to one of the scenarios, these
     // are sizes in K
     public static final int[]    _sizes                 = new int[] { 0, 1, 2,
-        4, 8, 16, 32, 64, 128                          };
+        4, 8, 16, 32, 64, 128, 256, 512, 1024          };
 
     // Location
     public static final String[] _locationUrls          = new String[] {
         "http://berlioz/oaklandsw-http/", //
         "http://repoman:8081/", //
-        "http://67.121.125.19/oaklandsw-http/", //
+        "http://216.120.249.245/~oakland/", //
+                                                        // "http://67.121.125.19/oaklandsw-http/",
+                                                        // //
                                                         // "http://oaklandswint.page.us/oaklandsw-http/"
                                                         // //
                                                         // "http://francisupton.com/"
@@ -48,13 +50,15 @@ public class PerfComparisonTest
     // Don't use these limits for now
     public static final int[][]  _sizeConnLimits        = new int[][] {
         { 0, 0, 0 }, { 0, 0, 0 }, { 0, 0, 0 }, { 0, 0, 0 }, { 0, 0, 0 },
-        { 0, 0, 0 }, { 0, 0, 0 }, { 0, 0, 0 }, { 0, 0, 0 } };
+        { 0, 0, 0 }, { 0, 0, 0 }, { 0, 0, 0 }, { 0, 0, 0 }, { 0, 0, 0 },
+        { 0, 0, 0 }, { 0, 0, 0 },                      };
 
     // Size x location
     public static final int[][]  _sizeCounts            = new int[][] {
-        { 4000, 2000, 200 }, { 4000, 2000, 200 }, { 4000, 2000, 200 },
-        { 4000, 2000, 200 }, { 4000, 2000, 200 }, { 4000, 2000, 200 },
-        { 4000, 2000, 200 }, { 4000, 2000, 200 }, { 4000, 2000, 200 } };
+        { 6000, 2000, 300 }, { 6000, 2000, 300 }, { 6000, 2000, 300 },
+        { 6000, 2000, 300 }, { 6000, 2000, 300 }, { 6000, 2000, 300 },
+        { 6000, 2000, 300 }, { 6000, 2000, 300 }, { 6000, 2000, 300 },
+        { 6000, 2000, 300 }, { 6000, 2000, 300 }, { 6000, 2000, 300 } };
 
     // Product Pipe depths
     // Product x pipeline depth
@@ -84,6 +88,12 @@ public class PerfComparisonTest
 
     public boolean               _noPrint;
 
+    // Just have the tests calculate the amount of required bandwidth
+    public boolean               _calculateBandWidth    = !true;
+
+    public int                   _calcBytes;
+    public int                   _calcConnections;
+
     public int                   _currentMaxConnections;
     public int                   _currentPipeDepth;
     public int                   _currentProduct;
@@ -94,9 +104,14 @@ public class PerfComparisonTest
     public int                   _currentThreads;
 
     public int                   _singleSize            = -1;
-    public int                   _singleLocation        = -1;
+    public int                   _singleLocation        = 1;
     public int                   _singleConnectionLimit = -1;
     public int                   _singleProduct         = -1;
+
+    public int                   _startSize             = 9;
+    public int                   _startLocation;
+    public int                   _startConnectionLimit;
+    public int                   _startProduct;
 
     // Runs a set of tests
     public void runSet() throws Exception
@@ -131,7 +146,19 @@ public class PerfComparisonTest
             com.oaklandsw.http.HttpURLConnection
                     .setDefaultConnectionRequestLimit(_sizeConnLimits[_currentSizeIndex][_currentLocation]);
 
-            tp.run();
+            int bytes = _currentCount * _sizes[_currentSizeIndex];
+            _calcBytes += bytes;
+            // Rough estimate assuming 100 bytes per connection
+            int conns = Math.max(_currentMaxConnections, _currentCount / 100);
+            _calcConnections += conns;
+
+            System.out.println("Total run bytes: " + bytes);
+            System.out.println("Total run conns: " + conns);
+
+            if (!_calculateBandWidth)
+            {
+                tp.run();
+            }
 
             if (tp._transTime > maxPerTrans)
                 maxPerTrans = tp._transTime;
@@ -225,24 +252,24 @@ public class PerfComparisonTest
         // Overall looping
         for (int i = 0; i < 1; i++)
         {
-            for (_currentLocation = 0; _currentLocation < _locationNames.length; _currentLocation++)
+            for (_currentLocation = _startLocation; _currentLocation < _locationNames.length; _currentLocation++)
             {
                 if (_singleLocation != -1
                     && _currentLocation != _singleLocation)
                     continue;
 
-                for (_currentSizeIndex = 0; _currentSizeIndex < _sizes.length; _currentSizeIndex++)
+                for (_currentSizeIndex = _startSize; _currentSizeIndex < _sizes.length; _currentSizeIndex++)
                 {
                     if (_singleSize != -1 && _currentSizeIndex != _singleSize)
                         continue;
 
-                    for (_currentProduct = 0; _currentProduct < TestPerf._impNames.length; _currentProduct++)
+                    for (_currentProduct = _startProduct; _currentProduct < TestPerf._impNames.length; _currentProduct++)
                     {
                         if (_singleProduct != -1
                             && _currentProduct != _singleProduct)
                             continue;
 
-                        for (int connIndex = 0; connIndex < _productConnections[_currentProduct].length; connIndex++)
+                        for (int connIndex = _startConnectionLimit; connIndex < _productConnections[_currentProduct].length; connIndex++)
                         {
                             if (_singleConnectionLimit != -1
                                 && connIndex != _singleConnectionLimit)
@@ -288,6 +315,9 @@ public class PerfComparisonTest
             }
         }
         _pw.close();
+
+        System.out.println("Total bandwidth: " + _calcBytes);
+        System.out.println("Total conns:     " + _calcConnections);
 
         // For profiler
         // Thread.sleep(10000000);

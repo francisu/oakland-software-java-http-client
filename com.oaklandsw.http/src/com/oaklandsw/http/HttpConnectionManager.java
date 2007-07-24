@@ -75,7 +75,9 @@ public class HttpConnectionManager
 
     // Used to synchronize the pipeline related methods, as distinct
     // from the connection management methods which are synchronized
-    // with "this"
+    // with "this".  This is a lower-level lock than the conn mgr (this)
+    // lock, so make sure you don't lock the conn mgr (or anything else)
+    // while holding this
     protected String              _pipelineLock;
 
     BlockingQueue                 _asyncQueue;
@@ -326,6 +328,8 @@ public class HttpConnectionManager
 
         urlCon._pipelineQueuedForWrite = false;
 
+        boolean flushAll = false;
+
         synchronized (_pipelineLock)
         {
             _outstandingWrites--;
@@ -339,20 +343,21 @@ public class HttpConnectionManager
             {
                 // Make sure all connections are flushed
                 if (_unflushedConnections > 0)
-                    flushAllConnections();
+                    flushAll = true;
             }
             else if (_outstandingWrites < 0)
             {
                 _outstandingWrites = 0;
-                // REMOVEME - the false check
-                if (false)
-                {
-                    Util.impossible("outstandingWrites underflow: "
-                        + _outstandingWrites);
-                }
+                // Don't worry about a check for underflow
+                // TODO - why is this again?
             }
 
         }
+        
+        // Do this outside of _pipelineLock since it locks
+        // the conn mgr
+        if (flushAll)
+            flushAllConnections();
     }
 
     int getOutstandingWrites()

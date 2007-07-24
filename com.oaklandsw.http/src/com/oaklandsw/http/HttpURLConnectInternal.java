@@ -1070,7 +1070,14 @@ public class HttpURLConnectInternal
         byte[] bytes = new byte[_pathQuery.length()
             + (_connection._hostPortURL.length() * 2)
             + OTHER];
+
         int index = 0;
+        int len = 0;
+        String str;
+
+        // Yes, we use the deprecated String.getBytes() here, but that's
+        // what we want because it's fast and we know we are always
+        // working with ASCII
 
         _dummyAuthRequestSent = false;
 
@@ -1082,35 +1089,48 @@ public class HttpURLConnectInternal
                 + _authenticationDummyMethod);
             _actualMethodPropsSent = getMethodProperties(_authenticationDummyMethod);
             _dummyAuthRequestSent = true;
-            index = Util.toByteAscii(_authenticationDummyMethod, bytes, index);
+            len = _authenticationDummyMethod.length();
+            _authenticationDummyMethod.getBytes(0, len, bytes, index);
+            index += len;
         }
         else
         {
             // Reset this incase it was changed from a previous request
             _actualMethodPropsSent = _methodProperties;
-            index = Util.toByteAscii(method, bytes, index);
+            len = method.length();
+            method.getBytes(0, len, bytes, index);
+            index += len;
         }
 
-        index = Util.toByteAscii(" ", bytes, index);
+        bytes[index++] = ' ';
 
         if ((_actualMethodPropsSent & METHOD_PROP_REQ_LINE_URL) != 0)
         {
             if (_connection.isProxied() && !_connection.isTransparent())
             {
                 if (_connection.isSecure())
-                    index = Util.toByteAscii("https://", bytes, index);
+                    str = "https://";
                 else
-                    index = Util.toByteAscii("http://", bytes, index);
-                index = Util
-                        .toByteAscii(_connection._hostPortURL, bytes, index);
+                    str = "http://";
+                len = str.length();
+                str.getBytes(0, len, bytes, index);
+                index += len;
+
+                len = _connection._hostPortURL.length();
+                _connection._hostPortURL.getBytes(0, len, bytes, index);
+                index += len;
             }
-            index = Util.toByteAscii(_pathQuery, bytes, index);
+
+            len = _pathQuery.length();
+            _pathQuery.getBytes(0, len, bytes, index);
+            index += len;
 
             // For testing, works with ParamServlet
             if (_addDiagSequence)
             {
                 synchronized (getClass())
                 {
+                    // Don't care if this is slow
                     index = Util.toByteAscii("&Sequence=" + (++_diagSequence),
                                              bytes,
                                              index);
@@ -1119,17 +1139,21 @@ public class HttpURLConnectInternal
         }
         else if ((_actualMethodPropsSent & METHOD_PROP_REQ_LINE_STAR) != 0)
         {
-            index = Util.toByteAscii("*", bytes, index);
+            bytes[index++] = '*';
         }
         else if ((_actualMethodPropsSent & METHOD_PROP_REQ_LINE_HOST_PORT) != 0)
         {
             // Put the host/port junk on the front if required
-            index = Util.toByteAscii(_connection._hostPort, bytes, index);
+            len = _connection._hostPort.length();
+            _connection._hostPort.getBytes(0, len, bytes, index);
+            index += len;
         }
 
-        index = Util.toByteAscii(_http11 ? " HTTP/1.1\r\n" : " HTTP/1.0\r\n",
-                                 bytes,
-                                 index);
+        str = _http11 ? " HTTP/1.1\r\n" : " HTTP/1.0\r\n";
+        len = str.length();
+        str.getBytes(0, len, bytes, index);
+        index += len;
+
         _conOutStream.write(bytes, 0, index);
     }
 

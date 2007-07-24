@@ -9,6 +9,7 @@ package com.oaklandsw.http;
 import java.util.ArrayList;
 import java.util.StringTokenizer;
 
+import javax.net.ssl.SSLSession;
 import javax.net.ssl.SSLSocketFactory;
 
 import org.apache.commons.logging.Log;
@@ -102,8 +103,19 @@ public class GlobalState
 
     HttpUserAgent                  _defaultUserAgent;
 
+    private class DefaultHostnameVerifier implements HostnameVerifier
+    {
+        public boolean verify(String hostName, SSLSession session)
+        {
+            return false;
+        }
+    }
+
     public GlobalState()
     {
+        _defaultHostnameVerifier = new DefaultHostnameVerifier();
+        _defaultSSLSocketFactory = ((SSLSocketFactory)SSLSocketFactory
+                .getDefault());
     }
 
     void setConnManager(HttpConnectionManager connManager)
