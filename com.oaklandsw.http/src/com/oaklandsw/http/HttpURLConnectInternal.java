@@ -1619,7 +1619,7 @@ public class HttpURLConnectInternal
         if (_hdrLocation == null)
         {
             // got a redirect response, but no location header
-            _log.error("Received redirect response "
+            _connLog.error("Received redirect response "
                 + _responseCode
                 + " but no location header");
             return false;
@@ -1876,7 +1876,7 @@ public class HttpURLConnectInternal
 
         }
 
-        _connLog.error("Giving up after "
+        _connLog.debug("Giving up after "
             + MAX_FORWARDS
             + " forwards/authentication restarts");
         throw new HttpException("Maximum redirects/authentication restarts ("
@@ -1928,14 +1928,14 @@ public class HttpURLConnectInternal
         }
         catch (RuntimeException re)
         {
-            _connLog.error("Unexpected exception processing request ", re);
+            _connLog.debug("Unexpected exception processing request ", re);
             releaseConnection(CLOSE);
             _dead = true;
             throw re;
         }
         catch (Error e)
         {
-            _connLog.error("Unexpected error processing request ", e);
+            _connLog.debug("Unexpected error processing request ", e);
             releaseConnection(CLOSE);
             _dead = true;
             throw e;

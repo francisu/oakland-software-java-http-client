@@ -58,7 +58,7 @@ public class PerfComparisonTest
         { 6000, 2000, 300 }, { 6000, 2000, 300 }, { 6000, 2000, 300 },
         { 6000, 2000, 300 }, { 6000, 2000, 300 }, { 6000, 2000, 300 },
         { 6000, 2000, 300 }, { 6000, 2000, 300 }, { 6000, 2000, 300 },
-        { 6000, 2000, 300 }, { 6000, 2000, 300 }, { 6000, 2000, 300 } };
+        { 6000, 2000, 300 }, { 6000, 2000, 300 }, { 2000, 2000, 300 } };
 
     // Product Pipe depths
     // Product x pipeline depth
@@ -104,14 +104,14 @@ public class PerfComparisonTest
     public int                   _currentThreads;
 
     public int                   _singleSize            = -1;
-    public int                   _singleLocation        = 1;
+    public int                   _singleLocation        = 2;
     public int                   _singleConnectionLimit = -1;
     public int                   _singleProduct         = -1;
 
-    public int                   _startSize             = 9;
+    public int                   _startSize             = 6;
     public int                   _startLocation;
     public int                   _startConnectionLimit;
-    public int                   _startProduct;
+    public int                   _startProduct = 2;
 
     // Runs a set of tests
     public void runSet() throws Exception

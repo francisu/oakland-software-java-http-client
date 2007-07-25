@@ -113,6 +113,8 @@ public class GlobalState
 
     public GlobalState()
     {
+        _log.info("Oakland Software Java HTTP Client " + Version.VERSION);
+
         _defaultHostnameVerifier = new DefaultHostnameVerifier();
         _defaultSSLSocketFactory = ((SSLSocketFactory)SSLSocketFactory
                 .getDefault());

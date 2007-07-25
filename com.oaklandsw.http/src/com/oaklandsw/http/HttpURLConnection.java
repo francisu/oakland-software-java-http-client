@@ -612,8 +612,6 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
         // Turn off the logging if there is no log4j configuration
         LogUtils.checkInitialLogging();
 
-        _log.info("Oakland Software HttpURLConnection " + Version.VERSION);
-
         try
         {
             _inInit = true;
@@ -1432,13 +1430,13 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
         catch (HttpTimeoutException tex)
         {
             releaseConnection(CLOSE);
-            _log.error("HttpURL.getConn (timeout): ", tex);
+            _log.debug("HttpURL.getConn (timeout): ", tex);
             throw tex;
         }
         catch (IOException hex)
         {
             releaseConnection(CLOSE);
-            _log.error("HttpURL.getConn: ", hex);
+            _log.debug("HttpURL.getConn: ", hex);
             throw hex;
         }
         catch (InterruptedException ex)

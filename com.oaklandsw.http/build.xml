@@ -97,6 +97,8 @@
 			<zipfileset src="../com.oaklandsw.http.jars/backport-util-concurrent.jar" includes="**/AtomicInteger.class,**/locks/*.class,**/helpers/*.class,**/AbstractQueue*.class,**/**BlockingQueue*.class,**/AbstractCollection*.class,**/Queue*.class,**/TimeUnit*.class" excludes="**/*.txt" />
 			<zipfileset src="../com.oaklandsw.util.jars/${commons.logging.jar}" excludes="**/*.txt" />
 			<manifest>
+				<attribute name="Product-Version" value="${oaklandswVersion}" />
+				<attribute name="Created-By" value="Oakland Software Incorporated" />
 				<section name="org/apache/regexp/">
 					<attribute name="Sealed" value="true" />
 				</section>
