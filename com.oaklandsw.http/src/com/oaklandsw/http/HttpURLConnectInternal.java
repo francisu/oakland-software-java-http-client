@@ -15,6 +15,7 @@ import java.io.InterruptedIOException;
 import java.io.OutputStream;
 import java.net.MalformedURLException;
 import java.net.SocketException;
+import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.util.Map;
 
@@ -1252,7 +1253,7 @@ public class HttpURLConnectInternal
             }
             else
             {
-                _log.info("Received status CONTINUE but the body has already "
+                _log.debug("Received status CONTINUE but the body has already "
                     + "been sent");
                 // According to RFC 2616 this respose should be ignored
             }
@@ -1543,6 +1544,21 @@ public class HttpURLConnectInternal
 
                 break;
             }
+            catch (SocketTimeoutException ioe)
+            {
+                // SocketTimeoutException is a subclass of
+                // InterruptedIOException;
+                // but we want to handle as a timeout
+                HttpTimeoutException htex = new HttpTimeoutException();
+                htex.initCause(ioe);
+                if (_log.isDebugEnabled())
+                {
+                    _log.debug("Converted to "
+                        + ioe
+                        + " to HttpTimeoutException", htex);
+                }
+                throw htex;
+            }
             catch (InterruptedIOException ioiex)
             {
                 // Handled at a higher level
@@ -1551,56 +1567,61 @@ public class HttpURLConnectInternal
             catch (HttpException httpe)
             {
                 // This is non-recoverable, throw it up to the user
-                _connLog.info("HttpException when writing "
+                _connLog.debug("HttpException when writing "
                     + "request/reading response: ", httpe);
                 // Handled at a higher level
+                _dead = true;
                 throw httpe;
             }
             catch (IOException ioe)
             {
-                if (_connLog.isDebugEnabled())
-                {
-                    _connLog.debug("IOException when writing "
-                        + "request/reading response: ", ioe);
-                }
-
-                if (_tryCount >= _maxTries)
-                {
-                    _connManager
-                            .recordCount(HttpConnectionManager.COUNT_FAIL_MAX_RETRY);
-                    throw maxRetryExceededWrapper(ioe);
-                }
-
-                // This can be retried
-                releaseConnection(CLOSE);
-
-                // Pipelining and before write sent, retry here
-                if ((_pipeliningOptions & PIPE_PIPELINE) != 0 && !_requestSent)
-                {
-                    _connLog.debug("Retrying pipelining before request sent");
-                    // fall through and retry
-                }
-                else if (readSeparateFromWrite())
-                {
-                    if (_connLog.isWarnEnabled())
-                    {
-                        _connLog
-                                .warn("Retry not allowed for a streaming urlcon: "
-                                    + this);
-                    }
-                    // For pipelining in the read, retry happens at a higher
-                    // level
-                    throw ioe;
-                }
-
-                // So we resend the request on a retry
-                _requestSent = false;
-
-                _connManager.recordRetry(_connManager._retryCounts, _tryCount);
+                handleIOException(ioe);
             }
         }
         while (true);
 
+    }
+
+    private void handleIOException(IOException ioe) throws IOException
+    {
+        if (_connLog.isDebugEnabled())
+        {
+            _connLog.debug("IOException when writing "
+                + "request/reading response: ", ioe);
+        }
+
+        if (_tryCount >= _maxTries)
+        {
+            _connManager
+                    .recordCount(HttpConnectionManager.COUNT_FAIL_MAX_RETRY);
+            throw maxRetryExceededWrapper(ioe);
+        }
+
+        // This can be retried
+        releaseConnection(CLOSE);
+
+        // Pipelining and before write sent, retry here
+        if ((_pipeliningOptions & PIPE_PIPELINE) != 0 && !_requestSent)
+        {
+            _connLog.debug("Retrying pipelining before request sent");
+            // fall through and retry
+        }
+        else if (readSeparateFromWrite())
+        {
+            if (_connLog.isWarnEnabled())
+            {
+                _connLog.warn("Retry not allowed for a streaming urlcon: "
+                    + this);
+            }
+            // For pipelining in the read, retry happens at a higher
+            // level
+            throw ioe;
+        }
+
+        // So we resend the request on a retry
+        _requestSent = false;
+
+        _connManager.recordRetry(_connManager._retryCounts, _tryCount);
     }
 
     // Returns true if retry needed
@@ -1610,7 +1631,7 @@ public class HttpURLConnectInternal
 
         if (!getInstanceFollowRedirects())
         {
-            _log.info("Redirect requested but "
+            _log.debug("Redirect requested but "
                 + "followRedirects is "
                 + "disabled");
             return false;
@@ -1911,10 +1932,27 @@ public class HttpURLConnectInternal
             _executing = true;
             processRequestLoop();
         }
+        catch (SocketTimeoutException httpe)
+        {
+            // SocketTimeoutException is a subclass of InterruptedIOException,
+            // but we should not get it here because it it converted to an
+            // HttpTimeoutException at a lower level
+            Util.impossible("SocketTimeoutException should not be here", httpe);
+            // throws
+        }
         catch (InterruptedIOException ioiex)
         {
             // Timeout
-            _connLog.info("Timeout when reading response: ", ioiex);
+            _connLog.debug("Interrupted when reading response: ", ioiex);
+            releaseConnection(CLOSE);
+            _dead = true;
+            throw ioiex;
+        }
+        catch (HttpTimeoutException ioiex)
+        {
+            // Timeout
+            _connLog.debug("HttpTimeoutException when reading response: ",
+                           ioiex);
             releaseConnection(CLOSE);
             _dead = true;
             throw ioiex;
@@ -2110,7 +2148,7 @@ public class HttpURLConnectInternal
                 }
 
                 // Returns null if we can retry
-                IOException ioex = (IOException)attemptPipelinedRetry(_ioException);
+                Exception ioex = attemptPipelinedRetry(_ioException);
                 if (ioex == null)
                     return;
                 ex = ioex;
@@ -2266,10 +2304,11 @@ public class HttpURLConnectInternal
                         }
 
                         // Returns null if we can retry
-                        IOException ioex = (IOException)attemptPipelinedRetry(_ioException);
+                        Exception ioex = attemptPipelinedRetry(_ioException);
                         if (ioex == null)
                             return;
-                        _ioException = ioex;
+                        if (ioex instanceof IOException)
+                            _ioException = (IOException)ioex;
                     }
 
                 }
@@ -2302,14 +2341,14 @@ public class HttpURLConnectInternal
                 catch (IOException iex)
                 {
                     // We don't care about exception during close
-                    if (_connLog.isInfoEnabled())
+                    if (_connLog.isDebugEnabled())
                     {
                         _connLog
-                                .info("Exception during close of InputStream for: "
-                                          + this
-                                          + " conn: "
-                                          + _connection,
-                                      iex);
+                                .debug("Exception during close of InputStream for: "
+                                           + this
+                                           + " conn: "
+                                           + _connection,
+                                       iex);
                     }
                 }
 
@@ -2352,6 +2391,9 @@ public class HttpURLConnectInternal
         throws InterruptedException,
             InterruptedIOException
     {
+        if (_connManager != _globalState._connManager)
+            return new HttpException("Not retrying after immediateShutdown()");
+
         // If allowed, give it another go
         if (_tryCount < _maxTries)
         {
@@ -2635,7 +2677,7 @@ public class HttpURLConnectInternal
             releaseConnection(CLOSE);
         }
 
-        _connLog.info("Discarding response body - flushed " + len + " bytes ");
+        _connLog.debug("Discarding response body - flushed " + len + " bytes ");
     }
 
 }

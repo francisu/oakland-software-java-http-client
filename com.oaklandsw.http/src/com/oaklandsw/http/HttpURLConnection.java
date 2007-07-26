@@ -1861,7 +1861,10 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
         InputStream is;
 
         if (_dead)
-            return null;
+        {
+            throw new IllegalStateException("This HttpURLConnection has previously "
+                + "failed (and the error has been reported)");
+        }
 
         // Could be the type of request does not return data, just give
         // back an empty stream

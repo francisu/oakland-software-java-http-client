@@ -266,14 +266,6 @@ public class HttpTestBase extends com.oaklandsw.TestCaseBase
     // protected static String host = TestEnv.HOST;
     // protected static int port = TestEnv.PORT;
 
-    public static void setLogging(boolean on)
-    {
-        if (on)
-            LogUtils.logAll();
-        else
-            LogUtils.logNone();
-    }
-
     public static String getReply(HttpURLConnection urlCon)
     {
         try

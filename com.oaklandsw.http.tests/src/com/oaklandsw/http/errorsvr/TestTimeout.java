@@ -12,16 +12,23 @@ import com.oaklandsw.http.HttpTimeoutException;
 import com.oaklandsw.http.HttpTestBase;
 import com.oaklandsw.http.HttpTestEnv;
 import com.oaklandsw.http.HttpURLConnection;
+import com.oaklandsw.http.server.ErrorServer;
 import com.oaklandsw.util.LogUtils;
 
 public class TestTimeout extends HttpTestBase
 {
 
-    private static final Log   _log         = LogUtils.makeLogger();
+    private static final Log _log = LogUtils.makeLogger();
+
+    protected String         _timeoutWhen;
+
+    // Indicates the timeout happens sometime before the headers are complete
+    protected boolean        _timeoutBeforeHeaders;
 
     public TestTimeout(String testName)
     {
         super(testName);
+        _timeoutWhen = ErrorServer.ERROR_BEFORE_CONTENT;
     }
 
     public static Test suite()
@@ -38,40 +45,78 @@ public class TestTimeout extends HttpTestBase
     // Test read timeout
     public void testReadTimeout(int type) throws Exception
     {
-        // 1 second timeout
-        setupDefaultTimeout(type, 1000);
 
-        // Delay the content for 5 seconds
+        boolean connectTimeout = type == CONN_CONNECT || type == DEF_CONNECT;
+
+        int timeout = 500;
+
+        // 1 second timeout
+        setupDefaultTimeout(type, timeout);
+
+        // Delay the content for 3 seconds
         URL url = new URL(HttpTestEnv.TEST_URL_HOST_ERRORSVR
             + "?error=timeout"
-            + "&when=before-content"
-            + "&sec=5"
+            + "&when="
+            + _timeoutWhen
+            + "&sec=3"
             + _errorDebug);
 
         HttpURLConnection urlCon = HttpURLConnection.openConnection(url);
-        setupConnTimeout(urlCon, type, 1000);
+        setupConnTimeout(urlCon, type, timeout);
 
         urlCon.setRequestMethod("GET");
         urlCon.connect();
 
-        // Should work
-        urlCon.getResponseCode();
-
-        InputStream is = urlCon.getInputStream();
-
-        try
+        if (_timeoutBeforeHeaders)
         {
-            is.read();
-            if (type != CONN_CONNECT && type != DEF_CONNECT)
-                fail("Should have timed out on the read");
-            else
-                is.close();
+            try
+            {
+                urlCon.getInputStream().close();
+                if (!connectTimeout)
+                    fail("Should have timed out on the read");
+            }
+            catch (HttpTimeoutException ex)
+            {
+                if (connectTimeout)
+                    fail("These timeouts should have no effect");
+                // Expected
+            }
         }
-        catch (HttpTimeoutException ex)
+        else
         {
-            if (type == CONN_CONNECT || type == DEF_CONNECT)
-                fail("These timeouts should have no effect");
-            // Expected
+            // Should work
+            urlCon.getResponseCode();
+
+            InputStream is = urlCon.getInputStream();
+
+            try
+            {
+                is.read();
+                if (!connectTimeout)
+                    fail("Should have timed out on the read");
+                else
+                    is.close();
+            }
+            catch (HttpTimeoutException ex)
+            {
+                if (connectTimeout)
+                    fail("These timeouts should have no effect");
+                // Expected
+            }
+        }
+
+        // Make sure we never return a null InputStream
+        if (!connectTimeout)
+        {
+            try
+            {
+                assertNotNull(urlCon.getInputStream());
+                fail("Did not get expected exception");
+            }
+            catch (IllegalStateException ex)
+            {
+                // Expected
+            }
         }
 
         checkNoActiveConns(url);

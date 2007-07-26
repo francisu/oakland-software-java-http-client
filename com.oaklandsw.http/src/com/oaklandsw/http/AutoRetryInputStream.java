@@ -66,7 +66,9 @@ public abstract class AutoRetryInputStream extends InputStream
 
     protected abstract void closeSubclass(boolean closeConn) throws IOException;
 
-    protected void processIOException(IOException ex) throws IOException, InterruptedIOException
+    protected void processIOException(IOException ex)
+        throws IOException,
+            InterruptedIOException
     {
         if (_log.isDebugEnabled())
             _log.debug("IOException on read", ex);
@@ -87,7 +89,17 @@ public abstract class AutoRetryInputStream extends InputStream
         // does not mean the thread was interrupted (despite it being a subclass
         // if InterruptedIOException)
         if (ex instanceof SocketTimeoutException)
-            throw new HttpTimeoutException();
+        {
+            _urlCon._dead = true;
+            HttpTimeoutException htex = new HttpTimeoutException();
+            htex.initCause(ex);
+            if (_log.isDebugEnabled())
+            {
+                _log.debug("Converted to " + ex + " to HttpTimeoutException",
+                           htex);
+            }
+            throw htex;
+        }
         throw ex;
 
     }

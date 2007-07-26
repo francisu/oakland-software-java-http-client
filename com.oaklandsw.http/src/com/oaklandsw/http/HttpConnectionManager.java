@@ -75,7 +75,7 @@ public class HttpConnectionManager
 
     // Used to synchronize the pipeline related methods, as distinct
     // from the connection management methods which are synchronized
-    // with "this".  This is a lower-level lock than the conn mgr (this)
+    // with "this". This is a lower-level lock than the conn mgr (this)
     // lock, so make sure you don't lock the conn mgr (or anything else)
     // while holding this
     protected String              _pipelineLock;
@@ -353,7 +353,7 @@ public class HttpConnectionManager
             }
 
         }
-        
+
         // Do this outside of _pipelineLock since it locks
         // the conn mgr
         if (flushAll)
@@ -526,7 +526,14 @@ public class HttpConnectionManager
         }
 
         if (!HttpURLConnection._urlConReleased)
+        {
+            if (_connLog.isDebugEnabled())
+            {
+                _connLog.debug("Setting not released timeout: "
+                    + NOT_RELEASED_TIMEOUT);
+            }
             connectionTimeout = NOT_RELEASED_TIMEOUT;
+        }
 
         // Get the protocol and port (use default port if not specified)
         final String protocol = URIUtil.getProtocol(url);
@@ -592,16 +599,21 @@ public class HttpConnectionManager
                     if (!HttpURLConnection._urlConReleased
                         && connectionTimeout == NOT_RELEASED_TIMEOUT)
                     {
-                        throw new IllegalStateException("Possible programming error: "
+                        IllegalStateException ex = new IllegalStateException("Possible programming error: "
                             + "You have timed out waiting for a "
                             + "connection and our records indicate you have not "
                             + "called getInputStream() and read the results yet.  If "
                             + "the response code is successful (20x), "
                             + "and there is data returned, you must call "
                             + "getInputStream() and close the stream. ");
+                        if (_connLog.isDebugEnabled())
+                        {
+                            _connLog.debug("Possible programming error", ex);
+                        }
+                        throw ex;
                     }
 
-                    _connLog.info("Timed out waiting for connection");
+                    _connLog.debug("Timed out waiting for connection");
                     throw new HttpTimeoutException();
                 }
 

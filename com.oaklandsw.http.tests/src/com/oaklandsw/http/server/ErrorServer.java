@@ -34,8 +34,8 @@ import com.oaklandsw.util.URIUtil;
 // * status - specifies entire status line
 // * error - specifies "none", "timeout", "disconnect", or an HTTP error code
 // * when - one of: "before-read", "during-read", "before-headers",
-// "during-headers",
-// * "before-content", or "during-content"
+// "before-content", "during-content", "during-status",
+// "during-headers"
 // * lines - # of lines to output before
 // * failing (used only for "during-content" case).
 // * sec - timeout length in seconds (used only in "error=timeout" case)
@@ -55,9 +55,11 @@ public class ErrorServer extends Thread
 
     public static final String ERROR_BEFORE_READ    = "before-read";
     public static final String ERROR_BEFORE_CONTENT = "before-content";
+    public static final String ERROR_BEFORE_HEADERS = "before-headers";
     public static final String ERROR_DURING_CONTENT = "during-content";
     public static final String ERROR_DURING_READ    = "during-read";
-    public static final String ERROR_BEFORE_HEADERS = "before-headers";
+    public static final String ERROR_DURING_STATUS  = "during-status";
+    public static final String ERROR_DURING_HEADERS = "during-headers";
 
     public static final String ERROR_IDLE_TIMEOUT   = "idle-timeout";
 
@@ -86,28 +88,28 @@ public class ErrorServer extends Thread
     boolean                    _badContentLength;
     boolean                    _spaceContentLength;
 
-    Socket                     request;
+    Socket                     _request;
 
-    InputStream                is;
-    OutputStream               os;
-    PrintStream                ps;
+    InputStream                _is;
+    OutputStream               _os;
+    PrintStream                _ps;
 
-    boolean                    post;
+    boolean                    _post;
 
     boolean                    _postNoData;
 
-    String                     errorType;
-    String                     errorLoc;
-    int                        errorLines;
-    int                        errorSec;
+    String                     _errorType;
+    String                     _errorLoc;
+    int                        _errorLines;
+    int                        _errorSec;
 
-    static boolean             debug;
+    static boolean             _debug = !true;
 
-    static String              defaultError         = "none";
+    static String              _defaultError        = "none";
 
-    boolean                    unix                 = (File.separatorChar == '/');
+    boolean                    _unix                = (File.separatorChar == '/');
 
-    static int                 succeedAfter;
+    static int                 _succeedAfter;
 
     static boolean             _quit;
 
@@ -115,7 +117,7 @@ public class ErrorServer extends Thread
     // on the same socket.
     public ErrorServer(Socket incoming)
     {
-        this.request = incoming;
+        _request = incoming;
 
         // Normal end of line
         _endOfLine = "\r\n";
@@ -123,58 +125,58 @@ public class ErrorServer extends Thread
 
     private void setupOutput() throws IOException
     {
-        if (os != null)
+        if (_os != null)
             return;
-        os = request.getOutputStream();
-        ps = new PrintStream(os, true);
+        _os = _request.getOutputStream();
+        _ps = new PrintStream(_os, true);
     }
 
     private void print(String s)
     {
-        this.ps.print(s);
+        _ps.print(s);
     }
 
     private void println()
     {
-        this.ps.print(_endOfLine);
-        this.ps.flush();
+        _ps.print(_endOfLine);
+        _ps.flush();
     }
 
     private void println(String s)
     {
-        this.print(s);
-        this.println();
+        print(s);
+        println();
     }
 
     private boolean simulateError() throws IOException
     {
-        if (succeedAfter == 1)
+        if (_succeedAfter == 1)
         {
             // succeed despite error request for retry test
-            succeedAfter = 0;
+            _succeedAfter = 0;
             return false;
         }
-        else if (succeedAfter > 1)
+        else if (_succeedAfter > 1)
         {
-            succeedAfter--;
+            _succeedAfter--;
         }
-        if (this.errorType.equalsIgnoreCase("none"))
+        if (_errorType.equalsIgnoreCase("none"))
         {
             return false;
         }
-        else if (this.errorType.equalsIgnoreCase("timeout"))
+        else if (_errorType.equalsIgnoreCase("timeout"))
         {
             try
             {
-                if (errorSec == 0)
-                    errorSec = 20;
-                if (debug)
-                    System.out.println("Sleeping for " + errorSec);
-                Thread.sleep(this.errorSec * 1000);
+                if (_errorSec == 0)
+                    _errorSec = 20;
+                if (_debug)
+                    System.out.println("Sleeping for " + _errorSec);
+                Thread.sleep(_errorSec * 1000);
             }
             catch (InterruptedException ie)
             {
-                if (debug)
+                if (_debug)
                 {
                     System.out.println("ErrorServlet: InterruptedException "
                         + "attempting to timeout");
@@ -182,30 +184,30 @@ public class ErrorServer extends Thread
             }
             return false;
         }
-        else if (this.errorType.equalsIgnoreCase("disconnect"))
+        else if (_errorType.equalsIgnoreCase("disconnect"))
         {
-            if (debug)
+            if (_debug)
                 System.out.println("Disconnected");
-            request.close();
+            _request.close();
         }
         else
         {
             try
             {
-                int respCode = Integer.parseInt(this.errorType);
+                int respCode = Integer.parseInt(_errorType);
                 setupOutput();
-                this.println("HTTP/" + _version + " " + respCode + " error");
-                this.println();
-                this.println("Here is some explanatory text about the "
+                println("HTTP/" + _version + " " + respCode + " error");
+                println();
+                println("Here is some explanatory text about the "
                     + respCode
                     + " error.");
             }
             catch (NumberFormatException nfe)
             {
-                if (debug)
+                if (_debug)
                 {
                     System.out.println("Unknown error type requested: '"
-                        + this.errorType
+                        + _errorType
                         + "'");
                 }
             }
@@ -220,15 +222,15 @@ public class ErrorServer extends Thread
         while (!closeConnection)
         {
             // Will happen if the connection timed out
-            if (request == null)
+            if (_request == null)
                 return;
 
             // Assume we want to close the connection
             closeConnection = true;
 
             char[] buf = new char[10000];
-            if (is == null)
-                is = request.getInputStream();
+            if (_is == null)
+                _is = _request.getInputStream();
 
             char term[] = new char[] { '\r', '\n', '\r', '\n' };
             int termInd = 0;
@@ -236,7 +238,7 @@ public class ErrorServer extends Thread
             // Read only the headers, no other data
             for (;; i++)
             {
-                int c = is.read();
+                int c = _is.read();
                 if (c == -1)
                     break;
 
@@ -258,11 +260,13 @@ public class ErrorServer extends Thread
 
             if (i == 0)
             {
-                System.out.println("Stream EOF - thread returning");
+                if (_debug)
+                    System.out.println("Stream EOF - thread returning");
                 return;
             }
 
             String strBuf = new String(buf, 0, i);
+            if (_debug)
             System.out.println("got message: " + strBuf);
 
             StringTokenizer tok = new StringTokenizer(strBuf);
@@ -277,6 +281,7 @@ public class ErrorServer extends Thread
                     query = query.substring(1);
             }
 
+            if (_debug)
             System.out.println("Query: " + query);
             Map args = new HashMap();
             String name = null;
@@ -287,7 +292,7 @@ public class ErrorServer extends Thread
             while (st.hasMoreTokens())
             {
                 String token = st.nextToken();
-                System.out.println("Token: " + token);
+                //System.out.println("Token: " + token);
                 if (token.equals("&"))
                 {
                     val = val.replace('_', ' ');
@@ -315,14 +320,15 @@ public class ErrorServer extends Thread
                 args.put(name, val);
 
             if (args.get("debug") != null)
-                debug = true;
+                _debug = true;
 
             _statusLine = (String)args.get("status");
-            System.out.println("status: " + _statusLine);
+            if (_debug)System.out.println("status: " + _statusLine);
 
             if ((String)args.get("endOfLine") != null)
             {
                 _endOfLine = (String)args.get("endOfLine");
+                if (_debug)
                 System.out.println("endOfLine: " + _endOfLine);
                 _endOfLine = _endOfLine.replace('N', '\n');
                 _endOfLine = _endOfLine.replace('R', '\r');
@@ -353,39 +359,39 @@ public class ErrorServer extends Thread
             // First check for shutdown message
             if (args.get("quit") != null)
             {
-                this.setupOutput();
-                this.println("HTTP/" + _version + " 200 OK");
-                this.println();
-                this.println("goodbye!");
-                request.close();
+                setupOutput();
+                println("HTTP/" + _version + " 200 OK");
+                println();
+                println("goodbye!");
+                _request.close();
                 _quit = true;
             }
 
             if (method.equalsIgnoreCase("post"))
-                this.post = true;
+                _post = true;
 
-            if (debug)
+            if (_debug)
                 System.out.println("ErrorServer received request: " + query);
 
-            errorType = (String)args.get("error");
-            if (errorType == null)
-                errorType = defaultError;
-            errorLoc = (String)args.get("when");
-            if (errorLoc == null)
-                errorLoc = "before-headers";
+            _errorType = (String)args.get("error");
+            if (_errorType == null)
+                _errorType = _defaultError;
+            _errorLoc = (String)args.get("when");
+            if (_errorLoc == null)
+                _errorLoc = "before-headers";
 
             String linesStr = (String)args.get("lines");
             String secStr = (String)args.get("sec");
 
             if (linesStr != null)
-                errorLines = Integer.parseInt(linesStr);
+                _errorLines = Integer.parseInt(linesStr);
             else
-                errorLines = 0;
+                _errorLines = 0;
 
             if (secStr != null)
-                errorSec = Integer.parseInt(secStr);
+                _errorSec = Integer.parseInt(secStr);
             else
-                errorSec = 0;
+                _errorSec = 0;
 
             String idleTimeout = (String)args.get(ERROR_IDLE_TIMEOUT);
             if (idleTimeout != null)
@@ -399,17 +405,23 @@ public class ErrorServer extends Thread
                 {
                     try
                     {
+                        if (_debug)
+                        {
                         System.out.println("Starting timeout wait: "
                             + _idleTimeout);
+                        }
                         Thread.sleep(_idleTimeout);
+                        if (_debug)
+                        {
                         System.out.println("Connection timeout");
                         System.out.println("time: "
                             + System.currentTimeMillis());
-                        if (is != null)
-                            is.close();
-                        if (request != null)
-                            request.close();
-                        request = null;
+                        }
+                        if (_is != null)
+                            _is.close();
+                        if (_request != null)
+                            _request.close();
+                        _request = null;
                     }
                     catch (InterruptedException e)
                     {
@@ -429,71 +441,82 @@ public class ErrorServer extends Thread
 
             // If we aren't already in a retry loop, set number of
             // times to fail before success now.
-            if (succeedAfter == 0)
+            if (_succeedAfter == 0)
             {
                 String successStr = (String)args.get("success");
                 if (successStr != null)
-                    succeedAfter = Integer.parseInt(successStr);
+                    _succeedAfter = Integer.parseInt(successStr);
             }
 
-            if (debug)
+            if (_debug)
             {
-                System.out.println("errorType = " + errorType);
-                System.out.println("errorLoc = " + errorLoc);
-                System.out.println("errorLines = " + errorLines);
-                System.out.println("errorSec = " + errorSec);
-                System.out.println("succeedAfter = " + succeedAfter);
+                System.out.println("errorType = " + _errorType);
+                System.out.println("errorLoc = " + _errorLoc);
+                System.out.println("errorLines = " + _errorLines);
+                System.out.println("errorSec = " + _errorSec);
+                System.out.println("succeedAfter = " + _succeedAfter);
                 System.out.println("statusLine = " + _statusLine);
             }
 
-            if (post)
+            if (_post)
             {
-                if (errorLoc.equalsIgnoreCase(ERROR_BEFORE_READ)
-                    && this.simulateError())
+                if (_errorLoc.equalsIgnoreCase(ERROR_BEFORE_READ)
+                    && simulateError())
                     return;
                 if (!_postNoData)
                 {
                     while (true)
                     {
-                        int c = is.read();
+                        int c = _is.read();
                         if (c == -1)
                             break;
-                        if (errorLoc.equalsIgnoreCase(ERROR_DURING_READ)
-                            && this.simulateError())
+                        if (_errorLoc.equalsIgnoreCase(ERROR_DURING_READ)
+                            && simulateError())
                             return;
                     }
                 }
             }
-            if (errorLoc.equalsIgnoreCase(ERROR_BEFORE_HEADERS)
-                && this.simulateError())
+            if (_errorLoc.equalsIgnoreCase(ERROR_BEFORE_HEADERS)
+                && simulateError())
                 return;
 
             setupOutput();
 
+            String status;
             if (_statusLine != null)
-                this.println(_statusLine);
+                status = _statusLine;
             else
-                this.println("HTTP/" + _version + " 200 OK");
+                status = "HTTP/" + _version + " 200 OK";
+
+            if (_errorLoc.equalsIgnoreCase(ERROR_DURING_STATUS))
+            {
+                print(status.substring(0, 7));
+                simulateError();
+                print(status.substring(7));
+            }
+            else
+            {
+                println(status);
+            }
 
             if (_closeConnection)
             {
                 closeConnection = true;
-                this.println("Connection: close");
+                println("Connection: close");
             }
 
             if (_keepAlive)
             {
                 closeConnection = false;
-                this.println("Connection: keep-alive");
+                println("Connection: keep-alive");
             }
 
-            this.println("Cache-Control: no-cache");
+            println("Cache-Control: no-cache");
 
-            if (errorLoc.equalsIgnoreCase("during-headers")
-                && this.simulateError())
+            if (_errorLoc.equalsIgnoreCase("during-headers") && simulateError())
                 return;
 
-            this.println("Content-Type: text/html");
+            println("Content-Type: text/html");
             if (_contentLength)
             {
                 String cl;
@@ -508,38 +531,38 @@ public class ErrorServer extends Thread
                     cl = "badcl";
                 if (_spaceContentLength)
                     cl += "  ";
-                this.println("Content-Length: " + cl);
+                println("Content-Length: " + cl);
             }
 
-            this.println();
+            println();
 
-            if (errorLoc.equalsIgnoreCase(ERROR_BEFORE_CONTENT)
-                && this.simulateError())
+            if (_errorLoc.equalsIgnoreCase(ERROR_BEFORE_CONTENT)
+                && simulateError())
                 return;
 
             NumberFormat fmt = NumberFormat.getInstance();
             fmt.setMinimumIntegerDigits(3);
-            this.print("<html><body><table border=\"1\">");
-            this.println("<!-- xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx -->");
+            print("<html><body><table border=\"1\">");
+            println("<!-- xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx -->");
 
             for (int ln = 1; ln <= CONTENT_LOOPS; ln++)
             {
-                this.print("<tr><td>Line " + fmt.format(ln) + "</td>");
-                this.println("<td>xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+                print("<tr><td>Line " + fmt.format(ln) + "</td>");
+                println("<td>xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
                     + "</td></tr>");
-                if (errorLines == ln
-                    && errorLoc.equalsIgnoreCase(ERROR_DURING_CONTENT))
+                if (_errorLines == ln
+                    && _errorLoc.equalsIgnoreCase(ERROR_DURING_CONTENT))
                 {
-                    if (this.simulateError())
+                    if (simulateError())
                         return;
                 }
             }
-            this.println("</table></body></html>");
+            println("</table></body></html>");
 
             if (closeConnection)
             {
-                request.close();
-                request = null;
+                _request.close();
+                _request = null;
             }
         }
 
@@ -553,14 +576,15 @@ public class ErrorServer extends Thread
         }
         catch (Exception e)
         {
-            e.printStackTrace();
+            if (_debug)
+                e.printStackTrace();
         }
         finally
         {
             try
             {
-                if (request != null)
-                    request.close();
+                if (_request != null)
+                    _request.close();
             }
             catch (IOException ie)
             {
@@ -595,7 +619,7 @@ public class ErrorServer extends Thread
             if (argv.length > 0)
                 port = Integer.parseInt(argv[0]);
             if (argv.length > 1)
-                defaultError = argv[1];
+                _defaultError = argv[1];
             listener = new ServerSocket(port);
             // Setup "busy" listener to test connect timeout
             // new BusyThread().start();

@@ -196,9 +196,16 @@ public class TestDisconnect extends HttpTestBase
         // Connection will happen here and fail
         urlCon.getHeaderField(1);
 
-        // This should return null, since the connection has been closed
-        InputStream in = urlCon.getInputStream();
-        assertNull(in);
+        // This should throw since the connection has died
+        try
+        {
+            urlCon.getInputStream();
+            fail("Should get exception");
+        }
+        catch (IllegalStateException ex)
+        {
+            // Expected
+        }
     }
 
     // Bug 1433 - bad response code if connection closed

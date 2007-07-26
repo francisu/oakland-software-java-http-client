@@ -103,15 +103,15 @@ public class PerfComparisonTest
     public int                   _currentCountPerThread;
     public int                   _currentThreads;
 
-    public int                   _singleSize            = -1;
+    public int                   _singleSize            = 8;
     public int                   _singleLocation        = 2;
     public int                   _singleConnectionLimit = -1;
     public int                   _singleProduct         = -1;
 
-    public int                   _startSize             = 6;
+    public int                   _startSize             = 0; //11 = 1K
     public int                   _startLocation;
-    public int                   _startConnectionLimit;
-    public int                   _startProduct = 2;
+    public int                   _startConnectionLimit  = 0;
+    public int                   _startProduct          = 0;
 
     // Runs a set of tests
     public void runSet() throws Exception

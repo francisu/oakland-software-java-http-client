@@ -86,7 +86,6 @@ public class SimpleHttpConnection extends HttpConnection
     ByteArrayOutputStream    _bitBucket      = new ByteArrayOutputStream();
 
     static GlobalState       _globalState;
-    HttpConnectionManager    _connManager;
 
     static
     {

@@ -399,8 +399,8 @@ public class HttpConnection
         {
             throw new IllegalStateException("Called on a connection that is not an SSL connection");
         }
-        
-        return ((SSLSocket)_socket).getSession().getPeerCertificates();        
+
+        return ((SSLSocket)_socket).getSession().getPeerCertificates();
     }
 
     void setHost(String host) throws IllegalStateException
@@ -991,10 +991,13 @@ public class HttpConnection
         if (!certHost.equals(hostName.toLowerCase())
             && _hostnameVerifier != null)
         {
-            _connLog.info("Cert host: "
-                + certHost
-                + " does not match: "
-                + hostName);
+            if (_connLog.isInfoEnabled())
+            {
+                _connLog.info("Cert host: "
+                    + certHost
+                    + " does not match: "
+                    + hostName);
+            }
             SSLSession sess = ((SSLSocket)_socket).getSession();
             // if (_hostnameVerifier instanceof HostnameVerifier)
             // {

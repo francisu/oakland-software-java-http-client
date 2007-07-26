@@ -20,6 +20,8 @@ public class AllErrorsvrTests extends TestCaseBase
         suite.addTest(TestError.suite());
         suite.addTest(TestDisconnect.suite());
         suite.addTest(TestTimeout.suite());
+        suite.addTest(TestTimeoutBeforeHeaders.suite());
+        suite.addTest(TestTimeoutDuringStatus.suite());
         suite.addTest(TestData.suite());
         suite.addTest(TestStatusLine.suite());
         return suite;
