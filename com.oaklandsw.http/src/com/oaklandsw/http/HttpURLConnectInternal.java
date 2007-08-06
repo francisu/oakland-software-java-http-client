@@ -462,7 +462,7 @@ public class HttpURLConnectInternal
                 _reqHeaders.remove(HDR_CONTENT_LENGTH_BYTES);
             }
 
-            if (_streamingChunked)
+            if (_streamingMode == STREAM_CHUNKED)
             {
                 if (!_reqHeaders.find(HDR_TRANSFER_ENCODING_BYTES))
                     _reqHeaders.add(HDR_TRANSFER_ENCODING_BYTES,
@@ -1034,9 +1034,13 @@ public class HttpURLConnectInternal
         resetBeforeRequest();
 
         _log.trace("writeRequest");
-        writeRequestLine();
-        writeRequestHeaders();
-        _conOutStream.write(Util.CRLF_BYTES);
+
+        if (_streamingMode != STREAM_RAW)
+        {
+            writeRequestLine();
+            writeRequestHeaders();
+            _conOutStream.write(Util.CRLF_BYTES);
+        }
         // No flush until we have written all we are going to write
 
         if (useDummyAuthContent())
@@ -1053,7 +1057,7 @@ public class HttpURLConnectInternal
 
         // We don't write the body in streaming mode, the user does
         // that
-        if (isStreaming())
+        if (_streamingMode > STREAM_NONE)
         {
             _log.debug("writeRequest - streaming request header sent");
             _requestSent = true;
@@ -1860,7 +1864,7 @@ public class HttpURLConnectInternal
                     // the request so the normal pipelining mechanism can be
                     // used
                     if (_forwardAuthCount == 1
-                        && (isStreaming() || (_pipeliningOptions & PIPE_PIPELINE) != 0))
+                        && (_streamingMode > STREAM_NONE || (_pipeliningOptions & PIPE_PIPELINE) != 0))
                     {
                         _connLog.warn("setAuthenticationType() specified with "
                             + "pipelining/streaming, but no authorization "
@@ -1912,11 +1916,6 @@ public class HttpURLConnectInternal
         throws IOException,
             InterruptedIOException
     {
-        if (_log.isDebugEnabled())
-        {
-            _log.debug("executeStart " + method);
-        }
-
         if (_executed)
             return;
 
@@ -1925,6 +1924,11 @@ public class HttpURLConnectInternal
         {
             _log.debug("Method not specified, setting to GET");
             setRequestMethodInternal(HTTP_METHOD_GET);
+        }
+
+        if (_log.isDebugEnabled())
+        {
+            _log.debug("executeStart " + method);
         }
 
         try
@@ -1998,7 +2002,7 @@ public class HttpURLConnectInternal
         // earlier during authentication
         _actualMethodPropsSent = _methodProperties;
 
-        boolean streaming = isStreaming();
+        boolean streaming = _streamingMode > STREAM_NONE;
 
         // Handle the methods that allow data
         if (!streaming
@@ -2473,7 +2477,6 @@ public class HttpURLConnectInternal
         throws IOException,
             InterruptedIOException
     {
-
         if (ok)
         {
             _log.debug("streaming write finished");
@@ -2520,7 +2523,7 @@ public class HttpURLConnectInternal
     // to pipelining or streaming
     protected boolean readSeparateFromWrite()
     {
-        return (isStreaming() || (_pipeliningOptions & PIPE_PIPELINE) != 0)
+        return (_streamingMode > STREAM_NONE || (_pipeliningOptions & PIPE_PIPELINE) != 0)
             && (_currentAuthType == -1
                 || _authState[_currentAuthType] == AS_NONE || _authState[_currentAuthType] >= AS_FINAL_AUTH_SENT);
     }

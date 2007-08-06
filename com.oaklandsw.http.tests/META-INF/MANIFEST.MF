@@ -4,7 +4,6 @@ Bundle-Name: Tests Plug-in
 Bundle-SymbolicName: com.oaklandsw.http.tests
 Bundle-Version: 2.6.5
 Bundle-Vendor: OAKLANDSW
-Bundle-Localization: plugin
 Require-Bundle: com.oaklandsw.http,
  com.oaklandsw.util.jars,
  com.oaklandsw.util,

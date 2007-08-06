@@ -4,7 +4,6 @@ Bundle-Name: Http Plug-in
 Bundle-SymbolicName: com.oaklandsw.http
 Bundle-Version: 2.6.5
 Bundle-Vendor: OAKLANDSW
-Bundle-Localization: plugin
 Require-Bundle: com.oaklandsw.util.jars,
  com.oaklandsw.util,
  com.oaklandsw.http.jars

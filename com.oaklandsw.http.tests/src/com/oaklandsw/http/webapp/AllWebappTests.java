@@ -30,6 +30,7 @@ public class AllWebappTests extends TestCaseBase
         suite.addTest(TestOutputStream.suite());
         suite.addTest(TestOutputStreamChunked.suite());
         suite.addTest(TestOutputStreamFixed.suite());
+        suite.addTest(TestOutputStreamRaw.suite());
         suite.addTest(TestMultiThread.suite());
         suite.addTest(TestParameters.suite());
         suite.addTest(TestHeaders.suite());

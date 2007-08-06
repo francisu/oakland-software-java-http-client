@@ -16,6 +16,7 @@ import com.oaklandsw.http.servlet.HeaderServlet;
 import com.oaklandsw.http.servlet.ParamServlet;
 import com.oaklandsw.http.servlet.RedirectServlet;
 import com.oaklandsw.util.LogUtils;
+import com.oaklandsw.util.Util;
 
 public class TestMultiThread extends TestWebappBase
 {
@@ -213,13 +214,15 @@ public class TestMultiThread extends TestWebappBase
                             threadMethod(com.oaklandsw.http.HttpURLConnection.HTTP_METHOD_GET,
                                          RedirectServlet.NAME
                                              + "?to="
-                                             + URLEncoder.encode("http://"
-                                                 + HttpTestEnv.TOMCAT_HOST
-                                                 + ":"
-                                                 + HttpTestEnv.TEST_WEBAPP_PORT
-                                                 + "/"
-                                                 + context
-                                                 + ParamServlet.NAME),
+                                             + URLEncoder
+                                                     .encode("http://"
+                                                                 + HttpTestEnv.TOMCAT_HOST
+                                                                 + ":"
+                                                                 + HttpTestEnv.TEST_WEBAPP_PORT
+                                                                 + "/"
+                                                                 + context
+                                                                 + ParamServlet.NAME,
+                                                             Util.DEFAULT_ENCODING),
                                          "Param",
                                          false);
                             threadMethod(com.oaklandsw.http.HttpURLConnection.HTTP_METHOD_POST,

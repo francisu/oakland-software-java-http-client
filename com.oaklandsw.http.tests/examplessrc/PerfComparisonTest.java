@@ -57,8 +57,8 @@ public class PerfComparisonTest
     public static final int[][]  _sizeCounts            = new int[][] {
         { 6000, 2000, 300 }, { 6000, 2000, 300 }, { 6000, 2000, 300 },
         { 6000, 2000, 300 }, { 6000, 2000, 300 }, { 6000, 2000, 300 },
-        { 6000, 2000, 300 }, { 6000, 2000, 300 }, { 6000, 2000, 300 },
-        { 6000, 2000, 300 }, { 6000, 2000, 300 }, { 2000, 2000, 300 } };
+        { 6000, 2000, 300 }, { 6000, 2000, 300 }, { 6000, 2000, 100 },
+        { 6000, 2000, 100 }, { 6000, 2000, 100 }, { 2000, 2000, 100 } };
 
     // Product Pipe depths
     // Product x pipeline depth
@@ -106,7 +106,7 @@ public class PerfComparisonTest
     public int                   _singleSize            = 8;
     public int                   _singleLocation        = 2;
     public int                   _singleConnectionLimit = -1;
-    public int                   _singleProduct         = -1;
+    public int                   _singleProduct         = 2;
 
     public int                   _startSize             = 0; //11 = 1K
     public int                   _startLocation;

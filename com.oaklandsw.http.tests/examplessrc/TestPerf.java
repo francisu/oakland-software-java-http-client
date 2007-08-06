@@ -248,7 +248,8 @@ public class TestPerf
 
     public void run() throws Exception
     {
-        // LogUtils.logFile("/home/francis/log4jperf.txt");
+        
+        //LogUtils.logFile("/home/francis/log4jperf.txt");
 
         for (int i = 0; i < _repeatTestTimes; i++)
         {
@@ -414,7 +415,7 @@ public class TestPerf
 
         // Start clean
         System.gc();
-        
+
         System.out.println("Test starting");
 
         _actualTimes = 0;
@@ -518,8 +519,9 @@ public class TestPerf
                 }
             }
 
-            //URL url = new URL(urlToUse + "?rep=" + _repeatIndex + "&seq=" + i);
-            URL url = new URL(urlToUse);
+            URL url = new URL(urlToUse + "?rep=" + _repeatIndex + "&seq=" +
+             i);
+            //URL url = new URL(urlToUse);
 
             int responseCode = 0;
             switch (_implementation)
@@ -639,15 +641,14 @@ public class TestPerf
 
         for (int i = 0; i < threads.size(); i++)
         {
-            ((Thread)threads.get(i)).join(100000);
+            ((Thread)threads.get(i)).join();
         }
 
         if (_failed > 0)
             System.out.println("One or more threads failed");
     }
 
-    public void processStream(InputStream inputStream)
-        throws IOException
+    public void processStream(InputStream inputStream) throws IOException
     {
         int nb = 0;
         while (true)

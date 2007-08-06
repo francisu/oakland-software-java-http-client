@@ -18,6 +18,7 @@ import com.oaklandsw.http.HttpURLConnection;
 import com.oaklandsw.http.servlet.ParamServlet;
 import com.oaklandsw.http.servlet.RedirectServlet;
 import com.oaklandsw.util.LogUtils;
+import com.oaklandsw.util.Util;
 
 public class TestRedirect extends TestWebappBase
 {
@@ -55,7 +56,7 @@ public class TestRedirect extends TestWebappBase
                 + HttpTestEnv.TEST_WEBAPP_PORT
                 + "/"
                 + context
-                + ParamServlet.NAME);
+                + ParamServlet.NAME, Util.DEFAULT_ENCODING);
         int response = 0;
 
         URL url;
@@ -148,7 +149,7 @@ public class TestRedirect extends TestWebappBase
                 + portRedir
                 + "/"
                 + context
-                + ParamServlet.NAME));
+                + ParamServlet.NAME, Util.DEFAULT_ENCODING));
         int response = 0;
 
         HttpURLConnection urlCon = (HttpURLConnection)url.openConnection();
@@ -222,7 +223,7 @@ public class TestRedirect extends TestWebappBase
                 + HttpTestEnv.TEST_WEBAPP_PORT
                 + "/"
                 + context
-                + ParamServlet.NAME));
+                + ParamServlet.NAME, Util.DEFAULT_ENCODING));
         int response = 0;
 
         HttpURLConnection urlCon = (HttpURLConnection)url.openConnection();
@@ -241,7 +242,8 @@ public class TestRedirect extends TestWebappBase
         URL url = new URL(_urlBase
             + RedirectServlet.NAME
             + "?to="
-            + URLEncoder.encode("/" + context + "/params"));
+            + URLEncoder.encode("/" + context + "/params",
+                                Util.DEFAULT_ENCODING));
         int response = 0;
 
         HttpURLConnection urlCon = (HttpURLConnection)url.openConnection();
@@ -262,7 +264,8 @@ public class TestRedirect extends TestWebappBase
         URL url = new URL(_urlBase
             + RedirectServlet.NAME
             + "?to="
-            + URLEncoder.encode("/" + context + "/params"));
+            + URLEncoder.encode("/" + context + "/params",
+                                Util.DEFAULT_ENCODING));
 
         HttpURLConnection urlCon = (HttpURLConnection)url.openConnection();
         urlCon.setFixedLengthStreamingMode(5);
@@ -292,7 +295,7 @@ public class TestRedirect extends TestWebappBase
             + HttpTestEnv.TEST_WEBAPP_PORT
             + "/"
             + context
-            + "/params?foo=bar&bar=foo");
+            + "/params?foo=bar&bar=foo", Util.DEFAULT_ENCODING);
 
         URL url = new URL(_urlBase + RedirectServlet.NAME + "?to=" + qs);
         int response = 0;
@@ -320,7 +323,7 @@ public class TestRedirect extends TestWebappBase
                 + HttpTestEnv.TEST_WEBAPP_PORT
                 + "/"
                 + context
-                + "/params?foo=bar");
+                + "/params?foo=bar", Util.DEFAULT_ENCODING);
         for (int i = 0; i < 10; i++)
         {
             qs = "to="
@@ -331,7 +334,7 @@ public class TestRedirect extends TestWebappBase
                     + "/"
                     + context
                     + "/redirect?"
-                    + qs);
+                    + qs, Util.DEFAULT_ENCODING);
         }
 
         URL url = new URL(_urlBase + RedirectServlet.NAME + "?" + qs);
@@ -362,7 +365,7 @@ public class TestRedirect extends TestWebappBase
                 + HttpTestEnv.TEST_WEBAPP_PORT
                 + "/"
                 + context
-                + "/params?foo=bar&bar=foo");
+                + "/params?foo=bar&bar=foo", Util.DEFAULT_ENCODING);
         URL url = new URL(_urlBase + RedirectServlet.NAME);
         int response = 0;
 

@@ -159,7 +159,6 @@ public class TestJCIFS extends TestWebappBase
     {
         Ntlm._forceNtlmType = Ntlm.FORCE_V1;
         testGetMethodParameters(TestUserAgent.BAD, ParamServlet.NAME_NTLM2);
-
     }
 
     public void test2Normal() throws Exception

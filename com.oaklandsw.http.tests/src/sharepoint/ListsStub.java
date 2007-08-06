@@ -593,9 +593,8 @@
                         // we cannot intantiate the class - throw the original Axis fault
                         throw f;
                     }
-                }else{
-                    throw f;
                 }
+                throw f;
             }else{
                 throw f;
             }
@@ -3542,17 +3541,8 @@
                 
 
                 
-                // Note all attributes that were handled. Used to differ normal attributes
-                // from anyAttributes.
-                java.util.Vector handledAttributes = new java.util.Vector();
-                
-
-                boolean isReaderMTOMAware = false;
-                
                 try{
-                  isReaderMTOMAware = java.lang.Boolean.TRUE.equals(reader.getProperty(org.apache.axiom.om.OMConstants.IS_DATA_HANDLERS_AWARE));
                 }catch(java.lang.IllegalArgumentException e){
-                  isReaderMTOMAware = false;
                 }
 
 
@@ -3841,16 +3831,8 @@
                 
                 // Note all attributes that were handled. Used to differ normal attributes
                 // from anyAttributes.
-                java.util.Vector handledAttributes = new java.util.Vector();
                 
 
-                boolean isReaderMTOMAware = false;
-                
-                try{
-                  isReaderMTOMAware = java.lang.Boolean.TRUE.equals(reader.getProperty(org.apache.axiom.om.OMConstants.IS_DATA_HANDLERS_AWARE));
-                }catch(java.lang.IllegalArgumentException e){
-                  isReaderMTOMAware = false;
-                }
 
 
                 
@@ -4138,16 +4120,7 @@
                 
                 // Note all attributes that were handled. Used to differ normal attributes
                 // from anyAttributes.
-                java.util.Vector handledAttributes = new java.util.Vector();
                 
-
-                boolean isReaderMTOMAware = false;
-                
-                try{
-                  isReaderMTOMAware = java.lang.Boolean.TRUE.equals(reader.getProperty(org.apache.axiom.om.OMConstants.IS_DATA_HANDLERS_AWARE));
-                }catch(java.lang.IllegalArgumentException e){
-                  isReaderMTOMAware = false;
-                }
 
 
                 
@@ -4479,17 +4452,7 @@
                 
                 // Note all attributes that were handled. Used to differ normal attributes
                 // from anyAttributes.
-                java.util.Vector handledAttributes = new java.util.Vector();
                 
-
-                boolean isReaderMTOMAware = false;
-                
-                try{
-                  isReaderMTOMAware = java.lang.Boolean.TRUE.equals(reader.getProperty(org.apache.axiom.om.OMConstants.IS_DATA_HANDLERS_AWARE));
-                }catch(java.lang.IllegalArgumentException e){
-                  isReaderMTOMAware = false;
-                }
-
 
                 
                     
@@ -4740,17 +4703,7 @@
                 
                 // Note all attributes that were handled. Used to differ normal attributes
                 // from anyAttributes.
-                java.util.Vector handledAttributes = new java.util.Vector();
                 
-
-                boolean isReaderMTOMAware = false;
-                
-                try{
-                  isReaderMTOMAware = java.lang.Boolean.TRUE.equals(reader.getProperty(org.apache.axiom.om.OMConstants.IS_DATA_HANDLERS_AWARE));
-                }catch(java.lang.IllegalArgumentException e){
-                  isReaderMTOMAware = false;
-                }
-
 
                    
                 while(!reader.isEndElement()) {
@@ -5022,19 +4975,8 @@
                 
                 // Note all attributes that were handled. Used to differ normal attributes
                 // from anyAttributes.
-                java.util.Vector handledAttributes = new java.util.Vector();
                 
 
-                boolean isReaderMTOMAware = false;
-                
-                try{
-                  isReaderMTOMAware = java.lang.Boolean.TRUE.equals(reader.getProperty(org.apache.axiom.om.OMConstants.IS_DATA_HANDLERS_AWARE));
-                }catch(java.lang.IllegalArgumentException e){
-                  isReaderMTOMAware = false;
-                }
-
-
-                
                     
                     reader.next();
                 
@@ -5552,17 +5494,7 @@
                 
                 // Note all attributes that were handled. Used to differ normal attributes
                 // from anyAttributes.
-                java.util.Vector handledAttributes = new java.util.Vector();
                 
-
-                boolean isReaderMTOMAware = false;
-                
-                try{
-                  isReaderMTOMAware = java.lang.Boolean.TRUE.equals(reader.getProperty(org.apache.axiom.om.OMConstants.IS_DATA_HANDLERS_AWARE));
-                }catch(java.lang.IllegalArgumentException e){
-                  isReaderMTOMAware = false;
-                }
-
 
                 
                     
@@ -6179,7 +6111,6 @@
                 
                 // Note all attributes that were handled. Used to differ normal attributes
                 // from anyAttributes.
-                java.util.Vector handledAttributes = new java.util.Vector();
                 
 
                 boolean isReaderMTOMAware = false;
@@ -6487,17 +6418,7 @@
                 
                 // Note all attributes that were handled. Used to differ normal attributes
                 // from anyAttributes.
-                java.util.Vector handledAttributes = new java.util.Vector();
                 
-
-                boolean isReaderMTOMAware = false;
-                
-                try{
-                  isReaderMTOMAware = java.lang.Boolean.TRUE.equals(reader.getProperty(org.apache.axiom.om.OMConstants.IS_DATA_HANDLERS_AWARE));
-                }catch(java.lang.IllegalArgumentException e){
-                  isReaderMTOMAware = false;
-                }
-
 
                 
                     
@@ -6752,19 +6673,8 @@
                 
                 // Note all attributes that were handled. Used to differ normal attributes
                 // from anyAttributes.
-                java.util.Vector handledAttributes = new java.util.Vector();
                 
 
-                boolean isReaderMTOMAware = false;
-                
-                try{
-                  isReaderMTOMAware = java.lang.Boolean.TRUE.equals(reader.getProperty(org.apache.axiom.om.OMConstants.IS_DATA_HANDLERS_AWARE));
-                }catch(java.lang.IllegalArgumentException e){
-                  isReaderMTOMAware = false;
-                }
-
-
-                
                     
                     reader.next();
                 
@@ -7152,19 +7062,8 @@
                 
                 // Note all attributes that were handled. Used to differ normal attributes
                 // from anyAttributes.
-                java.util.Vector handledAttributes = new java.util.Vector();
                 
 
-                boolean isReaderMTOMAware = false;
-                
-                try{
-                  isReaderMTOMAware = java.lang.Boolean.TRUE.equals(reader.getProperty(org.apache.axiom.om.OMConstants.IS_DATA_HANDLERS_AWARE));
-                }catch(java.lang.IllegalArgumentException e){
-                  isReaderMTOMAware = false;
-                }
-
-
-                
                     
                     reader.next();
                 
@@ -7448,19 +7347,8 @@
                 
                 // Note all attributes that were handled. Used to differ normal attributes
                 // from anyAttributes.
-                java.util.Vector handledAttributes = new java.util.Vector();
                 
 
-                boolean isReaderMTOMAware = false;
-                
-                try{
-                  isReaderMTOMAware = java.lang.Boolean.TRUE.equals(reader.getProperty(org.apache.axiom.om.OMConstants.IS_DATA_HANDLERS_AWARE));
-                }catch(java.lang.IllegalArgumentException e){
-                  isReaderMTOMAware = false;
-                }
-
-
-                
                     
                     reader.next();
                 
@@ -7745,19 +7633,8 @@
                 
                 // Note all attributes that were handled. Used to differ normal attributes
                 // from anyAttributes.
-                java.util.Vector handledAttributes = new java.util.Vector();
                 
 
-                boolean isReaderMTOMAware = false;
-                
-                try{
-                  isReaderMTOMAware = java.lang.Boolean.TRUE.equals(reader.getProperty(org.apache.axiom.om.OMConstants.IS_DATA_HANDLERS_AWARE));
-                }catch(java.lang.IllegalArgumentException e){
-                  isReaderMTOMAware = false;
-                }
-
-
-                
                     
                     reader.next();
                 
@@ -8042,19 +7919,8 @@
                 
                 // Note all attributes that were handled. Used to differ normal attributes
                 // from anyAttributes.
-                java.util.Vector handledAttributes = new java.util.Vector();
                 
 
-                boolean isReaderMTOMAware = false;
-                
-                try{
-                  isReaderMTOMAware = java.lang.Boolean.TRUE.equals(reader.getProperty(org.apache.axiom.om.OMConstants.IS_DATA_HANDLERS_AWARE));
-                }catch(java.lang.IllegalArgumentException e){
-                  isReaderMTOMAware = false;
-                }
-
-
-                
                     
                     reader.next();
                 
@@ -8356,17 +8222,7 @@
                 
                 // Note all attributes that were handled. Used to differ normal attributes
                 // from anyAttributes.
-                java.util.Vector handledAttributes = new java.util.Vector();
                 
-
-                boolean isReaderMTOMAware = false;
-                
-                try{
-                  isReaderMTOMAware = java.lang.Boolean.TRUE.equals(reader.getProperty(org.apache.axiom.om.OMConstants.IS_DATA_HANDLERS_AWARE));
-                }catch(java.lang.IllegalArgumentException e){
-                  isReaderMTOMAware = false;
-                }
-
 
                 
                     
@@ -9058,17 +8914,7 @@
                 
                 // Note all attributes that were handled. Used to differ normal attributes
                 // from anyAttributes.
-                java.util.Vector handledAttributes = new java.util.Vector();
                 
-
-                boolean isReaderMTOMAware = false;
-                
-                try{
-                  isReaderMTOMAware = java.lang.Boolean.TRUE.equals(reader.getProperty(org.apache.axiom.om.OMConstants.IS_DATA_HANDLERS_AWARE));
-                }catch(java.lang.IllegalArgumentException e){
-                  isReaderMTOMAware = false;
-                }
-
 
                 
                     
@@ -9407,15 +9253,10 @@
                 
                 // Note all attributes that were handled. Used to differ normal attributes
                 // from anyAttributes.
-                java.util.Vector handledAttributes = new java.util.Vector();
                 
 
-                boolean isReaderMTOMAware = false;
-                
                 try{
-                  isReaderMTOMAware = java.lang.Boolean.TRUE.equals(reader.getProperty(org.apache.axiom.om.OMConstants.IS_DATA_HANDLERS_AWARE));
                 }catch(java.lang.IllegalArgumentException e){
-                  isReaderMTOMAware = false;
                 }
 
 
@@ -9721,15 +9562,10 @@
                 
                 // Note all attributes that were handled. Used to differ normal attributes
                 // from anyAttributes.
-                java.util.Vector handledAttributes = new java.util.Vector();
                 
 
-                boolean isReaderMTOMAware = false;
-                
                 try{
-                  isReaderMTOMAware = java.lang.Boolean.TRUE.equals(reader.getProperty(org.apache.axiom.om.OMConstants.IS_DATA_HANDLERS_AWARE));
                 }catch(java.lang.IllegalArgumentException e){
-                  isReaderMTOMAware = false;
                 }
 
 
@@ -10018,7 +9854,6 @@
         */
         public static UndoCheckOut parse(javax.xml.stream.XMLStreamReader reader) throws java.lang.Exception{
             UndoCheckOut object = new UndoCheckOut();
-            int event;
             try {
                 
                 while (!reader.isStartElement() && !reader.isEndElement())
@@ -10048,17 +9883,7 @@
                 
                 // Note all attributes that were handled. Used to differ normal attributes
                 // from anyAttributes.
-                java.util.Vector handledAttributes = new java.util.Vector();
                 
-
-                boolean isReaderMTOMAware = false;
-                
-                try{
-                  isReaderMTOMAware = java.lang.Boolean.TRUE.equals(reader.getProperty(org.apache.axiom.om.OMConstants.IS_DATA_HANDLERS_AWARE));
-                }catch(java.lang.IllegalArgumentException e){
-                  isReaderMTOMAware = false;
-                }
-
 
                 
                     
@@ -10772,7 +10597,6 @@
         */
         public static CheckOutFileResponse parse(javax.xml.stream.XMLStreamReader reader) throws java.lang.Exception{
             CheckOutFileResponse object = new CheckOutFileResponse();
-            int event;
             try {
                 
                 while (!reader.isStartElement() && !reader.isEndElement())
@@ -10802,16 +10626,7 @@
                 
                 // Note all attributes that were handled. Used to differ normal attributes
                 // from anyAttributes.
-                java.util.Vector handledAttributes = new java.util.Vector();
                 
-
-                boolean isReaderMTOMAware = false;
-                
-                try{
-                  isReaderMTOMAware = java.lang.Boolean.TRUE.equals(reader.getProperty(org.apache.axiom.om.OMConstants.IS_DATA_HANDLERS_AWARE));
-                }catch(java.lang.IllegalArgumentException e){
-                  isReaderMTOMAware = false;
-                }
 
 
                 
@@ -11021,7 +10836,6 @@
         */
         public static GetListCollection parse(javax.xml.stream.XMLStreamReader reader) throws java.lang.Exception{
             GetListCollection object = new GetListCollection();
-            int event;
             try {
                 
                 while (!reader.isStartElement() && !reader.isEndElement())
@@ -11051,17 +10865,7 @@
                 
                 // Note all attributes that were handled. Used to differ normal attributes
                 // from anyAttributes.
-                java.util.Vector handledAttributes = new java.util.Vector();
                 
-
-                boolean isReaderMTOMAware = false;
-                
-                try{
-                  isReaderMTOMAware = java.lang.Boolean.TRUE.equals(reader.getProperty(org.apache.axiom.om.OMConstants.IS_DATA_HANDLERS_AWARE));
-                }catch(java.lang.IllegalArgumentException e){
-                  isReaderMTOMAware = false;
-                }
-
 
                 
                     
@@ -11287,7 +11091,6 @@
         */
         public static Contains_type13 parse(javax.xml.stream.XMLStreamReader reader) throws java.lang.Exception{
             Contains_type13 object = new Contains_type13();
-            int event;
             try {
                 
                 while (!reader.isStartElement() && !reader.isEndElement())
@@ -11317,16 +11120,7 @@
                 
                 // Note all attributes that were handled. Used to differ normal attributes
                 // from anyAttributes.
-                java.util.Vector handledAttributes = new java.util.Vector();
                 
-
-                boolean isReaderMTOMAware = false;
-                
-                try{
-                  isReaderMTOMAware = java.lang.Boolean.TRUE.equals(reader.getProperty(org.apache.axiom.om.OMConstants.IS_DATA_HANDLERS_AWARE));
-                }catch(java.lang.IllegalArgumentException e){
-                  isReaderMTOMAware = false;
-                }
 
 
                 
@@ -11801,7 +11595,6 @@
         */
         public static DeleteAttachment parse(javax.xml.stream.XMLStreamReader reader) throws java.lang.Exception{
             DeleteAttachment object = new DeleteAttachment();
-            int event;
             try {
                 
                 while (!reader.isStartElement() && !reader.isEndElement())
@@ -11831,17 +11624,7 @@
                 
                 // Note all attributes that were handled. Used to differ normal attributes
                 // from anyAttributes.
-                java.util.Vector handledAttributes = new java.util.Vector();
                 
-
-                boolean isReaderMTOMAware = false;
-                
-                try{
-                  isReaderMTOMAware = java.lang.Boolean.TRUE.equals(reader.getProperty(org.apache.axiom.om.OMConstants.IS_DATA_HANDLERS_AWARE));
-                }catch(java.lang.IllegalArgumentException e){
-                  isReaderMTOMAware = false;
-                }
-
 
                 
                     
@@ -12304,7 +12087,6 @@
         */
         public static UpdateContentTypeXmlDocument parse(javax.xml.stream.XMLStreamReader reader) throws java.lang.Exception{
             UpdateContentTypeXmlDocument object = new UpdateContentTypeXmlDocument();
-            int event;
             try {
                 
                 while (!reader.isStartElement() && !reader.isEndElement())
@@ -12334,19 +12116,8 @@
                 
                 // Note all attributes that were handled. Used to differ normal attributes
                 // from anyAttributes.
-                java.util.Vector handledAttributes = new java.util.Vector();
                 
 
-                boolean isReaderMTOMAware = false;
-                
-                try{
-                  isReaderMTOMAware = java.lang.Boolean.TRUE.equals(reader.getProperty(org.apache.axiom.om.OMConstants.IS_DATA_HANDLERS_AWARE));
-                }catch(java.lang.IllegalArgumentException e){
-                  isReaderMTOMAware = false;
-                }
-
-
-                
                     
                     reader.next();
                 
@@ -13067,7 +12838,6 @@
         */
         public static UpdateContentType parse(javax.xml.stream.XMLStreamReader reader) throws java.lang.Exception{
             UpdateContentType object = new UpdateContentType();
-            int event;
             try {
                 
                 while (!reader.isStartElement() && !reader.isEndElement())
@@ -13097,16 +12867,7 @@
                 
                 // Note all attributes that were handled. Used to differ normal attributes
                 // from anyAttributes.
-                java.util.Vector handledAttributes = new java.util.Vector();
                 
-
-                boolean isReaderMTOMAware = false;
-                
-                try{
-                  isReaderMTOMAware = java.lang.Boolean.TRUE.equals(reader.getProperty(org.apache.axiom.om.OMConstants.IS_DATA_HANDLERS_AWARE));
-                }catch(java.lang.IllegalArgumentException e){
-                  isReaderMTOMAware = false;
-                }
 
 
                 
@@ -13425,7 +13186,6 @@
         */
         public static GetListItemChangesResult_type23 parse(javax.xml.stream.XMLStreamReader reader) throws java.lang.Exception{
             GetListItemChangesResult_type23 object = new GetListItemChangesResult_type23();
-            int event;
             try {
                 
                 while (!reader.isStartElement() && !reader.isEndElement())
@@ -13455,17 +13215,7 @@
                 
                 // Note all attributes that were handled. Used to differ normal attributes
                 // from anyAttributes.
-                java.util.Vector handledAttributes = new java.util.Vector();
                 
-
-                boolean isReaderMTOMAware = false;
-                
-                try{
-                  isReaderMTOMAware = java.lang.Boolean.TRUE.equals(reader.getProperty(org.apache.axiom.om.OMConstants.IS_DATA_HANDLERS_AWARE));
-                }catch(java.lang.IllegalArgumentException e){
-                  isReaderMTOMAware = false;
-                }
-
 
                 
                     
@@ -13853,7 +13603,6 @@
         */
         public static DeleteContentType parse(javax.xml.stream.XMLStreamReader reader) throws java.lang.Exception{
             DeleteContentType object = new DeleteContentType();
-            int event;
             try {
                 
                 while (!reader.isStartElement() && !reader.isEndElement())
@@ -13883,19 +13632,8 @@
                 
                 // Note all attributes that were handled. Used to differ normal attributes
                 // from anyAttributes.
-                java.util.Vector handledAttributes = new java.util.Vector();
                 
 
-                boolean isReaderMTOMAware = false;
-                
-                try{
-                  isReaderMTOMAware = java.lang.Boolean.TRUE.equals(reader.getProperty(org.apache.axiom.om.OMConstants.IS_DATA_HANDLERS_AWARE));
-                }catch(java.lang.IllegalArgumentException e){
-                  isReaderMTOMAware = false;
-                }
-
-
-                
                     
                     reader.next();
                 
@@ -14369,7 +14107,6 @@
         */
         public static CheckInFile parse(javax.xml.stream.XMLStreamReader reader) throws java.lang.Exception{
             CheckInFile object = new CheckInFile();
-            int event;
             try {
                 
                 while (!reader.isStartElement() && !reader.isEndElement())
@@ -14399,19 +14136,8 @@
                 
                 // Note all attributes that were handled. Used to differ normal attributes
                 // from anyAttributes.
-                java.util.Vector handledAttributes = new java.util.Vector();
                 
 
-                boolean isReaderMTOMAware = false;
-                
-                try{
-                  isReaderMTOMAware = java.lang.Boolean.TRUE.equals(reader.getProperty(org.apache.axiom.om.OMConstants.IS_DATA_HANDLERS_AWARE));
-                }catch(java.lang.IllegalArgumentException e){
-                  isReaderMTOMAware = false;
-                }
-
-
-                
                     
                     reader.next();
                 
@@ -14683,7 +14409,6 @@
         */
         public static GetAttachmentCollectionResult_type37 parse(javax.xml.stream.XMLStreamReader reader) throws java.lang.Exception{
             GetAttachmentCollectionResult_type37 object = new GetAttachmentCollectionResult_type37();
-            int event;
             try {
                 
                 while (!reader.isStartElement() && !reader.isEndElement())
@@ -14713,20 +14438,8 @@
                 
                 // Note all attributes that were handled. Used to differ normal attributes
                 // from anyAttributes.
-                java.util.Vector handledAttributes = new java.util.Vector();
                 
 
-                boolean isReaderMTOMAware = false;
-                
-                try{
-                  isReaderMTOMAware = java.lang.Boolean.TRUE.equals(reader.getProperty(org.apache.axiom.om.OMConstants.IS_DATA_HANDLERS_AWARE));
-                }catch(java.lang.IllegalArgumentException e){
-                  isReaderMTOMAware = false;
-                }
-
-
-                
-                    
                     reader.next();
                 
                                     
@@ -14981,7 +14694,6 @@
         */
         public static ContentTypeProperties_type7 parse(javax.xml.stream.XMLStreamReader reader) throws java.lang.Exception{
             ContentTypeProperties_type7 object = new ContentTypeProperties_type7();
-            int event;
             try {
                 
                 while (!reader.isStartElement() && !reader.isEndElement())
@@ -15011,19 +14723,8 @@
                 
                 // Note all attributes that were handled. Used to differ normal attributes
                 // from anyAttributes.
-                java.util.Vector handledAttributes = new java.util.Vector();
                 
 
-                boolean isReaderMTOMAware = false;
-                
-                try{
-                  isReaderMTOMAware = java.lang.Boolean.TRUE.equals(reader.getProperty(org.apache.axiom.om.OMConstants.IS_DATA_HANDLERS_AWARE));
-                }catch(java.lang.IllegalArgumentException e){
-                  isReaderMTOMAware = false;
-                }
-
-
-                
                     
                     reader.next();
                 
@@ -15296,7 +14997,6 @@
         */
         public static UpdateContentTypeXmlDocumentResponse parse(javax.xml.stream.XMLStreamReader reader) throws java.lang.Exception{
             UpdateContentTypeXmlDocumentResponse object = new UpdateContentTypeXmlDocumentResponse();
-            int event;
             try {
                 
                 while (!reader.isStartElement() && !reader.isEndElement())
@@ -15326,19 +15026,8 @@
                 
                 // Note all attributes that were handled. Used to differ normal attributes
                 // from anyAttributes.
-                java.util.Vector handledAttributes = new java.util.Vector();
                 
 
-                boolean isReaderMTOMAware = false;
-                
-                try{
-                  isReaderMTOMAware = java.lang.Boolean.TRUE.equals(reader.getProperty(org.apache.axiom.om.OMConstants.IS_DATA_HANDLERS_AWARE));
-                }catch(java.lang.IllegalArgumentException e){
-                  isReaderMTOMAware = false;
-                }
-
-
-                
                     
                     reader.next();
                 
@@ -15579,7 +15268,6 @@
         */
         public static GetVersionCollectionResult_type42 parse(javax.xml.stream.XMLStreamReader reader) throws java.lang.Exception{
             GetVersionCollectionResult_type42 object = new GetVersionCollectionResult_type42();
-            int event;
             try {
                 
                 while (!reader.isStartElement() && !reader.isEndElement())
@@ -15609,17 +15297,7 @@
                 
                 // Note all attributes that were handled. Used to differ normal attributes
                 // from anyAttributes.
-                java.util.Vector handledAttributes = new java.util.Vector();
                 
-
-                boolean isReaderMTOMAware = false;
-                
-                try{
-                  isReaderMTOMAware = java.lang.Boolean.TRUE.equals(reader.getProperty(org.apache.axiom.om.OMConstants.IS_DATA_HANDLERS_AWARE));
-                }catch(java.lang.IllegalArgumentException e){
-                  isReaderMTOMAware = false;
-                }
-
 
                 
                     
@@ -15877,7 +15555,6 @@
         */
         public static GetListResult_type0 parse(javax.xml.stream.XMLStreamReader reader) throws java.lang.Exception{
             GetListResult_type0 object = new GetListResult_type0();
-            int event;
             try {
                 
                 while (!reader.isStartElement() && !reader.isEndElement())
@@ -15907,19 +15584,8 @@
                 
                 // Note all attributes that were handled. Used to differ normal attributes
                 // from anyAttributes.
-                java.util.Vector handledAttributes = new java.util.Vector();
                 
 
-                boolean isReaderMTOMAware = false;
-                
-                try{
-                  isReaderMTOMAware = java.lang.Boolean.TRUE.equals(reader.getProperty(org.apache.axiom.om.OMConstants.IS_DATA_HANDLERS_AWARE));
-                }catch(java.lang.IllegalArgumentException e){
-                  isReaderMTOMAware = false;
-                }
-
-
-                
                     
                     reader.next();
                 
@@ -16192,7 +15858,6 @@
         */
         public static GetListItemChangesResponse parse(javax.xml.stream.XMLStreamReader reader) throws java.lang.Exception{
             GetListItemChangesResponse object = new GetListItemChangesResponse();
-            int event;
             try {
                 
                 while (!reader.isStartElement() && !reader.isEndElement())
@@ -16222,19 +15887,8 @@
                 
                 // Note all attributes that were handled. Used to differ normal attributes
                 // from anyAttributes.
-                java.util.Vector handledAttributes = new java.util.Vector();
                 
 
-                boolean isReaderMTOMAware = false;
-                
-                try{
-                  isReaderMTOMAware = java.lang.Boolean.TRUE.equals(reader.getProperty(org.apache.axiom.om.OMConstants.IS_DATA_HANDLERS_AWARE));
-                }catch(java.lang.IllegalArgumentException e){
-                  isReaderMTOMAware = false;
-                }
-
-
-                
                     
                     reader.next();
                 
@@ -16475,7 +16129,6 @@
         */
         public static Updates_type3 parse(javax.xml.stream.XMLStreamReader reader) throws java.lang.Exception{
             Updates_type3 object = new Updates_type3();
-            int event;
             try {
                 
                 while (!reader.isStartElement() && !reader.isEndElement())
@@ -16505,19 +16158,8 @@
                 
                 // Note all attributes that were handled. Used to differ normal attributes
                 // from anyAttributes.
-                java.util.Vector handledAttributes = new java.util.Vector();
                 
 
-                boolean isReaderMTOMAware = false;
-                
-                try{
-                  isReaderMTOMAware = java.lang.Boolean.TRUE.equals(reader.getProperty(org.apache.axiom.om.OMConstants.IS_DATA_HANDLERS_AWARE));
-                }catch(java.lang.IllegalArgumentException e){
-                  isReaderMTOMAware = false;
-                }
-
-
-                
                     
                     reader.next();
                 
@@ -16790,7 +16432,6 @@
         */
         public static DeleteContentTypeXmlDocumentResponse parse(javax.xml.stream.XMLStreamReader reader) throws java.lang.Exception{
             DeleteContentTypeXmlDocumentResponse object = new DeleteContentTypeXmlDocumentResponse();
-            int event;
             try {
                 
                 while (!reader.isStartElement() && !reader.isEndElement())
@@ -16820,19 +16461,8 @@
                 
                 // Note all attributes that were handled. Used to differ normal attributes
                 // from anyAttributes.
-                java.util.Vector handledAttributes = new java.util.Vector();
                 
 
-                boolean isReaderMTOMAware = false;
-                
-                try{
-                  isReaderMTOMAware = java.lang.Boolean.TRUE.equals(reader.getProperty(org.apache.axiom.om.OMConstants.IS_DATA_HANDLERS_AWARE));
-                }catch(java.lang.IllegalArgumentException e){
-                  isReaderMTOMAware = false;
-                }
-
-
-                
                     
                     reader.next();
                 
@@ -17073,7 +16703,6 @@
         */
         public static AddDiscussionBoardItemResult_type8 parse(javax.xml.stream.XMLStreamReader reader) throws java.lang.Exception{
             AddDiscussionBoardItemResult_type8 object = new AddDiscussionBoardItemResult_type8();
-            int event;
             try {
                 
                 while (!reader.isStartElement() && !reader.isEndElement())
@@ -17103,19 +16732,8 @@
                 
                 // Note all attributes that were handled. Used to differ normal attributes
                 // from anyAttributes.
-                java.util.Vector handledAttributes = new java.util.Vector();
                 
 
-                boolean isReaderMTOMAware = false;
-                
-                try{
-                  isReaderMTOMAware = java.lang.Boolean.TRUE.equals(reader.getProperty(org.apache.axiom.om.OMConstants.IS_DATA_HANDLERS_AWARE));
-                }catch(java.lang.IllegalArgumentException e){
-                  isReaderMTOMAware = false;
-                }
-
-
-                
                     
                     reader.next();
                 
@@ -17371,7 +16989,6 @@
         */
         public static NewDocument_type21 parse(javax.xml.stream.XMLStreamReader reader) throws java.lang.Exception{
             NewDocument_type21 object = new NewDocument_type21();
-            int event;
             try {
                 
                 while (!reader.isStartElement() && !reader.isEndElement())
@@ -17401,20 +17018,8 @@
                 
                 // Note all attributes that were handled. Used to differ normal attributes
                 // from anyAttributes.
-                java.util.Vector handledAttributes = new java.util.Vector();
                 
 
-                boolean isReaderMTOMAware = false;
-                
-                try{
-                  isReaderMTOMAware = java.lang.Boolean.TRUE.equals(reader.getProperty(org.apache.axiom.om.OMConstants.IS_DATA_HANDLERS_AWARE));
-                }catch(java.lang.IllegalArgumentException e){
-                  isReaderMTOMAware = false;
-                }
-
-
-                
-                    
                     reader.next();
                 
                                     
@@ -17685,7 +17290,6 @@
         */
         public static UndoCheckOutResponse parse(javax.xml.stream.XMLStreamReader reader) throws java.lang.Exception{
             UndoCheckOutResponse object = new UndoCheckOutResponse();
-            int event;
             try {
                 
                 while (!reader.isStartElement() && !reader.isEndElement())
@@ -17715,17 +17319,7 @@
                 
                 // Note all attributes that were handled. Used to differ normal attributes
                 // from anyAttributes.
-                java.util.Vector handledAttributes = new java.util.Vector();
                 
-
-                boolean isReaderMTOMAware = false;
-                
-                try{
-                  isReaderMTOMAware = java.lang.Boolean.TRUE.equals(reader.getProperty(org.apache.axiom.om.OMConstants.IS_DATA_HANDLERS_AWARE));
-                }catch(java.lang.IllegalArgumentException e){
-                  isReaderMTOMAware = false;
-                }
-
 
                 
                     
@@ -17976,7 +17570,6 @@
         */
         public static UpdateListResult_type1 parse(javax.xml.stream.XMLStreamReader reader) throws java.lang.Exception{
             UpdateListResult_type1 object = new UpdateListResult_type1();
-            int event;
             try {
                 
                 while (!reader.isStartElement() && !reader.isEndElement())
@@ -18006,19 +17599,8 @@
                 
                 // Note all attributes that were handled. Used to differ normal attributes
                 // from anyAttributes.
-                java.util.Vector handledAttributes = new java.util.Vector();
                 
 
-                boolean isReaderMTOMAware = false;
-                
-                try{
-                  isReaderMTOMAware = java.lang.Boolean.TRUE.equals(reader.getProperty(org.apache.axiom.om.OMConstants.IS_DATA_HANDLERS_AWARE));
-                }catch(java.lang.IllegalArgumentException e){
-                  isReaderMTOMAware = false;
-                }
-
-
-                
                     
                     reader.next();
                 
@@ -18291,7 +17873,6 @@
         */
         public static AddListFromFeatureResponse parse(javax.xml.stream.XMLStreamReader reader) throws java.lang.Exception{
             AddListFromFeatureResponse object = new AddListFromFeatureResponse();
-            int event;
             try {
                 
                 while (!reader.isStartElement() && !reader.isEndElement())
@@ -18321,19 +17902,8 @@
                 
                 // Note all attributes that were handled. Used to differ normal attributes
                 // from anyAttributes.
-                java.util.Vector handledAttributes = new java.util.Vector();
                 
 
-                boolean isReaderMTOMAware = false;
-                
-                try{
-                  isReaderMTOMAware = java.lang.Boolean.TRUE.equals(reader.getProperty(org.apache.axiom.om.OMConstants.IS_DATA_HANDLERS_AWARE));
-                }catch(java.lang.IllegalArgumentException e){
-                  isReaderMTOMAware = false;
-                }
-
-
-                
                     
                     reader.next();
                 
@@ -18618,7 +18188,6 @@
         */
         public static DeleteList parse(javax.xml.stream.XMLStreamReader reader) throws java.lang.Exception{
             DeleteList object = new DeleteList();
-            int event;
             try {
                 
                 while (!reader.isStartElement() && !reader.isEndElement())
@@ -18648,19 +18217,8 @@
                 
                 // Note all attributes that were handled. Used to differ normal attributes
                 // from anyAttributes.
-                java.util.Vector handledAttributes = new java.util.Vector();
                 
 
-                boolean isReaderMTOMAware = false;
-                
-                try{
-                  isReaderMTOMAware = java.lang.Boolean.TRUE.equals(reader.getProperty(org.apache.axiom.om.OMConstants.IS_DATA_HANDLERS_AWARE));
-                }catch(java.lang.IllegalArgumentException e){
-                  isReaderMTOMAware = false;
-                }
-
-
-                
                     
                     reader.next();
                 
@@ -19120,7 +18678,6 @@
         */
         public static GetVersionCollection parse(javax.xml.stream.XMLStreamReader reader) throws java.lang.Exception{
             GetVersionCollection object = new GetVersionCollection();
-            int event;
             try {
                 
                 while (!reader.isStartElement() && !reader.isEndElement())
@@ -19150,20 +18707,8 @@
                 
                 // Note all attributes that were handled. Used to differ normal attributes
                 // from anyAttributes.
-                java.util.Vector handledAttributes = new java.util.Vector();
                 
 
-                boolean isReaderMTOMAware = false;
-                
-                try{
-                  isReaderMTOMAware = java.lang.Boolean.TRUE.equals(reader.getProperty(org.apache.axiom.om.OMConstants.IS_DATA_HANDLERS_AWARE));
-                }catch(java.lang.IllegalArgumentException e){
-                  isReaderMTOMAware = false;
-                }
-
-
-                
-                    
                     reader.next();
                 
                                     
@@ -19434,7 +18979,6 @@
         */
         public static GetListContentTypeResult_type38 parse(javax.xml.stream.XMLStreamReader reader) throws java.lang.Exception{
             GetListContentTypeResult_type38 object = new GetListContentTypeResult_type38();
-            int event;
             try {
                 
                 while (!reader.isStartElement() && !reader.isEndElement())
@@ -19464,19 +19008,8 @@
                 
                 // Note all attributes that were handled. Used to differ normal attributes
                 // from anyAttributes.
-                java.util.Vector handledAttributes = new java.util.Vector();
                 
 
-                boolean isReaderMTOMAware = false;
-                
-                try{
-                  isReaderMTOMAware = java.lang.Boolean.TRUE.equals(reader.getProperty(org.apache.axiom.om.OMConstants.IS_DATA_HANDLERS_AWARE));
-                }catch(java.lang.IllegalArgumentException e){
-                  isReaderMTOMAware = false;
-                }
-
-
-                
                     
                     reader.next();
                 
@@ -19749,7 +19282,6 @@
         */
         public static GetListItemsResponse parse(javax.xml.stream.XMLStreamReader reader) throws java.lang.Exception{
             GetListItemsResponse object = new GetListItemsResponse();
-            int event;
             try {
                 
                 while (!reader.isStartElement() && !reader.isEndElement())
@@ -19779,17 +19311,7 @@
                 
                 // Note all attributes that were handled. Used to differ normal attributes
                 // from anyAttributes.
-                java.util.Vector handledAttributes = new java.util.Vector();
                 
-
-                boolean isReaderMTOMAware = false;
-                
-                try{
-                  isReaderMTOMAware = java.lang.Boolean.TRUE.equals(reader.getProperty(org.apache.axiom.om.OMConstants.IS_DATA_HANDLERS_AWARE));
-                }catch(java.lang.IllegalArgumentException e){
-                  isReaderMTOMAware = false;
-                }
-
 
                 
                     
@@ -20032,7 +19554,6 @@
         */
         public static Query_type10 parse(javax.xml.stream.XMLStreamReader reader) throws java.lang.Exception{
             Query_type10 object = new Query_type10();
-            int event;
             try {
                 
                 while (!reader.isStartElement() && !reader.isEndElement())
@@ -20062,19 +19583,8 @@
                 
                 // Note all attributes that were handled. Used to differ normal attributes
                 // from anyAttributes.
-                java.util.Vector handledAttributes = new java.util.Vector();
                 
 
-                boolean isReaderMTOMAware = false;
-                
-                try{
-                  isReaderMTOMAware = java.lang.Boolean.TRUE.equals(reader.getProperty(org.apache.axiom.om.OMConstants.IS_DATA_HANDLERS_AWARE));
-                }catch(java.lang.IllegalArgumentException e){
-                  isReaderMTOMAware = false;
-                }
-
-
-                
                     
                     reader.next();
                 
@@ -20518,7 +20028,6 @@
         */
         public static AddList parse(javax.xml.stream.XMLStreamReader reader) throws java.lang.Exception{
             AddList object = new AddList();
-            int event;
             try {
                 
                 while (!reader.isStartElement() && !reader.isEndElement())
@@ -20548,20 +20057,8 @@
                 
                 // Note all attributes that were handled. Used to differ normal attributes
                 // from anyAttributes.
-                java.util.Vector handledAttributes = new java.util.Vector();
                 
 
-                boolean isReaderMTOMAware = false;
-                
-                try{
-                  isReaderMTOMAware = java.lang.Boolean.TRUE.equals(reader.getProperty(org.apache.axiom.om.OMConstants.IS_DATA_HANDLERS_AWARE));
-                }catch(java.lang.IllegalArgumentException e){
-                  isReaderMTOMAware = false;
-                }
-
-
-                
-                    
                     reader.next();
                 
                                     
@@ -20854,7 +20351,6 @@
         */
         public static UpdateListItemsResponse parse(javax.xml.stream.XMLStreamReader reader) throws java.lang.Exception{
             UpdateListItemsResponse object = new UpdateListItemsResponse();
-            int event;
             try {
                 
                 while (!reader.isStartElement() && !reader.isEndElement())
@@ -20884,19 +20380,8 @@
                 
                 // Note all attributes that were handled. Used to differ normal attributes
                 // from anyAttributes.
-                java.util.Vector handledAttributes = new java.util.Vector();
                 
 
-                boolean isReaderMTOMAware = false;
-                
-                try{
-                  isReaderMTOMAware = java.lang.Boolean.TRUE.equals(reader.getProperty(org.apache.axiom.om.OMConstants.IS_DATA_HANDLERS_AWARE));
-                }catch(java.lang.IllegalArgumentException e){
-                  isReaderMTOMAware = false;
-                }
-
-
-                
                     
                     reader.next();
                 
@@ -21267,7 +20752,6 @@
         */
         public static GetListAndView parse(javax.xml.stream.XMLStreamReader reader) throws java.lang.Exception{
             GetListAndView object = new GetListAndView();
-            int event;
             try {
                 
                 while (!reader.isStartElement() && !reader.isEndElement())
@@ -21297,19 +20781,8 @@
                 
                 // Note all attributes that were handled. Used to differ normal attributes
                 // from anyAttributes.
-                java.util.Vector handledAttributes = new java.util.Vector();
                 
 
-                boolean isReaderMTOMAware = false;
-                
-                try{
-                  isReaderMTOMAware = java.lang.Boolean.TRUE.equals(reader.getProperty(org.apache.axiom.om.OMConstants.IS_DATA_HANDLERS_AWARE));
-                }catch(java.lang.IllegalArgumentException e){
-                  isReaderMTOMAware = false;
-                }
-
-
-                
                     
                     reader.next();
                 
@@ -21670,7 +21143,6 @@
         */
         public static UpdateContentTypesXmlDocument parse(javax.xml.stream.XMLStreamReader reader) throws java.lang.Exception{
             UpdateContentTypesXmlDocument object = new UpdateContentTypesXmlDocument();
-            int event;
             try {
                 
                 while (!reader.isStartElement() && !reader.isEndElement())
@@ -21700,20 +21172,8 @@
                 
                 // Note all attributes that were handled. Used to differ normal attributes
                 // from anyAttributes.
-                java.util.Vector handledAttributes = new java.util.Vector();
                 
 
-                boolean isReaderMTOMAware = false;
-                
-                try{
-                  isReaderMTOMAware = java.lang.Boolean.TRUE.equals(reader.getProperty(org.apache.axiom.om.OMConstants.IS_DATA_HANDLERS_AWARE));
-                }catch(java.lang.IllegalArgumentException e){
-                  isReaderMTOMAware = false;
-                }
-
-
-                
-                    
                     reader.next();
                 
                                     
@@ -21967,7 +21427,6 @@
         */
         public static GetListCollectionResult_type39 parse(javax.xml.stream.XMLStreamReader reader) throws java.lang.Exception{
             GetListCollectionResult_type39 object = new GetListCollectionResult_type39();
-            int event;
             try {
                 
                 while (!reader.isStartElement() && !reader.isEndElement())
@@ -21997,19 +21456,8 @@
                 
                 // Note all attributes that were handled. Used to differ normal attributes
                 // from anyAttributes.
-                java.util.Vector handledAttributes = new java.util.Vector();
                 
 
-                boolean isReaderMTOMAware = false;
-                
-                try{
-                  isReaderMTOMAware = java.lang.Boolean.TRUE.equals(reader.getProperty(org.apache.axiom.om.OMConstants.IS_DATA_HANDLERS_AWARE));
-                }catch(java.lang.IllegalArgumentException e){
-                  isReaderMTOMAware = false;
-                }
-
-
-                
                     
                     reader.next();
                 
@@ -22265,7 +21713,6 @@
         */
         public static AddListFromFeatureResult_type31 parse(javax.xml.stream.XMLStreamReader reader) throws java.lang.Exception{
             AddListFromFeatureResult_type31 object = new AddListFromFeatureResult_type31();
-            int event;
             try {
                 
                 while (!reader.isStartElement() && !reader.isEndElement())
@@ -22295,20 +21742,8 @@
                 
                 // Note all attributes that were handled. Used to differ normal attributes
                 // from anyAttributes.
-                java.util.Vector handledAttributes = new java.util.Vector();
                 
 
-                boolean isReaderMTOMAware = false;
-                
-                try{
-                  isReaderMTOMAware = java.lang.Boolean.TRUE.equals(reader.getProperty(org.apache.axiom.om.OMConstants.IS_DATA_HANDLERS_AWARE));
-                }catch(java.lang.IllegalArgumentException e){
-                  isReaderMTOMAware = false;
-                }
-
-
-                
-                    
                     reader.next();
                 
                                     
@@ -22580,7 +22015,6 @@
         */
         public static GetListResponse parse(javax.xml.stream.XMLStreamReader reader) throws java.lang.Exception{
             GetListResponse object = new GetListResponse();
-            int event;
             try {
                 
                 while (!reader.isStartElement() && !reader.isEndElement())
@@ -22610,19 +22044,8 @@
                 
                 // Note all attributes that were handled. Used to differ normal attributes
                 // from anyAttributes.
-                java.util.Vector handledAttributes = new java.util.Vector();
                 
 
-                boolean isReaderMTOMAware = false;
-                
-                try{
-                  isReaderMTOMAware = java.lang.Boolean.TRUE.equals(reader.getProperty(org.apache.axiom.om.OMConstants.IS_DATA_HANDLERS_AWARE));
-                }catch(java.lang.IllegalArgumentException e){
-                  isReaderMTOMAware = false;
-                }
-
-
-                
                     
                     reader.next();
                 
@@ -22863,7 +22286,6 @@
         */
         public static DeleteFields_type28 parse(javax.xml.stream.XMLStreamReader reader) throws java.lang.Exception{
             DeleteFields_type28 object = new DeleteFields_type28();
-            int event;
             try {
                 
                 while (!reader.isStartElement() && !reader.isEndElement())
@@ -22893,20 +22315,8 @@
                 
                 // Note all attributes that were handled. Used to differ normal attributes
                 // from anyAttributes.
-                java.util.Vector handledAttributes = new java.util.Vector();
                 
 
-                boolean isReaderMTOMAware = false;
-                
-                try{
-                  isReaderMTOMAware = java.lang.Boolean.TRUE.equals(reader.getProperty(org.apache.axiom.om.OMConstants.IS_DATA_HANDLERS_AWARE));
-                }catch(java.lang.IllegalArgumentException e){
-                  isReaderMTOMAware = false;
-                }
-
-
-                
-                    
                     reader.next();
                 
                                     
@@ -23178,7 +22588,6 @@
         */
         public static UpdateListResponse parse(javax.xml.stream.XMLStreamReader reader) throws java.lang.Exception{
             UpdateListResponse object = new UpdateListResponse();
-            int event;
             try {
                 
                 while (!reader.isStartElement() && !reader.isEndElement())
@@ -23208,20 +22617,8 @@
                 
                 // Note all attributes that were handled. Used to differ normal attributes
                 // from anyAttributes.
-                java.util.Vector handledAttributes = new java.util.Vector();
                 
 
-                boolean isReaderMTOMAware = false;
-                
-                try{
-                  isReaderMTOMAware = java.lang.Boolean.TRUE.equals(reader.getProperty(org.apache.axiom.om.OMConstants.IS_DATA_HANDLERS_AWARE));
-                }catch(java.lang.IllegalArgumentException e){
-                  isReaderMTOMAware = false;
-                }
-
-
-                
-                    
                     reader.next();
                 
                                     
@@ -23591,7 +22988,6 @@
         */
         public static GetListContentType parse(javax.xml.stream.XMLStreamReader reader) throws java.lang.Exception{
             GetListContentType object = new GetListContentType();
-            int event;
             try {
                 
                 while (!reader.isStartElement() && !reader.isEndElement())
@@ -23621,19 +23017,8 @@
                 
                 // Note all attributes that were handled. Used to differ normal attributes
                 // from anyAttributes.
-                java.util.Vector handledAttributes = new java.util.Vector();
                 
 
-                boolean isReaderMTOMAware = false;
-                
-                try{
-                  isReaderMTOMAware = java.lang.Boolean.TRUE.equals(reader.getProperty(org.apache.axiom.om.OMConstants.IS_DATA_HANDLERS_AWARE));
-                }catch(java.lang.IllegalArgumentException e){
-                  isReaderMTOMAware = false;
-                }
-
-
-                
                     
                     reader.next();
                 
@@ -23891,7 +23276,6 @@
         */
         public static ApplyContentTypeToListResult_type30 parse(javax.xml.stream.XMLStreamReader reader) throws java.lang.Exception{
             ApplyContentTypeToListResult_type30 object = new ApplyContentTypeToListResult_type30();
-            int event;
             try {
                 
                 while (!reader.isStartElement() && !reader.isEndElement())
@@ -23921,20 +23305,8 @@
                 
                 // Note all attributes that were handled. Used to differ normal attributes
                 // from anyAttributes.
-                java.util.Vector handledAttributes = new java.util.Vector();
                 
 
-                boolean isReaderMTOMAware = false;
-                
-                try{
-                  isReaderMTOMAware = java.lang.Boolean.TRUE.equals(reader.getProperty(org.apache.axiom.om.OMConstants.IS_DATA_HANDLERS_AWARE));
-                }catch(java.lang.IllegalArgumentException e){
-                  isReaderMTOMAware = false;
-                }
-
-
-                
-                    
                     reader.next();
                 
                                     
@@ -24189,7 +23561,6 @@
         */
         public static UpdateListItemsResult_type40 parse(javax.xml.stream.XMLStreamReader reader) throws java.lang.Exception{
             UpdateListItemsResult_type40 object = new UpdateListItemsResult_type40();
-            int event;
             try {
                 
                 while (!reader.isStartElement() && !reader.isEndElement())
@@ -24219,19 +23590,8 @@
                 
                 // Note all attributes that were handled. Used to differ normal attributes
                 // from anyAttributes.
-                java.util.Vector handledAttributes = new java.util.Vector();
                 
 
-                boolean isReaderMTOMAware = false;
-                
-                try{
-                  isReaderMTOMAware = java.lang.Boolean.TRUE.equals(reader.getProperty(org.apache.axiom.om.OMConstants.IS_DATA_HANDLERS_AWARE));
-                }catch(java.lang.IllegalArgumentException e){
-                  isReaderMTOMAware = false;
-                }
-
-
-                
                     
                     reader.next();
                 
@@ -24504,7 +23864,6 @@
         */
         public static GetListContentTypesResponse parse(javax.xml.stream.XMLStreamReader reader) throws java.lang.Exception{
             GetListContentTypesResponse object = new GetListContentTypesResponse();
-            int event;
             try {
                 
                 while (!reader.isStartElement() && !reader.isEndElement())
@@ -24534,19 +23893,8 @@
                 
                 // Note all attributes that were handled. Used to differ normal attributes
                 // from anyAttributes.
-                java.util.Vector handledAttributes = new java.util.Vector();
                 
 
-                boolean isReaderMTOMAware = false;
-                
-                try{
-                  isReaderMTOMAware = java.lang.Boolean.TRUE.equals(reader.getProperty(org.apache.axiom.om.OMConstants.IS_DATA_HANDLERS_AWARE));
-                }catch(java.lang.IllegalArgumentException e){
-                  isReaderMTOMAware = false;
-                }
-
-
-                
                     
                     reader.next();
                 
@@ -24787,7 +24135,6 @@
         */
         public static ListProperties_type25 parse(javax.xml.stream.XMLStreamReader reader) throws java.lang.Exception{
             ListProperties_type25 object = new ListProperties_type25();
-            int event;
             try {
                 
                 while (!reader.isStartElement() && !reader.isEndElement())
@@ -24817,20 +24164,8 @@
                 
                 // Note all attributes that were handled. Used to differ normal attributes
                 // from anyAttributes.
-                java.util.Vector handledAttributes = new java.util.Vector();
                 
 
-                boolean isReaderMTOMAware = false;
-                
-                try{
-                  isReaderMTOMAware = java.lang.Boolean.TRUE.equals(reader.getProperty(org.apache.axiom.om.OMConstants.IS_DATA_HANDLERS_AWARE));
-                }catch(java.lang.IllegalArgumentException e){
-                  isReaderMTOMAware = false;
-                }
-
-
-                
-                    
                     reader.next();
                 
                                     
@@ -25101,7 +24436,6 @@
         */
         public static CheckInFileResponse parse(javax.xml.stream.XMLStreamReader reader) throws java.lang.Exception{
             CheckInFileResponse object = new CheckInFileResponse();
-            int event;
             try {
                 
                 while (!reader.isStartElement() && !reader.isEndElement())
@@ -25131,19 +24465,8 @@
                 
                 // Note all attributes that were handled. Used to differ normal attributes
                 // from anyAttributes.
-                java.util.Vector handledAttributes = new java.util.Vector();
                 
 
-                boolean isReaderMTOMAware = false;
-                
-                try{
-                  isReaderMTOMAware = java.lang.Boolean.TRUE.equals(reader.getProperty(org.apache.axiom.om.OMConstants.IS_DATA_HANDLERS_AWARE));
-                }catch(java.lang.IllegalArgumentException e){
-                  isReaderMTOMAware = false;
-                }
-
-
-                
                     
                     reader.next();
                 
@@ -25392,7 +24715,6 @@
         */
         public static UpdateContentTypeXmlDocumentResult_type22 parse(javax.xml.stream.XMLStreamReader reader) throws java.lang.Exception{
             UpdateContentTypeXmlDocumentResult_type22 object = new UpdateContentTypeXmlDocumentResult_type22();
-            int event;
             try {
                 
                 while (!reader.isStartElement() && !reader.isEndElement())
@@ -25422,20 +24744,8 @@
                 
                 // Note all attributes that were handled. Used to differ normal attributes
                 // from anyAttributes.
-                java.util.Vector handledAttributes = new java.util.Vector();
                 
 
-                boolean isReaderMTOMAware = false;
-                
-                try{
-                  isReaderMTOMAware = java.lang.Boolean.TRUE.equals(reader.getProperty(org.apache.axiom.om.OMConstants.IS_DATA_HANDLERS_AWARE));
-                }catch(java.lang.IllegalArgumentException e){
-                  isReaderMTOMAware = false;
-                }
-
-
-                
-                    
                     reader.next();
                 
                                     
@@ -25707,7 +25017,6 @@
         */
         public static GetListAndViewResponse parse(javax.xml.stream.XMLStreamReader reader) throws java.lang.Exception{
             GetListAndViewResponse object = new GetListAndViewResponse();
-            int event;
             try {
                 
                 while (!reader.isStartElement() && !reader.isEndElement())
@@ -25737,20 +25046,8 @@
                 
                 // Note all attributes that were handled. Used to differ normal attributes
                 // from anyAttributes.
-                java.util.Vector handledAttributes = new java.util.Vector();
                 
 
-                boolean isReaderMTOMAware = false;
-                
-                try{
-                  isReaderMTOMAware = java.lang.Boolean.TRUE.equals(reader.getProperty(org.apache.axiom.om.OMConstants.IS_DATA_HANDLERS_AWARE));
-                }catch(java.lang.IllegalArgumentException e){
-                  isReaderMTOMAware = false;
-                }
-
-
-                
-                    
                     reader.next();
                 
                                     
@@ -25990,7 +25287,6 @@
         */
         public static ContentTypeProperties_type17 parse(javax.xml.stream.XMLStreamReader reader) throws java.lang.Exception{
             ContentTypeProperties_type17 object = new ContentTypeProperties_type17();
-            int event;
             try {
                 
                 while (!reader.isStartElement() && !reader.isEndElement())
@@ -26020,20 +25316,8 @@
                 
                 // Note all attributes that were handled. Used to differ normal attributes
                 // from anyAttributes.
-                java.util.Vector handledAttributes = new java.util.Vector();
                 
 
-                boolean isReaderMTOMAware = false;
-                
-                try{
-                  isReaderMTOMAware = java.lang.Boolean.TRUE.equals(reader.getProperty(org.apache.axiom.om.OMConstants.IS_DATA_HANDLERS_AWARE));
-                }catch(java.lang.IllegalArgumentException e){
-                  isReaderMTOMAware = false;
-                }
-
-
-                
-                    
                     reader.next();
                 
                                     
@@ -26288,7 +25572,6 @@
         */
         public static GetListItemChangesSinceTokenResult_type5 parse(javax.xml.stream.XMLStreamReader reader) throws java.lang.Exception{
             GetListItemChangesSinceTokenResult_type5 object = new GetListItemChangesSinceTokenResult_type5();
-            int event;
             try {
                 
                 while (!reader.isStartElement() && !reader.isEndElement())
@@ -26318,20 +25601,8 @@
                 
                 // Note all attributes that were handled. Used to differ normal attributes
                 // from anyAttributes.
-                java.util.Vector handledAttributes = new java.util.Vector();
                 
 
-                boolean isReaderMTOMAware = false;
-                
-                try{
-                  isReaderMTOMAware = java.lang.Boolean.TRUE.equals(reader.getProperty(org.apache.axiom.om.OMConstants.IS_DATA_HANDLERS_AWARE));
-                }catch(java.lang.IllegalArgumentException e){
-                  isReaderMTOMAware = false;
-                }
-
-
-                
-                    
                     reader.next();
                 
                                     
@@ -26586,7 +25857,6 @@
         */
         public static QueryOptions_type36 parse(javax.xml.stream.XMLStreamReader reader) throws java.lang.Exception{
             QueryOptions_type36 object = new QueryOptions_type36();
-            int event;
             try {
                 
                 while (!reader.isStartElement() && !reader.isEndElement())
@@ -26616,20 +25886,8 @@
                 
                 // Note all attributes that were handled. Used to differ normal attributes
                 // from anyAttributes.
-                java.util.Vector handledAttributes = new java.util.Vector();
                 
 
-                boolean isReaderMTOMAware = false;
-                
-                try{
-                  isReaderMTOMAware = java.lang.Boolean.TRUE.equals(reader.getProperty(org.apache.axiom.om.OMConstants.IS_DATA_HANDLERS_AWARE));
-                }catch(java.lang.IllegalArgumentException e){
-                  isReaderMTOMAware = false;
-                }
-
-
-                
-                    
                     reader.next();
                 
                                     
@@ -26884,7 +26142,6 @@
         */
         public static NewFields_type18 parse(javax.xml.stream.XMLStreamReader reader) throws java.lang.Exception{
             NewFields_type18 object = new NewFields_type18();
-            int event;
             try {
                 
                 while (!reader.isStartElement() && !reader.isEndElement())
@@ -26914,19 +26171,8 @@
                 
                 // Note all attributes that were handled. Used to differ normal attributes
                 // from anyAttributes.
-                java.util.Vector handledAttributes = new java.util.Vector();
                 
 
-                boolean isReaderMTOMAware = false;
-                
-                try{
-                  isReaderMTOMAware = java.lang.Boolean.TRUE.equals(reader.getProperty(org.apache.axiom.om.OMConstants.IS_DATA_HANDLERS_AWARE));
-                }catch(java.lang.IllegalArgumentException e){
-                  isReaderMTOMAware = false;
-                }
-
-
-                
                     
                     reader.next();
                 
@@ -27303,7 +26549,6 @@
         */
         public static AddDiscussionBoardItem parse(javax.xml.stream.XMLStreamReader reader) throws java.lang.Exception{
             AddDiscussionBoardItem object = new AddDiscussionBoardItem();
-            int event;
             try {
                 
                 while (!reader.isStartElement() && !reader.isEndElement())
@@ -27333,7 +26578,6 @@
                 
                 // Note all attributes that were handled. Used to differ normal attributes
                 // from anyAttributes.
-                java.util.Vector handledAttributes = new java.util.Vector();
                 
 
                 boolean isReaderMTOMAware = false;
@@ -27626,7 +26870,6 @@
         */
         public static AddListResult_type29 parse(javax.xml.stream.XMLStreamReader reader) throws java.lang.Exception{
             AddListResult_type29 object = new AddListResult_type29();
-            int event;
             try {
                 
                 while (!reader.isStartElement() && !reader.isEndElement())
@@ -27656,19 +26899,8 @@
                 
                 // Note all attributes that were handled. Used to differ normal attributes
                 // from anyAttributes.
-                java.util.Vector handledAttributes = new java.util.Vector();
                 
 
-                boolean isReaderMTOMAware = false;
-                
-                try{
-                  isReaderMTOMAware = java.lang.Boolean.TRUE.equals(reader.getProperty(org.apache.axiom.om.OMConstants.IS_DATA_HANDLERS_AWARE));
-                }catch(java.lang.IllegalArgumentException e){
-                  isReaderMTOMAware = false;
-                }
-
-
-                
                     
                     reader.next();
                 
@@ -27924,7 +27156,6 @@
         */
         public static UpdateContentTypeResult_type33 parse(javax.xml.stream.XMLStreamReader reader) throws java.lang.Exception{
             UpdateContentTypeResult_type33 object = new UpdateContentTypeResult_type33();
-            int event;
             try {
                 
                 while (!reader.isStartElement() && !reader.isEndElement())
@@ -27954,20 +27185,8 @@
                 
                 // Note all attributes that were handled. Used to differ normal attributes
                 // from anyAttributes.
-                java.util.Vector handledAttributes = new java.util.Vector();
                 
 
-                boolean isReaderMTOMAware = false;
-                
-                try{
-                  isReaderMTOMAware = java.lang.Boolean.TRUE.equals(reader.getProperty(org.apache.axiom.om.OMConstants.IS_DATA_HANDLERS_AWARE));
-                }catch(java.lang.IllegalArgumentException e){
-                  isReaderMTOMAware = false;
-                }
-
-
-                
-                    
                     reader.next();
                 
                                     
@@ -28239,7 +27458,6 @@
         */
         public static DeleteContentTypeResponse parse(javax.xml.stream.XMLStreamReader reader) throws java.lang.Exception{
             DeleteContentTypeResponse object = new DeleteContentTypeResponse();
-            int event;
             try {
                 
                 while (!reader.isStartElement() && !reader.isEndElement())
@@ -28269,20 +27487,8 @@
                 
                 // Note all attributes that were handled. Used to differ normal attributes
                 // from anyAttributes.
-                java.util.Vector handledAttributes = new java.util.Vector();
                 
 
-                boolean isReaderMTOMAware = false;
-                
-                try{
-                  isReaderMTOMAware = java.lang.Boolean.TRUE.equals(reader.getProperty(org.apache.axiom.om.OMConstants.IS_DATA_HANDLERS_AWARE));
-                }catch(java.lang.IllegalArgumentException e){
-                  isReaderMTOMAware = false;
-                }
-
-
-                
-                    
                     reader.next();
                 
                                     
@@ -29060,7 +28266,6 @@
         */
         public static GetListItemChangesSinceToken parse(javax.xml.stream.XMLStreamReader reader) throws java.lang.Exception{
             GetListItemChangesSinceToken object = new GetListItemChangesSinceToken();
-            int event;
             try {
                 
                 while (!reader.isStartElement() && !reader.isEndElement())
@@ -29090,20 +28295,8 @@
                 
                 // Note all attributes that were handled. Used to differ normal attributes
                 // from anyAttributes.
-                java.util.Vector handledAttributes = new java.util.Vector();
                 
 
-                boolean isReaderMTOMAware = false;
-                
-                try{
-                  isReaderMTOMAware = java.lang.Boolean.TRUE.equals(reader.getProperty(org.apache.axiom.om.OMConstants.IS_DATA_HANDLERS_AWARE));
-                }catch(java.lang.IllegalArgumentException e){
-                  isReaderMTOMAware = false;
-                }
-
-
-                
-                    
                     reader.next();
                 
                                     
@@ -29680,7 +28873,6 @@
         */
         public static GetListItemChanges parse(javax.xml.stream.XMLStreamReader reader) throws java.lang.Exception{
             GetListItemChanges object = new GetListItemChanges();
-            int event;
             try {
                 
                 while (!reader.isStartElement() && !reader.isEndElement())
@@ -29710,19 +28902,8 @@
                 
                 // Note all attributes that were handled. Used to differ normal attributes
                 // from anyAttributes.
-                java.util.Vector handledAttributes = new java.util.Vector();
                 
 
-                boolean isReaderMTOMAware = false;
-                
-                try{
-                  isReaderMTOMAware = java.lang.Boolean.TRUE.equals(reader.getProperty(org.apache.axiom.om.OMConstants.IS_DATA_HANDLERS_AWARE));
-                }catch(java.lang.IllegalArgumentException e){
-                  isReaderMTOMAware = false;
-                }
-
-
-                
                     
                     reader.next();
                 
@@ -30002,7 +29183,6 @@
         */
         public static GetListAndViewResult_type4 parse(javax.xml.stream.XMLStreamReader reader) throws java.lang.Exception{
             GetListAndViewResult_type4 object = new GetListAndViewResult_type4();
-            int event;
             try {
                 
                 while (!reader.isStartElement() && !reader.isEndElement())
@@ -30032,17 +29212,7 @@
                 
                 // Note all attributes that were handled. Used to differ normal attributes
                 // from anyAttributes.
-                java.util.Vector handledAttributes = new java.util.Vector();
                 
-
-                boolean isReaderMTOMAware = false;
-                
-                try{
-                  isReaderMTOMAware = java.lang.Boolean.TRUE.equals(reader.getProperty(org.apache.axiom.om.OMConstants.IS_DATA_HANDLERS_AWARE));
-                }catch(java.lang.IllegalArgumentException e){
-                  isReaderMTOMAware = false;
-                }
-
 
                 
                     
@@ -30317,7 +29487,6 @@
         */
         public static UpdateContentTypesXmlDocumentResponse parse(javax.xml.stream.XMLStreamReader reader) throws java.lang.Exception{
             UpdateContentTypesXmlDocumentResponse object = new UpdateContentTypesXmlDocumentResponse();
-            int event;
             try {
                 
                 while (!reader.isStartElement() && !reader.isEndElement())
@@ -30347,19 +29516,8 @@
                 
                 // Note all attributes that were handled. Used to differ normal attributes
                 // from anyAttributes.
-                java.util.Vector handledAttributes = new java.util.Vector();
                 
 
-                boolean isReaderMTOMAware = false;
-                
-                try{
-                  isReaderMTOMAware = java.lang.Boolean.TRUE.equals(reader.getProperty(org.apache.axiom.om.OMConstants.IS_DATA_HANDLERS_AWARE));
-                }catch(java.lang.IllegalArgumentException e){
-                  isReaderMTOMAware = false;
-                }
-
-
-                
                     
                     reader.next();
                 
@@ -30600,7 +29758,6 @@
         */
         public static Query_type34 parse(javax.xml.stream.XMLStreamReader reader) throws java.lang.Exception{
             Query_type34 object = new Query_type34();
-            int event;
             try {
                 
                 while (!reader.isStartElement() && !reader.isEndElement())
@@ -30630,20 +29787,8 @@
                 
                 // Note all attributes that were handled. Used to differ normal attributes
                 // from anyAttributes.
-                java.util.Vector handledAttributes = new java.util.Vector();
                 
 
-                boolean isReaderMTOMAware = false;
-                
-                try{
-                  isReaderMTOMAware = java.lang.Boolean.TRUE.equals(reader.getProperty(org.apache.axiom.om.OMConstants.IS_DATA_HANDLERS_AWARE));
-                }catch(java.lang.IllegalArgumentException e){
-                  isReaderMTOMAware = false;
-                }
-
-
-                
-                    
                     reader.next();
                 
                                     
@@ -30942,7 +30087,6 @@
         */
         public static CreateContentTypeResponse parse(javax.xml.stream.XMLStreamReader reader) throws java.lang.Exception{
             CreateContentTypeResponse object = new CreateContentTypeResponse();
-            int event;
             try {
                 
                 while (!reader.isStartElement() && !reader.isEndElement())
@@ -30972,19 +30116,8 @@
                 
                 // Note all attributes that were handled. Used to differ normal attributes
                 // from anyAttributes.
-                java.util.Vector handledAttributes = new java.util.Vector();
                 
 
-                boolean isReaderMTOMAware = false;
-                
-                try{
-                  isReaderMTOMAware = java.lang.Boolean.TRUE.equals(reader.getProperty(org.apache.axiom.om.OMConstants.IS_DATA_HANDLERS_AWARE));
-                }catch(java.lang.IllegalArgumentException e){
-                  isReaderMTOMAware = false;
-                }
-
-
-                
                     
                     reader.next();
                 
@@ -31228,7 +30361,6 @@
         */
         public static Fields_type6 parse(javax.xml.stream.XMLStreamReader reader) throws java.lang.Exception{
             Fields_type6 object = new Fields_type6();
-            int event;
             try {
                 
                 while (!reader.isStartElement() && !reader.isEndElement())
@@ -31258,19 +30390,8 @@
                 
                 // Note all attributes that were handled. Used to differ normal attributes
                 // from anyAttributes.
-                java.util.Vector handledAttributes = new java.util.Vector();
                 
 
-                boolean isReaderMTOMAware = false;
-                
-                try{
-                  isReaderMTOMAware = java.lang.Boolean.TRUE.equals(reader.getProperty(org.apache.axiom.om.OMConstants.IS_DATA_HANDLERS_AWARE));
-                }catch(java.lang.IllegalArgumentException e){
-                  isReaderMTOMAware = false;
-                }
-
-
-                
                     
                     reader.next();
                 
@@ -31892,7 +31013,6 @@
         */
         public static UpdateList parse(javax.xml.stream.XMLStreamReader reader) throws java.lang.Exception{
             UpdateList object = new UpdateList();
-            int event;
             try {
                 
                 while (!reader.isStartElement() && !reader.isEndElement())
@@ -31922,17 +31042,7 @@
                 
                 // Note all attributes that were handled. Used to differ normal attributes
                 // from anyAttributes.
-                java.util.Vector handledAttributes = new java.util.Vector();
                 
-
-                boolean isReaderMTOMAware = false;
-                
-                try{
-                  isReaderMTOMAware = java.lang.Boolean.TRUE.equals(reader.getProperty(org.apache.axiom.om.OMConstants.IS_DATA_HANDLERS_AWARE));
-                }catch(java.lang.IllegalArgumentException e){
-                  isReaderMTOMAware = false;
-                }
-
 
                 
                     
@@ -32253,7 +31363,6 @@
         */
         public static AddListResponse parse(javax.xml.stream.XMLStreamReader reader) throws java.lang.Exception{
             AddListResponse object = new AddListResponse();
-            int event;
             try {
                 
                 while (!reader.isStartElement() && !reader.isEndElement())
@@ -32283,19 +31392,8 @@
                 
                 // Note all attributes that were handled. Used to differ normal attributes
                 // from anyAttributes.
-                java.util.Vector handledAttributes = new java.util.Vector();
                 
 
-                boolean isReaderMTOMAware = false;
-                
-                try{
-                  isReaderMTOMAware = java.lang.Boolean.TRUE.equals(reader.getProperty(org.apache.axiom.om.OMConstants.IS_DATA_HANDLERS_AWARE));
-                }catch(java.lang.IllegalArgumentException e){
-                  isReaderMTOMAware = false;
-                }
-
-
-                
                     
                     reader.next();
                 
@@ -32536,7 +31634,6 @@
         */
         public static UpdateContentTypesXmlDocumentResult_type16 parse(javax.xml.stream.XMLStreamReader reader) throws java.lang.Exception{
             UpdateContentTypesXmlDocumentResult_type16 object = new UpdateContentTypesXmlDocumentResult_type16();
-            int event;
             try {
                 
                 while (!reader.isStartElement() && !reader.isEndElement())
@@ -32566,19 +31663,8 @@
                 
                 // Note all attributes that were handled. Used to differ normal attributes
                 // from anyAttributes.
-                java.util.Vector handledAttributes = new java.util.Vector();
                 
 
-                boolean isReaderMTOMAware = false;
-                
-                try{
-                  isReaderMTOMAware = java.lang.Boolean.TRUE.equals(reader.getProperty(org.apache.axiom.om.OMConstants.IS_DATA_HANDLERS_AWARE));
-                }catch(java.lang.IllegalArgumentException e){
-                  isReaderMTOMAware = false;
-                }
-
-
-                
                     
                     reader.next();
                 
@@ -32834,7 +31920,6 @@
         */
         public static ViewFields_type11 parse(javax.xml.stream.XMLStreamReader reader) throws java.lang.Exception{
             ViewFields_type11 object = new ViewFields_type11();
-            int event;
             try {
                 
                 while (!reader.isStartElement() && !reader.isEndElement())
@@ -32864,20 +31949,8 @@
                 
                 // Note all attributes that were handled. Used to differ normal attributes
                 // from anyAttributes.
-                java.util.Vector handledAttributes = new java.util.Vector();
                 
 
-                boolean isReaderMTOMAware = false;
-                
-                try{
-                  isReaderMTOMAware = java.lang.Boolean.TRUE.equals(reader.getProperty(org.apache.axiom.om.OMConstants.IS_DATA_HANDLERS_AWARE));
-                }catch(java.lang.IllegalArgumentException e){
-                  isReaderMTOMAware = false;
-                }
-
-
-                
-                    
                     reader.next();
                 
                                     
@@ -33132,7 +32205,6 @@
         */
         public static ViewFields_type14 parse(javax.xml.stream.XMLStreamReader reader) throws java.lang.Exception{
             ViewFields_type14 object = new ViewFields_type14();
-            int event;
             try {
                 
                 while (!reader.isStartElement() && !reader.isEndElement())
@@ -33162,19 +32234,8 @@
                 
                 // Note all attributes that were handled. Used to differ normal attributes
                 // from anyAttributes.
-                java.util.Vector handledAttributes = new java.util.Vector();
                 
 
-                boolean isReaderMTOMAware = false;
-                
-                try{
-                  isReaderMTOMAware = java.lang.Boolean.TRUE.equals(reader.getProperty(org.apache.axiom.om.OMConstants.IS_DATA_HANDLERS_AWARE));
-                }catch(java.lang.IllegalArgumentException e){
-                  isReaderMTOMAware = false;
-                }
-
-
-                
                     
                     reader.next();
                 
@@ -33560,7 +32621,6 @@
         */
         public static GetListContentTypes parse(javax.xml.stream.XMLStreamReader reader) throws java.lang.Exception{
             GetListContentTypes object = new GetListContentTypes();
-            int event;
             try {
                 
                 while (!reader.isStartElement() && !reader.isEndElement())
@@ -33590,19 +32650,8 @@
                 
                 // Note all attributes that were handled. Used to differ normal attributes
                 // from anyAttributes.
-                java.util.Vector handledAttributes = new java.util.Vector();
                 
 
-                boolean isReaderMTOMAware = false;
-                
-                try{
-                  isReaderMTOMAware = java.lang.Boolean.TRUE.equals(reader.getProperty(org.apache.axiom.om.OMConstants.IS_DATA_HANDLERS_AWARE));
-                }catch(java.lang.IllegalArgumentException e){
-                  isReaderMTOMAware = false;
-                }
-
-
-                
                     
                     reader.next();
                 
@@ -33877,7 +32926,6 @@
         */
         public static ApplyContentTypeToListResponse parse(javax.xml.stream.XMLStreamReader reader) throws java.lang.Exception{
             ApplyContentTypeToListResponse object = new ApplyContentTypeToListResponse();
-            int event;
             try {
                 
                 while (!reader.isStartElement() && !reader.isEndElement())
@@ -33907,20 +32955,8 @@
                 
                 // Note all attributes that were handled. Used to differ normal attributes
                 // from anyAttributes.
-                java.util.Vector handledAttributes = new java.util.Vector();
                 
 
-                boolean isReaderMTOMAware = false;
-                
-                try{
-                  isReaderMTOMAware = java.lang.Boolean.TRUE.equals(reader.getProperty(org.apache.axiom.om.OMConstants.IS_DATA_HANDLERS_AWARE));
-                }catch(java.lang.IllegalArgumentException e){
-                  isReaderMTOMAware = false;
-                }
-
-
-                
-                    
                     reader.next();
                 
                                     
@@ -34204,7 +33240,6 @@
         */
         public static GetList parse(javax.xml.stream.XMLStreamReader reader) throws java.lang.Exception{
             GetList object = new GetList();
-            int event;
             try {
                 
                 while (!reader.isStartElement() && !reader.isEndElement())
@@ -34234,19 +33269,8 @@
                 
                 // Note all attributes that were handled. Used to differ normal attributes
                 // from anyAttributes.
-                java.util.Vector handledAttributes = new java.util.Vector();
                 
 
-                boolean isReaderMTOMAware = false;
-                
-                try{
-                  isReaderMTOMAware = java.lang.Boolean.TRUE.equals(reader.getProperty(org.apache.axiom.om.OMConstants.IS_DATA_HANDLERS_AWARE));
-                }catch(java.lang.IllegalArgumentException e){
-                  isReaderMTOMAware = false;
-                }
-
-
-                
                     
                     reader.next();
                 
@@ -34620,7 +33644,6 @@
         */
         public static GetAttachmentCollection parse(javax.xml.stream.XMLStreamReader reader) throws java.lang.Exception{
             GetAttachmentCollection object = new GetAttachmentCollection();
-            int event;
             try {
                 
                 while (!reader.isStartElement() && !reader.isEndElement())
@@ -34650,17 +33673,7 @@
                 
                 // Note all attributes that were handled. Used to differ normal attributes
                 // from anyAttributes.
-                java.util.Vector handledAttributes = new java.util.Vector();
                 
-
-                boolean isReaderMTOMAware = false;
-                
-                try{
-                  isReaderMTOMAware = java.lang.Boolean.TRUE.equals(reader.getProperty(org.apache.axiom.om.OMConstants.IS_DATA_HANDLERS_AWARE));
-                }catch(java.lang.IllegalArgumentException e){
-                  isReaderMTOMAware = false;
-                }
-
 
                 
                     
@@ -35136,7 +34149,6 @@
         */
         public static CheckOutFile parse(javax.xml.stream.XMLStreamReader reader) throws java.lang.Exception{
             CheckOutFile object = new CheckOutFile();
-            int event;
             try {
                 
                 while (!reader.isStartElement() && !reader.isEndElement())
@@ -35166,19 +34178,8 @@
                 
                 // Note all attributes that were handled. Used to differ normal attributes
                 // from anyAttributes.
-                java.util.Vector handledAttributes = new java.util.Vector();
                 
 
-                boolean isReaderMTOMAware = false;
-                
-                try{
-                  isReaderMTOMAware = java.lang.Boolean.TRUE.equals(reader.getProperty(org.apache.axiom.om.OMConstants.IS_DATA_HANDLERS_AWARE));
-                }catch(java.lang.IllegalArgumentException e){
-                  isReaderMTOMAware = false;
-                }
-
-
-                
                     
                     reader.next();
                 
@@ -35666,7 +34667,6 @@
         */
         public static ApplyContentTypeToList parse(javax.xml.stream.XMLStreamReader reader) throws java.lang.Exception{
             ApplyContentTypeToList object = new ApplyContentTypeToList();
-            int event;
             try {
                 
                 while (!reader.isStartElement() && !reader.isEndElement())
@@ -35696,19 +34696,8 @@
                 
                 // Note all attributes that were handled. Used to differ normal attributes
                 // from anyAttributes.
-                java.util.Vector handledAttributes = new java.util.Vector();
                 
 
-                boolean isReaderMTOMAware = false;
-                
-                try{
-                  isReaderMTOMAware = java.lang.Boolean.TRUE.equals(reader.getProperty(org.apache.axiom.om.OMConstants.IS_DATA_HANDLERS_AWARE));
-                }catch(java.lang.IllegalArgumentException e){
-                  isReaderMTOMAware = false;
-                }
-
-
-                
                     
                     reader.next();
                 
@@ -35997,7 +34986,6 @@
         */
         public static UpdateContentTypeResponse parse(javax.xml.stream.XMLStreamReader reader) throws java.lang.Exception{
             UpdateContentTypeResponse object = new UpdateContentTypeResponse();
-            int event;
             try {
                 
                 while (!reader.isStartElement() && !reader.isEndElement())
@@ -36027,19 +35015,8 @@
                 
                 // Note all attributes that were handled. Used to differ normal attributes
                 // from anyAttributes.
-                java.util.Vector handledAttributes = new java.util.Vector();
                 
 
-                boolean isReaderMTOMAware = false;
-                
-                try{
-                  isReaderMTOMAware = java.lang.Boolean.TRUE.equals(reader.getProperty(org.apache.axiom.om.OMConstants.IS_DATA_HANDLERS_AWARE));
-                }catch(java.lang.IllegalArgumentException e){
-                  isReaderMTOMAware = false;
-                }
-
-
-                
                     
                     reader.next();
                 
@@ -36280,7 +35257,6 @@
         */
         public static GetListItemsResult_type32 parse(javax.xml.stream.XMLStreamReader reader) throws java.lang.Exception{
             GetListItemsResult_type32 object = new GetListItemsResult_type32();
-            int event;
             try {
                 
                 while (!reader.isStartElement() && !reader.isEndElement())
@@ -36310,20 +35286,8 @@
                 
                 // Note all attributes that were handled. Used to differ normal attributes
                 // from anyAttributes.
-                java.util.Vector handledAttributes = new java.util.Vector();
                 
 
-                boolean isReaderMTOMAware = false;
-                
-                try{
-                  isReaderMTOMAware = java.lang.Boolean.TRUE.equals(reader.getProperty(org.apache.axiom.om.OMConstants.IS_DATA_HANDLERS_AWARE));
-                }catch(java.lang.IllegalArgumentException e){
-                  isReaderMTOMAware = false;
-                }
-
-
-                
-                    
                     reader.next();
                 
                                     
@@ -36876,12 +35840,8 @@
                                               
                                                      throw new RuntimeException("webID cannot be null!!");
                                                   
-                                          }else{
-
-                                        
-                                                   xmlWriter.writeCharacters(org.apache.axis2.databinding.utils.ConverterUtil.convertToString(localWebID));
-                                            
                                           }
+                                        xmlWriter.writeCharacters(org.apache.axis2.databinding.utils.ConverterUtil.convertToString(localWebID));
                                     
                                    xmlWriter.writeEndElement();
                              }
@@ -37057,7 +36017,6 @@
         */
         public static GetListItems parse(javax.xml.stream.XMLStreamReader reader) throws java.lang.Exception{
             GetListItems object = new GetListItems();
-            int event;
             try {
                 
                 while (!reader.isStartElement() && !reader.isEndElement())
@@ -37087,20 +36046,8 @@
                 
                 // Note all attributes that were handled. Used to differ normal attributes
                 // from anyAttributes.
-                java.util.Vector handledAttributes = new java.util.Vector();
                 
 
-                boolean isReaderMTOMAware = false;
-                
-                try{
-                  isReaderMTOMAware = java.lang.Boolean.TRUE.equals(reader.getProperty(org.apache.axiom.om.OMConstants.IS_DATA_HANDLERS_AWARE));
-                }catch(java.lang.IllegalArgumentException e){
-                  isReaderMTOMAware = false;
-                }
-
-
-                
-                    
                     reader.next();
                 
                                     
@@ -37418,7 +36365,6 @@
         */
         public static DeleteContentTypeXmlDocumentResult_type24 parse(javax.xml.stream.XMLStreamReader reader) throws java.lang.Exception{
             DeleteContentTypeXmlDocumentResult_type24 object = new DeleteContentTypeXmlDocumentResult_type24();
-            int event;
             try {
                 
                 while (!reader.isStartElement() && !reader.isEndElement())
@@ -37448,15 +36394,10 @@
                 
                 // Note all attributes that were handled. Used to differ normal attributes
                 // from anyAttributes.
-                java.util.Vector handledAttributes = new java.util.Vector();
                 
 
-                boolean isReaderMTOMAware = false;
-                
                 try{
-                  isReaderMTOMAware = java.lang.Boolean.TRUE.equals(reader.getProperty(org.apache.axiom.om.OMConstants.IS_DATA_HANDLERS_AWARE));
                 }catch(java.lang.IllegalArgumentException e){
-                  isReaderMTOMAware = false;
                 }
 
 
@@ -37716,7 +36657,6 @@
         */
         public static DeleteFields_type20 parse(javax.xml.stream.XMLStreamReader reader) throws java.lang.Exception{
             DeleteFields_type20 object = new DeleteFields_type20();
-            int event;
             try {
                 
                 while (!reader.isStartElement() && !reader.isEndElement())
@@ -37746,15 +36686,10 @@
                 
                 // Note all attributes that were handled. Used to differ normal attributes
                 // from anyAttributes.
-                java.util.Vector handledAttributes = new java.util.Vector();
                 
 
-                boolean isReaderMTOMAware = false;
-                
                 try{
-                  isReaderMTOMAware = java.lang.Boolean.TRUE.equals(reader.getProperty(org.apache.axiom.om.OMConstants.IS_DATA_HANDLERS_AWARE));
                 }catch(java.lang.IllegalArgumentException e){
-                  isReaderMTOMAware = false;
                 }
 
 
@@ -38031,7 +36966,6 @@
         */
         public static GetAttachmentCollectionResponse parse(javax.xml.stream.XMLStreamReader reader) throws java.lang.Exception{
             GetAttachmentCollectionResponse object = new GetAttachmentCollectionResponse();
-            int event;
             try {
                 
                 while (!reader.isStartElement() && !reader.isEndElement())
@@ -38061,19 +36995,8 @@
                 
                 // Note all attributes that were handled. Used to differ normal attributes
                 // from anyAttributes.
-                java.util.Vector handledAttributes = new java.util.Vector();
                 
 
-                boolean isReaderMTOMAware = false;
-                
-                try{
-                  isReaderMTOMAware = java.lang.Boolean.TRUE.equals(reader.getProperty(org.apache.axiom.om.OMConstants.IS_DATA_HANDLERS_AWARE));
-                }catch(java.lang.IllegalArgumentException e){
-                  isReaderMTOMAware = false;
-                }
-
-
-                
                     
                     reader.next();
                 
@@ -38331,7 +37254,6 @@
         */
         public static GetListContentTypeResponse parse(javax.xml.stream.XMLStreamReader reader) throws java.lang.Exception{
             GetListContentTypeResponse object = new GetListContentTypeResponse();
-            int event;
             try {
                 
                 while (!reader.isStartElement() && !reader.isEndElement())
@@ -38361,17 +37283,7 @@
                 
                 // Note all attributes that were handled. Used to differ normal attributes
                 // from anyAttributes.
-                java.util.Vector handledAttributes = new java.util.Vector();
                 
-
-                boolean isReaderMTOMAware = false;
-                
-                try{
-                  isReaderMTOMAware = java.lang.Boolean.TRUE.equals(reader.getProperty(org.apache.axiom.om.OMConstants.IS_DATA_HANDLERS_AWARE));
-                }catch(java.lang.IllegalArgumentException e){
-                  isReaderMTOMAware = false;
-                }
-
 
                 
                     
@@ -38572,7 +37484,6 @@
         */
         public static DeleteListResponse parse(javax.xml.stream.XMLStreamReader reader) throws java.lang.Exception{
             DeleteListResponse object = new DeleteListResponse();
-            int event;
             try {
                 
                 while (!reader.isStartElement() && !reader.isEndElement())
@@ -38602,17 +37513,7 @@
                 
                 // Note all attributes that were handled. Used to differ normal attributes
                 // from anyAttributes.
-                java.util.Vector handledAttributes = new java.util.Vector();
                 
-
-                boolean isReaderMTOMAware = false;
-                
-                try{
-                  isReaderMTOMAware = java.lang.Boolean.TRUE.equals(reader.getProperty(org.apache.axiom.om.OMConstants.IS_DATA_HANDLERS_AWARE));
-                }catch(java.lang.IllegalArgumentException e){
-                  isReaderMTOMAware = false;
-                }
-
 
                 
                     
@@ -38855,7 +37756,6 @@
         */
         public static GetListCollectionResponse parse(javax.xml.stream.XMLStreamReader reader) throws java.lang.Exception{
             GetListCollectionResponse object = new GetListCollectionResponse();
-            int event;
             try {
                 
                 while (!reader.isStartElement() && !reader.isEndElement())
@@ -38885,20 +37785,8 @@
                 
                 // Note all attributes that were handled. Used to differ normal attributes
                 // from anyAttributes.
-                java.util.Vector handledAttributes = new java.util.Vector();
                 
 
-                boolean isReaderMTOMAware = false;
-                
-                try{
-                  isReaderMTOMAware = java.lang.Boolean.TRUE.equals(reader.getProperty(org.apache.axiom.om.OMConstants.IS_DATA_HANDLERS_AWARE));
-                }catch(java.lang.IllegalArgumentException e){
-                  isReaderMTOMAware = false;
-                }
-
-
-                
-                    
                     reader.next();
                 
                                     
@@ -39209,12 +38097,8 @@
                                               
                                                      throw new RuntimeException("documentUri cannot be null!!");
                                                   
-                                          }else{
-
-                                        
-                                                   xmlWriter.writeCharacters(org.apache.axis2.databinding.utils.ConverterUtil.convertToString(localDocumentUri));
-                                            
                                           }
+                                        xmlWriter.writeCharacters(org.apache.axis2.databinding.utils.ConverterUtil.convertToString(localDocumentUri));
                                     
                                    xmlWriter.writeEndElement();
                              }
@@ -39354,7 +38238,6 @@
         */
         public static DeleteContentTypeXmlDocument parse(javax.xml.stream.XMLStreamReader reader) throws java.lang.Exception{
             DeleteContentTypeXmlDocument object = new DeleteContentTypeXmlDocument();
-            int event;
             try {
                 
                 while (!reader.isStartElement() && !reader.isEndElement())
@@ -39384,20 +38267,8 @@
                 
                 // Note all attributes that were handled. Used to differ normal attributes
                 // from anyAttributes.
-                java.util.Vector handledAttributes = new java.util.Vector();
                 
 
-                boolean isReaderMTOMAware = false;
-                
-                try{
-                  isReaderMTOMAware = java.lang.Boolean.TRUE.equals(reader.getProperty(org.apache.axiom.om.OMConstants.IS_DATA_HANDLERS_AWARE));
-                }catch(java.lang.IllegalArgumentException e){
-                  isReaderMTOMAware = false;
-                }
-
-
-                
-                    
                     reader.next();
                 
                                     
@@ -39685,7 +38556,6 @@
         */
         public static GetVersionCollectionResponse parse(javax.xml.stream.XMLStreamReader reader) throws java.lang.Exception{
             GetVersionCollectionResponse object = new GetVersionCollectionResponse();
-            int event;
             try {
                 
                 while (!reader.isStartElement() && !reader.isEndElement())
@@ -39715,19 +38585,8 @@
                 
                 // Note all attributes that were handled. Used to differ normal attributes
                 // from anyAttributes.
-                java.util.Vector handledAttributes = new java.util.Vector();
                 
 
-                boolean isReaderMTOMAware = false;
-                
-                try{
-                  isReaderMTOMAware = java.lang.Boolean.TRUE.equals(reader.getProperty(org.apache.axiom.om.OMConstants.IS_DATA_HANDLERS_AWARE));
-                }catch(java.lang.IllegalArgumentException e){
-                  isReaderMTOMAware = false;
-                }
-
-
-                
                     
                     reader.next();
                 

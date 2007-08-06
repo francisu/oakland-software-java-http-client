@@ -8,6 +8,7 @@ import junit.framework.TestSuite;
 import com.oaklandsw.http.server.ErrorServer;
 import com.oaklandsw.util.LogUtils;
 
+//Bug 1997 - SocketTimeoutException shows through in reading headers
 public class TestTimeoutBeforeHeaders extends TestTimeout
 {
     private static final Log _log = LogUtils.makeLogger();

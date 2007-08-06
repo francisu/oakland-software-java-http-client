@@ -499,11 +499,14 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
 
     protected static final int         DEFAULT_CHUNK_LEN                    = 4096;
 
-    // Enables streaming (no buffering) the request with chunked encoding. -1 if
-    // this is disabled.
-    protected boolean                  _streamingChunked;
+    static final int                   STREAM_NONE                          = 0;
+    static final int                   STREAM_CHUNKED                       = 1;
+    static final int                   STREAM_FIXED                         = 2;
+    static final int                   STREAM_RAW                           = 3;
 
-    // Enables streaming the request in one fixed block
+    protected int                      _streamingMode;
+
+    // For fixed stream mode
     protected int                      _streamingFixedLen                   = -1;
 
     // If the "Expect" request header is present
@@ -1265,29 +1268,40 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
             setRequestMethodInternal(HTTP_METHOD_POST);
         }
 
-        if (isStreaming())
+        if (_streamingMode > STREAM_NONE)
         {
             _log.debug("getOutputStream - streaming start");
 
             // Return the right kind of stream so the user can complete the
             // request. The requested is finished in the normal manner
-            if (_streamingChunked)
+            switch (_streamingMode)
             {
-                executeStart();
-                _log.debug("getOutputStream - "
-                    + "returning StreamingChunkedOutputStream");
-                _outStream = new StreamingChunkedOutputStream(this, _connection
-                        .getOutputStream());
-                return _outStream;
+                case STREAM_CHUNKED:
+                    executeStart();
+                    _log.debug("getOutputStream - "
+                        + "returning StreamingChunkedOutputStream");
+                    _outStream = new StreamingChunkedOutputStream(this,
+                                                                  _connection
+                                                                          .getOutputStream());
+                    return _outStream;
+                case STREAM_FIXED:
+                    _contentLength = _streamingFixedLen;
+                    executeStart();
+                    _log.debug("getOutputStream - "
+                        + "returning StreamingFixedOutputStream");
+                    _outStream = new StreamingFixedOutputStream(this,
+                                                                _connection
+                                                                        .getOutputStream(),
+                                                                _streamingFixedLen);
+                    return _outStream;
+                case STREAM_RAW:
+                    executeStart();
+                    _log.debug("getOutputStream - "
+                        + "returning StreamingRawOutputStream");
+                    _outStream = new StreamingRawOutputStream(this, _connection
+                            .getOutputStream());
+                    return _outStream;
             }
-
-            _contentLength = _streamingFixedLen;
-            executeStart();
-            _log.debug("getOutputStream - "
-                + "returning StreamingFixedOutputStream");
-            _outStream = new StreamingFixedOutputStream(this, _connection
-                    .getOutputStream(), _streamingFixedLen);
-            return _outStream;
         }
 
         if ((_pipeliningOptions & PIPE_PIPELINE) != 0)
@@ -1634,10 +1648,11 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
     {
         // Note, don't use the superclass for this because that only exists
         // on 1.5 and higher and we need to support this for all versions
-        if (connected || _streamingFixedLen >= 0)
+        if (connected
+            || (_streamingMode != STREAM_NONE && _streamingMode != STREAM_CHUNKED))
             throw new IllegalStateException();
 
-        _streamingChunked = true;
+        _streamingMode = STREAM_CHUNKED;
     }
 
     /**
@@ -1661,17 +1676,46 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
     {
         // Note, don't use the superclass for this because that only exists
         // on 1.5 and higher and we need to support this for all versions
-        if (connected || _streamingChunked)
+        if (connected
+            || (_streamingMode != STREAM_NONE && _streamingMode != STREAM_FIXED))
             throw new IllegalStateException();
         if (fixedLen < 0)
             throw new IllegalArgumentException("fixedLen must be greater than or equal to zero");
+        _streamingMode = STREAM_FIXED;
         _streamingFixedLen = fixedLen;
     }
 
-    protected boolean isStreaming()
+    /**
+     * Used to allow direct access to sending the HTTP request.
+     * <p>
+     * When using this option, you get the OutputStream using
+     * {@link #getOutputStream()} and then write the HTTP request that stream.
+     * After the request is written close the stream. The HTTP response is
+     * handled normally.
+     * <p>
+     * This is used if you wish to have complete control over the exact content
+     * of the HTTP request.
+     * 
+     * @param useRaw
+     *            True if enabling raw streaming, false if not
+     * @throws IllegalStateException -
+     *             If the connection is already connected or a different
+     *             streaming mode has been set.
+     */
+    public void setRawStreamingMode(boolean useRaw)
     {
-        // -1 means these are not used
-        return _streamingChunked || _streamingFixedLen >= 0;
+        if (connected)
+            throw new IllegalStateException();
+        if (true)
+        {
+            if (_streamingMode != STREAM_NONE && _streamingMode != STREAM_RAW)
+                throw new IllegalStateException();
+            _streamingMode = STREAM_RAW;
+        }
+        else
+        {
+            _streamingMode = STREAM_NONE;
+        }
     }
 
     /**

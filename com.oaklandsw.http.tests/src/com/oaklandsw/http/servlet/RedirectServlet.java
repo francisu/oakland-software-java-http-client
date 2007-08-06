@@ -57,7 +57,6 @@ import java.io.IOException;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpUtils;
 
 public class RedirectServlet extends MultiMethodServlet
 {
@@ -77,7 +76,7 @@ public class RedirectServlet extends MultiMethodServlet
         String to = null;
         if (null != request.getParameter("loop"))
         {
-            to = HttpUtils.getRequestURL(request).append("?")
+            to = request.getRequestURL().append("?")
                     .append(request.getQueryString()).toString();
         }
         else

@@ -7,13 +7,9 @@ See http://www.oaklandsoftware.com/support.html for current known problems.
 
 Incompatible Changes since release 1.x
 ------------------------------------------------
-1) The HttpURLConnection.setExplicitClose() and HttpURLConnection.isExplicitClose() have
-been replaced by HttpURLConnection.setDefaultExplicitClose() and 
-HttpURLConnection.isDefaultExplicitClose() respectively.  This is to align this
-with the convention used by the other properties.
-
-2) The HttpURLConnection.setExplicitClose() and HttpURLConnection.isExplicitClose() are 
-now instance methods that affect only the connection on which they are called.
+1) The HttpURLConnection.setExplicitClose() and HttpURLConnection.isExplicitClose() 
+are now deprecated and don't do anything.  The default behavior for the 2.x
+implementation is the same as using the ExplicitClose option.
 
 
 

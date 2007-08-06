@@ -162,6 +162,31 @@ public class TestMethodsNoHost extends HttpTestBase
         urlCon.setChunkedStreamingMode(25);
     }
 
+    public void testStreamRawMultipleTimes() throws Exception
+    {
+        URL url = new URL("http://doesnotmatter");
+
+        HttpURLConnection urlCon = HttpURLConnection.openConnection(url);
+
+        // These should all work
+        urlCon.setRawStreamingMode(true);
+        urlCon.setRawStreamingMode(false);
+        urlCon.setRawStreamingMode(true);
+        urlCon.setRawStreamingMode(true);
+
+        // Should not work since using raw
+        try
+        {
+            urlCon.setFixedLengthStreamingMode(10);
+            fail("Expected exception");
+        }
+        catch (IllegalStateException ex)
+        {
+            // OK
+        }
+
+    }
+
     public void testStreamBadFixedSize() throws Exception
     {
         URL url = new URL("http://doesnotmatter");

@@ -7,7 +7,6 @@ Bundle-ClassPath: javax.servlet.jar,
  wsdl4j-1.5.1.jar,
  commons-discovery-0.2.jar,
  netx.jar
-Bundle-Localization: plugin
 Export-Package: com.ibm.wsdl,
  com.ibm.wsdl.extensions,
  com.ibm.wsdl.extensions.http,

@@ -3,6 +3,7 @@ package com.oaklandsw.http;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.URL;
 
 import org.apache.commons.logging.Log;
@@ -22,9 +23,10 @@ public class HttpTestBase extends com.oaklandsw.TestCaseBase
 
     public boolean             _showStats;
 
-    protected static final int STREAM_NONE      = 0;
-    protected static final int STREAM_CHUNKED   = 1;
-    protected static final int STREAM_FIXED     = 2;
+    public static final int    STREAM_NONE      = HttpURLConnection.STREAM_NONE;
+    public static final int    STREAM_CHUNKED   = HttpURLConnection.STREAM_CHUNKED;
+    public static final int    STREAM_FIXED     = HttpURLConnection.STREAM_FIXED;
+    public static final int    STREAM_RAW       = HttpURLConnection.STREAM_RAW;
 
     protected int              _streamingType;
 
@@ -109,7 +111,8 @@ public class HttpTestBase extends com.oaklandsw.TestCaseBase
                 else
                     url = new URL(_url);
 
-                HttpURLConnection urlCon = HttpURLConnection.openConnection(url);
+                HttpURLConnection urlCon = HttpURLConnection
+                        .openConnection(url);
 
                 // Turn off the timeout for the connection since the
                 // default timeout has been set in the main thread
@@ -202,22 +205,51 @@ public class HttpTestBase extends com.oaklandsw.TestCaseBase
     {
         switch (_streamingType)
         {
-            case STREAM_NONE:
+            case HttpURLConnection.STREAM_NONE:
                 break;
-            case STREAM_CHUNKED:
+            case HttpURLConnection.STREAM_CHUNKED:
                 urlCon.setChunkedStreamingMode(size);
                 break;
-            case STREAM_FIXED:
+            case HttpURLConnection.STREAM_FIXED:
                 urlCon.setFixedLengthStreamingMode(size);
+                break;
+            case HttpURLConnection.STREAM_RAW:
+                urlCon.setRawStreamingMode(true);
                 break;
             default:
                 Util.impossible("Invalid streamingtype: " + _streamingType);
         }
     }
 
+    protected void writePostStart(OutputStream os, URL url, String data)
+        throws Exception
+    {
+        if (_streamingType == STREAM_RAW)
+        {
+            String str = "POST "
+                + url.toString()
+                + " HTTP/1.1\r\n"
+                + "Content-Length: "
+                + data.length()
+                + "\r\n"
+                + "\r\n";
+
+            os.write(str.getBytes());
+        }
+    }
+
+    protected void writePostEnd(OutputStream os, URL url) throws Exception
+    {
+        if (_streamingType == STREAM_RAW)
+        {
+            String str = "\r\n";
+            os.write(str.getBytes());
+        }
+    }
+
     protected boolean isInStreamTest()
     {
-        return _streamingType != STREAM_NONE;
+        return _streamingType != HttpURLConnection.STREAM_NONE;
     }
 
     protected void checkErrorSvrData(HttpURLConnection urlCon,
@@ -477,7 +509,7 @@ public class HttpTestBase extends com.oaklandsw.TestCaseBase
         HttpURLConnection.setProxyPort(HttpTestEnv.TEST_10_PROXY_PORT);
         try
         {
-            //LogUtils.logFile("/home/francis/log4j10proxy.txt");
+            // LogUtils.logFile("/home/francis/log4j10proxy.txt");
             allTestMethods();
         }
         finally

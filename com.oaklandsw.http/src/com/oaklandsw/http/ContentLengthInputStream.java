@@ -119,8 +119,8 @@ public class ContentLengthInputStream extends AutoRetryInputStream
             return 0;
         }
 
-        if (c == -1)
-            checkShort();
+        if (c == -1 && _pos < _contentLength)
+            throwShort();
         return c;
     }
 
@@ -134,9 +134,7 @@ public class ContentLengthInputStream extends AutoRetryInputStream
         if (_pos >= _contentLength)
             return -1;
         if (_pos + len > _contentLength)
-        {
             len = _contentLength - _pos;
-        }
 
         int count;
 
@@ -151,18 +149,15 @@ public class ContentLengthInputStream extends AutoRetryInputStream
             return 0;
         }
 
-        if (count == -1)
-            checkShort();
+        if (count == -1 && _pos < _contentLength)
+            throwShort();
         else
             _pos += count;
         return count;
     }
 
-    private void checkShort() throws IOException
+    private void throwShort() throws IOException
     {
-        if (_pos >= _contentLength)
-            return;
-
         String warn = "Connection closed before all content (of "
             + _contentLength
             + " bytes) was read (try #"

@@ -25,7 +25,7 @@ import com.oaklandsw.util.Util;
 public class TestOutputStream extends TestWebappBase
 {
 
-    private static final Log   _log           = LogUtils.makeLogger();
+    private static final Log _log = LogUtils.makeLogger();
 
     public TestOutputStream(String testName)
     {
@@ -148,7 +148,10 @@ public class TestOutputStream extends TestWebappBase
         urlCon.setDoOutput(true);
         setupStreaming(urlCon, 1);
         OutputStream outStr = urlCon.getOutputStream();
-        outStr.write("a".getBytes("ASCII"));
+        String str = "a";
+        writePostStart(outStr, url, str);
+        outStr.write(str.getBytes("ASCII"));
+        writePostEnd(outStr, url);
         outStr.close();
         if (checkResponse(urlCon))
             checkReply(urlCon, "<tt>a</tt>");
@@ -164,7 +167,9 @@ public class TestOutputStream extends TestWebappBase
         byte[] output = QUOTE.getBytes("ASCII");
         setupStreaming(urlCon, output.length);
         OutputStream outStr = urlCon.getOutputStream();
+        writePostStart(outStr, url, QUOTE);
         outStr.write(output);
+        writePostEnd(outStr, url);
         outStr.close();
         if (checkResponse(urlCon))
             checkReply(urlCon, "<tt>" + QUOTE + "</tt>");
@@ -185,6 +190,7 @@ public class TestOutputStream extends TestWebappBase
         // The output.length is ignored for chuncked
         setupStreaming(urlCon, output.length);
         OutputStream outStr = urlCon.getOutputStream();
+        writePostStart(outStr, url, postData);
         if (_streamingType == STREAM_CHUNKED)
         {
             // Do this so we actually get chunks
@@ -196,6 +202,7 @@ public class TestOutputStream extends TestWebappBase
             outStr.write(output);
 
         }
+        writePostEnd(outStr, url);
         outStr.close();
         if (checkResponse(urlCon))
             checkReply(urlCon, "<tt>" + postData + "</tt>");
@@ -213,7 +220,9 @@ public class TestOutputStream extends TestWebappBase
         byte[] output = QUOTE.getBytes("ASCII");
         setupStreaming(urlCon, output.length);
         OutputStream outStr = urlCon.getOutputStream();
+        writePostStart(outStr, url, QUOTE);
         outStr.write(output);
+        writePostEnd(outStr, url);
         outStr.close();
         if (checkResponse(urlCon))
             checkReply(urlCon, "<tt>" + QUOTE + "</tt>");
@@ -274,6 +283,8 @@ public class TestOutputStream extends TestWebappBase
     // From Caterpillar
     public void testPostWithSleep() throws Exception
     {
+        if (_streamingType == STREAM_RAW)
+            return;
         URL url = new URL(_urlBase + RequestBodyServlet.NAME);
 
         HttpURLConnection urlCon = (HttpURLConnection)url.openConnection();
@@ -308,6 +319,8 @@ public class TestOutputStream extends TestWebappBase
 
     public void testBug1796() throws Exception
     {
+        if (_streamingType == STREAM_RAW)
+            return;
         int tm = 5000;
         String addr = _urlBase + RequestBodyServlet.NAME;
 
@@ -367,6 +380,8 @@ public class TestOutputStream extends TestWebappBase
 
     public void testPostAsXMLRPC() throws Exception
     {
+        if (_streamingType == STREAM_RAW)
+            return;
         URL url = new URL(_urlBase + RequestBodyServlet.NAME);
 
         byte[] request = "This is a test request".getBytes("ASCII");
