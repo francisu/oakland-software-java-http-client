@@ -499,8 +499,11 @@ public class HttpConnection
     void unconditionalFlush() throws IOException
     {
         _log.debug("Flushing connection");
+        // Could be closed
+        if (_output == null)
+            return;
         _output.flush();
-        toggleNeedsFlush(false);
+        setNeedsFlush(false);
         _connManager.recordCount(HttpConnectionManager.COUNT_FLUSHES);
     }
 
@@ -518,7 +521,7 @@ public class HttpConnection
         }
         else
         {
-            toggleNeedsFlush(true);
+            setNeedsFlush(true);
             _connManager
                     .recordCount(HttpConnectionManager.COUNT_AVOIDED_FLUSHES);
             if (_log.isDebugEnabled())
@@ -528,12 +531,12 @@ public class HttpConnection
         }
     }
 
-    protected void toggleNeedsFlush(boolean needs)
+    protected void setNeedsFlush(boolean needs)
     {
         if (needs != _needsFlush)
         {
             _needsFlush = needs;
-            _connManager.toggleNeedsFlush(this);
+            _connManager.updateNeedsFlushCount(this);
         }
     }
 
@@ -1249,7 +1252,7 @@ public class HttpConnection
             _connLog.debug("Completing close: \n" + dump(0));
 
             // Let the connection manager we don't need to flush
-            toggleNeedsFlush(false);
+            setNeedsFlush(false);
 
             if (null != _input)
             {

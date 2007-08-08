@@ -416,7 +416,7 @@ public class HttpConnectionManager
         }
     }
 
-    void toggleNeedsFlush(HttpConnection conn)
+    void updateNeedsFlushCount(HttpConnection conn)
     {
         synchronized (_pipelineLock)
         {
