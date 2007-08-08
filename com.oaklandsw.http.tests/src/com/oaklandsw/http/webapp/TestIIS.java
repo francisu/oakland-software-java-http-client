@@ -269,12 +269,11 @@ public class TestIIS extends HttpTestBase
 
     public void test240GetPipeline(int num) throws Exception
     {
-        // LogUtils.logFile("/home/francis/log4jout.txt");
+         //LogUtils.logFile("/home/francis/log4jout.txt");
         // Pipelining does not work with netproxy
         if (_inAuthCloseProxyTest)
             return;
         HttpURLConnection.setDefaultAuthenticationType(Credential.AUTH_NTLM);
-
         PipelineTester pt = new PipelineTester(HttpTestEnv.TEST_URL_IIS
                                                    + HttpTestEnv.TEST_URL_APP_IIS_QUERY_STRING,
                                                num,

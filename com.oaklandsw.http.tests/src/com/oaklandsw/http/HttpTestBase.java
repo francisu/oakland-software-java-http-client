@@ -517,6 +517,9 @@ public class HttpTestBase extends com.oaklandsw.TestCaseBase
         _inTestGroup = true;
         HttpURLConnection.setProxyHost(HttpTestEnv.TEST_10_PROXY_HOST);
         HttpURLConnection.setProxyPort(HttpTestEnv.TEST_10_PROXY_PORT);
+
+        // Need more attempt to retry authentication in this environment
+        HttpURLConnection.setDefaultMaxForwards(200);
         try
         {
             // LogUtils.logFile("/home/francis/log4j10proxy.txt");

@@ -53,6 +53,9 @@ public class PipelineTester implements CheckResults
     public String              _outputData;
     public String              _requestType;
 
+    // Don't report on this type of failure
+    public int                 _ignoreFailType;
+
     public static final String COUNT_PROP        = "count";
 
     public PipelineTester(String url,
@@ -172,7 +175,7 @@ public class PipelineTester implements CheckResults
                     {
                         System.out.println("Output not in output: " + str);
                         setFailType(41, null, 0);
-                        
+
                     }
                     synchronized (PipelineTester.this)
                     {
@@ -225,12 +228,16 @@ public class PipelineTester implements CheckResults
         if (_stop)
             return;
 
-        System.out.println("failure "
-            + failType
-            + " respCode: "
-            + responseCode
-            + " exception: "
-            + ex);
+        if (_ignoreFailType != failType)
+        {
+            System.out.println("failure "
+                + failType
+                + " respCode: "
+                + responseCode
+                + " exception: "
+                + ex);
+        }
+
         if (ex != null)
         {
             if (ex instanceof AutomaticHttpRetryException)
@@ -239,7 +246,8 @@ public class PipelineTester implements CheckResults
                 return;
             }
 
-            ex.printStackTrace(System.out);
+            if (_ignoreFailType != failType)
+                ex.printStackTrace(System.out);
             _failException = ex;
         }
         if (responseCode != 0)

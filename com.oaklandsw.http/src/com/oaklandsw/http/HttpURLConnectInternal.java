@@ -170,11 +170,6 @@ public class HttpURLConnectInternal
     // Used for testing, see TestPipelineRough
     public static boolean    _ignoreObservedMaxCount;
 
-    /**
-     * Maximum number of redirects to forward through.
-     */
-    private int              MAX_FORWARDS         = 100;
-
     public HttpURLConnectInternal(URL urlParam)
     {
         super(urlParam);
@@ -191,7 +186,7 @@ public class HttpURLConnectInternal
         }
     }
 
-    // For testing and tunnelling
+    // For testing and tunneling
     public HttpURLConnectInternal()
     {
     }
@@ -1327,7 +1322,9 @@ public class HttpURLConnectInternal
 
                         // Force a retry at a higher level for redirect or auth
                         _tryCount = 0;
-                        throw new HttpException(str);
+                        HttpException ex = new HttpException(str);
+                        ex._retryable = true;
+                        throw ex;
                     }
                     break;
                 }
@@ -1797,8 +1794,10 @@ public class HttpURLConnectInternal
 
     protected final void processRequestLoop() throws IOException
     {
+        int maxForwards = _connManager._globalState._defaultMaxForwards;
+
         // Loop for redirection and authentication retries
-        while (_forwardAuthCount++ < MAX_FORWARDS)
+        while (_forwardAuthCount++ < maxForwards)
         {
             boolean redirect = false;
 
@@ -1902,10 +1901,10 @@ public class HttpURLConnectInternal
         }
 
         _connLog.debug("Giving up after "
-            + MAX_FORWARDS
+            + maxForwards
             + " forwards/authentication restarts");
         throw new HttpException("Maximum redirects/authentication restarts ("
-            + MAX_FORWARDS
+            + maxForwards
             + ") exceeded for "
             + this);
     }
@@ -2436,6 +2435,12 @@ public class HttpURLConnectInternal
                 + _tryCount
                 + " maxTries: "
                 + _maxTries, iex);
+        }
+
+        if (iex instanceof HttpException)
+        {
+            if (!((HttpException)iex)._retryable)
+                return iex;
         }
 
         // If allowed, give it another go

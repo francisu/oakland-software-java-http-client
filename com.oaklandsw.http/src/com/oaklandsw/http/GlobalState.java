@@ -86,6 +86,9 @@ public class GlobalState
     public static int              MAX_TRIES                        = 3;
     int                            _defaultMaxTries                 = MAX_TRIES;
 
+    public static int              MAX_FORWARDS                     = 100;
+    int                            _defaultMaxForwards              = MAX_FORWARDS;
+
     private static int             DEFAULT_RETRY_INTERVAL           = 0;
     int                            _retryInterval                   = DEFAULT_RETRY_INTERVAL;
 

@@ -20,5 +20,6 @@ public class AutomaticHttpRetryException extends HttpException
     public AutomaticHttpRetryException(String message)
     {
         super(message);
+        _retryable = true;
     }
 }

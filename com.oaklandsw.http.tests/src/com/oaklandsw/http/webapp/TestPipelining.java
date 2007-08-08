@@ -652,6 +652,7 @@ public class TestPipelining extends TestWebappBase
 
     public void testThreaded2() throws Exception
     {
+        System.out.println("----------------    Threaded2");
         if (_logging)
         {
             LogUtils.logFile("/home/francis/log4jpipeMT2"
@@ -665,6 +666,7 @@ public class TestPipelining extends TestWebappBase
 
     public void testThreaded3() throws Exception
     {
+        System.out.println("----------------    Threaded3");
         int count = _extended ? 10 : 1;
         for (int i = 0; i < count; i++)
         {
@@ -684,6 +686,8 @@ public class TestPipelining extends TestWebappBase
 
     public void testThreaded4() throws Exception
     {
+        System.out.println("----------------    Threaded4");
+
         HttpURLConnection.setMaxConnectionsPerHost(10);
         HttpURLConnection.setDefaultRequestTimeout(5000);
 

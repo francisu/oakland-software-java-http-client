@@ -2573,6 +2573,36 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
     }
 
     /**
+     * Set the number of times a request can be redirected or it can
+     * have its authentication retried in the event of an authentication
+     * failure (particularly in a pipelined environment).
+     * 
+     * This value defaults to 100.
+     * 
+     * @param forwards
+     *            the number of times to redirect or retry authentication
+     */
+    public static void setDefaultMaxForwards(int forwards)
+        throws IllegalArgumentException
+    {
+        if (_log.isDebugEnabled())
+            _log.debug("setDefaultMaxForwards: " + forwards);
+        if (forwards < 1)
+            throw new IllegalArgumentException("You must allow at least one try");
+        checkConnectionManager()._globalState._defaultMaxForwards = forwards;
+    }
+
+    /**
+     * Get the number of of forwards and authentication retries allowed
+     * 
+     * @return The number of times to redirect or retry authentication.
+     */
+    public static int getDefaultMaxForwards()
+    {
+        return checkConnectionManager()._globalState._defaultMaxForwards;
+    }
+
+    /**
      * Set the interval to wait before each retry of a failed request. This
      * value defaults to 0 (milliseconds).
      * 

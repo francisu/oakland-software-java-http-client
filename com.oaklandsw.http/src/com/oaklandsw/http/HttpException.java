@@ -35,6 +35,9 @@ import java.lang.reflect.Method;
 public class HttpException extends IOException
 {
 
+    // Can the request be retried as a result of this exception?
+    boolean _retryable;
+
     /**
      * Creates a new HttpException with a <tt>null</tt> detail message.
      */
@@ -196,4 +199,3 @@ public class HttpException extends IOException
     /** The original Throwable representing the cause of this error */
     private final Throwable cause;
 }
-
