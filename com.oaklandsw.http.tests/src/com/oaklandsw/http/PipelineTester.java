@@ -10,10 +10,11 @@ import java.net.URL;
 
 import org.apache.commons.logging.Log;
 
+import com.oaklandsw.http.HttpConnectionManager.CheckResults;
 import com.oaklandsw.util.LogUtils;
 import com.oaklandsw.util.Util;
 
-public class PipelineTester
+public class PipelineTester implements CheckResults
 {
     private static final Log   _log              = LogUtils.makeLogger();
 
@@ -21,6 +22,7 @@ public class PipelineTester
 
     public int                 _readCountOk;
     public int                 _readAutoRetry;
+    public int                 _writeAutoRetry;
     public int                 _writeCount;
 
     public int[]               _responseCounts;
@@ -45,6 +47,12 @@ public class PipelineTester
 
     public boolean             _checkResult      = true;
 
+    public int                 _streamingType;
+    public int                 _streamingSize;
+    public boolean             _doOutput;
+    public String              _outputData;
+    public String              _requestType;
+
     public static final String COUNT_PROP        = "count";
 
     public PipelineTester(String url,
@@ -56,6 +64,9 @@ public class PipelineTester
         _iterations = iterations;
         _pipeliningMaxDepth = pipeliningMaxDepth;
         _pipeliningOptions = pipeliningOptions;
+
+        if (false)
+            HttpURLConnection.getConnectionManager()._checkResults = this;
     }
 
     public class TestCallback implements Callback
@@ -65,19 +76,42 @@ public class PipelineTester
         {
             _writeCount++;
 
-            if (!Integer.toString(_writeCount).equals(urlCon
-                    .getRequestProperty(COUNT_PROP)))
+            // Unexpected
+            if (!_doOutput)
             {
-                setFailType(20, null, 0);
-
+                setFailType(22, null, 0);
             }
 
-            if (!Thread.currentThread().getName().equals(urlCon
-                    .getRequestProperty("threadName")))
+            try
             {
-                setFailType(21, null, 0);
+                if (_streamingType == HttpTestBase.STREAM_RAW)
+                {
+                    String urlString = urlCon.getUrlString();
+                    String outString = "PUT "
+                        + urlString
+                        + " HTTP/1.1\r\n"
+                        + "Content-Length: "
+                        + _outputData.length()
+                        + "\r\n\r\n";
+                    os.write(outString.getBytes());
+                }
+                os.write(_outputData.getBytes());
+                os.close();
             }
-            // Nothing, this is a get
+            catch (AutomaticHttpRetryException arex)
+            {
+                synchronized (PipelineTester.this)
+                {
+                    _writeAutoRetry++;
+                }
+                // The read will be redriven
+                return;
+            }
+            catch (IOException e)
+            {
+                setFailType(23, e, 0);
+            }
+
         }
 
         public void readResponse(HttpURLConnection urlCon, InputStream is)
@@ -131,7 +165,14 @@ public class PipelineTester
                     if (reqNumber < 1 || reqNumber > _iterations)
                     {
                         System.out.println("Invalid reqNumber: " + reqNumber);
-                        setFailType(9, null, 0);
+                        setFailType(40, null, 0);
+                    }
+
+                    if (_outputData != null && str.indexOf(_outputData) < 0)
+                    {
+                        System.out.println("Output not in output: " + str);
+                        setFailType(41, null, 0);
+                        
                     }
                     synchronized (PipelineTester.this)
                     {
@@ -246,18 +287,22 @@ public class PipelineTester
             }
 
             // Not in the header, add it as a query request param
-            url = new URL(_url
+            String urlString = _url
                 + (_url.endsWith("&") ? "" : "?")
                 + COUNT_PROP
                 + "="
                 + Integer.toString(i + 1)
                 + "&threadName="
-                + Thread.currentThread().getName());
+                + Thread.currentThread().getName();
+            url = new URL(urlString);
             // System.out.println(Thread.currentThread().getName()
             // + " creating Connection");
             HttpURLConnection urlCon = (HttpURLConnection)url.openConnection();
+            if (_requestType != null)
+                urlCon.setRequestMethod(_requestType);
             urlCon.setCallback(cb);
-
+            HttpTestBase.setupStreaming(_streamingType, urlCon, _streamingSize);
+            urlCon.setDoOutput(_doOutput);
             urlCon.setPipeliningOptions(_pipeliningOptions);
             urlCon.setPipeliningMaxDepth(_pipeliningMaxDepth);
             urlCon.setRequestProperty(COUNT_PROP, Integer.toString(i + 1));
@@ -291,6 +336,13 @@ public class PipelineTester
         // System.out.println(Thread.currentThread().getName()
         // + " after execute and block");
 
+        // Let things settle after we wake from the block, it's possible
+        // all of the processing of releasing connections etc might
+        // not be done when the block returns; this will not cause
+        // problems for the users, but the connection counts might
+        // not be right if we check right away
+        Thread.sleep(100);
+
         if (_showStats)
         {
             HttpURLConnection.dumpAll();
@@ -298,8 +350,9 @@ public class PipelineTester
 
         if (_showStats)
         {
-            System.out.println("Read OK count:         " + _readCountOk);
-            System.out.println("Read auto retry count: " + _readAutoRetry);
+            System.out.println("Read OK count:          " + _readCountOk);
+            System.out.println("Read auto retry count:  " + _readAutoRetry);
+            System.out.println("Write auto retry count: " + _writeAutoRetry);
         }
 
         boolean results = true;
@@ -329,6 +382,36 @@ public class PipelineTester
         HttpURLConnectInternal._addDiagSequence = false;
     }
 
+    // returns true if failed
+    public boolean checkCounts()
+    {
+        boolean fail = false;
+        int totalResponses = 0;
+        for (int i = 1; i <= _iterations; i++)
+        {
+            totalResponses += _responseCounts[i];
+            if (_responseCounts[i] != 1)
+            {
+                System.out.println("Response count incorrect for req: "
+                    + i
+                    + " count is: "
+                    + _responseCounts[i]);
+                fail = true;
+            }
+        }
+
+        if (_iterations != totalResponses)
+        {
+            System.out.println("totalResponses mismatch: "
+                + _iterations
+                + " read counts: "
+                + totalResponses);
+            fail = true;
+        }
+        return fail;
+
+    }
+
     // Returns true if there is a failure
     public boolean checkResults()
     {
@@ -354,29 +437,6 @@ public class PipelineTester
         if (_expectedResponse != 200)
             return fail;
 
-        int totalResponses = 0;
-        for (int i = 1; i <= _iterations; i++)
-        {
-            totalResponses += _responseCounts[i];
-            if (_responseCounts[i] != 1)
-            {
-                System.out.println("Response count incorrect for req: "
-                    + i
-                    + " count is: "
-                    + _responseCounts[i]);
-                fail = true;
-            }
-        }
-
-        if (_iterations != totalResponses)
-        {
-            System.out.println("totalResponses mismatch: "
-                + _iterations
-                + " read counts: "
-                + totalResponses);
-            fail = true;
-        }
-
-        return fail;
+        return checkCounts();
     }
 }

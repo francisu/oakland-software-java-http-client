@@ -6,16 +6,21 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.httpclient.Credentials;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpConnectionManager;
 import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
+import org.apache.commons.httpclient.NTCredentials;
 import org.apache.commons.httpclient.SimpleHttpConnectionManager;
+import org.apache.commons.httpclient.auth.AuthScope;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.params.HttpConnectionManagerParams;
 import org.apache.commons.logging.Log;
 
 import com.oaklandsw.http.AutomaticHttpRetryException;
 import com.oaklandsw.http.Callback;
+import com.oaklandsw.http.NtlmCredential;
+import com.oaklandsw.http.ntlm.Ntlm;
 import com.oaklandsw.util.LogUtils;
 import com.oaklandsw.util.Util;
 
@@ -85,6 +90,13 @@ public class TestPerf
 
     HttpConnectionManager _jakartaConnMgr;
     HttpClient            _jakartaClient;
+
+    boolean               _useAuth;
+
+    String                _user            = "httptest";
+    String                _password        = "httptestpw";
+    String                _host            = "repoman";
+    String                _domain          = "oaklandsw";
 
     public class PipelineCallback implements Callback
     {
@@ -226,6 +238,10 @@ public class TestPerf
             {
                 _quiet = true;
             }
+            else if (args[i].equalsIgnoreCase("-auth"))
+            {
+                _useAuth = true;
+            }
             else if (args[i].equalsIgnoreCase("-help"))
             {
                 usage();
@@ -248,8 +264,8 @@ public class TestPerf
 
     public void run() throws Exception
     {
-        
-        //LogUtils.logFile("/home/francis/log4jperf.txt");
+
+        // LogUtils.logFile("/home/francis/log4jperf.txt");
 
         for (int i = 0; i < _repeatTestTimes; i++)
         {
@@ -354,6 +370,23 @@ public class TestPerf
                             .setDefaultPipelining(false);
 
                 }
+
+                if (_useAuth)
+                {
+                    Ntlm._authMessageLmResponse = Ntlm.V1;
+                    Ntlm._authMessageNtResponse = Ntlm.NONE;
+                    Ntlm._authMessageFlags = 0x5206;
+                    SampleUserAgent ua = new SampleUserAgent();
+                    ua._normalCredential = new NtlmCredential();
+                    ua._normalCredential.setUser(_user);
+                    ua._normalCredential.setPassword(_password);
+                    ua._normalCredential.setDomain(_domain);
+                    ua._normalCredential.setHost(_host);
+                    com.oaklandsw.http.HttpURLConnection
+                            .setDefaultUserAgent(ua);
+                    com.oaklandsw.http.HttpURLConnection
+                            .setNtlmPreferredEncoding(com.oaklandsw.http.HttpURLConnection.NTLM_ENCODING_OEM);
+                }
                 break;
 
             case IMP_SUN:
@@ -382,6 +415,16 @@ public class TestPerf
                 _jakartaConnMgr.setParams(params);
 
                 _jakartaClient = new HttpClient(_jakartaConnMgr);
+
+                if (_useAuth)
+                {
+                    Credentials defaultcreds = new NTCredentials(_user,
+                                                                 _password,
+                                                                 _host,
+                                                                 _domain);
+                    _jakartaClient.getState().setCredentials(AuthScope.ANY,
+                                                             defaultcreds);
+                }
                 break;
         }
 
@@ -496,6 +539,7 @@ public class TestPerf
         System.out.println("  -ip4 - prefer the IPv4 stack (default)");
         System.out.println("  -ip6 - prefer the IPv6 stack");
         System.out.println("  -close - explicitly close all connections");
+        System.out.println("  -auth - use authentication");
         System.out.println("  -quiet - don't print anything");
         System.out
                 .println("  -dump <num> - dump the statistics at this interval");
@@ -519,9 +563,8 @@ public class TestPerf
                 }
             }
 
-            URL url = new URL(urlToUse + "?rep=" + _repeatIndex + "&seq=" +
-             i);
-            //URL url = new URL(urlToUse);
+            URL url = new URL(urlToUse + "?rep=" + _repeatIndex + "&seq=" + i);
+            // URL url = new URL(urlToUse);
 
             int responseCode = 0;
             switch (_implementation)

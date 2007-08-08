@@ -30,6 +30,9 @@ public class HttpTestBase extends com.oaklandsw.TestCaseBase
 
     protected int              _streamingType;
 
+    // For fixed streaming
+    protected int              _streamingSize;
+
     // For more stress testing
     protected boolean          _extended        = false;
 
@@ -203,7 +206,14 @@ public class HttpTestBase extends com.oaklandsw.TestCaseBase
 
     protected void setupStreaming(HttpURLConnection urlCon, int size)
     {
-        switch (_streamingType)
+        setupStreaming(_streamingType, urlCon, size);
+    }
+
+    public static void setupStreaming(int streamingType,
+                                      HttpURLConnection urlCon,
+                                      int size)
+    {
+        switch (streamingType)
         {
             case HttpURLConnection.STREAM_NONE:
                 break;
@@ -217,7 +227,7 @@ public class HttpTestBase extends com.oaklandsw.TestCaseBase
                 urlCon.setRawStreamingMode(true);
                 break;
             default:
-                Util.impossible("Invalid streamingtype: " + _streamingType);
+                Util.impossible("Invalid streamingtype: " + streamingType);
         }
     }
 

@@ -14,22 +14,17 @@ import com.oaklandsw.util.Util;
 /**
  * Handles the chunked streaming mode for the HttpURLConnection output.
  */
-public class StreamingChunkedOutputStream extends OutputStream
+public class StreamingChunkedOutputStream extends AutoRetryOutputStream
 {
     private static final Log  _log   = LogUtils.makeLogger();
 
-    private boolean           _closed;
-
-    private OutputStream      _stream;
-    private HttpURLConnection _urlCon;
-
     private static final byte ZERO[] = new byte[] { (byte)'0' };
 
-    public StreamingChunkedOutputStream(HttpURLConnection urlCon,
-            OutputStream str)
+    public StreamingChunkedOutputStream(OutputStream str,
+            HttpURLConnection urlCon,
+            boolean throwAutoRetry)
     {
-        _stream = str;
-        _urlCon = urlCon;
+        super(str, urlCon, throwAutoRetry);
     }
 
     // Using a this method precludes writing an array
@@ -48,51 +43,31 @@ public class StreamingChunkedOutputStream extends OutputStream
 
     public void write(byte[] b, int off, int len) throws IOException
     {
-        // Write the chunk as the size of the buffer
-        _stream.write(Integer.toHexString(len).getBytes(Util.DEFAULT_ENCODING));
-        _stream.write(Util.CRLF_BYTES, 0, Util.CRLF_BYTES.length);
-        _stream.write(b, off, len);
-        _stream.write(Util.CRLF_BYTES, 0, Util.CRLF_BYTES.length);
-    }
-
-    public void flush() throws IOException
-    {
-        // Just pass this through
-        _stream.flush();
-    }
-
-    public void close() throws IOException
-    {
-        if (!_closed)
+        try
         {
-            try
-            {
-                writeEndMarker(_stream);
-                _urlCon.streamWriteFinished(HttpURLConnectInternal.OK);
-            }
-            catch (IOException ioe)
-            {
-                _log.debug("Unexpected exception on closing chunked output "
-                    + " stream", ioe);
-                _urlCon.streamWriteFinished(!HttpURLConnectInternal.OK);
-                throw ioe;
-            }
-            finally
-            {
-                _closed = true;
-                super.close();
-            }
+            // Write the chunk as the size of the buffer
+            _outStr.write(Integer.toHexString(len)
+                    .getBytes(Util.DEFAULT_ENCODING));
+            _outStr.write(Util.CRLF_BYTES, 0, Util.CRLF_BYTES.length);
+            _outStr.write(b, off, len);
+            _outStr.write(Util.CRLF_BYTES, 0, Util.CRLF_BYTES.length);
         }
-
+        catch (IOException ex)
+        {
+            processIOException(ex);
+        }
     }
 
-    public static void writeEndMarker(OutputStream stream) throws IOException
+    public void closeSubclass(boolean closeConn) throws IOException
     {
-        stream.write(ZERO, 0, ZERO.length);
-        stream.write(Util.CRLF_BYTES, 0, Util.CRLF_BYTES.length);
-        stream.write(Util.CRLF_BYTES, 0, Util.CRLF_BYTES.length);
-        stream.flush();
-
+        if (closeConn)
+            return;
+        
+        _outStr.write(ZERO, 0, ZERO.length);
+        _outStr.write(Util.CRLF_BYTES, 0, Util.CRLF_BYTES.length);
+        _outStr.write(Util.CRLF_BYTES, 0, Util.CRLF_BYTES.length);
+        flush();
+        _urlCon.streamWriteFinished(HttpURLConnectInternal.OK);
     }
 
 }

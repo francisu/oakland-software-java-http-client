@@ -53,6 +53,7 @@
 package com.oaklandsw.http.servlet;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.PrintWriter;
 import java.net.InetAddress;
 import java.util.Enumeration;
@@ -78,7 +79,7 @@ public class ParamServlet extends MultiMethodServlet
     public static final String NAME_NTLM       = "/ntlmparams";
 
     // Oakland Software NTLMv2 filter
-    public static final String NAME_NTLM2       = "/ntlm2params";
+    public static final String NAME_NTLM2      = "/ntlm2params";
 
     protected void genericService(HttpServletRequest request,
                                   HttpServletResponse response)
@@ -179,15 +180,14 @@ public class ParamServlet extends MultiMethodServlet
             }
 
             out.println("<p>Request Body</p>");
-            // InputStream is = request.getInputStream();
-            // byte[] buffer = new byte[1000];
-            // int len;
 
-            /*******************************************************************
-             * // for tomcat 3.2 seems to die on this statement, // but no
-             * exception is thrown while ((len = is.read(buffer)) > 0) {
-             * out.print(new String(buffer, 0, len)); }
-             ******************************************************************/
+            InputStream is = request.getInputStream();
+            byte[] buffer = new byte[1000];
+            int len;
+            while ((len = is.read(buffer)) > 0)
+            {
+                out.print(new String(buffer, 0, len));
+            }
 
             out.println();
 

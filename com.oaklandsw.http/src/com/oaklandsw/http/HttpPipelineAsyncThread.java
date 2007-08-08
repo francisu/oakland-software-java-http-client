@@ -82,7 +82,13 @@ public class HttpPipelineAsyncThread extends Thread
                 }
 
                 urlCon = (HttpURLConnection)obj;
-                urlCon.processPipelinedWrite();
+
+                // This returns false if a retry is desired
+                while (!urlCon.processPipelinedWrite())
+                {
+                    if (_log.isDebugEnabled())
+                        _log.debug("retrying write on: " + urlCon);
+                }
             }
         }
         catch (InterruptedException e)

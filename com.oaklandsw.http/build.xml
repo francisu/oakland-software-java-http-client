@@ -44,7 +44,7 @@
 	<!-- =================================================================== -->
 	<target name="javadoc" depends="prepare">
 		<mkdir dir="${javadocs.dir}" />
-		<javadoc sourcepath="${src.dir}" destdir="${javadocs.dir}" access="public" windowtitle="Oakland Software HTTP Client API" doctitle="Oakland Software HTTP Client" bottom="Copyright &#169; 2002-2006 Oakland Software Incorporated. All Rights Reserved.">
+		<javadoc  destdir="${javadocs.dir}" access="public" windowtitle="Oakland Software HTTP Client API" doctitle="Oakland Software HTTP Client" bottom="Copyright &#169; 2002-2007 Oakland Software Incorporated. All Rights Reserved.">
 			<classpath refid="compile.classpath" />
 			<fileset dir="${src.dir}" defaultexcludes="yes">
 				<!-- MAKE SURE TO update the build.http.xml file -->
@@ -57,6 +57,7 @@
 				<include name="com/oaklandsw/http/HttpTimeoutException.java" />
 				<include name="com/oaklandsw/http/HttpUserAgent.java" />
 				<include name="com/oaklandsw/http/AbstractCallback.java" />
+				<include name="com/oaklandsw/http/ConnectionIOListener.java" />
 				<include name="com/oaklandsw/http/Callback.java" />
 				<include name="com/oaklandsw/http/Credential.java" />
 				<include name="com/oaklandsw/http/UserCredential.java" />

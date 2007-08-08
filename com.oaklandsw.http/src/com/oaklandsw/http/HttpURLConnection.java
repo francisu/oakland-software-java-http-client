@@ -1257,66 +1257,85 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
             throw new IllegalStateException("The reply to this URLConnection has already been received");
         }
 
-        // Return the same output stream so the user can just do stuff
-        // calling getOutputStream().whatever
-        if (_outStream != null)
-            return _outStream;
-
-        // Switch to post method - be compatible with JDK
-        if ((_actualMethodPropsSent & (METHOD_PROP_SWITCH_TO_POST | METHOD_PROP_UNSPECIFIED_METHOD)) != 0)
+        try
         {
-            setRequestMethodInternal(HTTP_METHOD_POST);
-        }
+            // Return the same output stream so the user can just do stuff
+            // calling getOutputStream().whatever
+            if (_outStream != null)
+                return _outStream;
 
-        if (_streamingMode > STREAM_NONE)
-        {
-            _log.debug("getOutputStream - streaming start");
-
-            // Return the right kind of stream so the user can complete the
-            // request. The requested is finished in the normal manner
-            switch (_streamingMode)
+            // Switch to post method - be compatible with JDK
+            if ((_actualMethodPropsSent & (METHOD_PROP_SWITCH_TO_POST | METHOD_PROP_UNSPECIFIED_METHOD)) != 0)
             {
-                case STREAM_CHUNKED:
-                    executeStart();
-                    _log.debug("getOutputStream - "
-                        + "returning StreamingChunkedOutputStream");
-                    _outStream = new StreamingChunkedOutputStream(this,
-                                                                  _connection
-                                                                          .getOutputStream());
-                    return _outStream;
-                case STREAM_FIXED:
-                    _contentLength = _streamingFixedLen;
-                    executeStart();
-                    _log.debug("getOutputStream - "
-                        + "returning StreamingFixedOutputStream");
-                    _outStream = new StreamingFixedOutputStream(this,
-                                                                _connection
-                                                                        .getOutputStream(),
-                                                                _streamingFixedLen);
-                    return _outStream;
-                case STREAM_RAW:
-                    executeStart();
-                    _log.debug("getOutputStream - "
-                        + "returning StreamingRawOutputStream");
-                    _outStream = new StreamingRawOutputStream(this, _connection
-                            .getOutputStream());
-                    return _outStream;
+                setRequestMethodInternal(HTTP_METHOD_POST);
+            }
+
+            if (_streamingMode > STREAM_NONE)
+            {
+                _log.debug("getOutputStream - streaming start");
+
+                boolean throwAutoRetry = (_pipeliningOptions & PIPE_PIPELINE) != 0;
+
+                // Return the right kind of stream so the user can complete the
+                // request. The requested is finished in the normal manner
+                switch (_streamingMode)
+                {
+                    case STREAM_CHUNKED:
+                        executeStart();
+
+                        _log.debug("getOutputStream - "
+                            + "returning StreamingChunkedOutputStream");
+                        _outStream = new StreamingChunkedOutputStream(_connection
+                                                                              .getOutputStream(),
+                                                                      this,
+                                                                      throwAutoRetry);
+                        return _outStream;
+                    case STREAM_FIXED:
+                        _contentLength = _streamingFixedLen;
+                        executeStart();
+
+                        _log.debug("getOutputStream - "
+                            + "returning StreamingFixedOutputStream");
+                        _outStream = new StreamingFixedOutputStream(_connection
+                                                                            .getOutputStream(),
+                                                                    this,
+                                                                    throwAutoRetry,
+                                                                    _streamingFixedLen);
+                        return _outStream;
+                    case STREAM_RAW:
+                        executeStart();
+
+                        _log.debug("getOutputStream - "
+                            + "returning StreamingRawOutputStream");
+                        _outStream = new StreamingRawOutputStream(_connection
+                                .getOutputStream(), this, throwAutoRetry);
+                        return _outStream;
+                }
+            }
+
+            if ((_pipeliningOptions & PIPE_PIPELINE) != 0)
+            {
+                throw new IllegalStateException("You cannot use the pipelining feature for "
+                    + "sending output unless the connection is streaming.  "
+                    + "Call set[Chunked|FixedLength|Raw]StreamingMode() "
+                    + "to turn on streaming.");
+            }
+
+            _log.debug("getOutputStream - returning "
+                + "ByteArrayOutputStream (non streaming)");
+            _outStream = new ByteArrayOutputStream();
+            return _outStream;
+        }
+        finally
+        {
+            if (_connManager._urlConnIoListener != null && _outStream != null)
+            {
+                _outStream = new IOListenerOutputStream(_outStream,
+                                                        _connManager._urlConnIoListener,
+                                                        _connection,
+                                                        this);
             }
         }
-
-        if ((_pipeliningOptions & PIPE_PIPELINE) != 0)
-        {
-            throw new IllegalStateException("You cannot use the pipelining feature for "
-                + "sending output unless the connection is streaming.  "
-                + "Call set[Chunked|FixedLength]StreamingMode() "
-                + "to turn on streaming.");
-        }
-
-        _log.debug("getOutputStream - returning "
-            + "ByteArrayOutputStream (non streaming)");
-        _outStream = new ByteArrayOutputStream();
-        return _outStream;
-
     }
 
     /**
@@ -1353,9 +1372,12 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
                     if (_releaseConnection)
                     {
                         if (_log.isDebugEnabled())
-                            _log
-                                    .debug("releaseConnection: now connected = FALSE");
+                        {
+                            _log.debug("releaseConnection: "
+                                + "now connected = FALSE");
+                        }
                         connected = false;
+                        _outStream = null;
 
                         boolean closed = false;
                         if (type == CLOSE || _shouldClose)
@@ -1366,9 +1388,8 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
                             closed = true;
                         }
 
-                        // When reading and piplining the connection is not
-                        // owned
-                        // from the connection manager point of view
+                        // When reading and pipelining the connection is not
+                        // owned from the connection manager point of view
                         if (closed || (_pipeliningOptions & PIPE_PIPELINE) == 0)
                         {
                             // See the comment on this field
@@ -1922,6 +1943,15 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
             _log.debug("getResponseStream - returning: "
                 + ((is == null) ? "null" : is.getClass().getName()));
         }
+
+        if (_connManager._urlConnIoListener != null)
+        {
+            is = new IOListenerInputStream(is,
+                                           _connManager._urlConnIoListener,
+                                           _connection,
+                                           this);
+        }
+
         return is;
     }
 
@@ -3690,11 +3720,15 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
 
     protected abstract void executeStart() throws HttpException, IOException;
 
-    protected abstract void processPipelinedWrite()
+    // Returns true if it worked, false if processPipelinedWrite() should be
+    // called
+    protected abstract boolean processPipelinedWrite()
         throws InterruptedException,
             InterruptedIOException;
 
-    protected abstract void processPipelinedRead()
+    // Returns true if it worked, false if processPipelinedWrite() should be
+    // called
+    protected abstract boolean processPipelinedRead()
         throws InterruptedException,
             InterruptedIOException;
 

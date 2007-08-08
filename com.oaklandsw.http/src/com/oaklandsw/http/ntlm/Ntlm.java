@@ -14,19 +14,53 @@ import com.oaklandsw.http.HttpURLConnection;
 
 public class Ntlm
 {
-    public static final int     FORCE_NONE     = 0;
-    public static final int     FORCE_V1       = 1;
-    public static final int     FORCE_V2       = 2;
 
-    // For testing
-    public static int           _forceNtlmType;
+    public static final int     NONE                   = 0;
+    public static final int     V1                     = 1;
+    public static final int     V2                     = 2;
+    public static final int     AS_NEGOTIATED          = 3;
 
-    private static final String ENCODING       = "8859_1";
+    public static int           _authMessageNtResponse;
+    public static int           _authMessageLmResponse;
+
+    public static long          _authMessageFlags;
+
+    public static boolean       _checkChallengeV2Flags;
+
+    private static final String ENCODING               = "8859_1";
 
     // Do something to call the HttpURLConnection so that class goes through
     // static init and thus license checking
-    private static int          _dummyMaxTries = HttpURLConnection.MAX_TRIES;
+    private static int          _dummyMaxTries         = HttpURLConnection.MAX_TRIES;
 
+    public static void init()
+    {
+        _authMessageNtResponse = AS_NEGOTIATED;
+        _authMessageLmResponse = AS_NEGOTIATED;
+
+        _authMessageFlags = Message.NEGOTIATE_NTLM
+            | Message.NEGOTIATE_ALWAYS_SIGN;
+
+        _checkChallengeV2Flags = false;
+    }
+
+    static
+    {
+        init();
+    }
+
+    public static void forceV2()
+    {
+        _authMessageLmResponse = V2;
+        _authMessageNtResponse = V2;
+    }
+    
+    public static void forceV1()
+    {
+        _authMessageLmResponse = V1;
+        _authMessageNtResponse = V1;
+    }
+    
     /**
      * Returns the response for the given message.
      * 
@@ -64,7 +98,7 @@ public class Ntlm
             challengeMsg.decode();
 
             // Do checking of the challenge flags
-            if (_forceNtlmType == FORCE_V2)
+            if (_checkChallengeV2Flags)
             {
                 long expectedFlags = Message.NEGOTIATE_NTLM
                     | Message.NEGOTIATE_TARGET_INFO;

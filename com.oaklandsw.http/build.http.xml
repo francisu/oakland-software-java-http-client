@@ -71,12 +71,11 @@
   <!-- =================================================================== -->
   <target name="javadocs" depends="prepare-src">
     <mkdir dir="${javadocs.dir}"/>
-    <javadoc sourcepath="${java.src.dir}"
-             destdir="${javadocs.dir}"
+    <javadoc destdir="${javadocs.dir}"
              access="public"
              windowtitle="${java.http.name} API"
              doctitle="${java.http.name}"
-             bottom="Copyright &#169; 2002-2006 Oakland Software Incorporated. All Rights Reserved."
+             bottom="Copyright &#169; 2002-2007 Oakland Software Incorporated. All Rights Reserved."
     >
       <fileset dir="${java.src.dir}" defaultexcludes="yes">
 		<include name="com/oaklandsw/http/HttpURLConnection.java" />
@@ -88,6 +87,7 @@
 		<include name="com/oaklandsw/http/HttpTimeoutException.java" />
 		<include name="com/oaklandsw/http/HttpUserAgent.java" />
 		<include name="com/oaklandsw/http/AbstractCallback.java" />
+		<include name="com/oaklandsw/http/ConnectionIOListener.java" />
 		<include name="com/oaklandsw/http/Callback.java" />
 		<include name="com/oaklandsw/http/Credential.java" />
 		<include name="com/oaklandsw/http/UserCredential.java" />

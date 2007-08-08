@@ -1,6 +1,7 @@
 package com.oaklandsw.http.webapp;
 
 import java.io.InputStream;
+import java.net.Socket;
 import java.net.URL;
 
 import org.apache.commons.logging.Log;
@@ -8,8 +9,11 @@ import org.apache.commons.logging.Log;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
+import com.oaklandsw.http.ConnectionIOListener;
+import com.oaklandsw.http.HttpConnectionManager;
 import com.oaklandsw.http.HttpTestEnv;
 import com.oaklandsw.http.HttpURLConnection;
+import com.oaklandsw.http.servlet.ParamServlet;
 import com.oaklandsw.http.servlet.RequestBodyServlet;
 import com.oaklandsw.util.LogUtils;
 import com.oaklandsw.util.SystemUtils;
@@ -147,6 +151,51 @@ public class TestMethods extends TestWebappBase
         assertEquals(200, urlCon.getResponseCode());
     }
 
+    class Lis implements ConnectionIOListener
+    {
+
+        HttpURLConnection _urlCon;
+
+        public void read(byte[] bytes,
+                         int offset,
+                         int length,
+                         Socket socket,
+                         HttpURLConnection urlCon)
+        {
+            String result = new String(bytes, offset, length);
+            assertTrue(result.indexOf("HTTP/1.1 200 OK") >= 0);
+            assertNull(urlCon);
+            // assertEquals(_urlCon, urlCon);
+        }
+
+        public void write(byte[] bytes,
+                          int offset,
+                          int length,
+                          Socket socket,
+                          HttpURLConnection urlCon)
+        {
+            String result = new String(bytes, offset, length);
+            assertTrue(result.indexOf("GET /") >= 0);
+            assertTrue(result.indexOf(" HTTP/1.1") >= 0);
+            assertNull(urlCon);
+            // assertEquals(_urlCon, urlCon);
+        }
+    }
+
+    // Bug 2010 add method of accessing socket connection data
+    public void testGetMethodSocketListener() throws Exception
+    {
+        HttpConnectionManager cm = HttpURLConnection.getConnectionManager();
+        Lis ioListener = new Lis();
+        cm.setSocketConnectionIOListener(ioListener);
+        URL url = new URL(_urlBase + ParamServlet.NAME);
+
+        HttpURLConnection urlCon = HttpURLConnection.openConnection(url);
+        ioListener._urlCon = urlCon;
+        urlCon.connect();
+        getReply(urlCon);
+    }
+
     public void allTestMethods() throws Exception
     {
         testGetMethod();
@@ -156,6 +205,5 @@ public class TestMethods extends TestWebappBase
         testPutMethod();
         // testOptionsMethod();
     }
-
 
 }

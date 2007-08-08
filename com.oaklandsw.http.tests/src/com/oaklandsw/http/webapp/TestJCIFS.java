@@ -52,7 +52,7 @@ public class TestJCIFS extends TestWebappBase
     public void tearDown() throws Exception
     {
         super.tearDown();
-        Ntlm._forceNtlmType = Ntlm.FORCE_NONE;
+        Ntlm.init();
     }
 
     // Bug 1946 - make sure JCIFS "server" (really the servet filter) is
@@ -121,19 +121,19 @@ public class TestJCIFS extends TestWebappBase
 
     public void test2NormalForce2() throws Exception
     {
-        Ntlm._forceNtlmType = Ntlm.FORCE_V2;
+        Ntlm.forceV2();
         testGetMethodParameters(TestUserAgent.GOOD, ParamServlet.NAME_NTLM2);
     }
 
     public void test2NormalForce2NoDomain() throws Exception
     {
-        Ntlm._forceNtlmType = Ntlm.FORCE_V2;
+        Ntlm.forceV2();
         noDomain2Normal();
     }
 
     public void test2BadForce2() throws Exception
     {
-        Ntlm._forceNtlmType = Ntlm.FORCE_V2;
+        Ntlm.forceV2();
         testGetMethodParameters(TestUserAgent.BAD, ParamServlet.NAME_NTLM2);
     }
 
@@ -142,7 +142,7 @@ public class TestJCIFS extends TestWebappBase
         // Don't do this if only NTLM v2 is available
         if (HttpTestEnv.REQUIRE_NTLMV2 == null)
         {
-            Ntlm._forceNtlmType = Ntlm.FORCE_V1;
+            Ntlm.forceV1();
             // This fails if the target IIS server is configured to require
             // only NTLMv2 authentication
             testGetMethodParameters(TestUserAgent.GOOD, ParamServlet.NAME_NTLM2);
@@ -151,13 +151,13 @@ public class TestJCIFS extends TestWebappBase
 
     public void test2NormalForce1NoDomain() throws Exception
     {
-        Ntlm._forceNtlmType = Ntlm.FORCE_V1;
+        Ntlm.forceV1();
         noDomain2Normal();
     }
 
     public void test2BadForce1() throws Exception
     {
-        Ntlm._forceNtlmType = Ntlm.FORCE_V1;
+        Ntlm.forceV1();
         testGetMethodParameters(TestUserAgent.BAD, ParamServlet.NAME_NTLM2);
     }
 

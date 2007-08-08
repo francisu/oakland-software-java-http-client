@@ -13,20 +13,15 @@ import com.oaklandsw.util.LogUtils;
 /**
  * Handles the raw streaming mode for the HttpURLConnection output.
  */
-public class StreamingRawOutputStream extends OutputStream
+public class StreamingRawOutputStream extends AutoRetryOutputStream
 {
-    private static final Log  _log   = LogUtils.makeLogger();
+    private static final Log _log = LogUtils.makeLogger();
 
-    private boolean           _closed;
-
-    private OutputStream      _stream;
-    private HttpURLConnection _urlCon;
-
-    public StreamingRawOutputStream(HttpURLConnection urlCon,
-            OutputStream str)
+    public StreamingRawOutputStream(OutputStream str,
+            HttpURLConnection urlCon,
+            boolean throwAutoRetry)
     {
-        _stream = str;
-        _urlCon = urlCon;
+        super(str, urlCon, throwAutoRetry);
     }
 
     // Using a this method precludes writing an array
@@ -40,44 +35,39 @@ public class StreamingRawOutputStream extends OutputStream
 
     public void write(byte[] b) throws IOException
     {
-        write(b, 0, b.length);
+        try
+        {
+            write(b, 0, b.length);
+        }
+        catch (IOException ex)
+        {
+            processIOException(ex);
+        }
     }
 
     public void write(byte[] b, int off, int len) throws IOException
     {
-        // Pass it through
-        _stream.write(b, off, len);
-    }
-
-    public void flush() throws IOException
-    {
-        // Just pass this through
-        _stream.flush();
-    }
-
-    public void close() throws IOException
-    {
-        if (!_closed)
+        try
         {
-            _stream.flush();
-            try
-            {
-                _urlCon.streamWriteFinished(HttpURLConnectInternal.OK);
-            }
-            catch (IOException ioe)
-            {
-                _log.debug("Unexpected exception on closing raw output "
-                    + " stream", ioe);
-                _urlCon.streamWriteFinished(!HttpURLConnectInternal.OK);
-                throw ioe;
-            }
-            finally
-            {
-                _closed = true;
-                super.close();
-            }
+            // Pass it through
+            _outStr.write(b, off, len);
         }
+        catch (IOException ex)
+        {
+            processIOException(ex);
+        }
+    }
 
+    public void closeSubclass(boolean closeConn) throws IOException
+    {
+        if (closeConn)
+            return;
+        
+        // If something is wrong with the flush(), it will throw and
+        // the super will deal with the streamWriteFinished
+        
+        flush();
+        _urlCon.streamWriteFinished(HttpURLConnectInternal.OK);
     }
 
 }

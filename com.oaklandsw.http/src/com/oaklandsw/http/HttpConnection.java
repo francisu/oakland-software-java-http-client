@@ -1048,6 +1048,18 @@ public class HttpConnection
             os = new WireLogOutputStream(os);
         }
 
+        if (_connManager._socketIoListener != null)
+        {
+            is = new IOListenerInputStream(is,
+                                           _connManager._socketIoListener,
+                                           this,
+                                           null);
+            os = new IOListenerOutputStream(os,
+                                            _connManager._socketIoListener,
+                                            this,
+                                            null);
+        }
+
         _input = new ExposedBufferInputStream(is, STREAM_BUFFER_SIZE);
         _output = new BufferedOutputStream(os, STREAM_BUFFER_SIZE);
 
@@ -1072,7 +1084,7 @@ public class HttpConnection
 
     public BufferedOutputStream getOutputStream() throws IOException
     {
-        _connLog.trace("getOutputStream");
+        _log.trace("getOutputStream");
         if (_output == null)
             throw new IOException("Connection is not open");
         return _output;
@@ -1080,7 +1092,7 @@ public class HttpConnection
 
     public ExposedBufferInputStream getInputStream() throws IOException
     {
-        _connLog.trace("getInputStream");
+        _log.trace("getInputStream");
         if (_input == null)
             throw new IOException("Connection is not open");
         return _input;
@@ -1101,7 +1113,9 @@ public class HttpConnection
                     + amount);
             }
 
-            if (_pipelineUrlConCount < 0)
+            // FIXME - add a check for this being closed, it can underflow
+            // if the connection is closed
+            if (false && _pipelineUrlConCount < 0)
             {
                 Util.impossible("_pipelingUrlConCount underflow: "
                     + _pipelineUrlConCount

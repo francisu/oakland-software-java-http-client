@@ -89,7 +89,16 @@ public class HttpConnectionThread extends Thread
 
                 if (_log.isDebugEnabled())
                     _log.debug("starting: " + _connection);
-                urlCon.processPipelinedRead();
+                if (!urlCon.processPipelinedRead())
+                {
+                    // If the above returned false, we need to retry, 
+                    // we keep retrying here until we get it right
+                    while (!urlCon.processPipelinedWrite())
+                    {
+                        if (_log.isDebugEnabled())
+                            _log.debug("retrying write on: " + urlCon);
+                    }
+                }
                 if (_log.isDebugEnabled())
                     _log.debug("end: " + _connection);
             }

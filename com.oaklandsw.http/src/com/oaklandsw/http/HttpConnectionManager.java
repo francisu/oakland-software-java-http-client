@@ -43,7 +43,8 @@ public class HttpConnectionManager
     // See the comment about _urlConReleased in HttpURLConnection
     protected static final int    NOT_RELEASED_TIMEOUT        = 10000;
 
-    // Keep the connection info around for 10 mins
+    // Keep the connection info around for 10 mins, so we don't lose the
+    // statistics
     protected static final int    CONNECTION_INFO_RETAIN_TIME = 600000;
 
     protected GlobalState         _globalState;
@@ -84,6 +85,12 @@ public class HttpConnectionManager
 
     HttpPipelineAsyncThread       _asyncThread;
 
+    // Listens at the level of the socket connections
+    ConnectionIOListener          _socketIoListener;
+
+    // Listens at the level of the url connections
+    ConnectionIOListener          _urlConnIoListener;
+
     // Statistics
 
     // V(AtomicInteger) - by number of tries when it succeeds
@@ -117,6 +124,14 @@ public class HttpConnectionManager
         , "Flush IOExceptions:             " //
                                                               };
 
+    // Diagnostic interface only
+    public interface CheckResults
+    {
+        public boolean checkCounts();
+    }
+
+    public CheckResults _checkResults;
+
     public HttpConnectionManager(GlobalState globalState)
     {
         _globalState = globalState;
@@ -127,6 +142,39 @@ public class HttpConnectionManager
 
         initAsyncQueue();
         resetStatistics();
+    }
+
+    /**
+     * Sets a ConnectionIOListener to receive events associated with data on the
+     * all connections.
+     * 
+     * The information for which HttpURLConnection is not available when using
+     * this method. Use this if you are very concerned about performance as this
+     * does not create an extra pair of objects for each HttpURLConnection.
+     * 
+     * @param ioListener
+     */
+    public void setSocketConnectionIOListener(ConnectionIOListener ioListener)
+    {
+        _socketIoListener = ioListener;
+    }
+
+    /**
+     * FIXME - this is not worked out yet, remove it or make it public when it
+     * is worked out.
+     * 
+     * Sets a ConnectionIOListener to receive events associated with data on the
+     * all connections.
+     * 
+     * This is used when you must know the HttpURLConnection that is
+     * sending/receiving the data. This has a performance penalty of creating
+     * two extra object per HttpURLConnection.
+     * 
+     * @param ioListener
+     */
+    void setUrlConnectionIOListener(ConnectionIOListener ioListener)
+    {
+        _urlConnIoListener = ioListener;
     }
 
     protected void initAsyncQueue()
@@ -277,7 +325,7 @@ public class HttpConnectionManager
     {
         synchronized (this)
         {
-            _connLog.trace("pipelineReadCompleted");
+            _log.trace("pipelineReadCompleted");
             notifyAll();
         }
     }
@@ -386,6 +434,8 @@ public class HttpConnectionManager
 
     void urlConWasRead(Thread thread)
     {
+        boolean dumpAll = false;
+        int dumpCount = 0;
         synchronized (_pipelineLock)
         {
             AtomicInteger ai = (AtomicInteger)_threadUrlConCountMap.get(thread);
@@ -396,11 +446,29 @@ public class HttpConnectionManager
             if (_log.isDebugEnabled())
                 _log.debug("urlConWasRead - count (after) " + count);
             // Can have a count of < 0 during a reset
+
+            // Diagnostic only
+            if (false && count < 10)
+            {
+                dumpAll = true;
+                dumpCount = count;
+            }
+
             if (count <= 0)
             {
                 _pipelineLock.notifyAll();
                 _threadUrlConCountMap.remove(thread);
             }
+        }
+
+        // Diagnostic only
+        if (dumpAll)
+        {
+            System.out.println("Dumping all because the end is near: "
+                + dumpCount);
+            HttpURLConnection.dumpAll();
+            if (_checkResults != null)
+                _checkResults.checkCounts();
         }
     }
 

@@ -2013,7 +2013,6 @@ public class HttpURLConnectInternal
             setRequestBody(outBytes);
             if (_contentLength == UNINIT_CONTENT_LENGTH)
                 _contentLength = outBytes.length;
-
         }
 
         try
@@ -2062,7 +2061,8 @@ public class HttpURLConnectInternal
     // Does the write for a pipelined connection. This can happen
     // on any thread, but is synchronized because it must obtain
     // the connection exclusively from the connection manager
-    protected void processPipelinedWrite()
+    // Returns false if the write should be retried
+    protected boolean processPipelinedWrite()
         throws InterruptedException,
             InterruptedIOException
     {
@@ -2070,6 +2070,8 @@ public class HttpURLConnectInternal
         {
             _log.debug("processPipelinedWrite " + this);
         }
+
+        Exception ex = null;
 
         try
         {
@@ -2088,7 +2090,6 @@ public class HttpURLConnectInternal
                 try
                 {
                     connection.startPreventClose();
-
                     _callback.writeRequest(this, os);
                 }
                 finally
@@ -2108,7 +2109,21 @@ public class HttpURLConnectInternal
                 streamWriteFinished(true);
             }
         }
-        catch (Exception ex)
+        catch (IOException iex)
+        {
+            _ioException = iex;
+        }
+        catch (Exception sex)
+        {
+            ex = sex;
+        }
+
+        // The _ioException could happen without a throw above if
+        // it happened inside of the AutoRetryOutputStream
+        if (_ioException != null)
+            ex = _ioException;
+
+        if (ex != null)
         {
             // Some problem writing, pass this to the user, we have
             // already retried if possible
@@ -2134,7 +2149,7 @@ public class HttpURLConnectInternal
                 // Ignore it, this was caused by a problem flushing
                 // something, possibly on an unrelated connection. The
                 // urlcon involved will get the appropriate exception
-                // it trie to read
+                // it tries to read
             }
 
             // We got so far as to get a connection, we need to indicate
@@ -2142,19 +2157,19 @@ public class HttpURLConnectInternal
             if (_connection != null)
                 _connection.adjustPipelinedUrlConCount(-1);
 
-            if (ex instanceof AutomaticHttpRetryException)
+            if (_ioException != null)
             {
                 if (_connLog.isDebugEnabled())
                 {
                     _connLog.debug("processPipelinedWrite "
                         + "AutomaticHttpRetryException thrown while writing "
-                        + "Callback - attempting retry ", ex);
+                        + "Callback - attempting retry ", _ioException);
                 }
 
                 // Returns null if we can retry
                 Exception ioex = attemptPipelinedRetry(_ioException);
                 if (ioex == null)
-                    return;
+                    return false;
                 ex = ioex;
                 // Continue
             }
@@ -2175,12 +2190,17 @@ public class HttpURLConnectInternal
             if (ex instanceof InterruptedException)
                 throw (InterruptedException)ex;
         }
+
+        // All OK
+        return true;
     }
 
     // Process the pipelined read, this is executed on the HttpConnectionThread,
     // that guarantees that each connection is accessed by only one thread for
     // reading.
-    protected void processPipelinedRead()
+    // Returns true if it worked, false if a retry is required which is a call
+    // to processPipelinedWrite()
+    protected boolean processPipelinedRead()
         throws InterruptedException,
             InterruptedIOException
     {
@@ -2195,7 +2215,7 @@ public class HttpURLConnectInternal
         boolean readSuccessful = false;
 
         // Make sure we have only one read at a time for the connection,
-        // since enqueing work happens in the middle of writing (if we
+        // since enqueueing work happens in the middle of writing (if we
         // have to write for authentication), we don't want to be
         // reentered
         synchronized (this)
@@ -2237,7 +2257,7 @@ public class HttpURLConnectInternal
                                 + "wrote authentication and returning");
                         }
                         // Will retry
-                        return;
+                        return true;
                     }
 
                     // Gets the input stream if we actually read
@@ -2260,7 +2280,7 @@ public class HttpURLConnectInternal
                     // Returns the exception to use, or null if we can retry
                     ex = attemptPipelinedRetry(iex);
                     if (ex == null)
-                        return;
+                        return false;
                 }
                 catch (Exception sex)
                 {
@@ -2287,12 +2307,21 @@ public class HttpURLConnectInternal
                 Exception saveExc = _ioException;
                 try
                 {
+                    if (ex != null && ex instanceof IOException)
+                        _ioException = (IOException)ex;
+                    // Prevent any kind of re-execution
+                    _executed = true;
+
                     // Call the user
                     if (ex != null
                         || _responseCode >= HttpStatus.SC_REDIRECTION)
+                    {
                         callPipelineError(is, ex);
+                    }
                     else
+                    {
                         _callback.readResponse(this, is);
+                    }
 
                     // Inside of the call to the user a stream got closed and
                     // caused an exception reading, it will have thrown an
@@ -2310,7 +2339,7 @@ public class HttpURLConnectInternal
                         // Returns null if we can retry
                         Exception ioex = attemptPipelinedRetry(_ioException);
                         if (ioex == null)
-                            return;
+                            return false;
                         if (ioex instanceof IOException)
                             _ioException = (IOException)ioex;
                     }
@@ -2378,6 +2407,7 @@ public class HttpURLConnectInternal
                 }
             }
         }
+        return true;
     }
 
     protected void callPipelineError(InputStream is, Exception ex)
@@ -2398,12 +2428,22 @@ public class HttpURLConnectInternal
         if (_connManager != _globalState._connManager)
             return new HttpException("Not retrying after immediateShutdown()");
 
+        if (_connLog.isDebugEnabled())
+        {
+            _connLog.debug("pipelined exception - checking retry attempt "
+                + this
+                + " trycount: "
+                + _tryCount
+                + " maxTries: "
+                + _maxTries, iex);
+        }
+
         // If allowed, give it another go
         if (_tryCount < _maxTries)
         {
             if (_connLog.isDebugEnabled())
             {
-                _connLog.debug("pipelined RETRY (exception) " + this, iex);
+                _connLog.debug("pipelined RETRY attempt " + this);
             }
 
             releaseConnection(CLOSE);
@@ -2416,11 +2456,6 @@ public class HttpURLConnectInternal
             _connManager.recordRetry(_connManager._pipelineReadRetryCounts,
                                      _tryCount);
             _connManager.addUrlConToWrite(this);
-            processPipelinedWrite();
-            if (_connLog.isDebugEnabled())
-            {
-                _connLog.debug("pipelined FINISHED RETRY " + this);
-            }
             return null;
         }
 

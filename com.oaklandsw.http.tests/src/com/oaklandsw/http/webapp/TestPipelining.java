@@ -35,6 +35,10 @@ public class TestPipelining extends TestWebappBase
 
     protected boolean        _failed;
 
+    protected String         _outputData;
+    protected boolean        _doOutput;
+    protected String         _requestType;
+
     public TestPipelining(String testName)
     {
         super(testName);
@@ -69,6 +73,8 @@ public class TestPipelining extends TestWebappBase
         // LogUtils.logFile("/home/francis/log4jpipeALL.txt");
 
         _showStats = true;
+
+        _streamingType = STREAM_NONE;
     }
 
     public void tearDown() throws Exception
@@ -84,6 +90,12 @@ public class TestPipelining extends TestWebappBase
                                  number,
                                  _pipelineOptions,
                                  _pipelineMaxDepth);
+        _pt._streamingType = _streamingType;
+        _pt._streamingSize = _streamingSize;
+        _pt._doOutput = _doOutput;
+        _pt._outputData = _outputData;
+        _pt._requestType = _requestType;
+
         assertFalse(_pt.runTest());
         HttpURLConnection.dumpAll();
     }
@@ -131,32 +143,6 @@ public class TestPipelining extends TestWebappBase
 
         HttpURLConnection.pipelineBlock();
         assertTrue(cb._read);
-    }
-
-    public void testSimple1() throws Exception
-    {
-        testSimple(1);
-    }
-
-    public void testSimple2() throws Exception
-    {
-        if (_logging)
-        {
-            LogUtils
-                    .logFile("/home/francis/log4jpipe2" + _testAllName + ".txt");
-        }
-        testSimple(2);
-    }
-
-    public void testSimple10() throws Exception
-    {
-        if (_logging)
-        {
-            LogUtils.logFile("/home/francis/log4jpipe10"
-                + _testAllName
-                + ".txt");
-        }
-        testSimple(10);
     }
 
     public void testSimple10Async() throws Exception
@@ -291,10 +277,10 @@ public class TestPipelining extends TestWebappBase
         HttpURLConnection.dumpAll();
 
     }
-    
+
     public void testShutdown2Base() throws Exception
     {
-        //LogUtils.logFile("/home/francis/log4jshutdown.txt");
+        // LogUtils.logFile("/home/francis/log4jshutdown.txt");
 
         _failed = false;
         // Run this a few times and make sure everything is OK
@@ -350,13 +336,39 @@ public class TestPipelining extends TestWebappBase
     public void testShutdown2Loop() throws Exception
     {
         // logAll();
-        //LogUtils.logFile("/home/francis/log4jshutdown.txt");
+        // LogUtils.logFile("/home/francis/log4jshutdown.txt");
 
         for (int i = 0; i < 5; i++)
         {
             testShutdown2Base();
             Thread.sleep(50);
         }
+    }
+
+    public void testSimple1() throws Exception
+    {
+        testSimple(1);
+    }
+
+    public void testSimple2() throws Exception
+    {
+        if (_logging)
+        {
+            LogUtils
+                    .logFile("/home/francis/log4jpipe2" + _testAllName + ".txt");
+        }
+        testSimple(2);
+    }
+
+    public void testSimple10() throws Exception
+    {
+        if (_logging)
+        {
+            LogUtils.logFile("/home/francis/log4jpipe10"
+                + _testAllName
+                + ".txt");
+        }
+        testSimple(10);
     }
 
     public void testSimple100() throws Exception
@@ -456,6 +468,64 @@ public class TestPipelining extends TestWebappBase
                 + ".txt");
         }
         testSimple(10000);
+    }
+
+    public void testStreamingChunk() throws Exception
+    {
+        _streamingType = STREAM_CHUNKED;
+        _doOutput = true;
+        _requestType = "PUT";
+        _outputData = "abc";
+
+        if (_logging)
+        {
+            LogUtils.logFile("/home/francis/log4jpipechunked"
+                + _testAllName
+                + ".txt");
+        }
+
+        testSimple1();
+        testSimple110();
+        testSimple1000();
+    }
+
+    public void testStreamingFixed() throws Exception
+    {
+        _streamingType = STREAM_FIXED;
+        _doOutput = true;
+        _requestType = "PUT";
+        _outputData = "abc";
+        _streamingSize = _outputData.length();
+
+        if (_logging)
+        {
+            LogUtils.logFile("/home/francis/log4jpipefixed"
+                + _testAllName
+                + ".txt");
+        }
+
+        testSimple1();
+        testSimple110();
+        testSimple1000();
+    }
+
+    public void testStreamingRaw() throws Exception
+    {
+        _streamingType = STREAM_RAW;
+        _doOutput = true;
+        _requestType = "PUT";
+        _outputData = "abc";
+
+        if (_logging)
+        {
+            LogUtils.logFile("/home/francis/log4jpiperaw"
+                + _testAllName
+                + ".txt");
+        }
+
+        testSimple1();
+        testSimple110();
+        testSimple1000();
     }
 
     // Make sure the pipeling depth limit is respected
@@ -674,6 +744,20 @@ public class TestPipelining extends TestWebappBase
         testThreaded3();
         // System.out.println("---------------- Threaded4");
         // testThreaded4();
+
+        // FIXME - these don't seem to work correctly for the 1.0 proxy
+        if (!_in10ProxyTest)
+        {
+            System.out.println("----------------    StreamingChunk");
+            testStreamingChunk();
+            System.out.println("----------------    StreamingFixed");
+            testStreamingFixed();
+        }
+
+        // Can't test this through the proxy because it will not
+        // write the request correctly
+        // System.out.println("---------------- StreamingRaw");
+        // testStreamingRaw();
     }
 
 }

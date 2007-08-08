@@ -520,40 +520,77 @@ public class AuthenticateMessage extends Message
                              0,
                              _challenge._msgLength);
 
-            if ((_challenge.getFlags() & NEGOTIATE_TARGET_INFO) != 0
-                && Ntlm._forceNtlmType != Ntlm.FORCE_V1)
-            {
-                byte[] clientChallenge = new byte[8];
-                Util.toByteLittle(System.currentTimeMillis(),
+            byte[] clientChallenge = new byte[8];
+            Util
+                    .toByteLittle(System.currentTimeMillis(),
                                   8,
                                   clientChallenge,
                                   0);
 
-                if (Ntlm._forceNtlmType != Ntlm.FORCE_V2)
-                {
+            switch (Ntlm._authMessageLmResponse)
+            {
+                case Ntlm.NONE:
+                    break;
+                case Ntlm.V1:
+                    _lmResponse = getLMResponse(_password, _nonce);
+                    break;
+                case Ntlm.V2:
                     _lmResponse = getLMv2Response(_domain,
                                                   _user,
                                                   _password,
                                                   _nonce,
                                                   clientChallenge);
-                }
-
-                // NTLM V2 response
-                _ntResponse = getNTLMv2Response(_domain,
-                                                _user,
-                                                _password,
-                                                _challenge.getTargetBlock(),
-                                                _nonce,
-                                                clientChallenge);
-                _flags |= NEGOTIATE_NTLM2;
+                    break;
+                case Ntlm.AS_NEGOTIATED:
+                    if ((_challenge.getFlags() & NEGOTIATE_TARGET_INFO) != 0)
+                    {
+                        _lmResponse = getLMv2Response(_domain,
+                                                      _user,
+                                                      _password,
+                                                      _nonce,
+                                                      clientChallenge);
+                    }
+                    else
+                    {
+                        _lmResponse = getLMResponse(_password, _nonce);
+                    }
+                    break;
             }
-            else
+
+            switch (Ntlm._authMessageNtResponse)
             {
-                // This is NTLM V1
-                _lmResponse = getLMResponse(_password, _nonce);
-                _ntResponse = getNTLMResponse(_password, _nonce);
+                case Ntlm.NONE:
+                    break;
+                case Ntlm.V1:
+                    _ntResponse = getNTLMResponse(_password, _nonce);
+                    break;
+                case Ntlm.V2:
+                    _ntResponse = getNTLMv2Response(_domain,
+                                                    _user,
+                                                    _password,
+                                                    _challenge.getTargetBlock(),
+                                                    _nonce,
+                                                    clientChallenge);
+                    _flags |= NEGOTIATE_NTLM2;
+                    break;
+                case Ntlm.AS_NEGOTIATED:
+                    if ((_challenge.getFlags() & NEGOTIATE_TARGET_INFO) != 0)
+                    {
+                        _ntResponse = getNTLMv2Response(_domain,
+                                                        _user,
+                                                        _password,
+                                                        _challenge
+                                                                .getTargetBlock(),
+                                                        _nonce,
+                                                        clientChallenge);
+                        _flags |= NEGOTIATE_NTLM2;
+                    }
+                    else
+                    {
+                        _ntResponse = getNTLMResponse(_password, _nonce);
+                    }
+                    break;
             }
-
         }
         catch (Exception e)
         {
@@ -718,7 +755,7 @@ public class AuthenticateMessage extends Message
         _type = MSG_AUTHENTICATE;
         int index = super.encode();
 
-        _flags |= NEGOTIATE_NTLM | NEGOTIATE_ALWAYS_SIGN;
+        _flags |= Ntlm._authMessageFlags;
 
         if (_encodingOem)
             _flags |= NEGOTIATE_OEM;

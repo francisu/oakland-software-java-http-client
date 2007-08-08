@@ -15,74 +15,82 @@ import com.oaklandsw.util.LogUtils;
  * passes the data through to the underlying stream and checks that the amount
  * equals the expected size.
  */
-public class StreamingFixedOutputStream extends OutputStream
+public class StreamingFixedOutputStream extends AutoRetryOutputStream
 {
-    private static final Log    _log = LogUtils.makeLogger();
+    private static final Log _log = LogUtils.makeLogger();
 
-    private boolean             _closed;
-
-    private OutputStream        _stream;
-
-    private int                 _bytesWritten;
-
-    protected HttpURLConnection _urlCon;
+    private int              _bytesWritten;
 
     // The content-length
-    protected int               _size;
+    protected int            _size;
 
-    public StreamingFixedOutputStream(HttpURLConnection urlCon,
-            OutputStream str,
+    public StreamingFixedOutputStream(OutputStream str,
+            HttpURLConnection urlCon,
+            boolean throwAutoRetry,
             int size)
     {
+        super(str, urlCon, throwAutoRetry);
         _size = size;
-        _stream = str;
-        _urlCon = urlCon;
     }
 
     public void write(int b) throws IOException
     {
-        _stream.write(b);
-        _bytesWritten++;
+        try
+        {
+            _outStr.write(b);
+            _bytesWritten++;
+        }
+        catch (IOException ex)
+        {
+            processIOException(ex);
+        }
     }
 
     public void write(byte[] b) throws IOException
     {
-        _stream.write(b, 0, b.length);
-        _bytesWritten += b.length;
+        try
+        {
+            _outStr.write(b, 0, b.length);
+            _bytesWritten += b.length;
+        }
+        catch (IOException ex)
+        {
+            processIOException(ex);
+        }
     }
 
     public void write(byte[] b, int off, int len) throws IOException
     {
-        _stream.write(b, off, len);
-        _bytesWritten += len;
-    }
-
-    public void flush() throws IOException
-    {
-        // Just pass this through
-        _stream.flush();
-    }
-
-    public void close() throws IOException
-    {
-        if (!_closed)
+        try
         {
-            _closed = true;
-            _stream.flush();
-            super.close();
-
-            if (_bytesWritten != _size)
-            {
-                // Tell the URL connection we have a problem so it can clean
-                // itself up
-                _urlCon.streamWriteFinished(!HttpURLConnectInternal.OK);
-                throw new HttpException("Streaming fixed length mismatch: bytes written: "
-                    + _bytesWritten
-                    + " requested size: "
-                    + _size);
-            }
-            _urlCon.streamWriteFinished(HttpURLConnectInternal.OK);
+            _outStr.write(b, off, len);
+            _bytesWritten += len;
         }
+        catch (IOException ex)
+        {
+            processIOException(ex);
+        }
+    }
+
+    public void closeSubclass(boolean closeConn) throws IOException
+    {
+        if (closeConn)
+            return;
+        
+        flush();
+
+        if (_bytesWritten != _size)
+        {
+            // Tell the URL connection we have a problem so it can clean
+            // itself up
+            _urlCon.streamWriteFinished(!HttpURLConnectInternal.OK);
+            throw new HttpException("Streaming fixed length mismatch: bytes written: "
+                + _bytesWritten
+                + " requested size: "
+                + _size);
+        }
+
+        _urlCon.streamWriteFinished(HttpURLConnectInternal.OK);
 
     }
 
