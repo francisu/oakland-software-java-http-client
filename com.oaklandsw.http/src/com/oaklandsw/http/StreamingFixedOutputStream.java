@@ -77,7 +77,8 @@ public class StreamingFixedOutputStream extends AutoRetryOutputStream
         if (closeConn)
             return;
         
-        flush();
+        // No flush here, it's done in streamWriteFinished so that things
+        // are batched
 
         if (_bytesWritten != _size)
         {
@@ -89,9 +90,6 @@ public class StreamingFixedOutputStream extends AutoRetryOutputStream
                 + " requested size: "
                 + _size);
         }
-
-        _urlCon.streamWriteFinished(HttpURLConnectInternal.OK);
-
     }
 
 }

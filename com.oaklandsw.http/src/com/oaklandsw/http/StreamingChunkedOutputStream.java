@@ -66,8 +66,6 @@ public class StreamingChunkedOutputStream extends AutoRetryOutputStream
         _outStr.write(ZERO, 0, ZERO.length);
         _outStr.write(Util.CRLF_BYTES, 0, Util.CRLF_BYTES.length);
         _outStr.write(Util.CRLF_BYTES, 0, Util.CRLF_BYTES.length);
-        flush();
-        _urlCon.streamWriteFinished(HttpURLConnectInternal.OK);
     }
 
 }

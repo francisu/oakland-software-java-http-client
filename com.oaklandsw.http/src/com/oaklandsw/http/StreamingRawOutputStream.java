@@ -60,14 +60,7 @@ public class StreamingRawOutputStream extends AutoRetryOutputStream
 
     public void closeSubclass(boolean closeConn) throws IOException
     {
-        if (closeConn)
-            return;
-        
-        // If something is wrong with the flush(), it will throw and
-        // the super will deal with the streamWriteFinished
-        
-        flush();
-        _urlCon.streamWriteFinished(HttpURLConnectInternal.OK);
+        // Nothing
     }
 
 }

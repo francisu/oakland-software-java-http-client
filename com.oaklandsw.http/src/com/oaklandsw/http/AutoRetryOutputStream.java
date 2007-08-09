@@ -51,8 +51,22 @@ public abstract class AutoRetryOutputStream extends OutputStream
         if (_closed)
             return;
 
-        closeSubclass(closeConn);
-        _closed = true;
+        try
+        {
+            closeSubclass(closeConn);
+
+            // No flush here, it's done in streamWriteFinished so that things
+            // are batched, but this might throw and we want to do the auto
+            // retry thing if it does
+            _urlCon.streamWriteFinished(HttpURLConnectInternal.OK);
+            _closed = true;
+        }
+        catch (IOException ex)
+        {
+            // Mark closed so we don't reenter this method
+            _closed = true;
+            processIOException(ex);
+        }
     }
 
     protected abstract void closeSubclass(boolean closeConn) throws IOException;
@@ -97,6 +111,7 @@ public abstract class AutoRetryOutputStream extends OutputStream
         throw ex;
     }
 
+    // This is only used if the user really wants to flush
     public void flush() throws IOException
     {
         try

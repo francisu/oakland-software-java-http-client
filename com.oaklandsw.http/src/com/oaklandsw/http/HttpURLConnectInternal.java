@@ -2520,6 +2520,9 @@ public class HttpURLConnectInternal
         if (ok)
         {
             _log.debug("streaming write finished");
+            
+            _connection.conditionalFlush(this);
+            
             _streamingWritingFinished = true;
             if ((_pipeliningOptions & PIPE_PIPELINE) != 0)
             {
