@@ -11,14 +11,17 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.InterruptedIOException;
 import java.io.OutputStream;
+import java.io.Reader;
 import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.security.cert.Certificate;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.zip.GZIPInputStream;
 
 import javax.net.ssl.SSLPeerUnverifiedException;
 import javax.net.ssl.SSLSocketFactory;
@@ -273,6 +276,7 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
     static final String                PROP_SKIP_ENVIRONMENT_INIT           = "com.oaklandsw.http.skipEnvironmentInit";
 
     static final String                HDR_USER_AGENT                       = "User-Agent";
+    static final String                HDR_CONTENT_ENCODING                 = "Content-Encoding";
     static final String                HDR_CONTENT_LENGTH                   = "Content-Length";
     static final String                HDR_CONTENT_TYPE                     = "Content-Type";
     static final String                HDR_HOST                             = "Host";
@@ -316,6 +320,9 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
     static final byte[]                HDR_USER_AGENT_LC                    = HDR_USER_AGENT
                                                                                     .toLowerCase()
                                                                                     .getBytes();
+    static final byte[]                HDR_CONTENT_ENCODING_LC              = HDR_CONTENT_ENCODING
+                                                                                    .toLowerCase()
+                                                                                    .getBytes();
     static final byte[]                HDR_CONTENT_LENGTH_LC                = HDR_CONTENT_LENGTH
                                                                                     .toLowerCase()
                                                                                     .getBytes();
@@ -357,6 +364,9 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
     static final String                HDR_VALUE_CLOSE                      = "close";
     static final String                HDR_VALUE_CHUNKED                    = "chunked";
     static final String                HDR_VALUE_DEFAULT_CONTENT_TYPE       = "application/x-www-form-urlencoded";
+    static final String                HDR_VALUE_GZIP                       = "gzip";
+    static final String                HDR_VALUE_X_GZIP                     = "x-gzip";
+    static final String                HDR_VALUE_CHARSET                    = "charset";
 
     static final byte[]                HDR_VALUE_KEEP_ALIVE_BYTES           = HDR_VALUE_KEEP_ALIVE
                                                                                     .getBytes();
@@ -365,6 +375,12 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
     static final byte[]                HDR_VALUE_CHUNKED_BYTES              = HDR_VALUE_CHUNKED
                                                                                     .getBytes();
     static final byte[]                HDR_VALUE_DEFAULT_CONTENT_TYPE_BYTES = HDR_VALUE_DEFAULT_CONTENT_TYPE
+                                                                                    .getBytes();
+    static final byte[]                HDR_VALUE_GZIP_BYTES                 = HDR_VALUE_GZIP
+                                                                                    .getBytes();
+    static final byte[]                HDR_VALUE_X_GZIP_BYTES               = HDR_VALUE_X_GZIP
+                                                                                    .getBytes();
+    static final byte[]                HDR_VALUE_CHARSET_BYTES              = HDR_VALUE_CHARSET
                                                                                     .getBytes();
 
     public static final int            NTLM_ENCODING_UNICODE                = 1;
@@ -587,6 +603,42 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
 
     // Based on the response headers should the connection be closed?
     protected boolean                  _shouldClose;
+
+    /**
+     * Header values we are interested in. The actual data used in these arrays
+     * is not the size of the arrays, use the corresponding ...Len field.
+     * 
+     * NOTE: be sure to change HttpURLConnectInternal.resetBeforeRead if
+     * anything is added to this list
+     */
+    protected byte[]                   _hdrContentEncoding;
+    protected int                      _hdrContentEncodingLen;
+
+    protected byte[]                   _hdrContentLength;
+    protected int                      _hdrContentLengthLen;
+
+    protected byte[]                   _hdrContentType;
+    protected int                      _hdrContentTypeLen;
+
+    protected byte[]                   _hdrConnection;
+    protected int                      _hdrConnectionLen;
+
+    protected byte[]                   _hdrProxyConnection;
+    protected int                      _hdrProxyConnectionLen;
+
+    protected byte[]                   _hdrTransferEncoding;
+    protected int                      _hdrTransferEncodingLen;
+
+    protected byte[]                   _hdrWWWAuth;
+    protected int                      _hdrWWWAuthLen;
+
+    protected byte[]                   _hdrLocation;
+    protected int                      _hdrLocationLen;
+
+    protected byte[]                   _hdrProxyAuth;
+    protected int                      _hdrProxyAuthLen;
+
+    protected int                      _hdrContentLengthInt;
 
     private static boolean             _inLicenseCheck;
 
@@ -1881,6 +1933,105 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
         return getResponseStream();
     }
 
+    private static final int CT_START   = 0;
+    private static final int CT_PARAMS  = 1;
+    private static final int CT_CHARSET = 2;
+
+    /**
+     * Gets a Reader for the data returned in the response.
+     * 
+     * This will return whatever data is provided in the response, regardless of
+     * whether the request succeeded or not.
+     * 
+     * This is an alternative to using {@link #getInputStream()}, used if you
+     * want to read the data as character data instead of as bytes. The
+     * characters returned will be decoded according to the
+     * <code>Content-Encoding</code> and <code>Content-Type</code> headers
+     * in the response. If the charset of the response is not specified using a
+     * <code>Content-Type</code> header, then ISO-8859-1 is used, in
+     * accordance with the rules of RFC 2616 (3.7.1).
+     */
+    public Reader getReader() throws IOException
+    {
+        // Get the input stream first which causes the request to execute
+        InputStream is = getInputStream();
+
+        if (_hdrContentEncoding != null)
+        {
+            // FIXME - right now we handle only gzip encoding
+            if (Util.bytesEqual(HDR_VALUE_X_GZIP_BYTES,
+                                _hdrContentEncoding,
+                                _hdrContentEncodingLen)
+                || Util.bytesEqual(HDR_VALUE_GZIP_BYTES,
+                                   _hdrContentEncoding,
+                                   _hdrContentEncodingLen))
+            {
+                if (_log.isDebugEnabled())
+                    _log.debug("Using gzip content encoding");
+                is = new GZIPInputStream(is);
+            }
+        }
+
+        String charset = "ISO-8859-1";
+        if (_hdrContentType != null)
+        {
+            byte charsetValue[] = new byte[200];
+            int charsetIndex = 0;
+
+            // FIXME - this does not handle errors at all
+            lookForCharset:
+            {
+                int state = CT_START;
+                for (int i = 0; i < _hdrContentTypeLen; i++)
+                {
+                    switch (state)
+                    {
+                        case CT_START:
+                            if (_hdrContentType[i] == ';')
+                            {
+                                state = CT_PARAMS;
+                            }
+                            // No params
+                            if (_hdrContentType[i] == '\r')
+                            {
+                                break lookForCharset;
+                            }
+                            break;
+                        case CT_PARAMS:
+                            if (Util.bytesEqual(HDR_VALUE_CHARSET_BYTES,
+                                                _hdrContentType,
+                                                i,
+                                                _hdrContentTypeLen))
+                            {
+                                // Move past the '=' after charset
+                                i += HDR_VALUE_CHARSET_BYTES.length;
+                                state = CT_CHARSET;
+                            }
+                            break;
+                        case CT_CHARSET:
+                            if (_hdrContentType[i] == '\r')
+                            {
+                                break lookForCharset;
+                            }
+                            charsetValue[charsetIndex++] = _hdrContentType[i];
+                            break;
+                    }
+                }
+                
+                if (charsetIndex > 0)
+                {
+                    charset = new String(charsetValue, 0, charsetIndex);
+                }
+                if (_log.isDebugEnabled())
+                    _log.debug("Using charset: " + charset);
+            }
+        }
+
+        Reader r;
+        r = new InputStreamReader(is, charset);
+        return r;
+    }
+
     /**
      * Returns the data associated with the connection in the event of an error.
      * This returns data only when the response code is >= 300. This should not
@@ -2573,9 +2724,9 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
     }
 
     /**
-     * Set the number of times a request can be redirected or it can
-     * have its authentication retried in the event of an authentication
-     * failure (particularly in a pipelined environment).
+     * Set the number of times a request can be redirected or it can have its
+     * authentication retried in the event of an authentication failure
+     * (particularly in a pipelined environment).
      * 
      * This value defaults to 100.
      * 

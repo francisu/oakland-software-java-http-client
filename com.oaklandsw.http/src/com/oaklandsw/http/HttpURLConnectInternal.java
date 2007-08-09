@@ -73,35 +73,6 @@ public class HttpURLConnectInternal
      * with the setNtlmLeaveOpen() flag.
      */
 
-    /**
-     * Header values we are interested in. The actual data used in these arrays
-     * is not the size of the arrays, use the corresponding ...Len field.
-     * 
-     * NOTE: be sure to change resetBeforeRead if anything is added to this list
-     */
-    protected byte[]         _hdrContentLength;
-    protected int            _hdrContentLengthLen;
-
-    protected byte[]         _hdrConnection;
-    protected int            _hdrConnectionLen;
-
-    protected byte[]         _hdrProxyConnection;
-    protected int            _hdrProxyConnectionLen;
-
-    protected byte[]         _hdrTransferEncoding;
-    protected int            _hdrTransferEncodingLen;
-
-    protected byte[]         _hdrWWWAuth;
-    protected int            _hdrWWWAuthLen;
-
-    protected byte[]         _hdrLocation;
-    protected int            _hdrLocationLen;
-
-    protected byte[]         _hdrProxyAuth;
-    protected int            _hdrProxyAuthLen;
-
-    protected int            _hdrContentLengthInt;
-
     // We have read the first character of the next line after
     // the status line, and it is here. This only applies if
     // _singleEolChar is true
@@ -530,7 +501,9 @@ public class HttpURLConnectInternal
 
     protected final void resetBeforeRequest()
     {
+        _hdrContentEncoding = null;
         _hdrContentLength = null;
+        _hdrContentType = null;
         _hdrContentLengthInt = 0;
         _hdrConnection = null;
         _hdrProxyConnection = null;
@@ -789,6 +762,16 @@ public class HttpURLConnectInternal
                 {
                     _hdrContentLength = value;
                     _hdrContentLengthLen = valueLen;
+                }
+                else if (Util.bytesEqual(HDR_CONTENT_TYPE_LC, name, nameLen))
+                {
+                    _hdrContentType = value;
+                    _hdrContentTypeLen = valueLen;
+                }
+                else if (Util.bytesEqual(HDR_CONTENT_ENCODING_LC, name, nameLen))
+                {
+                    _hdrContentEncoding = value;
+                    _hdrContentEncodingLen = valueLen;
                 }
                 else if (Util.bytesEqual(HDR_CONNECTION_LC, name, nameLen))
                 {

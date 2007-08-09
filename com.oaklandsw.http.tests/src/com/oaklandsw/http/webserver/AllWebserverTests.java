@@ -82,6 +82,7 @@ public class AllWebserverTests extends TestCaseBase
         suite.addTest(TestConnectionManagerWebserver.suite());
         suite.addTest(TestBasicAndDigestAuth.suite());
         suite.addTest(TestMethods.suite());
+        suite.addTest(TestCharacter.suite());
         suite.addTest(TestWebDavMethods.suite());
         suite.addTest(TestGetMethod.suite());
         suite.addTest(TestTraceMethod.suite());

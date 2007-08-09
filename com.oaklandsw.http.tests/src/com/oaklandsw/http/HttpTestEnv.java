@@ -164,6 +164,10 @@ public class HttpTestEnv
                                                                      + ":"
                                                                      + TEST_WEBSERVER_PORT;
 
+    // Various webserver data files
+    public static String       TEST_URL_WEBSERVER_DATA           = TEST_URL_WEBSERVER
+                                                                     + "/oaklandsw-http/";
+
     // We expect these to be protected by the user names "basic" and "digest"
     // with the password the same as the username
     public static String       TEST_URL_AUTH_BASIC               = TEST_URL_WEBSERVER
