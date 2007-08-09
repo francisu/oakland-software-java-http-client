@@ -106,17 +106,17 @@ public class SimpleHttpConnection extends HttpConnection
 
     public SimpleHttpConnection()
     {
-        super(null, -1, "localhost", 80, false, 0, "none");
+        super(null, -1, "localhost", 80, false, "none");
         setup();
-        _connectionInfo = new ConnectionInfo(_connManager, "localhost", 1);
+        _connectionInfo = new ConnectionInfo(_connManager, "localhost");
         _output = new BufferedOutputStream(new ByteArrayOutputStream());
     }
 
     public SimpleHttpConnection(String host, int port, boolean isSecure)
     {
-        super(null, -1, host, port, isSecure, 0, "none");
+        super(null, -1, host, port, isSecure, "none");
         setup();
-        _connectionInfo = new ConnectionInfo(_connManager, host, 1);
+        _connectionInfo = new ConnectionInfo(_connManager, host);
     }
 
     public void open() throws IOException

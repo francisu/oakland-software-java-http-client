@@ -142,10 +142,19 @@ public class HttpConnection
 
     static final int           CS_VIRGIN          = 0;
     static final int           CS_OPEN            = 1;
-    static final int           CS_CLOSED          = 2;
+
+    // This is set when the connection needs to close, but cannot right
+    // now because other threads are working on it. When the last thread
+    // finishes with the connection, it is closed. This is synchronized
+    // using this object.
+    static final int           CS_PENDING_CLOSE   = 2;
+
+    static final int           CS_CLOSED          = 3;
 
     int                        _state;
-    // boolean _open;
+
+    // Used to remember if the requested close was immediate
+    boolean                    _immediateClosePending;
 
     boolean                    _ssl;
 
@@ -173,10 +182,6 @@ public class HttpConnection
     public static boolean      _testNonMatchHost;
 
     private Exception          _openException;
-
-    // Used to keep track of the global proxy state at the time
-    // this connection was created.
-    int                        _proxyIncarnation;
 
     // The number of urlcons with outstanding pipelined writes
     // against this connection. This is used to avoid assigning
@@ -238,6 +243,8 @@ public class HttpConnection
                 return "CS_VIRGIN";
             case CS_OPEN:
                 return "CS_OPEN";
+            case CS_PENDING_CLOSE:
+                return "CS_PENDING_CLOSE";
             case CS_CLOSED:
                 return "CS_CLOSED";
         }
@@ -305,7 +312,6 @@ public class HttpConnection
             String host,
             int port,
             boolean secure,
-            int proxyIncarnation,
             String handle)
     {
         if (_connLog.isDebugEnabled())
@@ -331,7 +337,6 @@ public class HttpConnection
         _host = host;
         _port = port;
         _ssl = secure;
-        _proxyIncarnation = proxyIncarnation;
         _handle = handle;
         setHostPort();
         _queue = new ArrayBlockingQueue(200);
@@ -660,14 +665,6 @@ public class HttpConnection
     }
 
     /**
-     * Return the proxy incarnation number associated with this connection.
-     */
-    public int getProxyIncarnation()
-    {
-        return _proxyIncarnation;
-    }
-
-    /**
      * Get the protocol.
      * 
      * @return HTTPS if secure, HTTP otherwise
@@ -755,6 +752,7 @@ public class HttpConnection
     public void open() throws IOException
     {
         // Lock to synchronize with close
+        // WARNING - the connMgr lock cannot be locked while this lock is held
         synchronized (_connManager)
         {
             if (_state != CS_VIRGIN)
@@ -1103,6 +1101,7 @@ public class HttpConnection
 
     void adjustPipelinedUrlConCount(int amount)
     {
+        // WARNING - the connMgr lock cannot be locked while this lock is held
         synchronized (this)
         {
             _pipelineUrlConCount += amount;
@@ -1146,22 +1145,20 @@ public class HttpConnection
 
     int getPipelinedUrlConCount()
     {
+        // WARNING - the connMgr lock cannot be locked while this lock is held
         synchronized (this)
         {
             return _pipelineUrlConCount;
         }
     }
 
-    //
-    // In the locking for the close wait stuff, it can be
-    // called from inside of the connection manager, so
-    // nothing should be called (in the CM or anything that calls the CM) while
-    // this close lock (this object) is locked.
-
     void startPreventClose() throws IOException
     {
+        // WARNING - the connMgr lock cannot be locked while this lock is held
         synchronized (this)
         {
+            _log.debug("startPreventClose");
+
             _preventCloseList.add(Thread.currentThread());
 
             if (!isOpen())
@@ -1174,19 +1171,27 @@ public class HttpConnection
 
     void endPreventClose()
     {
+        boolean doClose = false;
+
+        // WARNING - the connMgr lock cannot be locked while this lock is held
         synchronized (this)
         {
-            // Could happen because we already removed ourselve when
-            // closing
-            if (_preventCloseList.size() == 0)
-                return;
-
+            _log.debug("endPreventClose");
+            
             // This thread may not be found (because it already closed
             // the connection), that's harmless
             _preventCloseList.remove(Thread.currentThread());
-            if (_preventCloseList.size() == 0)
-                notifyAll();
+
+            // Other threads still using the connection
+            if (_preventCloseList.size() > 0)
+                return;
+
+            if (_state == CS_PENDING_CLOSE)
+                doClose = true;
         }
+
+        if (doClose)
+            finishClose(_immediateClosePending);
     }
 
     public void close() throws InterruptedException
@@ -1200,20 +1205,16 @@ public class HttpConnection
      * Low-level close of this connection, releases the socket and stream
      * resources. Specify immediate if you can't wait.
      */
-    // WARNING - do not lock the connection manager lock here, it may
-    // be held when this is called
     void close(boolean immediate) throws InterruptedException
     {
         if (_connLog.isDebugEnabled())
             _connLog.debug("close " + this + " immediate: " + immediate);
 
-        // This thread is allowed to close
-        endPreventClose();
-
-        // If there is another thread accessing the connection
-        // we have to wait
+        // WARNING - the connMgr lock cannot be locked while this lock is held
         synchronized (this)
         {
+            _immediateClosePending = immediate;
+
             // Close the socket so that any reads complete immediately
             // Don't close the streams at this point, because we don't
             // want to cause NPEs and other problems
@@ -1227,60 +1228,75 @@ public class HttpConnection
                 _connLog.debug("Exception caught when closing socket", ex);
                 // ignored
             }
+
             _socket = null;
 
-            while (_preventCloseList.size() > 0)
+            // This thread may call close() in the while a startPreventClose()
+            // is outstanding
+            _preventCloseList.remove(Thread.currentThread());
+
+            // There are other threads working on this, the last one out
+            // will close it
+            if (_preventCloseList.size() > 0)
             {
-                _connLog.debug("Waiting to close");
-                wait();
+                _connLog.debug("Setting close needed - "
+                    + "someone else will close");
+                _state = CS_PENDING_CLOSE;
+                return;
             }
+        }
 
-            if (immediate)
+        // Do the actual close of the streams
+        finishClose(immediate);
+    }
+
+    protected void finishClose(boolean immediate)
+    {
+        if (immediate)
+        {
+            if (_connectionThread != null)
+                _connectionThread.interrupt();
+            // Clear out the queue since we don't guarantee
+            // notifications in this case
+            _queue.clear();
+
+            if (_connLog.isDebugEnabled())
+                _connLog.debug("close - finished interrupt of conn thread");
+        }
+
+        _tunnelEstablished = false;
+        _state = CS_CLOSED;
+        _connLog.debug("Completing close: \n" + dump(0));
+
+        // Let the connection manager we don't need to flush
+        setNeedsFlush(false);
+
+        if (null != _input)
+        {
+            try
             {
-                if (_connectionThread != null)
-                    _connectionThread.interrupt();
-                // Clear out the queue since we don't guarantee
-                // notifications in this case
-                _queue.clear();
-
-                if (_connLog.isDebugEnabled())
-                    _connLog.debug("close - finished interrupt of conn thread");
+                _input.close();
             }
-
-            _tunnelEstablished = false;
-            _state = CS_CLOSED;
-            _connLog.debug("Completing close: \n" + dump(0));
-
-            // Let the connection manager we don't need to flush
-            setNeedsFlush(false);
-
-            if (null != _input)
+            catch (Exception ex)
             {
-                try
-                {
-                    _input.close();
-                }
-                catch (Exception ex)
-                {
-                    _connLog.warn("Exception caught when closing input", ex);
-                    // ignored
-                }
-                _input = null;
+                _connLog.warn("Exception caught when closing input", ex);
+                // ignored
             }
+            _input = null;
+        }
 
-            if (null != _output)
+        if (null != _output)
+        {
+            try
             {
-                try
-                {
-                    _output.close();
-                }
-                catch (Exception ex)
-                {
-                    _connLog.debug("Exception caught when closing output", ex);
-                    // ignored
-                }
-                _output = null;
+                _output.close();
             }
+            catch (Exception ex)
+            {
+                _connLog.debug("Exception caught when closing output", ex);
+                // ignored
+            }
+            _output = null;
         }
 
         if (_connLog.isDebugEnabled())

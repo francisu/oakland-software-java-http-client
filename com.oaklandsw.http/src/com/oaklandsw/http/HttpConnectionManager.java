@@ -60,10 +60,6 @@ public class HttpConnectionManager
     // K(current Thread) V(AtomicInteger) - count of urlcons to read
     Map                           _threadUrlConCountMap;
 
-    // Used to keep track of the global proxy state at the time
-    // this connection was created.
-    private int                   _globalProxyIncarnation;
-
     // The total number of urlCons that need to be written,
     // Synchronized by the connection manager; this is used to help
     // track flushing connections
@@ -737,7 +733,6 @@ public class HttpConnectionManager
                                           host,
                                           port,
                                           isSecure,
-                                          ci._proxyIncarnation,
                                           connectionKey);
                 ci.addNewConnection(conn);
             }
@@ -799,8 +794,7 @@ public class HttpConnectionManager
                         + connectionKey);
                 }
                 ci = new ConnectionInfo(this,
-                                        connectionKey,
-                                        _globalProxyIncarnation);
+                                        connectionKey);
                 _hostMap.put(connectionKey, ci);
             }
             return ci;
@@ -824,30 +818,24 @@ public class HttpConnectionManager
             _log.debug("Releasing connection: " + conn);
         }
 
+        // This connection does not belong to this connManager
+        if (conn._connManager != this)
+        {
+            if (_connLog.isDebugEnabled())
+            {
+                _connLog.debug("Closed and ignored connection due to "
+                    + "old connMgr");
+            }
+            conn.close();
+            return;
+        }
+
         synchronized (this)
         {
             if (conn._released && conn.isOpen())
                 Util.impossible("Connection released twice: " + conn);
 
             ConnectionInfo ci = getConnectionInfo(conn._handle);
-
-            // This connection does not belong to this ConnectionInfo
-            // because the connection was created before a reset.
-            if (ci._proxyIncarnation != conn.getProxyIncarnation())
-            {
-                if (_connLog.isDebugEnabled())
-                {
-                    _connLog.debug("Closed connection due to "
-                        + "non-equal proxyIncarnation: "
-                        + conn
-                        + " ci._proxyInc: "
-                        + ci._proxyIncarnation
-                        + " conn inc: "
-                        + conn.getProxyIncarnation());
-                }
-                conn.close();
-                return;
-            }
 
             // Don't put a closed connection back
             if (!conn.isOpen())
@@ -1105,10 +1093,6 @@ public class HttpConnectionManager
         synchronized (this)
         {
             _connLog.debug("resetConnectionPool - immediate: " + immediate);
-
-            // Use this to make sure we destroy any connections
-            // returned with a prior proxy incarnation number
-            _globalProxyIncarnation++;
 
             if (immediate)
             {

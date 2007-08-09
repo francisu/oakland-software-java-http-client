@@ -165,7 +165,7 @@ public class TestPipelining extends TestWebappBase
     // Bug 1972 connection released twice
     public void testSimple10Async404() throws Exception
     {
-        if (!true || _logging)
+        if (_logging)
         {
             LogUtils.logFile("/home/francis/log4jpipe10Async404"
                 + _testAllName

@@ -34,12 +34,6 @@ class ConnectionInfo
     // is used to deal with that.
     String                          _connectionKey;
 
-    // The number that is incremented whenever the global
-    // proxy state changes (ie, all connections are reset)
-    // This is used to make sure that older connections opened
-    // before the reset are closed.
-    int                             _proxyIncarnation;
-
     // The number of urlcons allowed on this connection before the
     // server closes it. This starts off being zero (unlimited), then
     // if a connection is closed by the server (using a Connection: close header
@@ -72,11 +66,9 @@ class ConnectionInfo
     protected HttpConnectionManager _connManager;
 
     ConnectionInfo(HttpConnectionManager connManager,
-            String connectionKey,
-            int proxyIncarnation)
+            String connectionKey)
     {
         _connectionKey = connectionKey;
-        _proxyIncarnation = proxyIncarnation;
         _availableConnections = new ArrayBlockingQueue(START_SIZE);
         _assignedConnections = new ArrayList();
         _connManager = connManager;
