@@ -22,6 +22,7 @@ import java.security.cert.Certificate;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.zip.GZIPInputStream;
+import java.util.zip.InflaterInputStream;
 
 import javax.net.ssl.SSLPeerUnverifiedException;
 import javax.net.ssl.SSLSocketFactory;
@@ -365,8 +366,9 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
     static final String                HDR_VALUE_CHUNKED                    = "chunked";
     static final String                HDR_VALUE_DEFAULT_CONTENT_TYPE       = "application/x-www-form-urlencoded";
     static final String                HDR_VALUE_GZIP                       = "gzip";
-    static final String                HDR_VALUE_X_GZIP                     = "x-gzip";
+    static final String                HDR_VALUE_DEFLATE                    = "deflate";
     static final String                HDR_VALUE_CHARSET                    = "charset";
+    static final String                HDR_VALUE_X_                         = "x-";
 
     static final byte[]                HDR_VALUE_KEEP_ALIVE_BYTES           = HDR_VALUE_KEEP_ALIVE
                                                                                     .getBytes();
@@ -378,9 +380,11 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
                                                                                     .getBytes();
     static final byte[]                HDR_VALUE_GZIP_BYTES                 = HDR_VALUE_GZIP
                                                                                     .getBytes();
-    static final byte[]                HDR_VALUE_X_GZIP_BYTES               = HDR_VALUE_X_GZIP
+    static final byte[]                HDR_VALUE_DEFLATE_BYTES              = HDR_VALUE_DEFLATE
                                                                                     .getBytes();
     static final byte[]                HDR_VALUE_CHARSET_BYTES              = HDR_VALUE_CHARSET
+                                                                                    .getBytes();
+    static final byte[]                HDR_VALUE_X__BYTES                   = HDR_VALUE_X_
                                                                                     .getBytes();
 
     public static final int            NTLM_ENCODING_UNICODE                = 1;
@@ -1958,17 +1962,37 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
 
         if (_hdrContentEncoding != null)
         {
-            // FIXME - right now we handle only gzip encoding
-            if (Util.bytesEqual(HDR_VALUE_X_GZIP_BYTES,
-                                _hdrContentEncoding,
-                                _hdrContentEncodingLen)
-                || Util.bytesEqual(HDR_VALUE_GZIP_BYTES,
-                                   _hdrContentEncoding,
-                                   _hdrContentEncodingLen))
+            int offset = 0;
+            if (Util.bytesEqual(HDR_VALUE_X__BYTES, _hdrContentEncoding, 2))
             {
-                if (_log.isDebugEnabled())
-                    _log.debug("Using gzip content encoding");
+                offset = 2;
+            }
+
+            if (Util.bytesEqual(HDR_VALUE_GZIP_BYTES,
+                                _hdrContentEncoding,
+                                offset,
+                                _hdrContentEncodingLen))
+            {
                 is = new GZIPInputStream(is);
+            }
+            else if (Util.bytesEqual(HDR_VALUE_DEFLATE_BYTES,
+                                     _hdrContentEncoding,
+                                     offset,
+                                     _hdrContentEncodingLen))
+            {
+                is = new InflaterInputStream(is);
+            }
+            else
+            {
+                throw new HttpException("Unsupported Content-Encoding: "
+                    + new String(_hdrContentEncoding, 0, _hdrContentEncodingLen));
+            }
+
+            if (_log.isDebugEnabled())
+            {
+                _log.debug("Using "
+                    + is.getClass().getName()
+                    + " content encoding");
             }
         }
 
@@ -1992,7 +2016,8 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
                                 state = CT_PARAMS;
                             }
                             // No params
-                            if (_hdrContentType[i] == '\r')
+                            if (_hdrContentType[i] == '\r'
+                                || _hdrContentType[i] == '\n')
                             {
                                 break lookForCharset;
                             }
@@ -2009,7 +2034,8 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
                             }
                             break;
                         case CT_CHARSET:
-                            if (_hdrContentType[i] == '\r')
+                            if (_hdrContentType[i] == '\r'
+                                || _hdrContentType[i] == '\n')
                             {
                                 break lookForCharset;
                             }
@@ -2017,7 +2043,7 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
                             break;
                     }
                 }
-                
+
                 if (charsetIndex > 0)
                 {
                     charset = new String(charsetValue, 0, charsetIndex);
@@ -2027,6 +2053,8 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
             }
         }
 
+        // If the charset is not found, this will just throw and the
+        // user can deal with it.
         Reader r;
         r = new InputStreamReader(is, charset);
         return r;
