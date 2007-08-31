@@ -10,11 +10,11 @@ import java.net.URL;
 
 import org.apache.commons.logging.Log;
 
-import com.oaklandsw.http.HttpConnectionManager.CheckResults;
+//import com.oaklandsw.http.HttpConnectionManager.CheckResults;
 import com.oaklandsw.util.LogUtils;
 import com.oaklandsw.util.Util;
 
-public class PipelineTester implements CheckResults
+public class PipelineTester //implements CheckResults
 {
     private static final Log   _log              = LogUtils.makeLogger();
 
@@ -68,8 +68,8 @@ public class PipelineTester implements CheckResults
         _pipeliningMaxDepth = pipeliningMaxDepth;
         _pipeliningOptions = pipeliningOptions;
 
-        if (false)
-            HttpURLConnection.getConnectionManager()._checkResults = this;
+        //if (false)
+        //    HttpURLConnection.getConnectionManager()._checkResults = this;
     }
 
     public class TestCallback implements Callback

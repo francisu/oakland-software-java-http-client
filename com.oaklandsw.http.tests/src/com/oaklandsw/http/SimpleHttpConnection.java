@@ -60,12 +60,14 @@ import java.io.BufferedOutputStream;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.util.Vector;
 
 import org.apache.commons.logging.Log;
 
 import com.oaklandsw.http.HttpConnection;
 import com.oaklandsw.util.ExposedBufferInputStream;
+import com.oaklandsw.util.ExposedBufferOutputStream;
 import com.oaklandsw.util.LogUtils;
 
 /**
@@ -109,7 +111,7 @@ public class SimpleHttpConnection extends HttpConnection
         super(null, -1, "localhost", 80, false, "none");
         setup();
         _connectionInfo = new ConnectionInfo(_connManager, "localhost");
-        _output = new BufferedOutputStream(new ByteArrayOutputStream());
+        _output = new ExposedBufferOutputStream(new ByteArrayOutputStream(), 8192);
     }
 
     public SimpleHttpConnection(String host, int port, boolean isSecure)
@@ -162,7 +164,7 @@ public class SimpleHttpConnection extends HttpConnection
         return new ExposedBufferInputStream(bodyInputStream, 1024);
     }
 
-    public BufferedOutputStream getOutputStream()
+    public OutputStream getOutputStream()
     {
         return new BufferedOutputStream(_bitBucket);
     }

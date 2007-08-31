@@ -27,6 +27,13 @@
   </servlet>
 
   <servlet>
+    <servlet-name>perf</servlet-name>
+    <servlet-class>
+      com.oaklandsw.http.servlet.PerfServlet
+    </servlet-class>
+  </servlet>
+
+  <servlet>
     <servlet-name>body</servlet-name>
     <servlet-class>
       com.oaklandsw.http.servlet.RequestBodyServlet
@@ -100,6 +107,11 @@
   <servlet-mapping>
     <servlet-name>params</servlet-name>
     <url-pattern>/params3</url-pattern>
+  </servlet-mapping>
+
+  <servlet-mapping>
+    <servlet-name>perf</servlet-name>
+    <url-pattern>/perf</url-pattern>
   </servlet-mapping>
 
   <servlet-mapping>
