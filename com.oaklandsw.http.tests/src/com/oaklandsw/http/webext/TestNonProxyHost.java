@@ -56,7 +56,7 @@ public class TestNonProxyHost extends HttpTestBase
         HttpURLConnection.setNonProxyHosts(hosts);
         URL url = new URL("http://" + connectHost + "/");
 
-        HttpURLConnection urlCon = (HttpURLConnection)url.openConnection();
+        HttpURLConnection urlCon = HttpURLConnection.openConnection(url);
         if (_perConnection)
         {
             urlCon.setConnectionProxyHost(HttpTestEnv.TEST_PROXY_HOST);

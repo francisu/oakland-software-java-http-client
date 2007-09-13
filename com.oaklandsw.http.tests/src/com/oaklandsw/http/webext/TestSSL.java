@@ -47,7 +47,7 @@ public class TestSSL extends HttpTestBase
     public void testHttpsGet(URL url) throws IOException
     {
         // System.out.println(System.currentTimeMillis() + " do get");
-        HttpURLConnection urlCon = (HttpURLConnection)url.openConnection();
+        HttpURLConnection urlCon = HttpURLConnection.openConnection(url);
         urlCon.setRequestMethod("GET");
         urlCon.connect();
         assertEquals(200, urlCon.getResponseCode());
@@ -98,7 +98,7 @@ public class TestSSL extends HttpTestBase
 
         com.oaklandsw.http.HttpURLConnection.setDefaultSSLSocketFactory(sf);
         URL url = new URL(HttpTestEnv.TEST_WEBEXT_SSL_URL);
-        HttpURLConnection urlCon = (HttpURLConnection)url.openConnection();
+        HttpURLConnection urlCon = HttpURLConnection.openConnection(url);
 
         if ((urlCon).getSSLSocketFactory() != sf)
             fail("Socket factory mismatch");
@@ -115,7 +115,7 @@ public class TestSSL extends HttpTestBase
         TestSSLSocketFactory sf = new TestSSLSocketFactory();
 
         URL url = new URL(HttpTestEnv.TEST_WEBEXT_SSL_URL);
-        HttpURLConnection urlCon = (HttpURLConnection)url.openConnection();
+        HttpURLConnection urlCon = HttpURLConnection.openConnection(url);
         (urlCon).setSSLSocketFactory(sf);
 
         urlCon.setRequestMethod("GET");
@@ -229,7 +229,7 @@ public class TestSSL extends HttpTestBase
         TestHostnameVerifier ver = new TestHostnameVerifier();
 
         URL url = new URL(HttpTestEnv.TEST_WEBEXT_SSL_URL);
-        HttpURLConnection urlCon = (HttpURLConnection)url.openConnection();
+        HttpURLConnection urlCon = HttpURLConnection.openConnection(url);
         (urlCon).setHostnameVerifier(ver);
         urlCon.setRequestMethod("GET");
         urlCon.connect();
@@ -250,7 +250,7 @@ public class TestSSL extends HttpTestBase
         TestHostnameVerifier ver = new TestHostnameVerifier();
 
         URL url = new URL(HttpTestEnv.TEST_WEBEXT_SSL_URL);
-        HttpURLConnection urlCon = (HttpURLConnection)url.openConnection();
+        HttpURLConnection urlCon = HttpURLConnection.openConnection(url);
         urlCon.setRequestMethod("GET");
         urlCon.connect();
 
@@ -274,7 +274,7 @@ public class TestSSL extends HttpTestBase
             return;
 
         URL url = new URL(HttpTestEnv.TEST_WEBEXT_SSL_URL);
-        HttpURLConnection urlCon = (HttpURLConnection)url.openConnection();
+        HttpURLConnection urlCon = HttpURLConnection.openConnection(url);
 
         urlCon.setRequestMethod("GET");
         urlCon.connect();
@@ -293,7 +293,7 @@ public class TestSSL extends HttpTestBase
             return;
 
         URL url = new URL(HttpTestEnv.TEST_WEBEXT_SSL_URL);
-        HttpURLConnection urlCon = (HttpURLConnection)url.openConnection();
+        HttpURLConnection urlCon = HttpURLConnection.openConnection(url);
 
         urlCon.setRequestMethod("GET");
         urlCon.connect();
@@ -309,7 +309,7 @@ public class TestSSL extends HttpTestBase
     public void testHttpsGetCipherSuite() throws Exception
     {
         URL url = new URL(HttpTestEnv.TEST_WEBEXT_SSL_URL);
-        HttpURLConnection urlCon = (HttpURLConnection)url.openConnection();
+        HttpURLConnection urlCon = HttpURLConnection.openConnection(url);
 
         urlCon.setRequestMethod("GET");
         urlCon.connect();

@@ -72,9 +72,7 @@ class SmbComNTCreateAndX extends AndXServerMessageBlock {
     static final int SECURITY_CONTEXT_TRACKING = 0x01;
     static final int SECURITY_EFFECTIVE_ONLY   = 0x02;
 
-    private int flags,
-        rootDirectoryFid,
-        desiredAccess,
+    private int rootDirectoryFid,
         extFileAttributes,
         shareAccess,
         createDisposition,
@@ -83,6 +81,8 @@ class SmbComNTCreateAndX extends AndXServerMessageBlock {
     private long allocationSize;
     private byte securityFlags;
     private int namelen_index;
+
+int flags0, desiredAccess;
 
     SmbComNTCreateAndX( String name, int flags,
                 int access,
@@ -143,7 +143,7 @@ class SmbComNTCreateAndX extends AndXServerMessageBlock {
         // name length without counting null termination
         namelen_index = dstIndex;
         dstIndex += 2;
-        writeInt4( flags, dst, dstIndex );
+        writeInt4( flags0, dst, dstIndex );
         dstIndex += 4;
         writeInt4( rootDirectoryFid, dst, dstIndex );
         dstIndex += 4;
@@ -180,7 +180,7 @@ class SmbComNTCreateAndX extends AndXServerMessageBlock {
     public String toString() {
         return new String( "SmbComNTCreateAndX[" +
             super.toString() +
-            ",flags=0x" + Hexdump.toHexString( flags, 2 ) +
+            ",flags=0x" + Hexdump.toHexString( flags0, 2 ) +
             ",rootDirectoryFid=" + rootDirectoryFid +
             ",desiredAccess=0x" + Hexdump.toHexString( desiredAccess, 4 ) +
             ",allocationSize=" + allocationSize +

@@ -42,7 +42,7 @@ public class TestCharacter extends HttpTestBase
     {
         URL url = new URL(HttpTestEnv.TEST_URL_WEBSERVER_DATA + file);
 
-        HttpURLConnection urlCon = (HttpURLConnection)url.openConnection();
+        HttpURLConnection urlCon = HttpURLConnection.openConnection(url);
         if (accept == ADEFLATE)
             urlCon.addRequestProperty("Accept-Encoding", "gzip");
         if (accept == AGZIP)
@@ -88,7 +88,7 @@ public class TestCharacter extends HttpTestBase
     {
         URL url = new URL(HttpTestEnv.TEST_URL_WEBSERVER_DATA + "ebcdic.cp037");
 
-        HttpURLConnection urlCon = (HttpURLConnection)url.openConnection();
+        HttpURLConnection urlCon = HttpURLConnection.openConnection(url);
 
         char cbuf[] = new char[1024];
 

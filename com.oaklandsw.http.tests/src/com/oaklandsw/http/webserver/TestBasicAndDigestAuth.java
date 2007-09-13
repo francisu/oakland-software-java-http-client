@@ -40,13 +40,13 @@ public class TestBasicAndDigestAuth extends HttpTestBase
         URL url = new URL(urlStr);
         int response = 0;
 
-        HttpURLConnection urlCon = (HttpURLConnection)url.openConnection();
+        HttpURLConnection urlCon = HttpURLConnection.openConnection(url);
         urlCon.connect();
         response = urlCon.getResponseCode();
         assertEquals(200, response);
 
         // Try again will authenticate again
-        urlCon = (HttpURLConnection)url.openConnection();
+        urlCon = HttpURLConnection.openConnection(url);
         urlCon.connect();
         response = urlCon.getResponseCode();
         assertEquals(200, response);
@@ -72,7 +72,7 @@ public class TestBasicAndDigestAuth extends HttpTestBase
         URL url = new URL(urlStr);
         int response = 0;
 
-        HttpURLConnection urlCon = (HttpURLConnection)url.openConnection();
+        HttpURLConnection urlCon = HttpURLConnection.openConnection(url);
         urlCon.setRequestMethod("GET");
 
         urlCon.connect();
@@ -85,7 +85,7 @@ public class TestBasicAndDigestAuth extends HttpTestBase
 
         TestUserAgent._type = authType;
         url = new URL(urlStr);
-        urlCon = (HttpURLConnection)url.openConnection();
+        urlCon = HttpURLConnection.openConnection(url);
         urlCon.setRequestMethod("GET");
 
         urlCon.connect();

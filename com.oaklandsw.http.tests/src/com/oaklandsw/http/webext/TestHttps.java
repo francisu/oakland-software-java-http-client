@@ -96,7 +96,7 @@ public class TestHttps extends HttpTestBase
         int response = 0;
 
         // System.out.println(System.currentTimeMillis() + " do get");
-        HttpURLConnection urlCon = (HttpURLConnection)url.openConnection();
+        HttpURLConnection urlCon = HttpURLConnection.openConnection(url);
         urlCon.setRequestMethod("GET");
         urlCon.connect();
         response = urlCon.getResponseCode();

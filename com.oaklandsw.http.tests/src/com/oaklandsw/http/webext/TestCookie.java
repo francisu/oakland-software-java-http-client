@@ -40,7 +40,7 @@ public class TestCookie extends HttpTestBase
 
         CookieContainer cc = new CookieContainer();
 
-        HttpURLConnection urlCon = (HttpURLConnection)url.openConnection();
+        HttpURLConnection urlCon = HttpURLConnection.openConnection(url);
         urlCon.setRequestMethod("GET");
         urlCon.setCookieSupport(cc, null);
         response = urlCon.getResponseCode();

@@ -230,7 +230,7 @@ public class SmbTransport extends Transport implements SmbConstants {
              * is a policy regarding which hosts a user can connect from. This
              * requires communicating over port 139 rather than 445.
              */
-            if (NETBIOS_HOSTNAME != null && NETBIOS_HOSTNAME.equals( "" ) == false) {
+            if (false && NETBIOS_HOSTNAME != null && NETBIOS_HOSTNAME.equals( "" ) == false) {
                 port = 139;
             }
             if (port == 139) {

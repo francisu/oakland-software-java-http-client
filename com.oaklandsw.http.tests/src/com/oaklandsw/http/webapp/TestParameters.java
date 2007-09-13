@@ -41,7 +41,7 @@ public class TestParameters extends TestWebappBase
             + "?hadQuestionMark=true");
         int response = 0;
 
-        HttpURLConnection urlCon = (HttpURLConnection)url.openConnection();
+        HttpURLConnection urlCon = HttpURLConnection.openConnection(url);
         urlCon.setRequestMethod("GET");
         urlCon.connect();
         response = urlCon.getResponseCode();
@@ -61,7 +61,7 @@ public class TestParameters extends TestWebappBase
         URL url = new URL(_urlBase + ParamServlet.NAME + "?");
         int response = 0;
 
-        HttpURLConnection urlCon = (HttpURLConnection)url.openConnection();
+        HttpURLConnection urlCon = HttpURLConnection.openConnection(url);
         urlCon.setRequestMethod("GET");
         urlCon.connect();
         response = urlCon.getResponseCode();
@@ -87,7 +87,7 @@ public class TestParameters extends TestWebappBase
         URL url = new URL(_urlBase + ParamServlet.NAME);
         int response = 0;
 
-        HttpURLConnection urlCon = (HttpURLConnection)url.openConnection();
+        HttpURLConnection urlCon = HttpURLConnection.openConnection(url);
         urlCon.setRequestMethod("GET");
         urlCon.connect();
         response = urlCon.getResponseCode();
@@ -108,7 +108,7 @@ public class TestParameters extends TestWebappBase
             + "?hadQuestionMark=false");
         int response = 0;
 
-        HttpURLConnection urlCon = (HttpURLConnection)url.openConnection();
+        HttpURLConnection urlCon = HttpURLConnection.openConnection(url);
         urlCon.setRequestMethod("GET");
         urlCon.connect();
         response = urlCon.getResponseCode();
@@ -129,7 +129,7 @@ public class TestParameters extends TestWebappBase
             + "?param-one=param-value");
         int response = 0;
 
-        HttpURLConnection urlCon = (HttpURLConnection)url.openConnection();
+        HttpURLConnection urlCon = HttpURLConnection.openConnection(url);
         urlCon.setRequestMethod("GET");
         urlCon.connect();
         response = urlCon.getResponseCode();
@@ -150,7 +150,7 @@ public class TestParameters extends TestWebappBase
         URL url = new URL(_urlBase + ParamServlet.NAME);
         int response = 0;
 
-        HttpURLConnection urlCon = (HttpURLConnection)url.openConnection();
+        HttpURLConnection urlCon = HttpURLConnection.openConnection(url);
         urlCon.setRequestMethod("POST");
 
         urlCon.setDoOutput(true);
@@ -177,7 +177,7 @@ public class TestParameters extends TestWebappBase
             + "&special-chars=:/?~.");
         int response = 0;
 
-        HttpURLConnection urlCon = (HttpURLConnection)url.openConnection();
+        HttpURLConnection urlCon = HttpURLConnection.openConnection(url);
         urlCon.setRequestMethod("GET");
         urlCon.connect();
         response = urlCon.getResponseCode();
@@ -200,7 +200,7 @@ public class TestParameters extends TestWebappBase
         URL url = new URL(_urlBase + ParamServlet.NAME);
         int response = 0;
 
-        HttpURLConnection urlCon = (HttpURLConnection)url.openConnection();
+        HttpURLConnection urlCon = HttpURLConnection.openConnection(url);
         urlCon.setRequestMethod("POST");
 
         urlCon.setDoOutput(true);
@@ -239,7 +239,7 @@ public class TestParameters extends TestWebappBase
             + "?param-without-value=");
         int response = 0;
 
-        HttpURLConnection urlCon = (HttpURLConnection)url.openConnection();
+        HttpURLConnection urlCon = HttpURLConnection.openConnection(url);
         urlCon.setRequestMethod("GET");
         urlCon.connect();
         response = urlCon.getResponseCode();
@@ -258,7 +258,7 @@ public class TestParameters extends TestWebappBase
         URL url = new URL(_urlBase + ParamServlet.NAME + "?foo=one&foo=two");
         int response = 0;
 
-        HttpURLConnection urlCon = (HttpURLConnection)url.openConnection();
+        HttpURLConnection urlCon = HttpURLConnection.openConnection(url);
         urlCon.setRequestMethod("GET");
         urlCon.connect();
         response = urlCon.getResponseCode();
@@ -278,7 +278,7 @@ public class TestParameters extends TestWebappBase
         URL url = new URL("http://" + HttpTestEnv.TOMCAT_HOST + "?foo=one");
         int response = 0;
 
-        HttpURLConnection urlCon = (HttpURLConnection)url.openConnection();
+        HttpURLConnection urlCon = HttpURLConnection.openConnection(url);
         urlCon.setRequestMethod("GET");
         urlCon.connect();
         response = urlCon.getResponseCode();
@@ -290,7 +290,7 @@ public class TestParameters extends TestWebappBase
         URL url = new URL("http://" + HttpTestEnv.TOMCAT_HOST + "/?foo=one");
         int response = 0;
 
-        HttpURLConnection urlCon = (HttpURLConnection)url.openConnection();
+        HttpURLConnection urlCon = HttpURLConnection.openConnection(url);
         urlCon.setRequestMethod("GET");
         urlCon.connect();
         response = urlCon.getResponseCode();

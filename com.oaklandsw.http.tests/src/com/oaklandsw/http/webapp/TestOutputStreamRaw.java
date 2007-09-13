@@ -43,7 +43,7 @@ public class TestOutputStreamRaw extends TestOutputStream
     {
         URL url = new URL(_urlBase + RequestBodyServlet.NAME);
 
-        HttpURLConnection urlCon = (HttpURLConnection)url.openConnection();
+        HttpURLConnection urlCon = HttpURLConnection.openConnection(url);
         urlCon.setDoOutput(true);
         urlCon.setRequestMethod("GET");
         setupStreaming(urlCon, 100);
@@ -59,7 +59,7 @@ public class TestOutputStreamRaw extends TestOutputStream
     {
         URL url = new URL(_urlBase + RequestBodyServlet.NAME);
 
-        HttpURLConnection urlCon = (HttpURLConnection)url.openConnection();
+        HttpURLConnection urlCon = HttpURLConnection.openConnection(url);
         urlCon.setDoOutput(true);
         urlCon.setRequestMethod("GET");
         setupStreaming(urlCon, 100);

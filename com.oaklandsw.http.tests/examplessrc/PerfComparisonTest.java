@@ -6,6 +6,9 @@ import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Properties;
+
+import org.apache.commons.logging.Log;
 
 import com.oaklandsw.util.LogUtils;
 
@@ -14,10 +17,10 @@ import com.oaklandsw.util.LogUtils;
  */
 public class PerfComparisonTest
 {
+    static final Log             _log                   = LogUtils
+                                                                .makeLogger("com.oaklandsw.http.TestPerf");
 
     public static final int      REPEAT_TIMES           = 3;
-
-    public static final String   INTRANET_3K            = "http://repoman:8081/3k";
 
     // Network scenarios
     public static final int      SC_LOCAL               = 0;
@@ -35,7 +38,9 @@ public class PerfComparisonTest
 
     // Location
     public static final String[] _locationUrls          = new String[] {
-        "http://berlioz/oaklandsw-http/", //
+      "http://berlioz/oaklandsw-http/", //
+//      "http://berlioz/cgi-bin/httptest.pl?size=", //
+//      "http://localhost:8080/oaklandsw-http/perf?size=", //
         "http://repoman:8081/", //
         "http://216.120.249.245/~oakland/", //
                                                         // "http://67.121.125.19/oaklandsw-http/",
@@ -55,20 +60,17 @@ public class PerfComparisonTest
 
     // Size x location
     public static final int[][]  _sizeCounts            = new int[][] {
-        { 6000, 2000, 300 }, { 6000, 2000, 300 }, { 6000, 2000, 300 },
-        { 6000, 2000, 300 }, { 6000, 2000, 300 }, { 6000, 2000, 300 },
-        { 6000, 2000, 300 }, { 6000, 2000, 300 }, { 6000, 2000, 100 },
-        { 6000, 2000, 100 }, { 6000, 2000, 100 }, { 2000, 2000, 100 } };
+        { 2000, 2000, 100 }, { 2000, 2000, 100 }, { 2000, 2000, 100 },
+        { 2000, 2000, 100 }, { 2000, 2000, 100 }, { 2000, 2000, 100 },
+        { 2000, 2000, 100 }, { 2000, 2000, 100 }, { 2000, 2000, 100 },
+        { 2000, 2000, 100 }, { 2000, 2000, 100 }, { 2000, 2000, 100 } };
 
-    // Product Pipe depths
-    // Product x pipeline depth
-    // WARNING - the order of these is defined by the values in TestPerf
+    // Product Pipe depths (only apply to pipelining)
+    // location x pipeline depth
     public static final int[][]  _pipeDepths            = new int[][] {//
-                                                        { 0 }, // Oakland
-        { 0 }, // Sun
-        { 0 }, // Apache
-        { 1, 2, 50, 100, 200, 0 }, // Oakland Pipe
-                                                        };
+        { 1, 2, 50, 100, 200, 500, 1000, 0 },
+        { 1, 2, 50, 100, 200, 500, 1000, 0 }, { 1, 2, 5, 10, 20, 0 }, };
+
     // Product Connections Limits
     // Product x connection limit
     // WARNING - the order of these is defined by the values in TestPerf
@@ -82,9 +84,18 @@ public class PerfComparisonTest
 
     // Counts of the number of threads to use
     public static final int[]    _threadCounts          = new int[] { 1, 2, 5,
-        10, 20                                         };
+        10, 20,                                        };
 
-    public PrintWriter           _pw;
+    // One per each product, so we warm up the classes associated with the
+    // product
+    // for the first run
+    boolean                      _productFirstTimes[]   = { true, true, true,
+        true                                           };
+
+    int                          _prevThreadCount;
+
+    public PrintWriter           _pwAverage;
+    public PrintWriter           _pwDetails;
 
     public boolean               _noPrint;
 
@@ -103,19 +114,38 @@ public class PerfComparisonTest
     public int                   _currentCountPerThread;
     public int                   _currentThreads;
 
-    public int                   _singleSize            = 8;
-    public int                   _singleLocation        = 2;
+    public int                   _singleSize            = -1;
+    public int                   _singleLocation        = -1;
     public int                   _singleConnectionLimit = -1;
-    public int                   _singleProduct         = 2;
+    public int                   _singleProduct         = -1;
 
-    public int                   _startSize             = 0; //11 = 1K
-    public int                   _startLocation;
+    public int                   _startSize             = 0;
+    public int                   _startLocation         = 1;
     public int                   _startConnectionLimit  = 0;
+    public int                   _startThreads          = 0;
     public int                   _startProduct          = 0;
+    public int                   _startPipeDepth        = 0;
+
+    protected void warmUpRun(TestPerf tp) throws Exception
+    {
+        int times = 1;
+        if (_currentLocation == SC_INTERNET)
+            times = 1;
+        for (int j = 0; j < times; j++)
+            tp.run();
+    }
 
     // Runs a set of tests
-    public void runSet() throws Exception
+    public void runSet(int logCounter) throws Exception
     {
+        DecimalFormat format = new DecimalFormat("00000");
+
+        if (!true)
+        {
+            String textCount = format.format(logCounter++);
+            LogUtils.logConnFile("/home/francis/logPerf" + textCount + ".txt");
+        }
+
         String url;
 
         url = _locationUrls[_currentLocation] + _sizes[_currentSizeIndex] + "k";
@@ -129,19 +159,52 @@ public class PerfComparisonTest
         long totalTime = 0;
         int totalPipeDepth = 0;
 
+        int totalAvoidedFlushes = 0;
+        int totalBufferFlushes = 0;
+        int totalForcedFlushes = 0;
+        int totalRetries = 0;
+        int totalPipelineRetries = 0;
+
+        // We make a timestamp for the run, everything for that run gets
+        // that stamp in all logs
+        DateFormat df = new SimpleDateFormat("HH:mm:ss.SSS");
+        String startTime = df.format(new Date());
+
         for (int i = 0; i < REPEAT_TIMES; i++)
         {
             TestPerf tp = new TestPerf();
-
             tp._warmUp = false;
             tp._urlString = url;
             tp._pipeDepth = _currentPipeDepth;
             tp._implementation = _currentProduct;
             tp._totalTimes = _currentCount;
             tp._threads = _currentThreads;
-            tp._useSuffixes = false;
             tp._maxConn = _currentMaxConnections;
             tp._quiet = false;
+            tp._startTime = startTime;
+            tp._expectedSize = _sizes[_currentSizeIndex] * 1024;
+            
+            tp._requestType = TestPerf.REQ_ID;
+
+            // Do a warm-up by running the tests a few times, as the numbers
+            // associated with the first tests are artificially high
+            // We need to get the classes all loaded for each product
+            if (_productFirstTimes[_currentProduct])
+            {
+                warmUpRun(tp);
+                _productFirstTimes[_currentProduct] = false;
+            }
+
+            // Seems for Jakarta and Oakland when we go over into 20 and 50
+            // threads it takes a huge hit, not sure why but this will remove it
+            // This is probably something on the web server
+            if (_prevThreadCount < _currentThreads
+                && _currentThreads >= 20
+                && _currentThreads == _currentMaxConnections)
+            {
+                warmUpRun(tp);
+            }
+            _prevThreadCount = _currentThreads;
 
             com.oaklandsw.http.HttpURLConnection
                     .setDefaultConnectionRequestLimit(_sizeConnLimits[_currentSizeIndex][_currentLocation]);
@@ -152,13 +215,15 @@ public class PerfComparisonTest
             int conns = Math.max(_currentMaxConnections, _currentCount / 100);
             _calcConnections += conns;
 
-            System.out.println("Total run bytes: " + bytes);
-            System.out.println("Total run conns: " + conns);
+            log("");
 
             if (!_calculateBandWidth)
             {
                 tp.run();
             }
+
+            log("Total run bytes: " + bytes);
+            log("Total run conns: " + conns);
 
             if (tp._transTime > maxPerTrans)
                 maxPerTrans = tp._transTime;
@@ -176,6 +241,47 @@ public class PerfComparisonTest
                 totalPipeDepth += tp._actualPipeMaxDepth;
             }
 
+            totalForcedFlushes += tp._actualForcedFlushes;
+            totalBufferFlushes += tp._actualBufferFlushes;
+            totalAvoidedFlushes += tp._actualAvoidFlushes;
+            totalRetries += tp._actualRetries;
+            totalPipelineRetries += tp._actualPipelineRetries;
+
+            String str = _locationNames[_currentLocation]
+                + ","
+                + TestPerf._impNames[_currentProduct]
+                + ","
+                + _sizes[_currentSizeIndex]
+                + ","
+                + tp._transTime
+                + ","
+                + _currentMaxConnections
+                + ","
+                + _currentThreads
+                + ","
+                + tp._actualPipeMaxDepth
+                + ","
+                + _currentPipeDepth
+                + ","
+                + _currentCount
+                + ","
+                + REPEAT_TIMES
+                + ","
+                + tp._totalTime
+                + ","
+                + tp._actualForcedFlushes
+                + ","
+                + tp._actualBufferFlushes
+                + ","
+                + tp._actualAvoidFlushes
+                + ","
+                + tp._actualRetries
+                + ","
+                + tp._actualPipelineRetries
+                + ","
+                + startTime;
+            println(str, _pwDetails);
+
         }
 
         String str = _locationNames[_currentLocation]
@@ -184,8 +290,7 @@ public class PerfComparisonTest
             + ","
             + _sizes[_currentSizeIndex]
             + ","
-            + totalPerTrans
-            / REPEAT_TIMES
+            + totalPerTrans / REPEAT_TIMES
             + ","
             + _currentMaxConnections
             + ","
@@ -193,6 +298,8 @@ public class PerfComparisonTest
             + ","
             + (totalPipeDepth == 0 ? "" : Integer
                     .toString((totalPipeDepth / REPEAT_TIMES)))
+            + ","
+            + _currentPipeDepth
             + ","
             + _currentCount
             + ","
@@ -202,34 +309,78 @@ public class PerfComparisonTest
             + ","
             + maxPerTrans
             + ","
-            + totalTime;
-        println(str);
-    }
-
-    public void println(String str)
-    {
-        if (_noPrint)
-            return;
-        _pw.println(str);
-        _pw.flush();
-        System.out.println(str);
+            + totalTime
+            + ","
+            + totalForcedFlushes
+            + ","
+            + totalBufferFlushes
+            + ","
+            + totalAvoidedFlushes
+            + ","
+            + totalRetries
+            + ","
+            + totalPipelineRetries
+            + ","
+            + startTime;
+        println(str, _pwAverage);
     }
 
     public void printHeader()
     {
         String str = "Where"
             + ",Product"
-            + ",Size (K)"
-            + ",Avg ms/Trans"
+            + ",SizeK"
+            + ",ms/TransAvg"
             + ",Connections"
             + ",Threads"
-            + ",Pipe Depth"
+            + ",PipeDepthObsAvg"
+            + ",PipeDepthLim"
             + ",Count"
             + ",Repeats"
-            + ",Min ms/Trans"
-            + ",Max ms/Trans"
-            + ",Total ms";
-        println(str);
+            + ",ms/TransMin"
+            + ",ms/TransMax"
+            + ",msTotal"
+            + ",FlushesForced"
+            + ",FlushesBuffFull"
+            + ",FlushesAvoided"
+            + ",Retry"
+            + ",RetryPL"
+            + ",StartTime";
+        println(str, _pwAverage);
+
+        str = "Where"
+            + ",Product"
+            + ",SizeK"
+            + ",ms/Trans"
+            + ",Connections"
+            + ",Threads"
+            + ",PipeDepthObs"
+            + ",PipeDepthLim"
+            + ",Count"
+            + ",Repeats"
+            + ",msTotal"
+            + ",FlushesForced"
+            + ",FlushesBuffFull"
+            + ",FlushesAvoided"
+            + ",Retry"
+            + ",RetryPL"
+            + ",StartTime";
+        println(str, _pwDetails);
+    }
+
+    public void println(String str, PrintWriter pw)
+    {
+        if (_noPrint)
+            return;
+        pw.println(str);
+        pw.flush();
+        log(str);
+    }
+
+    public void log(String str)
+    {
+        _log.info(str);
+        System.out.println(str);
     }
 
     public void run(String args[]) throws Exception
@@ -237,17 +388,36 @@ public class PerfComparisonTest
         String dir = "/home/francis/d/com.oaklandsw.http.tests/perfResults/";
 
         DateFormat df = new SimpleDateFormat("yyyyMMMdd-HHmm");
-        File file = new File(dir + "run" + df.format(new Date()) + ".csv");
-        _pw = new PrintWriter(new BufferedOutputStream(new FileOutputStream(file)));
+
+        String fileTime = df.format(new Date());
+        String fileStart = "run" + fileTime;
+        File avgfile = new File(dir + fileStart + ".csv");
+        File detfile = new File(dir + fileStart + "_details.csv");
+
+        _pwAverage = new PrintWriter(new BufferedOutputStream(new FileOutputStream(avgfile)));
+        _pwDetails = new PrintWriter(new BufferedOutputStream(new FileOutputStream(detfile)));
+
+        if (true)
+        {
+            Properties logProps = new Properties();
+            logProps.setProperty("log4j.logger.com.oaklandsw.http.TestPerf",
+                                 "INFO, A1");
+            logProps.setProperty("log4j.appender.A1",
+                                 "org.apache.log4j.FileAppender");
+            logProps.setProperty("log4j.appender.A1.File", dir
+                + fileStart
+                + "_log.txt");
+            logProps.setProperty("log4j.appender.A1.Append", "false");
+            logProps.setProperty("log4j.appender.A1.layout",
+                                 "org.apache.log4j.PatternLayout");
+            logProps.setProperty("log4j.appender.A1.layout.ConversionPattern",
+                                 LogUtils.DEBUG_PATTERN);
+            LogUtils.configureLog(logProps);
+        }
 
         printHeader();
 
-        DecimalFormat format = new DecimalFormat("00000");
-
         int logCounter = 1;
-
-        if (!true)
-            LogUtils.logConnFile("/home/francis/logPerf" + "big" + ".txt");
 
         // Overall looping
         for (int i = 0; i < 1; i++)
@@ -277,36 +447,46 @@ public class PerfComparisonTest
 
                             _currentMaxConnections = _productConnections[_currentProduct][connIndex];
 
-                            for (int pipeIndex = 0; pipeIndex < _pipeDepths[_currentProduct].length; pipeIndex++)
+                            for (int threadIndex = _startThreads; threadIndex < _threadCounts.length; threadIndex++)
                             {
-                                _currentPipeDepth = _pipeDepths[_currentProduct][pipeIndex];
+                                _currentThreads = _threadCounts[threadIndex];
+
+                                // Sun implementation always as many
+                                // connections needed by the number
+                                // of threads, regardless of the setting of
+                                // the http.maxConnections
+                                if (_currentProduct == TestPerf.IMP_SUN)
+                                    _currentMaxConnections = _currentThreads;
+
+                                // There is never any benefit to having more
+                                // threads than connections
+                                // (the data shows this)
+                                if (_currentThreads != _currentMaxConnections)
+                                    continue;
+
+                                // With non-pipelined implementations,
+                                // thread count should equal connections (no
+                                // benefit otherwise)
+                                if (_currentThreads != _currentMaxConnections
+                                    && _currentProduct != TestPerf.IMP_OAKLAND_PIPE)
+                                    continue;
+
+                                _currentCountPerThread = _currentCount
+                                    / _currentThreads;
 
                                 _currentCount = _sizeCounts[_currentSizeIndex][_currentLocation];
 
-                                for (int threadIndex = 0; threadIndex < _threadCounts.length; threadIndex++)
+                                if (_currentProduct == TestPerf.IMP_OAKLAND_PIPE)
                                 {
-                                    _currentThreads = _threadCounts[threadIndex];
-                                    _currentCountPerThread = _currentCount
-                                        / _currentThreads;
-
-                                    // Sun implementation always as many
-                                    // connections needed by the number
-                                    // of threads, regardless of the setting of
-                                    // the http.maxConnections
-                                    if (_currentProduct == TestPerf.IMP_SUN)
-                                        _currentMaxConnections = _currentThreads;
-
-                                    if (!true)
+                                    for (int pipeIndex = _startPipeDepth; pipeIndex < _pipeDepths[_currentLocation].length; pipeIndex++)
                                     {
-                                        String textCount = format
-                                                .format(logCounter++);
-                                        LogUtils
-                                                .logConnFile("/home/francis/logPerf"
-                                                    + textCount
-                                                    + ".txt");
+                                        _currentPipeDepth = _pipeDepths[_currentLocation][pipeIndex];
+                                        runSet(logCounter++);
                                     }
-
-                                    runSet();
+                                }
+                                else
+                                {
+                                    runSet(logCounter++);
                                 }
                             }
                         }
@@ -314,10 +494,10 @@ public class PerfComparisonTest
                 }
             }
         }
-        _pw.close();
+        _pwAverage.close();
 
-        System.out.println("Total bandwidth: " + _calcBytes);
-        System.out.println("Total conns:     " + _calcConnections);
+        log("Total bandwidth: " + _calcBytes);
+        log("Total conns:     " + _calcConnections);
 
         // For profiler
         // Thread.sleep(10000000);

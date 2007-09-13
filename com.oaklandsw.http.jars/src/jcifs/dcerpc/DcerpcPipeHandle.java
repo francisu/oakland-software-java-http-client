@@ -29,8 +29,8 @@ import jcifs.util.*;
 public class DcerpcPipeHandle extends DcerpcHandle {
 
     SmbNamedPipe pipe;
-    SmbFileInputStream in;
-    OutputStream out = null;
+    SmbFileInputStream in = null;
+    SmbFileOutputStream out = null;
     boolean isStart = true;
 
     public DcerpcPipeHandle(String url,
@@ -44,18 +44,27 @@ public class DcerpcPipeHandle extends DcerpcHandle {
                 auth);
     }
 
-    protected void doSendFragment(byte[] buf, int off, int length) throws IOException {
-        in = (SmbFileInputStream)pipe.getNamedPipeInputStream();
-        out = pipe.getNamedPipeOutputStream();
+    protected void doSendFragment(byte[] buf,
+                    int off,
+                    int length,
+                    boolean isDirect) throws IOException {
+        if (in == null)
+            in = (SmbFileInputStream)pipe.getNamedPipeInputStream();
+        if (out == null)
+            out = (SmbFileOutputStream)pipe.getNamedPipeOutputStream();
+        if (isDirect) {
+            out.writeDirect( buf, off, length, 1 );
+            return;
+        }
         out.write(buf, off, length);
     }
-    protected void doReceiveFragment(byte[] buf) throws IOException {
+    protected void doReceiveFragment(byte[] buf, boolean isDirect) throws IOException {
         int off, flags, length;
 
         if (buf.length < max_recv)
             throw new IllegalArgumentException("buffer too small");
 
-        if (isStart) { // start of new frag, do trans
+        if (isStart && !isDirect) { // start of new frag, do trans
             off = in.read(buf, 0, 1024);
         } else {
             off = in.readDirect(buf, 0, buf.length);

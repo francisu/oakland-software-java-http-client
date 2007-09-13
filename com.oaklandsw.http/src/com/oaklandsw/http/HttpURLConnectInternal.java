@@ -1156,7 +1156,7 @@ public class HttpURLConnectInternal
         {
             return false;
         }
-
+        
         // Nothing to write
         if (_contentLength == 0)
         {
@@ -2073,6 +2073,7 @@ public class HttpURLConnectInternal
                 {
                     connection.startPreventClose();
                     _callback.writeRequest(this, os);
+                    _connManager.recordCount(HttpConnectionManager.COUNT_PIPELINE_WRITE_REQ);
                 }
                 finally
                 {
@@ -2165,7 +2166,9 @@ public class HttpURLConnectInternal
             if (_connLog.isDebugEnabled())
                 _connLog.debug("urlConWasRead (write error): " + this);
             if (_pipelineExpectBlock)
+            {
                 _connManager.urlConWasRead(_thread);
+            }
 
             if (ex instanceof InterruptedIOException)
                 throw (InterruptedIOException)ex;
@@ -2303,6 +2306,7 @@ public class HttpURLConnectInternal
                     else
                     {
                         _callback.readResponse(this, is);
+                        _connManager.recordCount(HttpConnectionManager.COUNT_PIPELINE_READ_RESP);
                     }
 
                     // Inside of the call to the user a stream got closed and
@@ -2399,6 +2403,7 @@ public class HttpURLConnectInternal
             _connLog.debug("pipeling error callback: " + this, ex);
         }
         _callback.error(this, is, ex);
+        _connManager.recordCount(HttpConnectionManager.COUNT_PIPELINE_ERROR);
     }
 
     // Returns null if retry is possible, otherwise returns the exception to
@@ -2504,7 +2509,8 @@ public class HttpURLConnectInternal
         {
             _log.debug("streaming write finished");
             
-            _connection.conditionalFlush(this);
+            if (doOutput)
+                _connection.conditionalFlush(this);
             
             _streamingWritingFinished = true;
             if ((_pipeliningOptions & PIPE_PIPELINE) != 0)

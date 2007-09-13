@@ -33,6 +33,7 @@ public class TestUserAgent implements HttpUserAgent
     public static final int  OFFICESHARE_ICEWEB = 21;
     public static final int  WEBSERVER_BASIC    = 22;
     public static final int  WEBSERVER_DIGEST   = 23;
+    public static final int  OAKLANDSWTEST_DOMAIN  = 24;
 
     public Credential getCredential(String realm, String url, int scheme)
     {
@@ -130,6 +131,13 @@ public class TestUserAgent implements HttpUserAgent
                         ntlmCred.setDomain(HttpTestEnv.TEST_ICEWEB_DOMAIN);
                         ntlmCred.setHost("host");
                         break;
+                    case OAKLANDSWTEST_DOMAIN:
+                        ntlmCred.setUser(HttpTestEnv.TEST_IIS_USER);
+                        ntlmCred.setPassword(HttpTestEnv.TEST_IIS_PASSWORD);
+                        ntlmCred.setDomain("oaklandswtest.com");
+                        ntlmCred.setHost(HttpTestEnv.TEST_IIS_HOST);
+                        break;
+
                 }
                 cred = ntlmCred;
                 break;

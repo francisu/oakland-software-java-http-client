@@ -25,10 +25,7 @@ import java.security.Principal;
 import java.util.Random;
 import java.util.Arrays;
 import jcifs.Config;
-import jcifs.util.LogStream;
-import jcifs.util.DES;
-import jcifs.util.MD4;
-import jcifs.util.HMACT64;
+import jcifs.util.*;
 
 /**
  * This class stores and encrypts NTLM user credentials. The default

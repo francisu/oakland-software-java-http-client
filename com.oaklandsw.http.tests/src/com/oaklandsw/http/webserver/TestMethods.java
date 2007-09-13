@@ -115,7 +115,7 @@ public class TestMethods extends HttpTestBase
         URL url = new URL("http://" + _host + ":" + _port + "/");
         int response = 0;
 
-        HttpURLConnection urlCon = (HttpURLConnection)url.openConnection();
+        HttpURLConnection urlCon = HttpURLConnection.openConnection(url);
         urlCon.setRequestMethod("OPTIONS");
         urlCon.connect();
         response = urlCon.getResponseCode();
@@ -132,7 +132,7 @@ public class TestMethods extends HttpTestBase
         URL url = new URL("http://" + _host + ":" + _port + "/");
         int response = 0;
 
-        HttpURLConnection urlCon = (HttpURLConnection)url.openConnection();
+        HttpURLConnection urlCon = HttpURLConnection.openConnection(url);
         urlCon.setRequestMethod("GET");
         urlCon.connect();
         response = urlCon.getResponseCode();
@@ -147,7 +147,7 @@ public class TestMethods extends HttpTestBase
             + _port
             + HttpTestEnv.TEST_WEBSERVER_PAGE);
 
-        urlCon = (HttpURLConnection)url.openConnection();
+        urlCon = HttpURLConnection.openConnection(url);
         urlCon.setRequestMethod("GET");
         urlCon.connect();
         response = urlCon.getResponseCode();
@@ -165,7 +165,7 @@ public class TestMethods extends HttpTestBase
         URL url = new URL("http://" + _host + ":" + _port + "/");
         int response = 0;
 
-        HttpURLConnection urlCon = (HttpURLConnection)url.openConnection();
+        HttpURLConnection urlCon = HttpURLConnection.openConnection(url);
         urlCon.setRequestMethod("HEAD");
         urlCon.connect();
         response = urlCon.getResponseCode();
@@ -178,7 +178,7 @@ public class TestMethods extends HttpTestBase
             + _port
             + HttpTestEnv.TEST_WEBSERVER_PAGE);
 
-        urlCon = (HttpURLConnection)url.openConnection();
+        urlCon = HttpURLConnection.openConnection(url);
         urlCon.setRequestMethod("HEAD");
         urlCon.connect();
         response = urlCon.getResponseCode();

@@ -102,6 +102,7 @@ public class NtlmHttpFilter implements Filter
         if ((level = Config.getInt("jcifs.util.loglevel", -1)) != -1)
         {
             LogStream.setLevel(level);
+            //LogUtils.logAll();
         }
         if (LogStream.level > 2)
         {
@@ -138,7 +139,7 @@ public class NtlmHttpFilter implements Filter
         {
             if (LogStream.level > 1)
             {
-                log.println("Authentication failed or not complete "
+                log.println("oaklandsw - Authentication failed or not complete "
                     + "- not calling downstream filters");
             }
             return;
@@ -146,7 +147,7 @@ public class NtlmHttpFilter implements Filter
 
         if (LogStream.level > 2)
         {
-            log.println("Authentication OK: " + ntlm);
+            log.println("oaklandsw - Authentication OK: " + ntlm);
         }
         chain.doFilter(new NtlmHttpServletRequest(req, ntlm), response);
     }
@@ -239,7 +240,7 @@ public class NtlmHttpFilter implements Filter
 
                 if (LogStream.level > 2)
                 {
-                    log.println("NtlmHttpFilter: "
+                    log.println("oaklandsw - NtlmHttpFilter: "
                         + ntlm
                         + " successfully authenticated against "
                         + dc);
@@ -249,7 +250,7 @@ public class NtlmHttpFilter implements Filter
             {
                 if (LogStream.level > 1)
                 {
-                    log.println("NtlmHttpFilter: "
+                    log.println("oaklandsw - NtlmHttpFilter: "
                         + ntlm.getName()
                         + ": 0x"
                         + jcifs.util.Hexdump.toHexString(sae.getNtStatus(), 8)
@@ -287,9 +288,10 @@ public class NtlmHttpFilter implements Filter
             if (!skipAuthentication)
             {
                 HttpSession ssn = req.getSession(false);
-                if (ssn == null
+                // REMOVEME
+                if (true|| (ssn == null
                     || (ntlm = (NtlmPasswordAuthentication)ssn
-                            .getAttribute("NtlmHttpAuth")) == null)
+                            .getAttribute("NtlmHttpAuth")) == null))
                 {
                     resp.setHeader("WWW-Authenticate", "NTLM");
                     if (offerBasic)

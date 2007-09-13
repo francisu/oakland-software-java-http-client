@@ -114,7 +114,7 @@ public class TestTraceMethod extends HttpTestBase
         final String strTestHeaderName = "MyTestHeader";
         final String strTestHeaderValue = "This-is-a-test-value.";
 
-        HttpURLConnection urlCon = (HttpURLConnection)url.openConnection();
+        HttpURLConnection urlCon = HttpURLConnection.openConnection(url);
         urlCon.setRequestMethod("TRACE");
         urlCon.setRequestProperty(strTestHeaderName, strTestHeaderValue);
         urlCon.connect();

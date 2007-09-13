@@ -42,7 +42,7 @@ public class TestHeaders extends TestWebappBase
         URL url = new URL(_urlBase + HeaderServlet.NAME);
         int response = 0;
 
-        HttpURLConnection urlCon = (HttpURLConnection)url.openConnection();
+        HttpURLConnection urlCon = HttpURLConnection.openConnection(url);
         urlCon.setRequestMethod("GET");
         urlCon.setRequestProperty("addRequestHeader", "Also True");
         urlCon.connect();
@@ -91,7 +91,7 @@ public class TestHeaders extends TestWebappBase
         URL url = new URL(_urlBase + HeaderServlet.NAME);
         int response = 0;
 
-        HttpURLConnection urlCon = (HttpURLConnection)url.openConnection();
+        HttpURLConnection urlCon = HttpURLConnection.openConnection(url);
         urlCon.setRequestMethod("GET");
         urlCon.setRequestProperty("xxx-a-header", "one");
         urlCon.setRequestProperty("XXX-A-HEADER", "two");
@@ -112,7 +112,7 @@ public class TestHeaders extends TestWebappBase
         URL url = new URL(_urlBase + HeaderServlet.NAME);
         int response = 0;
 
-        HttpURLConnection urlCon = (HttpURLConnection)url.openConnection();
+        HttpURLConnection urlCon = HttpURLConnection.openConnection(url);
         urlCon.setRequestMethod("GET");
         urlCon.connect();
         response = urlCon.getResponseCode();
@@ -160,7 +160,7 @@ public class TestHeaders extends TestWebappBase
         URL url = new URL(_urlBase + HeaderServlet.NAME);
         int response = 0;
 
-        HttpURLConnection urlCon = (HttpURLConnection)url.openConnection();
+        HttpURLConnection urlCon = HttpURLConnection.openConnection(url);
         urlCon.setRequestProperty("User-Agent", "TestUserAgent");
         response = urlCon.getResponseCode();
         assertEquals(200, response);
@@ -180,7 +180,7 @@ public class TestHeaders extends TestWebappBase
         URL url = new URL(_urlBase + HeaderServlet.NAME);
         int response = 0;
 
-        HttpURLConnection urlCon = (HttpURLConnection)url.openConnection();
+        HttpURLConnection urlCon = HttpURLConnection.openConnection(url);
         response = urlCon.getResponseCode();
         assertEquals(200, response);
 
@@ -206,7 +206,7 @@ public class TestHeaders extends TestWebappBase
             + HeaderServlet.NAME);
         int response = 0;
 
-        HttpURLConnection urlCon = (HttpURLConnection)url.openConnection();
+        HttpURLConnection urlCon = HttpURLConnection.openConnection(url);
         urlCon.setRequestMethod("GET");
         urlCon.connect();
         response = urlCon.getResponseCode();

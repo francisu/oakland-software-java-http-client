@@ -44,7 +44,7 @@ public class TestNoData extends TestWebappBase
 
         int response = 0;
 
-        HttpURLConnection urlCon = (HttpURLConnection)url.openConnection();
+        HttpURLConnection urlCon = HttpURLConnection.openConnection(url);
         urlCon.setRequestMethod("GET");
         urlCon.connect();
         response = urlCon.getResponseCode();
@@ -73,7 +73,7 @@ public class TestNoData extends TestWebappBase
 
         int response = 0;
 
-        HttpURLConnection urlCon = (HttpURLConnection)url.openConnection();
+        HttpURLConnection urlCon = HttpURLConnection.openConnection(url);
         urlCon.setRequestMethod("POST");
         urlCon.connect();
         response = urlCon.getResponseCode();
@@ -107,10 +107,10 @@ public class TestNoData extends TestWebappBase
 
         try
         {
-            HttpURLConnection urlCon = (HttpURLConnection)url.openConnection();
+            HttpURLConnection urlCon = HttpURLConnection.openConnection(url);
             for (int i = 0; i < HttpURLConnection.getMaxConnectionsPerHost() + 1; i++)
             {
-                urlCon = (HttpURLConnection)url.openConnection();
+                urlCon = HttpURLConnection.openConnection(url);
                 // The last of of these will hang here because all of the
                 // connections are allocated
                 urlCon.getResponseCode();

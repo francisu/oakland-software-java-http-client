@@ -122,7 +122,7 @@ public class TestData extends HttpTestBase
             + "&spaceContentLength=true"
             + _errorDebug);
 
-        HttpURLConnection urlCon = (HttpURLConnection)url.openConnection();
+        HttpURLConnection urlCon = HttpURLConnection.openConnection(url);
         urlCon.setRequestMethod("GET");
         urlCon.connect();
         assertEquals(200, urlCon.getResponseCode());

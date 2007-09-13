@@ -154,19 +154,19 @@
     <url-pattern>/callmyself</url-pattern>
   </servlet-mapping>
 
+  <!--  the jcifs args need to be the same for both filters set below
+        since they are set on a process basis -->
   <filter>
     <filter-name>NtlmHttpFilter</filter-name>
     <filter-class>jcifs.http.NtlmHttpFilter</filter-class>
 
     <init-param>
       <param-name>jcifs.http.domainController</param-name>
-      <param-value>192.168.1.20</param-value>
+      <param-value>192.168.1.26</param-value>
     </init-param>
     <init-param>
       <param-name>jcifs.smb.client.domain</param-name>
-    <!--  specify an empty domain name which causes a zero length to be sent
-          in the challenge - see bug 1946 -->
-      <param-value></param-value>
+      <param-value>oaklandswtest.com</param-value>
     </init-param>
     <init-param>
       <param-name>jcifs.smb.client.username</param-name>
@@ -177,8 +177,11 @@
       <param-value>httptestpw</param-value>
     </init-param>
     <init-param>
+      <param-name>jcifs.smb.lmCompatibility</param-name>
+      <param-value>5</param-value>
+    </init-param>
+    <init-param>
       <param-name>jcifs.util.loglevel</param-name>
-    <!--  6 is full detail logging -->
       <param-value>6</param-value>
     </init-param>
   </filter>
@@ -187,18 +190,23 @@
     <filter-name>NtlmHttpFilter</filter-name>
     <url-pattern>/ntlmparams</url-pattern>
   </filter-mapping>
-
+ 
   <filter>
     <filter-name>Ntlm2HttpFilter</filter-name>
     <filter-class>com.oaklandsw.http.servlet.NtlmHttpFilter</filter-class>
-
     <init-param>
       <param-name>jcifs.http.domainController</param-name>
-      <param-value>192.168.1.20</param-value>
+      <param-value>192.168.1.26</param-value>
     </init-param>
+    <!-- 
+    <init-param>
+      <param-name>jcifs.netbios.wins</param-name>
+      <param-value>win2k3</param-value>
+    </init-param>
+     -->
     <init-param>
       <param-name>jcifs.smb.client.domain</param-name>
-      <param-value>oaklandsw</param-value>
+      <param-value>oaklandswtest.com</param-value>
     </init-param>
     <init-param>
       <param-name>jcifs.smb.client.username</param-name>
@@ -207,6 +215,16 @@
     <init-param>
       <param-name>jcifs.smb.client.password</param-name>
       <param-value>httptestpw</param-value>
+    </init-param>
+    <!-- 
+<init-param>
+            <param-name>jcifs.smb.client.soTimeout</param-name>
+            <param-value>5000</param-value>
+  </init-param>
+   -->    
+    <init-param>
+      <param-name>jcifs.smb.lmCompatibility</param-name>
+      <param-value>5</param-value>
     </init-param>
     <init-param>
       <param-name>jcifs.util.loglevel</param-name>

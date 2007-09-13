@@ -1,6 +1,5 @@
 package com.oaklandsw.http.local;
 
-import java.net.HttpURLConnection;
 import java.net.URL;
 
 import org.apache.commons.logging.Log;
@@ -12,6 +11,7 @@ import com.oaklandsw.http.HttpConnection;
 import com.oaklandsw.http.HttpTimeoutException;
 import com.oaklandsw.http.HttpTestBase;
 import com.oaklandsw.http.HttpTestEnv;
+import com.oaklandsw.http.HttpURLConnection;
 import com.oaklandsw.util.LogUtils;
 
 public class TestTimeout extends HttpTestBase
@@ -61,19 +61,13 @@ public class TestTimeout extends HttpTestBase
         // Does not really matter
         URL url = new URL(_timeoutURL);
 
-        HttpURLConnection urlCon = (HttpURLConnection)url.openConnection();
-
-        // Only valid for oaklandsw implementation
-        if (!(urlCon instanceof com.oaklandsw.http.HttpURLConnection))
-            return;
+        HttpURLConnection urlCon = HttpURLConnection.openConnection(url);
 
         // Simulated timeout stuff does not work on 1.4 or higher
         if (!HttpTestEnv.SIMULATED_TIMEOUT_ENABLED)
             return;
 
-        setupConnTimeout((com.oaklandsw.http.HttpURLConnection)urlCon,
-                         type,
-                         _timeoutVal);
+        setupConnTimeout(urlCon, type, _timeoutVal);
 
         long startTime = System.currentTimeMillis();
 
@@ -131,11 +125,9 @@ public class TestTimeout extends HttpTestBase
         URL url = new URL(_timeoutURL);
         long startTime = System.currentTimeMillis();
 
-        HttpURLConnection urlCon = (HttpURLConnection)url.openConnection();
+        HttpURLConnection urlCon = HttpURLConnection.openConnection(url);
 
-        setupConnTimeout((com.oaklandsw.http.HttpURLConnection)urlCon,
-                         type,
-                         _timeoutVal);
+        setupConnTimeout(urlCon, type, _timeoutVal);
 
         try
         {
@@ -171,10 +163,6 @@ public class TestTimeout extends HttpTestBase
         setupDefaultTimeout(type, _timeoutVal);
 
         URL url = new URL(_timeoutURL);
-        HttpURLConnection urlCon = (HttpURLConnection)url.openConnection();
-        // Only valid for nogoop implementation
-        if (!(urlCon instanceof com.oaklandsw.http.HttpURLConnection))
-            return;
 
         // Simulated timeout stuff does not work on 1.4 or higher
         if (!HttpTestEnv.SIMULATED_TIMEOUT_ENABLED)

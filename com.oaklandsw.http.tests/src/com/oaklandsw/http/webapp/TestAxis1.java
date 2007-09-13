@@ -505,6 +505,7 @@ public class TestAxis1 extends TestWebappBase
         // Use Axis authentication
         _user = HttpTestEnv.TEST_IIS_DOMAIN_USER;
         _password = HttpTestEnv.TEST_IIS_PASSWORD;
+        //logAll();
         Map map = invokeWindowsService();
         assertEquals(1, map.size());
     }

@@ -305,7 +305,7 @@ public class PipelineTester //implements CheckResults
             url = new URL(urlString);
             // System.out.println(Thread.currentThread().getName()
             // + " creating Connection");
-            HttpURLConnection urlCon = (HttpURLConnection)url.openConnection();
+            HttpURLConnection urlCon = HttpURLConnection.openConnection(url);
             if (_requestType != null)
                 urlCon.setRequestMethod(_requestType);
             urlCon.setCallback(cb);

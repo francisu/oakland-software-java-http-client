@@ -1,5 +1,6 @@
 package com.oaklandsw.http.webapp;
 
+import java.io.OutputStream;
 import java.net.URL;
 
 import org.apache.commons.logging.Log;
@@ -55,18 +56,19 @@ public class TestJCIFS extends TestWebappBase
         Ntlm.init();
     }
 
-    // Bug 1946 - make sure JCIFS "server" (really the servet filter) is
-    // supported
-    public void testGetMethodParameters(int agentType, String servlet)
-        throws Exception
+    public void testPostMethod(int agentType, String servlet) throws Exception
     {
-        URL url = new URL(_urlBase + servlet + "?param-one=param-value");
-        int response = 0;
+        URL url = new URL(_urlBase + servlet);
 
-        TestUserAgent._type = agentType;
+        HttpURLConnection urlCon = HttpURLConnection.openConnection(url);
+        urlCon.setRequestMethod("POST");
+        urlCon.setDoOutput(true);
+        byte[] output = TestOutputStream.QUOTE.getBytes("ASCII");
+        OutputStream outStr = urlCon.getOutputStream();
+        outStr.write(output);
+        outStr.close();
 
-        HttpURLConnection urlCon = (HttpURLConnection)url.openConnection();
-        response = urlCon.getResponseCode();
+        int response = urlCon.getResponseCode();
 
         check:
         {
@@ -80,11 +82,8 @@ public class TestJCIFS extends TestWebappBase
             if (response == 200)
             {
                 assertTrue(checkReplyNoAssert(reply,
-                                              "<title>Param Servlet: GET</title>"));
-                assertTrue(checkReplyNoAssert(reply,
-                                              "<p>QueryString=\"param-one=param-value\"</p>"));
-                assertTrue(checkReplyNoAssert(reply, "<p>Parameters</p>\r\n"
-                    + "name=\"param-one\";value=\"param-value\"<br>"));
+                                              "<title>Param Servlet: POST</title>"));
+                assertTrue(checkReplyNoAssert(reply, "It was the best of times"));
             }
             else if (response == 500)
             {
@@ -92,8 +91,50 @@ public class TestJCIFS extends TestWebappBase
             }
         }
 
+    }
+
+    // Bug 1946 - make sure JCIFS "server" (really the servet filter) is
+    // supported
+    public void testGetMethodParameters(int agentType, String servlet)
+        throws Exception
+    {
+        //logAll();
+        URL url = new URL(_urlBase + servlet + "?param-one=param-value");
+        int response = 0;
+
+        TestUserAgent._type = agentType;
+
+        // logAll();
+
+        HttpURLConnection urlCon = HttpURLConnection.openConnection(url);
+        response = urlCon.getResponseCode();
+
+        check:
+        {
+            if (response == 401 && agentType == TestUserAgent.BAD)
+                break check;
+
+            // 500 is when the max connections have exceeded
+            assertTrue(response == 200 /*|| response == 500*/);
+
+            String reply = getReply(urlCon);
+            if (response == 200)
+            {
+                assertTrue(checkReplyNoAssert(reply,
+                                              "<title>Param Servlet: GET</title>"));
+                assertTrue(checkReplyNoAssert(reply,
+                                              "<p>QueryString=\"param-one=param-value\"</p>"));
+                assertTrue(checkReplyNoAssert(reply, "<p>Parameters</p>\r\n"
+                    + "name=\"param-one\";value=\"param-value\"<br>"));
+            }
+            else if (false && response == 500)
+            {
+                assertTrue(checkReplyNoAssert(reply, "no more connections"));
+            }
+        }
+
         urlCon.disconnect();
-        checkNoTotalConns(url);
+        //checkNoTotalConns(url);
     }
 
     public void testNormal() throws Exception
@@ -101,9 +142,19 @@ public class TestJCIFS extends TestWebappBase
         testGetMethodParameters(TestUserAgent.GOOD, ParamServlet.NAME_NTLM);
     }
 
+    public void testNormalPost() throws Exception
+    {
+        testPostMethod(TestUserAgent.GOOD, ParamServlet.NAME_NTLM);
+    }
+
     public void testBad() throws Exception
     {
         testGetMethodParameters(TestUserAgent.BAD, ParamServlet.NAME_NTLM);
+    }
+
+    public void testBadPost() throws Exception
+    {
+        testPostMethod(TestUserAgent.BAD, ParamServlet.NAME_NTLM);
     }
 
     public static final boolean FORCE = true;
@@ -114,15 +165,43 @@ public class TestJCIFS extends TestWebappBase
 
         TestUserAgent._type = TestUserAgent.NO_DOMAIN;
 
-        HttpURLConnection urlCon = (HttpURLConnection)url.openConnection();
+        HttpURLConnection urlCon = HttpURLConnection.openConnection(url);
         assertEquals(401, urlCon.getResponseCode());
         assertContains(urlCon.getResponseMessage(), "Domain name");
     }
 
     public void test2NormalForce2() throws Exception
     {
+        // logAll();
         Ntlm.forceV2();
         testGetMethodParameters(TestUserAgent.GOOD, ParamServlet.NAME_NTLM2);
+    }
+
+    public void test2NormalForce2Oaklandswtest() throws Exception
+    {
+        // This test does not pass with a win2k3 server set with SMB signing
+        // signing is turned off on the win2k3 server
+        //logAll();
+        Ntlm.forceV2();
+        for (int i = 1; i < 10; i++)
+        {
+            testGetMethodParameters(TestUserAgent.OAKLANDSWTEST_DOMAIN,
+                                    ParamServlet.NAME_NTLM2);
+        }
+    }
+
+    public void test2NormalPostForce2() throws Exception
+    {
+        Ntlm.forceV2();
+        testPostMethod(TestUserAgent.GOOD, ParamServlet.NAME_NTLM2);
+    }
+
+    public void test2NormalPostForce2Loop() throws Exception
+    {
+        Ntlm.forceV2();
+        //logAll();
+        for (int i = 1; i < 10; i++)
+            testPostMethod(TestUserAgent.GOOD, ParamServlet.NAME_NTLM2);
     }
 
     public void test2NormalForce2NoDomain() throws Exception
@@ -179,7 +258,9 @@ public class TestJCIFS extends TestWebappBase
     public void allTestMethods() throws Exception
     {
         testNormal();
+        testNormalPost();
         testBad();
+        testBadPost();
     }
 
 }

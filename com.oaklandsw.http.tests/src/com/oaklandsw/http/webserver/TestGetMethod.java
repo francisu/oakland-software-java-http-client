@@ -112,7 +112,7 @@ public class TestGetMethod extends HttpTestBase
         URL url = new URL("http://" + _host + ":" + _port + "/");
         int response = 0;
 
-        HttpURLConnection urlCon = (HttpURLConnection)url.openConnection();
+        HttpURLConnection urlCon = HttpURLConnection.openConnection(url);
         urlCon.setRequestMethod("GET");
         response = urlCon.getResponseCode();
         assertEquals(200, response);
@@ -157,7 +157,7 @@ public class TestGetMethod extends HttpTestBase
             + _port
             + "/notpresent/really/not");
 
-        HttpURLConnection urlCon = (HttpURLConnection)url.openConnection();
+        HttpURLConnection urlCon = HttpURLConnection.openConnection(url);
         urlCon.setRequestMethod("GET");
         urlCon.connect();
         response = urlCon.getResponseCode();

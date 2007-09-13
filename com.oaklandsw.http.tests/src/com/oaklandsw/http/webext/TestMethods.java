@@ -97,7 +97,7 @@ public class TestMethods extends HttpTestBase
             + HttpTestEnv.TEST_WEBEXT_EXTERNAL_OPTIONS_HOST);
         int response = 0;
 
-        HttpURLConnection urlCon = (HttpURLConnection)url.openConnection();
+        HttpURLConnection urlCon = HttpURLConnection.openConnection(url);
         urlCon.setRequestMethod("OPTIONS");
         urlCon.connect();
         response = urlCon.getResponseCode();
@@ -111,7 +111,7 @@ public class TestMethods extends HttpTestBase
     {
         URL url = new URL("http://" + HttpTestEnv.TEST_WEBEXT_EXTERNAL_HOST);
 
-        HttpURLConnection urlCon = (HttpURLConnection)url.openConnection();
+        HttpURLConnection urlCon = HttpURLConnection.openConnection(url);
 
         String data = HttpTestBase.getReply(urlCon);
         assertTrue("No data returned.", (data.length() > 0));
@@ -136,7 +136,7 @@ public class TestMethods extends HttpTestBase
         {
             URL url = new URL("http://ggttll.wwwsss.ddeeddss");
             int response = 0;
-            HttpURLConnection urlCon = (HttpURLConnection)url.openConnection();
+            HttpURLConnection urlCon = HttpURLConnection.openConnection(url);
             urlCon.setRequestMethod("GET");
             urlCon.connect();
             response = urlCon.getResponseCode();

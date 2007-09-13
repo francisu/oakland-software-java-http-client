@@ -26,10 +26,8 @@ class SmbComReadAndX extends AndXServerMessageBlock {
 
     private long offset;
     private int fid,
-        maxCount,
-        minCount,
-        openTimeout,
-        remaining;
+        openTimeout;
+int maxCount, minCount, remaining;
 
     SmbComReadAndX() {
         super( null );

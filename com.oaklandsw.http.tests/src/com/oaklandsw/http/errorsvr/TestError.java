@@ -1,6 +1,5 @@
 package com.oaklandsw.http.errorsvr;
 
-import java.net.HttpURLConnection;
 import java.net.URL;
 
 import org.apache.commons.logging.Log;
@@ -11,12 +10,13 @@ import junit.framework.TestSuite;
 import com.oaklandsw.http.HttpException;
 import com.oaklandsw.http.HttpTestBase;
 import com.oaklandsw.http.HttpTestEnv;
+import com.oaklandsw.http.HttpURLConnection;
 import com.oaklandsw.util.LogUtils;
 
 public class TestError extends HttpTestBase
 {
 
-    private static final Log   _log         = LogUtils.makeLogger();
+    private static final Log _log      = LogUtils.makeLogger();
 
     protected static String  _errorUrl = HttpTestEnv.TEST_URL_HOST_ERRORSVR;
 
@@ -43,7 +43,7 @@ public class TestError extends HttpTestBase
             + "&badContentLength=true"
             + _errorDebug);
 
-        HttpURLConnection urlCon = (HttpURLConnection)url.openConnection();
+        HttpURLConnection urlCon = HttpURLConnection.openConnection(url);
         urlCon.setRequestMethod("GET");
         urlCon.connect();
 

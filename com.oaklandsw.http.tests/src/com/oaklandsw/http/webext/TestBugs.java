@@ -49,7 +49,7 @@ public class TestBugs extends HttpTestBase
         URL url = new URL("http://sharepoint.iceweb.com/sites/demo/default.aspx");
         int response = 0;
 
-        _urlCon = (HttpURLConnection)url.openConnection();
+        _urlCon = HttpURLConnection.openConnection(url);
         _urlCon.connect();
         response = _urlCon.getResponseCode();
         assertEquals(200, response);
@@ -63,7 +63,7 @@ public class TestBugs extends HttpTestBase
         URL url = new URL("http://www.cnn.com");
         int response = 0;
 
-        _urlCon = (HttpURLConnection)url.openConnection();
+        _urlCon = HttpURLConnection.openConnection(url);
         _urlCon.addRequestProperty("accept-encoding", "gzip");
         _urlCon.connect();
         response = _urlCon.getResponseCode();

@@ -21,6 +21,7 @@ package jcifs.dcerpc;
 
 import java.io.*;
 import java.net.*;
+import java.security.Principal;
 
 import jcifs.smb.NtlmPasswordAuthentication;
 import jcifs.util.Hexdump;
@@ -105,7 +106,7 @@ public abstract class DcerpcHandle implements DcerpcConstants {
     protected int max_xmit = 4280;
     protected int max_recv = max_xmit;
     protected int state = 0;
-    private static int call_id = 0;
+    private static int call_id = 1;
 
     public static DcerpcHandle getHandle(String url,
                 NtlmPasswordAuthentication auth)
@@ -119,7 +120,7 @@ public abstract class DcerpcHandle implements DcerpcConstants {
     public void sendrecv(DcerpcMessage msg) throws DcerpcException, IOException {
         byte[] stub, frag;
         NdrBuffer buf, fbuf;
-        boolean isLast;
+        boolean isLast, isDirect;
         DcerpcException de;
 
         if (state == 0) {
@@ -127,6 +128,8 @@ public abstract class DcerpcHandle implements DcerpcConstants {
             DcerpcMessage bind = new DcerpcBind(binding, this);
             sendrecv(bind);
         }
+
+        isDirect = msg instanceof DcerpcBind;
 
         stub = jcifs.smb.BufferCache.getBuffer();
         try {
@@ -158,11 +161,11 @@ public abstract class DcerpcHandle implements DcerpcConstants {
                     n = tot - off;
                 }
 
-                doSendFragment(stub, off, n);
+                doSendFragment(stub, off, n, isDirect);
                 off += n;
             }
 
-            doReceiveFragment(stub);
+            doReceiveFragment(stub, isDirect);
             buf.reset();
             msg.decode_header(buf);
 
@@ -180,7 +183,7 @@ public abstract class DcerpcHandle implements DcerpcConstants {
                     fbuf = new NdrBuffer(frag, 0);
                 }
 
-                doReceiveFragment(frag);
+                doReceiveFragment(frag, isDirect);
                 fbuf.reset();
                 msg.decode_header(fbuf);
                 stub_frag_len = msg.length - 24;
@@ -205,11 +208,25 @@ public abstract class DcerpcHandle implements DcerpcConstants {
         if ((de = msg.getResult()) != null)
             throw de;
     }
+
+    public String getServer() {
+        if (this instanceof DcerpcPipeHandle)
+            return ((DcerpcPipeHandle)this).pipe.getServer();
+        return null;
+    }
+    public Principal getPrincipal() {
+        if (this instanceof DcerpcPipeHandle)
+            return ((DcerpcPipeHandle)this).pipe.getPrincipal();
+        return null;
+    }
     public String toString() {
         return binding.toString();
     }
 
-    protected abstract void doSendFragment(byte[] buf, int off, int length) throws IOException;
-    protected abstract void doReceiveFragment(byte[] buf) throws IOException;
+    protected abstract void doSendFragment(byte[] buf,
+                int off,
+                int length,
+                boolean isDirect) throws IOException;
+    protected abstract void doReceiveFragment(byte[] buf, boolean isDirect) throws IOException;
     public abstract void close() throws IOException;
 }

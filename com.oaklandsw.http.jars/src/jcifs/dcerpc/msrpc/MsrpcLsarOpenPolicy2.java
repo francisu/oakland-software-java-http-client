@@ -24,6 +24,12 @@ public class MsrpcLsarOpenPolicy2 extends lsarpc.LsarOpenPolicy2 {
     public MsrpcLsarOpenPolicy2(String server, int access, LsaPolicyHandle policyHandle) {
         super(server, new lsarpc.LsarObjectAttributes(), access, policyHandle);
         object_attributes.length = 24;
+lsarpc.LsarQosInfo qos = new lsarpc.LsarQosInfo();
+qos.length = 12;
+qos.impersonation_level = 2;
+qos.context_mode = 1;
+qos.effective_only = 0;
+object_attributes.security_quality_of_service = qos;
         ptype = 0;
         flags = DCERPC_FIRST_FRAG | DCERPC_LAST_FRAG;
     }

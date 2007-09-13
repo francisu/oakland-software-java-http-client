@@ -196,6 +196,7 @@ abstract class ServerMessageBlock extends Response implements Request, SmbConsta
         flags2 = 0;
         errorCode = 0;
         received = false;
+        digest = null;
     }
     int writeString( String str, byte[] dst, int dstIndex ) {
         return writeString( str, dst, dstIndex, useUnicode );

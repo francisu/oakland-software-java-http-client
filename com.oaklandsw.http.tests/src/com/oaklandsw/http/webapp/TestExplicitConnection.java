@@ -61,7 +61,7 @@ public class TestExplicitConnection extends TestWebappBase
         assertEquals(1, getTotalConns(url));
 
         // Once
-        urlCon = (HttpURLConnection)url.openConnection();
+        urlCon = HttpURLConnection.openConnection(url);
         // use the connection
         urlCon.setConnection(conn);
         urlCon.getResponseCode();
@@ -70,7 +70,7 @@ public class TestExplicitConnection extends TestWebappBase
         assertEquals(1, getTotalConns(url));
 
         // Twice
-        urlCon = (HttpURLConnection)url.openConnection();
+        urlCon = HttpURLConnection.openConnection(url);
         // use it again
         urlCon.setConnection(conn);
         urlCon.getResponseCode();
@@ -79,7 +79,7 @@ public class TestExplicitConnection extends TestWebappBase
         assertEquals(1, getTotalConns(url));
 
         // Disconnect
-        urlCon = (HttpURLConnection)url.openConnection();
+        urlCon = HttpURLConnection.openConnection(url);
         urlCon.setConnection(conn);
         urlCon.disconnect();
 
@@ -103,10 +103,10 @@ public class TestExplicitConnection extends TestWebappBase
         assertEquals(2, getTotalConns(url));
 
         // Once
-        urlCon = (HttpURLConnection)url.openConnection();
-        HttpURLConnection urlCon2 = (HttpURLConnection)url.openConnection();
-        urlCon = (HttpURLConnection)url.openConnection();
-        urlCon2 = (HttpURLConnection)url.openConnection();
+        urlCon = HttpURLConnection.openConnection(url);
+        HttpURLConnection urlCon2 = HttpURLConnection.openConnection(url);
+        urlCon = HttpURLConnection.openConnection(url);
+        urlCon2 = HttpURLConnection.openConnection(url);
         urlCon.setConnection(conn);
         urlCon2.setConnection(conn2);
         checkReply(urlCon, paramReply("GET"));
@@ -116,8 +116,8 @@ public class TestExplicitConnection extends TestWebappBase
         assertEquals(2, getTotalConns(url));
 
         // Disconnect
-        urlCon = (HttpURLConnection)url.openConnection();
-        urlCon2 = (HttpURLConnection)url.openConnection();
+        urlCon = HttpURLConnection.openConnection(url);
+        urlCon2 = HttpURLConnection.openConnection(url);
         urlCon.setConnection(conn);
         urlCon2.setConnection(conn2);
         urlCon.disconnect();
@@ -139,7 +139,7 @@ public class TestExplicitConnection extends TestWebappBase
         url = new URL(_urlBase + RequestBodyServlet.NAME);
 
         // Once
-        urlCon = (HttpURLConnection)url.openConnection();
+        urlCon = HttpURLConnection.openConnection(url);
         urlCon.connect();
         try
         {
@@ -157,7 +157,7 @@ public class TestExplicitConnection extends TestWebappBase
         assertEquals(1, getTotalConns(url));
 
         // Disconnect
-        urlCon = (HttpURLConnection)url.openConnection();
+        urlCon = HttpURLConnection.openConnection(url);
         urlCon.setConnection(conn);
         urlCon.disconnect();
 

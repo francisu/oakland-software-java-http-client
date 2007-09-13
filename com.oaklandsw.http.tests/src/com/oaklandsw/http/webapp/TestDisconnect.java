@@ -37,7 +37,7 @@ public class TestDisconnect extends TestWebappBase
     {
         URL url = new URL(_urlBase + RequestBodyServlet.NAME);
 
-        HttpURLConnection urlCon = (HttpURLConnection)url.openConnection();
+        HttpURLConnection urlCon = HttpURLConnection.openConnection(url);
         urlCon.setRequestMethod("GET");
         urlCon.connect();
         urlCon.disconnect();
@@ -51,7 +51,7 @@ public class TestDisconnect extends TestWebappBase
     {
         URL url = new URL(_urlBase + RequestBodyServlet.NAME);
 
-        HttpURLConnection urlCon = (HttpURLConnection)url.openConnection();
+        HttpURLConnection urlCon = HttpURLConnection.openConnection(url);
         urlCon.setRequestMethod("GET");
         urlCon.connect();
 

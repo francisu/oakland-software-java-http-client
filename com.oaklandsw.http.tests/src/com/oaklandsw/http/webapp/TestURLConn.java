@@ -3,7 +3,6 @@ package com.oaklandsw.http.webapp;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
 
@@ -12,6 +11,7 @@ import org.apache.commons.logging.Log;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
+import com.oaklandsw.http.HttpURLConnection;
 import com.oaklandsw.http.servlet.HeaderServlet;
 import com.oaklandsw.http.servlet.ParamServlet;
 import com.oaklandsw.util.LogUtils;
@@ -20,7 +20,7 @@ import com.oaklandsw.util.Util;
 public class TestURLConn extends TestWebappBase
 {
 
-    private static final Log   _log         = LogUtils.makeLogger();
+    private static final Log _log = LogUtils.makeLogger();
 
     public TestURLConn(String testName)
     {
@@ -41,7 +41,7 @@ public class TestURLConn extends TestWebappBase
     public void testDefaultValues() throws Exception
     {
         URL url = new URL(_urlBase + ParamServlet.NAME);
-        HttpURLConnection urlCon = (HttpURLConnection)url.openConnection();
+        HttpURLConnection urlCon = HttpURLConnection.openConnection(url);
         assertFalse(urlCon.getAllowUserInteraction());
         assertFalse(URLConnection.getDefaultAllowUserInteraction());
         assertTrue(urlCon.getDefaultUseCaches());
@@ -53,7 +53,8 @@ public class TestURLConn extends TestWebappBase
         assertEquals(url, urlCon.getURL());
         assertTrue(urlCon.getUseCaches());
         assertTrue(urlCon.getIfModifiedSince() == 0);
-        assertFalse(com.oaklandsw.http.HttpURLConnection.getPreemptiveAuthentication());
+        assertFalse(com.oaklandsw.http.HttpURLConnection
+                .getPreemptiveAuthentication());
         urlCon.setIfModifiedSince(1234);
         assertEquals(1234, urlCon.getIfModifiedSince());
     }
@@ -62,12 +63,12 @@ public class TestURLConn extends TestWebappBase
     {
         URL url = new URL(_urlBase + ParamServlet.NAME);
         URLConnection.setDefaultAllowUserInteraction(true);
-        HttpURLConnection urlCon = (HttpURLConnection)url.openConnection();
+        HttpURLConnection urlCon = HttpURLConnection.openConnection(url);
         assertTrue(urlCon.getAllowUserInteraction());
         assertTrue(URLConnection.getDefaultAllowUserInteraction());
 
         URLConnection.setDefaultAllowUserInteraction(false);
-        urlCon = (HttpURLConnection)url.openConnection();
+        urlCon = HttpURLConnection.openConnection(url);
         assertFalse(urlCon.getAllowUserInteraction());
         assertFalse(URLConnection.getDefaultAllowUserInteraction());
 
@@ -76,13 +77,13 @@ public class TestURLConn extends TestWebappBase
     public void testDefaultUseCache() throws Exception
     {
         URL url = new URL(_urlBase + ParamServlet.NAME);
-        HttpURLConnection urlCon = (HttpURLConnection)url.openConnection();
+        HttpURLConnection urlCon = HttpURLConnection.openConnection(url);
         urlCon.setDefaultUseCaches(true);
         assertTrue(urlCon.getUseCaches());
         assertTrue(urlCon.getDefaultUseCaches());
 
         urlCon.setDefaultUseCaches(false);
-        urlCon = (HttpURLConnection)url.openConnection();
+        urlCon = HttpURLConnection.openConnection(url);
         assertFalse(urlCon.getUseCaches());
         assertFalse(urlCon.getDefaultUseCaches());
 
@@ -92,7 +93,7 @@ public class TestURLConn extends TestWebappBase
      * This does not seem to work, even in the JDK stuff public void
      * testDoInput() throws Exception { URL url = new URL(_urlBase +
      * ParamServlet.NAME); HttpURLConnection urlCon =
-     * (HttpURLConnection)url.openConnection(); urlCon.setDoInput(false); try {
+     * HttpURLConnection.openConnection(url); urlCon.setDoInput(false); try {
      * urlCon.setRequestMethod("GET"); urlCon.connect(); fail("expected
      * exception because input not allowed"); } catch (Exception ex) { // this
      * is expected } }
@@ -107,7 +108,7 @@ public class TestURLConn extends TestWebappBase
      * assertEquals("request",
      * URLConnection.getDefaultRequestProperty("default"));
      * 
-     * HttpURLConnection urlCon = (HttpURLConnection)url.openConnection();
+     * HttpURLConnection urlCon = HttpURLConnection.openConnection(url);
      * urlCon.setRequestMethod("GET");
      * 
      * assertEquals("request", urlCon.getRequestProperty("default"));
@@ -123,7 +124,7 @@ public class TestURLConn extends TestWebappBase
         URL url = new URL(_urlBase + HeaderServlet.NAME);
         int response = 0;
 
-        HttpURLConnection urlCon = (HttpURLConnection)url.openConnection();
+        HttpURLConnection urlCon = HttpURLConnection.openConnection(url);
         urlCon.setRequestMethod("GET");
 
         urlCon.connect();
@@ -153,7 +154,7 @@ public class TestURLConn extends TestWebappBase
         URL url = new URL(_urlBase + HeaderServlet.NAME);
         int response = 0;
 
-        HttpURLConnection urlCon = (HttpURLConnection)url.openConnection();
+        HttpURLConnection urlCon = HttpURLConnection.openConnection(url);
         urlCon.setRequestMethod("POST");
         urlCon.setDoOutput(true);
 
@@ -172,7 +173,7 @@ public class TestURLConn extends TestWebappBase
         URL url = new URL(_urlBase + HeaderServlet.NAME);
         int response = 0;
 
-        HttpURLConnection urlCon = (HttpURLConnection)url.openConnection();
+        HttpURLConnection urlCon = HttpURLConnection.openConnection(url);
         urlCon.setRequestMethod("POST");
         urlCon.setDoOutput(true);
 
@@ -197,7 +198,7 @@ public class TestURLConn extends TestWebappBase
     public void testErrorStream() throws Exception
     {
         URL url = new URL(_urlBase + "/filenot_found/a/c/");
-        HttpURLConnection urlCon = (HttpURLConnection)url.openConnection();
+        HttpURLConnection urlCon = HttpURLConnection.openConnection(url);
         urlCon.connect();
 
         InputStream is = urlCon.getErrorStream();
@@ -210,7 +211,7 @@ public class TestURLConn extends TestWebappBase
     public void testErrorStreamGetResp() throws Exception
     {
         URL url = new URL(_urlBase + "/filenot_found/a/c/");
-        HttpURLConnection urlCon = (HttpURLConnection)url.openConnection();
+        HttpURLConnection urlCon = HttpURLConnection.openConnection(url);
         urlCon.connect();
 
         assertEquals(404, urlCon.getResponseCode());
@@ -224,7 +225,7 @@ public class TestURLConn extends TestWebappBase
     public void testErrorStreamNoError() throws Exception
     {
         URL url = new URL(_urlBase + HeaderServlet.NAME);
-        HttpURLConnection urlCon = (HttpURLConnection)url.openConnection();
+        HttpURLConnection urlCon = HttpURLConnection.openConnection(url);
         urlCon.connect();
 
         InputStream is = urlCon.getErrorStream();
@@ -234,7 +235,7 @@ public class TestURLConn extends TestWebappBase
     public void testErrorStreamBeforeConnect() throws Exception
     {
         URL url = new URL(_urlBase + HeaderServlet.NAME);
-        HttpURLConnection urlCon = (HttpURLConnection)url.openConnection();
+        HttpURLConnection urlCon = HttpURLConnection.openConnection(url);
 
         InputStream is = urlCon.getErrorStream();
         assertEquals(null, is);
@@ -244,7 +245,7 @@ public class TestURLConn extends TestWebappBase
     public void testBadHost() throws Exception
     {
         URL url = new URL("http://thisisbad");
-        HttpURLConnection urlCon = (HttpURLConnection)url.openConnection();
+        HttpURLConnection urlCon = HttpURLConnection.openConnection(url);
         try
         {
             urlCon.connect();
@@ -261,7 +262,7 @@ public class TestURLConn extends TestWebappBase
     public void testBadHost2() throws Exception
     {
         URL url = new URL("http://127.0.0.0");
-        HttpURLConnection urlCon = (HttpURLConnection)url.openConnection();
+        HttpURLConnection urlCon = HttpURLConnection.openConnection(url);
         try
         {
             urlCon.connect();
@@ -282,7 +283,7 @@ public class TestURLConn extends TestWebappBase
     public void testBadPort() throws Exception
     {
         URL url = new URL("http://localhost:9999");
-        HttpURLConnection urlCon = (HttpURLConnection)url.openConnection();
+        HttpURLConnection urlCon = HttpURLConnection.openConnection(url);
         try
         {
             urlCon.connect();

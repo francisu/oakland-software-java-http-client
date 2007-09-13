@@ -153,7 +153,11 @@ public class SmbFileInputStream extends InputStream {
                 file.log.println( "read: len=" + len + ",r=" + r + ",fp=" + fp );
 
             try {
-                file.send( new SmbComReadAndX( file.fid, fp, r, null ), response );
+SmbComReadAndX request = new SmbComReadAndX( file.fid, fp, r, null );
+if( file.type == SmbFile.TYPE_NAMED_PIPE ) {
+    request.minCount = request.maxCount = request.remaining = 1024;
+}
+                file.send( request, response );
             } catch( SmbException se ) {
                 if( file.type == SmbFile.TYPE_NAMED_PIPE &&
                         se.getNtStatus() == NtStatus.NT_STATUS_PIPE_BROKEN ) {

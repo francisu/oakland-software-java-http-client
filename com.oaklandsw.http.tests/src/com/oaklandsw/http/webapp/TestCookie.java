@@ -41,7 +41,7 @@ public class TestCookie extends TestWebappBase
 
         CookieContainer cc = new CookieContainer();
 
-        HttpURLConnection urlCon = (HttpURLConnection)url.openConnection();
+        HttpURLConnection urlCon = HttpURLConnection.openConnection(url);
         urlCon.connect();
         try
         {
@@ -62,7 +62,7 @@ public class TestCookie extends TestWebappBase
 
         CookieContainer cc = new CookieContainer();
 
-        HttpURLConnection urlCon = (HttpURLConnection)url.openConnection();
+        HttpURLConnection urlCon = HttpURLConnection.openConnection(url);
         urlCon.setRequestMethod(method);
         urlCon.setCookieSupport(cc, null);
         response = urlCon.getResponseCode();
@@ -80,7 +80,7 @@ public class TestCookie extends TestWebappBase
         // Now have the cookie read
         url = new URL(_urlBase + ReadCookieServlet.NAME);
 
-        urlCon = (HttpURLConnection)url.openConnection();
+        urlCon = HttpURLConnection.openConnection(url);
         urlCon.setRequestMethod(method);
         urlCon.setCookieSupport(cc, null);
         response = urlCon.getResponseCode();
@@ -94,7 +94,7 @@ public class TestCookie extends TestWebappBase
         // Now have the cookie removed
         url = new URL(_urlBase + WriteCookieServlet.NAME + "?simple=unset");
 
-        urlCon = (HttpURLConnection)url.openConnection();
+        urlCon = HttpURLConnection.openConnection(url);
         urlCon.setRequestMethod(method);
         urlCon.setCookieSupport(cc, null);
         response = urlCon.getResponseCode();
@@ -132,7 +132,7 @@ public class TestCookie extends TestWebappBase
 
         CookieContainer cc = new CookieContainer();
 
-        HttpURLConnection urlCon = (HttpURLConnection)url.openConnection();
+        HttpURLConnection urlCon = HttpURLConnection.openConnection(url);
         urlCon.setRequestMethod(method);
         urlCon.setCookieSupport(cc, null);
         urlCon.connect();
@@ -187,7 +187,7 @@ public class TestCookie extends TestWebappBase
 
         CookieContainer cc = new CookieContainer();
 
-        HttpURLConnection urlCon = (HttpURLConnection)url.openConnection();
+        HttpURLConnection urlCon = HttpURLConnection.openConnection(url);
         urlCon.setRequestMethod(method);
         urlCon.setCookieSupport(cc, null);
         urlCon.connect();

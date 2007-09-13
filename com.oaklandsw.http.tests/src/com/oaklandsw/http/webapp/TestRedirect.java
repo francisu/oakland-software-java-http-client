@@ -66,7 +66,7 @@ public class TestRedirect extends TestWebappBase
             urlStr += "?" + qs;
         url = new URL(urlStr);
 
-        HttpURLConnection urlCon = (HttpURLConnection)url.openConnection();
+        HttpURLConnection urlCon = HttpURLConnection.openConnection(url);
         urlCon.setRequestMethod(method);
 
         if (!method.equals("GET"))
@@ -152,7 +152,7 @@ public class TestRedirect extends TestWebappBase
                 + ParamServlet.NAME, Util.DEFAULT_ENCODING));
         int response = 0;
 
-        HttpURLConnection urlCon = (HttpURLConnection)url.openConnection();
+        HttpURLConnection urlCon = HttpURLConnection.openConnection(url);
         urlCon.setRequestMethod("GET");
 
         // Bug 1029 host header not set correctly in redirection
@@ -226,7 +226,7 @@ public class TestRedirect extends TestWebappBase
                 + ParamServlet.NAME, Util.DEFAULT_ENCODING));
         int response = 0;
 
-        HttpURLConnection urlCon = (HttpURLConnection)url.openConnection();
+        HttpURLConnection urlCon = HttpURLConnection.openConnection(url);
         urlCon.setRequestMethod("GET");
         urlCon.connect();
         response = urlCon.getResponseCode();
@@ -246,7 +246,7 @@ public class TestRedirect extends TestWebappBase
                                 Util.DEFAULT_ENCODING));
         int response = 0;
 
-        HttpURLConnection urlCon = (HttpURLConnection)url.openConnection();
+        HttpURLConnection urlCon = HttpURLConnection.openConnection(url);
         urlCon.setRequestMethod("GET");
         urlCon.connect();
         response = urlCon.getResponseCode();
@@ -267,7 +267,7 @@ public class TestRedirect extends TestWebappBase
             + URLEncoder.encode("/" + context + "/params",
                                 Util.DEFAULT_ENCODING));
 
-        HttpURLConnection urlCon = (HttpURLConnection)url.openConnection();
+        HttpURLConnection urlCon = HttpURLConnection.openConnection(url);
         urlCon.setFixedLengthStreamingMode(5);
 
         urlCon.setDoOutput(true);
@@ -300,7 +300,7 @@ public class TestRedirect extends TestWebappBase
         URL url = new URL(_urlBase + RedirectServlet.NAME + "?to=" + qs);
         int response = 0;
 
-        HttpURLConnection urlCon = (HttpURLConnection)url.openConnection();
+        HttpURLConnection urlCon = HttpURLConnection.openConnection(url);
         urlCon.setRequestMethod("GET");
         urlCon.connect();
         response = urlCon.getResponseCode();
@@ -340,7 +340,7 @@ public class TestRedirect extends TestWebappBase
         URL url = new URL(_urlBase + RedirectServlet.NAME + "?" + qs);
         int response = 0;
 
-        HttpURLConnection urlCon = (HttpURLConnection)url.openConnection();
+        HttpURLConnection urlCon = HttpURLConnection.openConnection(url);
         urlCon.setRequestMethod("GET");
         urlCon.connect();
         response = urlCon.getResponseCode();
@@ -369,7 +369,7 @@ public class TestRedirect extends TestWebappBase
         URL url = new URL(_urlBase + RedirectServlet.NAME);
         int response = 0;
 
-        HttpURLConnection urlCon = (HttpURLConnection)url.openConnection();
+        HttpURLConnection urlCon = HttpURLConnection.openConnection(url);
         urlCon.setRequestMethod("PUT");
         urlCon.setDoOutput(true);
 
@@ -393,7 +393,7 @@ public class TestRedirect extends TestWebappBase
 
         URL url = new URL(_urlBase + RedirectServlet.NAME + "?loop=true");
 
-        HttpURLConnection urlCon = (HttpURLConnection)url.openConnection();
+        HttpURLConnection urlCon = HttpURLConnection.openConnection(url);
         urlCon.setRequestMethod("GET");
 
         try

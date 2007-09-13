@@ -1,6 +1,5 @@
 package com.oaklandsw.http.webext;
 
-import java.net.HttpURLConnection;
 import java.net.URL;
 
 import org.apache.commons.logging.Log;
@@ -10,6 +9,7 @@ import junit.framework.TestSuite;
 
 import com.oaklandsw.http.HttpTimeoutException;
 import com.oaklandsw.http.HttpTestBase;
+import com.oaklandsw.http.HttpURLConnection;
 import com.oaklandsw.util.LogUtils;
 
 public class TestTimeout extends HttpTestBase
@@ -44,13 +44,9 @@ public class TestTimeout extends HttpTestBase
         url = new URL("http://www.bbc.co.uk");
         // url = new URL("http://xxx.nepad.org");
 
-        HttpURLConnection urlCon = (HttpURLConnection)url.openConnection();
+        HttpURLConnection urlCon = HttpURLConnection.openConnection(url);
 
-        // Only valid for nogoop implementation
-        if (!(urlCon instanceof com.oaklandsw.http.HttpURLConnection))
-            return;
-
-        setupConnTimeout((com.oaklandsw.http.HttpURLConnection)urlCon, type, 1);
+        setupConnTimeout(urlCon, type, 1);
 
         urlCon.setRequestMethod("GET");
 

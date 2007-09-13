@@ -21,7 +21,7 @@ package jcifs.smb;
 import java.io.OutputStream;
 import java.io.IOException;
 
-class TransactNamedPipeOutputStream extends OutputStream {
+class TransactNamedPipeOutputStream extends SmbFileOutputStream {
 
     private String path;
     private SmbNamedPipe pipe;
@@ -29,6 +29,7 @@ class TransactNamedPipeOutputStream extends OutputStream {
     private boolean dcePipe;
 
     TransactNamedPipeOutputStream( SmbNamedPipe pipe ) throws IOException {
+        super(pipe, false, (pipe.pipeType & 0xFFFF00FF) | SmbFile.O_EXCL);
         this.pipe = pipe;
         this.dcePipe = ( pipe.pipeType & SmbNamedPipe.PIPE_TYPE_DCE_TRANSACT ) == SmbNamedPipe.PIPE_TYPE_DCE_TRANSACT;
         path = pipe.unc;
@@ -56,10 +57,7 @@ class TransactNamedPipeOutputStream extends OutputStream {
                                         new TransCallNamedPipeResponse( pipe ));
         } else if(( pipe.pipeType & SmbNamedPipe.PIPE_TYPE_TRANSACT ) ==
                                                     SmbNamedPipe.PIPE_TYPE_TRANSACT ) {
-            pipe.open((pipe.pipeType & 0xFF) | SmbFile.O_EXCL,
-                        pipe.pipeType >>> 16,
-                        SmbFile.ATTR_NORMAL,
-                        0);
+            ensureOpen();
             TransTransactNamedPipe req = new TransTransactNamedPipe( pipe.fid, b, off, len );
             if (dcePipe) {
                 req.maxDataCount = 1024;

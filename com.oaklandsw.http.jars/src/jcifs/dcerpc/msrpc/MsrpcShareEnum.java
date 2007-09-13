@@ -24,50 +24,12 @@ import jcifs.util.Hexdump;
 
 public class MsrpcShareEnum extends srvsvc.ShareEnumAll {
 
-    class MsrpcShareInfo1 implements FileEntry {
-
-        String netname;
-        int type;
-        String remark;
+    class MsrpcShareInfo1 extends SmbShareInfo {
 
         MsrpcShareInfo1(srvsvc.ShareInfo1 info1) {
-            this.netname = info1.netname;
+            this.netName = info1.netname;
             this.type = info1.type;
             this.remark = info1.remark;
-        }
-
-        public String getName() {
-            return netname;
-        }
-        public int getType() {
-            /* 0x80000000 means hidden but SmbFile.isHidden() checks for $ at end
-             */
-            switch(type & 0xFFFF) {
-                case 1:
-                    return SmbFile.TYPE_PRINTER;
-                case 3:
-                    return SmbFile.TYPE_NAMED_PIPE;
-            }
-            return SmbFile.TYPE_SHARE;
-        }
-        public int getAttributes() {
-            return SmbFile.ATTR_READONLY | SmbFile.ATTR_DIRECTORY;
-        }
-        public long createTime() {
-            return 0L;
-        }
-        public long lastModified() {
-            return 0L;
-        }
-        public long length() {
-            return 0L;
-        }
-
-        public String toString() {
-            return new String( "MsrpcShareInfo1[" +
-                    "netName=" + netname +
-                    ",type=0x" + Hexdump.toHexString( type, 8 ) +
-                    ",remark=" + remark + "]" );
         }
     }
 

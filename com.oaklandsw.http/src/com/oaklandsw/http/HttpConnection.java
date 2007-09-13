@@ -58,7 +58,6 @@
 
 package com.oaklandsw.http;
 
-import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -82,11 +81,12 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import com.oaklandsw.util.ExposedBufferInputStream;
+import com.oaklandsw.util.ExposedBufferOutputStream;
 import com.oaklandsw.util.LogUtils;
 import com.oaklandsw.util.Util;
 
-import edu.emory.mathcs.backport.java.util.concurrent.ArrayBlockingQueue;
 import edu.emory.mathcs.backport.java.util.concurrent.BlockingQueue;
+import edu.emory.mathcs.backport.java.util.concurrent.LinkedBlockingQueue;
 
 public class HttpConnection
 {
@@ -100,15 +100,15 @@ public class HttpConnection
     private static final Log   _wireLog           = LogFactory.getLog(WIRE_LOG);
     private static final Log   _connLog           = LogFactory.getLog(CONN_LOG);
 
-    // private static final int STREAM_BUFFER_SIZE = 16384;
-    private static final int   STREAM_BUFFER_SIZE = 16436;
-
+    protected static final int MAX_WRITE_BUFFER_SIZE = 16 * 1024;
+    protected static final int MAX_READ_BUFFER_SIZE = 2 * 1024;
+    
     public String              _host;
     public int                 _port              = -1;
 
     /**
      * The host/port string to use when part of a URL. This has the port number
-     * omitted the port is the default port for the protcol.
+     * omitted the port is the default port for the protocol.
      */
     String                     _hostPortURL;
 
@@ -118,7 +118,7 @@ public class HttpConnection
      */
     String                     _hostPort;
 
-    // The way this connection is idenfified by the connection
+    // The way this connection is identified by the connection
     // manager.
     String                     _handle;
 
@@ -135,7 +135,7 @@ public class HttpConnection
     Socket                     _socket;
 
     ExposedBufferInputStream   _input;
-    BufferedOutputStream       _output;
+    ExposedBufferOutputStream  _output;
 
     // A request has been written but not flushed
     boolean                    _needsFlush;
@@ -339,7 +339,8 @@ public class HttpConnection
         _ssl = secure;
         _handle = handle;
         setHostPort();
-        _queue = new ArrayBlockingQueue(200);
+        // _queue = new ArrayBlockingQueue(6000);
+        _queue = new LinkedBlockingQueue();
         _preventCloseList = new ArrayList();
     }
 
@@ -509,7 +510,7 @@ public class HttpConnection
             return;
         _output.flush();
         setNeedsFlush(false);
-        _connManager.recordCount(HttpConnectionManager.COUNT_FLUSHES);
+        _connManager.recordCount(HttpConnectionManager.COUNT_FORCED_FLUSHES);
     }
 
     void conditionalFlush(HttpURLConnection urlCon) throws IOException
@@ -1061,11 +1062,26 @@ public class HttpConnection
                                             null);
         }
 
-        _input = new ExposedBufferInputStream(is, STREAM_BUFFER_SIZE);
-        _output = new BufferedOutputStream(os, STREAM_BUFFER_SIZE);
+        int buffSize = _socket.getSendBufferSize();
+        if (buffSize > MAX_WRITE_BUFFER_SIZE)
+            buffSize = MAX_WRITE_BUFFER_SIZE;
+        if (_connLog.isDebugEnabled())
+            _connLog.debug("sendbuf size: " + buffSize);
+        _output = new ExposedBufferOutputStream(os, buffSize)
+        {
+            protected void countFlush()
+            {
+                _connManager
+                        .recordCount(HttpConnectionManager.COUNT_BUFFER_FLUSHES);
+            }
+        };
 
-        // System.out.println("sendbuf: " + _socket.getSendBufferSize());
-        // System.out.println("recvbuf: " + _socket.getReceiveBufferSize());
+        buffSize = _socket.getReceiveBufferSize();
+        if (buffSize > MAX_READ_BUFFER_SIZE)
+            buffSize = MAX_READ_BUFFER_SIZE;
+        if (_connLog.isDebugEnabled())
+            _connLog.debug("recvbuf size: " + buffSize);
+        _input = new ExposedBufferInputStream(is, buffSize);
 
         _socket.setSoLinger(false, 0);
         _socket.setTcpNoDelay(true);
@@ -1083,7 +1099,7 @@ public class HttpConnection
         return !isProxied() || _tunnelEstablished;
     }
 
-    public BufferedOutputStream getOutputStream() throws IOException
+    public OutputStream getOutputStream() throws IOException
     {
         _log.trace("getOutputStream");
         if (_output == null)
@@ -1177,7 +1193,7 @@ public class HttpConnection
         synchronized (this)
         {
             _log.debug("endPreventClose");
-            
+
             // This thread may not be found (because it already closed
             // the connection), that's harmless
             _preventCloseList.remove(Thread.currentThread());

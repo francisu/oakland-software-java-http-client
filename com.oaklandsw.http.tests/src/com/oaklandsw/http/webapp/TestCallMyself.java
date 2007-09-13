@@ -44,7 +44,7 @@ public class TestCallMyself extends TestWebappBase
             + innerMethod);
         int response = 0;
 
-        HttpURLConnection urlCon = (HttpURLConnection)url.openConnection();
+        HttpURLConnection urlCon = HttpURLConnection.openConnection(url);
         urlCon.setRequestMethod(firstMethod);
 
         if (firstMethod.equals("POST"))

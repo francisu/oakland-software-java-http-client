@@ -58,14 +58,14 @@ public class SigningDigest {
         } catch( Exception ex ) {
             throw new SmbException( "", ex );
         }
-        if( log.level >= 4 ) {
+        if( log.level >= 5 ) {
             log.println( "LM_COMPATIBILITY=" + LM_COMPATIBILITY );
             Hexdump.hexdump( log, macSigningKey, 0, macSigningKey.length );
         }
     }
 
     public void update( byte[] input, int offset, int len ) {
-        if( log.level >= 4 ) {
+        if( log.level >= 5 ) {
             log.println( "update: " + updates + " " + offset + ":" + len );
             Hexdump.hexdump( log, input, offset, Math.min( len, 256 ));
             log.flush();
@@ -81,7 +81,7 @@ public class SigningDigest {
 
         b = digest.digest();
 
-        if( log.level >= 4 ) {
+        if( log.level >= 5 ) {
             log.println( "digest: " );
             Hexdump.hexdump( log, b, 0, b.length );
             log.flush();
@@ -165,6 +165,9 @@ public class SigningDigest {
         }
 
         return response.verifyFailed = false;
+    }
+    public String toString() {
+        return "LM_COMPATIBILITY=" + LM_COMPATIBILITY + " MacSigningKey=" + Hexdump.toHexString(macSigningKey, 0, macSigningKey.length);
     }
 }
 

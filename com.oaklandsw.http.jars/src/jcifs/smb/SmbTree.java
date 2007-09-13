@@ -95,7 +95,7 @@ class SmbTree {
             }
         }
         request.tid = tid;
-        if( inDfs && request.path != null && request.path.length() > 0 ) {
+        if( inDfs && !service.equals("IPC") && request.path != null && request.path.length() > 0 ) {
             /* When DFS is in action all request paths are
              * full UNC paths minus the first backslash like
              *   \server\share\path\to\file

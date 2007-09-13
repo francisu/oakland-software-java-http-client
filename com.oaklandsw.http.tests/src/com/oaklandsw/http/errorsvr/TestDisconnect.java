@@ -59,7 +59,7 @@ public class TestDisconnect extends HttpTestBase
         {
             URL url = makeUrl(when, lines);
 
-            HttpURLConnection urlCon = (HttpURLConnection)url.openConnection();
+            HttpURLConnection urlCon = HttpURLConnection.openConnection(url);
             urlCon.setRequestMethod("POST");
             urlCon.setDoOutput(true);
             urlCon.connect();
@@ -190,7 +190,7 @@ public class TestDisconnect extends HttpTestBase
     {
         URL url = makeUrl(ErrorServer.ERROR_BEFORE_HEADERS, 10);
 
-        HttpURLConnection urlCon = (HttpURLConnection)url.openConnection();
+        HttpURLConnection urlCon = HttpURLConnection.openConnection(url);
         com.oaklandsw.http.HttpURLConnection.setDefaultMaxTries(1);
 
         // Connection will happen here and fail
@@ -213,7 +213,7 @@ public class TestDisconnect extends HttpTestBase
     {
         URL url = makeUrl(ErrorServer.ERROR_BEFORE_HEADERS, 10);
 
-        HttpURLConnection urlCon = (HttpURLConnection)url.openConnection();
+        HttpURLConnection urlCon = HttpURLConnection.openConnection(url);
         com.oaklandsw.http.HttpURLConnection.setDefaultMaxTries(1);
 
         // Connection will happen here and fail

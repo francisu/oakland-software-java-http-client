@@ -33,16 +33,20 @@ public interface NtStatus {
     public static final int NT_STATUS_INVALID_PARAMETER = 0xC000000d;
     public static final int NT_STATUS_NO_SUCH_DEVICE = 0xC000000e;
     public static final int NT_STATUS_NO_SUCH_FILE = 0xC000000f;
+    public static final int NT_STATUS_MORE_PROCESSING_REQUIRED = 0xC0000016;
     public static final int NT_STATUS_ACCESS_DENIED = 0xC0000022;
     public static final int NT_STATUS_BUFFER_TOO_SMALL = 0xC0000023;
     public static final int NT_STATUS_OBJECT_NAME_INVALID = 0xC0000033;
     public static final int NT_STATUS_OBJECT_NAME_NOT_FOUND = 0xC0000034;
     public static final int NT_STATUS_OBJECT_NAME_COLLISION = 0xC0000035;
     public static final int NT_STATUS_PORT_DISCONNECTED = 0xC0000037;
+    public static final int NT_STATUS_OBJECT_PATH_INVALID = 0xC0000039;
     public static final int NT_STATUS_OBJECT_PATH_NOT_FOUND = 0xC000003a;
     public static final int NT_STATUS_OBJECT_PATH_SYNTAX_BAD = 0xC000003b;
     public static final int NT_STATUS_SHARING_VIOLATION = 0xC0000043;
     public static final int NT_STATUS_DELETE_PENDING = 0xC0000056;
+    public static final int NT_STATUS_NO_LOGON_SERVERS = 0xC000005e;
+    public static final int NT_STATUS_USER_EXISTS = 0xC0000063;
     public static final int NT_STATUS_NO_SUCH_USER = 0xC0000064;
     public static final int NT_STATUS_WRONG_PASSWORD = 0xC000006a;
     public static final int NT_STATUS_LOGON_FAILURE = 0xC000006d;
@@ -67,9 +71,11 @@ public interface NtStatus {
     public static final int NT_STATUS_BAD_NETWORK_NAME = 0xC00000cc;
     public static final int NT_STATUS_REQUEST_NOT_ACCEPTED = 0xC00000d0;
     public static final int NT_STATUS_CANT_ACCESS_DOMAIN_INFO = 0xC00000da;
+    public static final int NT_STATUS_NO_SUCH_DOMAIN = 0xC00000df;
     public static final int NT_STATUS_NOT_A_DIRECTORY = 0xC0000103;
     public static final int NT_STATUS_CANNOT_DELETE = 0xC0000121;
     public static final int NT_STATUS_PIPE_BROKEN = 0xC000014b;
+    public static final int NT_STATUS_NO_SUCH_ALIAS = 0xC0000151;
     public static final int NT_STATUS_LOGON_TYPE_NOT_GRANTED = 0xC000015b;
     public static final int NT_STATUS_TRUSTED_DOMAIN_FAILURE = 0xC000018c;
     public static final int NT_STATUS_PASSWORD_MUST_CHANGE = 0xC0000224;
@@ -87,16 +93,20 @@ public interface NtStatus {
         NT_STATUS_INVALID_PARAMETER,
         NT_STATUS_NO_SUCH_DEVICE,
         NT_STATUS_NO_SUCH_FILE,
+        NT_STATUS_MORE_PROCESSING_REQUIRED,
         NT_STATUS_ACCESS_DENIED,
         NT_STATUS_BUFFER_TOO_SMALL,
         NT_STATUS_OBJECT_NAME_INVALID,
         NT_STATUS_OBJECT_NAME_NOT_FOUND,
         NT_STATUS_OBJECT_NAME_COLLISION,
         NT_STATUS_PORT_DISCONNECTED,
+        NT_STATUS_OBJECT_PATH_INVALID,
         NT_STATUS_OBJECT_PATH_NOT_FOUND,
         NT_STATUS_OBJECT_PATH_SYNTAX_BAD,
         NT_STATUS_SHARING_VIOLATION,
         NT_STATUS_DELETE_PENDING,
+        NT_STATUS_NO_LOGON_SERVERS,
+        NT_STATUS_USER_EXISTS,
         NT_STATUS_NO_SUCH_USER,
         NT_STATUS_WRONG_PASSWORD,
         NT_STATUS_LOGON_FAILURE,
@@ -121,9 +131,11 @@ public interface NtStatus {
         NT_STATUS_BAD_NETWORK_NAME,
         NT_STATUS_REQUEST_NOT_ACCEPTED,
         NT_STATUS_CANT_ACCESS_DOMAIN_INFO,
+        NT_STATUS_NO_SUCH_DOMAIN,
         NT_STATUS_NOT_A_DIRECTORY,
         NT_STATUS_CANNOT_DELETE,
         NT_STATUS_PIPE_BROKEN,
+        NT_STATUS_NO_SUCH_ALIAS,
         NT_STATUS_LOGON_TYPE_NOT_GRANTED,
         NT_STATUS_TRUSTED_DOMAIN_FAILURE,
         NT_STATUS_PASSWORD_MUST_CHANGE,
@@ -142,16 +154,20 @@ public interface NtStatus {
         "The parameter is incorrect.",
         "The system cannot find the file specified.",
         "The system cannot find the file specified.",
+        "More data is available.",
         "Access is denied.",
         "The data area passed to a system call is too small.",
         "The filename, directory name, or volume label syntax is incorrect.",
         "The system cannot find the file specified.",
         "Cannot create a file when that file already exists.",
         "The handle is invalid.",
+        "The specified path is invalid.",
         "The system cannot find the path specified.",
         "The specified path is invalid.",
         "The process cannot access the file because it is being used by another process.",
         "Access is denied.",
+        "There are currently no logon servers available to service the logon request.",
+        "The specified user already exists.",
         "The specified user does not exist.",
         "The specified network password is not correct.",
         "Logon failure: unknown user name or bad password.",
@@ -176,9 +192,11 @@ public interface NtStatus {
         "The network name cannot be found.",
         "No more connections can be made to this remote computer at this time because there are already as many connections as the computer can accept.",
         "Indicates a Windows NT Server could not be contacted or that objects within the domain are protected such that necessary information could not be retrieved.",
+        "The specified domain did not exist.",
         "The directory name is invalid.",
         "Access is denied.",
         "The pipe has been ended.",
+        "The specified local group does not exist.",
         "Logon failure: the user has not been granted the requested logon type at this computer.",
         "The trust relationship between the primary domain and the trusted domain failed.",
         "The user must change his password before he logs on the first time.",

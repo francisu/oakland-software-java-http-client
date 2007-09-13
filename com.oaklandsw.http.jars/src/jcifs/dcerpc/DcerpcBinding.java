@@ -32,6 +32,7 @@ class DcerpcBinding {
         INTERFACES = new HashMap();
         INTERFACES.put("srvsvc", srvsvc.getSyntax());
         INTERFACES.put("lsarpc", lsarpc.getSyntax());
+        INTERFACES.put("samr", samr.getSyntax());
     }
 
     String proto;

@@ -242,6 +242,12 @@ public class UniAddress {
     public static UniAddress getByName( String hostname,
                                         boolean possibleNTDomainOrWorkgroup )
                                         throws UnknownHostException {
+        UniAddress[] addrs = UniAddress.getAllByName(hostname, possibleNTDomainOrWorkgroup);
+        return addrs[0];
+    }
+    public static UniAddress[] getAllByName( String hostname,
+                                        boolean possibleNTDomainOrWorkgroup )
+                                        throws UnknownHostException {
         Object addr;
         int i;
 
@@ -250,7 +256,9 @@ public class UniAddress {
         }
 
         if( isDotQuadIP( hostname )) {
-            return new UniAddress( NbtAddress.getByName( hostname ));
+            UniAddress[] addrs = new UniAddress[1];
+            addrs[0] = new UniAddress( NbtAddress.getByName( hostname ));
+            return addrs;
         }
 
         for( i = 0; i < resolveOrder.length; i++ ) {
@@ -288,12 +296,18 @@ public class UniAddress {
                         if( isAllDigits( hostname )) {
                             throw new UnknownHostException( hostname );
                         }
-                        addr = InetAddress.getByName( hostname );
-                        break;
+                        InetAddress[] iaddrs = InetAddress.getAllByName( hostname );
+                        UniAddress[] addrs = new UniAddress[iaddrs.length];
+                        for (int ii = 0; ii < iaddrs.length; ii++) {
+                            addrs[ii] = new UniAddress(iaddrs[ii]);
+                        }
+                        return addrs; // Success
                     default:
                         throw new UnknownHostException( hostname );
                 }
-                return new UniAddress( addr ); // Success
+                UniAddress[] addrs = new UniAddress[1];
+                addrs[0] = new UniAddress( addr );
+                return addrs; // Success
             } catch( IOException ioe ) {
                 // Failure
             }

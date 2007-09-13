@@ -31,6 +31,8 @@ public class Headers
 
     private static final int         INIT_HEADER_COUNT = 20;
 
+    private static final int         INIT_BUF_SIZE     = 100;
+
     // Header keys are always encoded in ASCII, the values might or might
     // not be ASCII
 
@@ -327,8 +329,6 @@ public class Headers
 
         _currentIndex = 0;
     }
-
-    private static final int INIT_BUF_SIZE   = 250;
 
     // States
     private static final int ST_HEADER_START = 0;

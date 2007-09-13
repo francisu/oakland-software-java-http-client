@@ -89,7 +89,7 @@ public class TestIIS extends HttpTestBase
 
         String str = "lname=lastName123&fname=firstName123";
 
-        _urlCon = (HttpURLConnection)url.openConnection();
+        _urlCon = HttpURLConnection.openConnection(url);
         _urlCon.setAuthenticationType(Credential.AUTH_NTLM);
         setupStreaming(_urlCon, str.length());
         _urlCon.setRequestMethod("POST");
@@ -148,7 +148,7 @@ public class TestIIS extends HttpTestBase
         int response = 0;
 
         HttpURLConnection urlCon;
-        urlCon = (HttpURLConnection)url.openConnection();
+        urlCon = HttpURLConnection.openConnection(url);
         urlCon.connect();
         response = urlCon.getResponseCode();
         assertEquals(200, response);
@@ -174,7 +174,7 @@ public class TestIIS extends HttpTestBase
         int response = 0;
 
         HttpURLConnection urlCon;
-        urlCon = (HttpURLConnection)url.openConnection();
+        urlCon = HttpURLConnection.openConnection(url);
         response = urlCon.getResponseCode();
         assertEquals(200, response);
 
@@ -184,7 +184,7 @@ public class TestIIS extends HttpTestBase
         // Try again with a different user, should not reuse the
         // same connection
         TestUserAgent._type = TestUserAgent.BAD;
-        urlCon = (HttpURLConnection)url.openConnection();
+        urlCon = HttpURLConnection.openConnection(url);
         response = urlCon.getResponseCode();
         assertEquals(401, response);
         checkNoActiveConns(url);
@@ -205,7 +205,7 @@ public class TestIIS extends HttpTestBase
         HttpURLConnection.setMaxConnectionsPerHost(1);
 
         // Create connection with the good auth params
-        HttpURLConnection urlCon = (HttpURLConnection)url.openConnection();
+        HttpURLConnection urlCon = HttpURLConnection.openConnection(url);
         urlCon.setRequestMethod("GET");
         urlCon.getResponseCode();
         urlCon.getInputStream().close();
@@ -214,7 +214,7 @@ public class TestIIS extends HttpTestBase
         // to wait for a connection since they are used up with the good params,
         // but then it should go when the idle connection timer pops
         TestUserAgent._type = TestUserAgent.BAD;
-        urlCon = (HttpURLConnection)url.openConnection();
+        urlCon = HttpURLConnection.openConnection(url);
         assertEquals(401, urlCon.getResponseCode());
 
         // The failed connection will be closed, and the idle connection should
@@ -240,7 +240,7 @@ public class TestIIS extends HttpTestBase
             + HttpTestEnv.TEST_URL_APP_IIS_FORM);
 
         HttpURLConnection urlCon;
-        urlCon = (HttpURLConnection)url.openConnection();
+        urlCon = HttpURLConnection.openConnection(url);
         urlCon.setFixedLengthStreamingMode(5);
 
         urlCon.setDoOutput(true);
@@ -312,7 +312,7 @@ public class TestIIS extends HttpTestBase
         int response = 0;
 
         HttpURLConnection urlCon;
-        urlCon = (HttpURLConnection)url.openConnection();
+        urlCon = HttpURLConnection.openConnection(url);
         urlCon.disconnect();
         urlCon.connect();
         response = urlCon.getResponseCode();
@@ -322,7 +322,7 @@ public class TestIIS extends HttpTestBase
         // a bad one, that is, it re-requests the credential
         TestUserAgent._type = TestUserAgent.GOOD;
 
-        urlCon = (HttpURLConnection)url.openConnection();
+        urlCon = HttpURLConnection.openConnection(url);
         urlCon.connect();
         response = urlCon.getResponseCode();
         assertEquals(200, response);
@@ -341,7 +341,7 @@ public class TestIIS extends HttpTestBase
         int response = 0;
 
         HttpURLConnection urlCon;
-        urlCon = (HttpURLConnection)url.openConnection();
+        urlCon = HttpURLConnection.openConnection(url);
         urlCon.disconnect();
         urlCon.connect();
         response = urlCon.getResponseCode();

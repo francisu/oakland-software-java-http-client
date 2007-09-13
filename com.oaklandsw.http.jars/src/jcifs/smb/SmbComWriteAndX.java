@@ -19,6 +19,7 @@
 package jcifs.smb;
 
 import jcifs.Config;
+import jcifs.util.*;
 
 class SmbComWriteAndX extends AndXServerMessageBlock {
 
@@ -28,13 +29,16 @@ class SmbComWriteAndX extends AndXServerMessageBlock {
                             Config.getInt( "jcifs.smb.client.WriteAndX.Close", 1 );
 
     private int fid,
-        writeMode,
         remaining,
         dataLength,
         dataOffset,
         off;
     private byte[] b;
     private long offset;
+
+private int pad;
+
+    int writeMode;
 
     SmbComWriteAndX() {
         super( null );
@@ -77,18 +81,17 @@ class SmbComWriteAndX extends AndXServerMessageBlock {
         int start = dstIndex;
 
         dataOffset = (dstIndex - headerStart) + 26; // 26 = off from here to pad
-/*
- *      pad = ( dataOffset - headerStart ) % 4;
- *      pad = pad == 0 ? 0 : 4 - pad;
- *      dataOffset += pad;
- */
+
+pad = ( dataOffset - headerStart ) % 4;
+pad = pad == 0 ? 0 : 4 - pad;
+dataOffset += pad;
 
         writeInt2( fid, dst, dstIndex );
         dstIndex += 2;
         writeInt4( offset, dst, dstIndex );
         dstIndex += 4;
         for( int i = 0; i < 4; i++ ) {
-            dst[dstIndex++] = (byte)0x00;
+            dst[dstIndex++] = (byte)0xFF;
         }
         writeInt2( writeMode, dst, dstIndex );
         dstIndex += 2;
@@ -108,11 +111,9 @@ class SmbComWriteAndX extends AndXServerMessageBlock {
     int writeBytesWireFormat( byte[] dst, int dstIndex ) {
         int start = dstIndex;
 
-/* Netware doesn't like this
- *      while( pad-- > 0 ) {
- *          dst[dstIndex++] = (byte)0x00;
- *      }
- */
+while( pad-- > 0 ) {
+    dst[dstIndex++] = (byte)0xEE;
+}
         System.arraycopy( b, off, dst, dstIndex, dataLength );
         dstIndex += dataLength;
 

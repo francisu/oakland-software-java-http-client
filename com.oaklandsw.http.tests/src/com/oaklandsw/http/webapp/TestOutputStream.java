@@ -72,7 +72,7 @@ public class TestOutputStream extends TestWebappBase
 
         URL url = new URL(_urlBase + RequestBodyServlet.NAME);
 
-        HttpURLConnection urlCon = (HttpURLConnection)url.openConnection();
+        HttpURLConnection urlCon = HttpURLConnection.openConnection(url);
         setupStreaming(urlCon, 100);
         urlCon.setDoOutput(true);
         if (getStream)
@@ -107,7 +107,7 @@ public class TestOutputStream extends TestWebappBase
 
         URL url = new URL(_urlBase + RequestBodyServlet.NAME);
 
-        HttpURLConnection urlCon = (HttpURLConnection)url.openConnection();
+        HttpURLConnection urlCon = HttpURLConnection.openConnection(url);
         urlCon.setRequestMethod("POST");
         urlCon.setDoOutput(true);
         byte[] output = QUOTE.getBytes("ASCII");
@@ -143,7 +143,7 @@ public class TestOutputStream extends TestWebappBase
     {
         URL url = new URL(_urlBase + RequestBodyServlet.NAME);
 
-        HttpURLConnection urlCon = (HttpURLConnection)url.openConnection();
+        HttpURLConnection urlCon = HttpURLConnection.openConnection(url);
         urlCon.setRequestMethod("POST");
         urlCon.setDoOutput(true);
         setupStreaming(urlCon, 1);
@@ -161,7 +161,7 @@ public class TestOutputStream extends TestWebappBase
     {
         URL url = new URL(_urlBase + RequestBodyServlet.NAME);
 
-        HttpURLConnection urlCon = (HttpURLConnection)url.openConnection();
+        HttpURLConnection urlCon = HttpURLConnection.openConnection(url);
         urlCon.setRequestMethod("POST");
         urlCon.setDoOutput(true);
         byte[] output = QUOTE.getBytes("ASCII");
@@ -183,7 +183,7 @@ public class TestOutputStream extends TestWebappBase
         for (int i = 0; i < HUGE_TIMES; i++)
             postData += QUOTE;
 
-        HttpURLConnection urlCon = (HttpURLConnection)url.openConnection();
+        HttpURLConnection urlCon = HttpURLConnection.openConnection(url);
         urlCon.setRequestMethod("POST");
         urlCon.setDoOutput(true);
         byte[] output = postData.getBytes("ASCII");
@@ -212,7 +212,7 @@ public class TestOutputStream extends TestWebappBase
     {
         URL url = new URL(_urlBase + RequestBodyServlet.NAME);
 
-        HttpURLConnection urlCon = (HttpURLConnection)url.openConnection();
+        HttpURLConnection urlCon = HttpURLConnection.openConnection(url);
         urlCon.setRequestMethod("POST");
         urlCon.setDoOutput(true);
         urlCon.setRequestProperty("Content-Length", String.valueOf(QUOTE
@@ -235,7 +235,7 @@ public class TestOutputStream extends TestWebappBase
 
         URL url = new URL(_urlBase + RequestBodyServlet.NAME);
 
-        HttpURLConnection urlCon = (HttpURLConnection)url.openConnection();
+        HttpURLConnection urlCon = HttpURLConnection.openConnection(url);
         urlCon.setRequestMethod("POST");
         urlCon.setDoOutput(true);
         urlCon.setRequestProperty("Content-Length", String.valueOf(QUOTE
@@ -262,7 +262,7 @@ public class TestOutputStream extends TestWebappBase
 
         URL url = new URL(_urlBase + RequestBodyServlet.NAME);
 
-        HttpURLConnection urlCon = (HttpURLConnection)url.openConnection();
+        HttpURLConnection urlCon = HttpURLConnection.openConnection(url);
         urlCon.setRequestMethod("POST");
         urlCon.setDoOutput(true);
         urlCon.setRequestProperty("Content-Length", String.valueOf(QUOTE
@@ -287,7 +287,7 @@ public class TestOutputStream extends TestWebappBase
             return;
         URL url = new URL(_urlBase + RequestBodyServlet.NAME);
 
-        HttpURLConnection urlCon = (HttpURLConnection)url.openConnection();
+        HttpURLConnection urlCon = HttpURLConnection.openConnection(url);
         urlCon.setRequestMethod("POST");
 
         urlCon.setUseCaches(false);
@@ -388,7 +388,7 @@ public class TestOutputStream extends TestWebappBase
 
         _log.debug("testPostAsXMLRPC");
 
-        HttpURLConnection urlCon = (HttpURLConnection)url.openConnection();
+        HttpURLConnection urlCon = HttpURLConnection.openConnection(url);
         urlCon.setDoInput(true);
         urlCon.setDoOutput(true);
         urlCon.setUseCaches(false);
@@ -412,7 +412,7 @@ public class TestOutputStream extends TestWebappBase
     {
         URL url = new URL(_urlBase + RequestBodyServlet.NAME);
 
-        HttpURLConnection conn = (HttpURLConnection)url.openConnection();
+        HttpURLConnection conn = HttpURLConnection.openConnection(url);
         conn.setRequestMethod("POST");
 
         assertFalse(conn.isConnected());

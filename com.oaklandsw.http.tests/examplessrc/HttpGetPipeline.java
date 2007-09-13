@@ -43,7 +43,7 @@ public class HttpGetPipeline
         {
             // Creates and HttpURLConnection which is automatically
             // associated with the thread
-            urlCon = (HttpURLConnection)url.openConnection();
+            urlCon = HttpURLConnection.openConnection(url);
 
             // Begins the execution
             urlCon.pipelineExecute();
@@ -53,7 +53,7 @@ public class HttpGetPipeline
         HttpURLConnection.pipelineBlock();
         
         // Now try async
-        urlCon = (HttpURLConnection)url.openConnection();
+        urlCon = HttpURLConnection.openConnection(url);
         urlCon.pipelineExecuteAsync();
         
         // Stay around for it to finish

@@ -43,7 +43,7 @@ public class TestTimeout extends TestWebappBase
         URL url = new URL(_urlBase + TimeoutServlet.NAME);
         int response = 0;
 
-        HttpURLConnection urlCon = (HttpURLConnection)url.openConnection();
+        HttpURLConnection urlCon = HttpURLConnection.openConnection(url);
 
         urlCon.setRequestMethod("GET");
         response = urlCon.getResponseCode();
@@ -57,7 +57,7 @@ public class TestTimeout extends TestWebappBase
         com.oaklandsw.http.HttpURLConnection.closeAllPooledConnections();
 
         // Do another one
-        urlCon = (HttpURLConnection)url.openConnection();
+        urlCon = HttpURLConnection.openConnection(url);
 
         urlCon.setRequestMethod("GET");
         response = urlCon.getResponseCode();
@@ -81,7 +81,7 @@ public class TestTimeout extends TestWebappBase
         URL url = new URL(_urlBase + TimeoutServlet.NAME);
         int response = 0;
 
-        HttpURLConnection urlCon = (HttpURLConnection)url.openConnection();
+        HttpURLConnection urlCon = HttpURLConnection.openConnection(url);
 
         urlCon.setRequestMethod("GET");
         response = urlCon.getResponseCode();
@@ -110,7 +110,7 @@ public class TestTimeout extends TestWebappBase
 
         URL url = new URL(_urlBase + TimeoutServlet.NAME);
 
-        HttpURLConnection urlCon = (HttpURLConnection)url.openConnection();
+        HttpURLConnection urlCon = HttpURLConnection.openConnection(url);
 
         // No timeout, but this should not be able to get a connection
         urlCon.setRequestMethod("GET");
@@ -157,7 +157,7 @@ public class TestTimeout extends TestWebappBase
 
         URL url = new URL(_urlBase + TimeoutServlet.NAME);
 
-        HttpURLConnection urlCon = (HttpURLConnection)url.openConnection();
+        HttpURLConnection urlCon = HttpURLConnection.openConnection(url);
 
         setupConnTimeout(urlCon, type, 1000);
 
@@ -218,7 +218,7 @@ public class TestTimeout extends TestWebappBase
         URL url = new URL(_urlBase + TimeoutServlet.NAME);
         int response = 0;
 
-        HttpURLConnection urlCon = (HttpURLConnection)url.openConnection();
+        HttpURLConnection urlCon = HttpURLConnection.openConnection(url);
 
         setupConnTimeout(urlCon, type, 2000);
 
@@ -241,7 +241,7 @@ public class TestTimeout extends TestWebappBase
         // Remove the timeout
         com.oaklandsw.http.HttpURLConnection.setDefaultTimeout(0);
 
-        urlCon = (HttpURLConnection)url.openConnection();
+        urlCon = HttpURLConnection.openConnection(url);
         urlCon.setRequestMethod("GET");
         urlCon.setRequestProperty("timeout", "5000");
 
@@ -287,7 +287,7 @@ public class TestTimeout extends TestWebappBase
         URL url = new URL(_urlBase + TimeoutServlet.NAME);
         int response = 0;
 
-        HttpURLConnection urlCon = (HttpURLConnection)url.openConnection();
+        HttpURLConnection urlCon = HttpURLConnection.openConnection(url);
 
         setupConnTimeout(urlCon, type, 5000);
 
@@ -340,7 +340,7 @@ public class TestTimeout extends TestWebappBase
         for (int i = 0; i < com.oaklandsw.http.HttpURLConnection
                 .getMaxConnectionsPerHost() + 5; i++)
         {
-            HttpURLConnection urlCon = (HttpURLConnection)url.openConnection();
+            HttpURLConnection urlCon = HttpURLConnection.openConnection(url);
 
             setupConnTimeout(urlCon, type, 5000);
 
@@ -404,7 +404,7 @@ public class TestTimeout extends TestWebappBase
         for (i = 0; i < com.oaklandsw.http.HttpURLConnection
                 .getMaxConnectionsPerHost() + 5; i++)
         {
-            HttpURLConnection urlCon = (HttpURLConnection)url.openConnection();
+            HttpURLConnection urlCon = HttpURLConnection.openConnection(url);
 
             setupConnTimeout(urlCon, type, 2000);
 

@@ -67,13 +67,13 @@ public class TestWebDavMethods extends HttpTestBase
 
         // Make sure we delete it the first time in case for some reason it's
         // there, don't care about the result
-        urlCon = (HttpURLConnection)collectionUrl.openConnection();
+        urlCon = HttpURLConnection.openConnection(collectionUrl);
         urlCon.setRequestMethod("DELETE");
         urlCon.connect();
         response = urlCon.getResponseCode();
 
         // Create the collection
-        urlCon = (HttpURLConnection)collectionUrl.openConnection();
+        urlCon = HttpURLConnection.openConnection(collectionUrl);
         urlCon.setRequestMethod("MKCOL");
         urlCon.connect();
         response = urlCon.getResponseCode();
@@ -84,7 +84,7 @@ public class TestWebDavMethods extends HttpTestBase
         assertTrue((data.indexOf("created") > 0));
 
         // Create a resource
-        urlCon = (HttpURLConnection)resourceUrl.openConnection();
+        urlCon = HttpURLConnection.openConnection(resourceUrl);
         urlCon.setRequestMethod("PUT");
         urlCon.setDoOutput(true);
         outStr = urlCon.getOutputStream();
@@ -99,7 +99,7 @@ public class TestWebDavMethods extends HttpTestBase
         assertTrue((data.indexOf("created") > 0));
 
         // Set a property
-        urlCon = (HttpURLConnection)resourceUrl.openConnection();
+        urlCon = HttpURLConnection.openConnection(resourceUrl);
         urlCon.setRequestMethod("PROPPATCH");
         urlCon.setDoOutput(true);
         outStr = urlCon.getOutputStream();
@@ -123,7 +123,7 @@ public class TestWebDavMethods extends HttpTestBase
         assertTrue((data.indexOf("200 OK") >= 0));
 
         // Get a property
-        urlCon = (HttpURLConnection)resourceUrl.openConnection();
+        urlCon = HttpURLConnection.openConnection(resourceUrl);
         urlCon.setRequestMethod("PROPFIND");
         urlCon.setDoOutput(true);
         outStr = urlCon.getOutputStream();
@@ -143,7 +143,7 @@ public class TestWebDavMethods extends HttpTestBase
         assertTrue((data.indexOf("Jim Whitehead") >= 0));
 
         // Move the resource
-        urlCon = (HttpURLConnection)resourceUrl.openConnection();
+        urlCon = HttpURLConnection.openConnection(resourceUrl);
         urlCon.setRequestMethod("MOVE");
         urlCon.setRequestProperty("Destination", movedUrl.toString());
         response = urlCon.getResponseCode();
@@ -153,7 +153,7 @@ public class TestWebDavMethods extends HttpTestBase
         assertTrue("No data returned.", (data.length() > 0));
 
         // Lock the moved resource
-        urlCon = (HttpURLConnection)movedUrl.openConnection();
+        urlCon = HttpURLConnection.openConnection(movedUrl);
         urlCon.setRequestMethod("LOCK");
         urlCon.setRequestProperty("Depth", "0");
         msg = "<?xml version='1.0' ?>"
@@ -173,7 +173,7 @@ public class TestWebDavMethods extends HttpTestBase
         assertTrue("No data returned.", (data.length() > 0));
 
         // Get the moved resource
-        urlCon = (HttpURLConnection)movedUrl.openConnection();
+        urlCon = HttpURLConnection.openConnection(movedUrl);
         urlCon.setRequestMethod("GET");
         response = urlCon.getResponseCode();
         assertEquals(200, response);
@@ -183,7 +183,7 @@ public class TestWebDavMethods extends HttpTestBase
         assertTrue((data.indexOf(resourceContent) >= 0));
 
         // Unlock the moved resource
-        urlCon = (HttpURLConnection)movedUrl.openConnection();
+        urlCon = HttpURLConnection.openConnection(movedUrl);
         urlCon.setRequestMethod("UNLOCK");
         urlCon.setRequestProperty("Lock-Token", lockToken);
         response = urlCon.getResponseCode();
@@ -193,7 +193,7 @@ public class TestWebDavMethods extends HttpTestBase
         assertTrue("Data returned.", (data.length() == 0));
 
         // Get the original resource - should not be found
-        urlCon = (HttpURLConnection)resourceUrl.openConnection();
+        urlCon = HttpURLConnection.openConnection(resourceUrl);
         urlCon.setRequestMethod("GET");
         urlCon.setRequestProperty("Cache-Control", "no-cache");
         response = urlCon.getResponseCode();
@@ -203,7 +203,7 @@ public class TestWebDavMethods extends HttpTestBase
         assertTrue("No data returned.", (data.length() > 0));
 
         // Copy back to original
-        urlCon = (HttpURLConnection)movedUrl.openConnection();
+        urlCon = HttpURLConnection.openConnection(movedUrl);
         urlCon.setRequestMethod("COPY");
         urlCon.setRequestProperty("Destination", resourceUrl.toString());
         response = urlCon.getResponseCode();
@@ -213,7 +213,7 @@ public class TestWebDavMethods extends HttpTestBase
         assertTrue("No data returned.", (data.length() > 0));
 
         // Get the original resource - should be there
-        urlCon = (HttpURLConnection)resourceUrl.openConnection();
+        urlCon = HttpURLConnection.openConnection(resourceUrl);
         urlCon.setRequestMethod("GET");
         response = urlCon.getResponseCode();
         assertEquals(200, response);
@@ -223,7 +223,7 @@ public class TestWebDavMethods extends HttpTestBase
         assertTrue((data.indexOf(resourceContent) >= 0));
 
         // Delete the collection
-        urlCon = (HttpURLConnection)collectionUrl.openConnection();
+        urlCon = HttpURLConnection.openConnection(collectionUrl);
         urlCon.setRequestMethod("DELETE");
         urlCon.connect();
         response = urlCon.getResponseCode();
@@ -240,7 +240,7 @@ public class TestWebDavMethods extends HttpTestBase
         URL url = new URL("http://" + _host + ":" + _port + "/svn/main");
         int response = 0;
 
-        HttpURLConnection urlCon = (HttpURLConnection)url.openConnection();
+        HttpURLConnection urlCon = HttpURLConnection.openConnection(url);
         urlCon.setRequestMethod("PROPFIND");
         urlCon.setRequestProperty("Depth", "1");
 

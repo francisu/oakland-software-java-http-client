@@ -95,14 +95,18 @@ public class HttpConnectionManager
 
     public static final int       COUNT_ATTEMPTED             = 0;
     public static final int       COUNT_SUCCESS               = 1;
-    public static final int       COUNT_TOTAL_RETRY           = 2;
-    public static final int       COUNT_TOTAL_PIPELINE_RETRY  = 3;
-    public static final int       COUNT_FAIL_MAX_RETRY        = 4;
-    public static final int       COUNT_FAIL_GE_400           = 5;
-    public static final int       COUNT_PIPELINE_DEPTH_HIGH   = 6;
-    public static final int       COUNT_FLUSHES               = 7;
-    public static final int       COUNT_AVOIDED_FLUSHES       = 8;
-    public static final int       COUNT_FLUSH_IO_ERRORS       = 9;
+    public static final int       COUNT_PIPELINE_WRITE_REQ    = 2;
+    public static final int       COUNT_PIPELINE_READ_RESP    = 3;
+    public static final int       COUNT_PIPELINE_ERROR        = 4;
+    public static final int       COUNT_TOTAL_RETRY           = 5;
+    public static final int       COUNT_TOTAL_PIPELINE_RETRY  = 6;
+    public static final int       COUNT_FAIL_MAX_RETRY        = 7;
+    public static final int       COUNT_FAIL_GE_400           = 8;
+    public static final int       COUNT_PIPELINE_DEPTH_HIGH   = 9;
+    public static final int       COUNT_FORCED_FLUSHES        = 10;
+    public static final int       COUNT_BUFFER_FLUSHES        = 11;
+    public static final int       COUNT_AVOIDED_FLUSHES       = 12;
+    public static final int       COUNT_FLUSH_IO_ERRORS       = 13;
 
     public static final int       COUNT_LAST                  = COUNT_FLUSH_IO_ERRORS;
 
@@ -110,23 +114,27 @@ public class HttpConnectionManager
     String[]                      _requestCountNames          = new String[] { //
                                                               "UrlCons Attempted:              " //
         , "UrlCons Success:                " //
+        , "Pipeline write request:         " //
+        , "Pipeline read response:         " //
+        , "Pipeline error:                 " //
         , "Total retries:                  " //
         , "Total pipelined retries:        " //
         , "UrlCons Failed Max Retries:     " //
         , "UrlCons Failed > 400:           " //
         , "Pipeline max depth (all conns): " //
-        , "Flushes:                        " //
+        , "Forced Flushes:                 " //
+        , "Buffer Flushes:                 " //
         , "Avoided Flushes:                " //
         , "Flush IOExceptions:             " //
                                                               };
 
     // Diagnostic interface only
-    public interface CheckResults
-    {
-        public boolean checkCounts();
-    }
+    // public interface CheckResults
+    // {
+    // public boolean checkCounts();
+    // }
 
-    public CheckResults _checkResults;
+    // public CheckResults _checkResults;
 
     public HttpConnectionManager(GlobalState globalState)
     {
@@ -430,8 +438,6 @@ public class HttpConnectionManager
 
     void urlConWasRead(Thread thread)
     {
-        boolean dumpAll = false;
-        int dumpCount = 0;
         synchronized (_pipelineLock)
         {
             AtomicInteger ai = (AtomicInteger)_threadUrlConCountMap.get(thread);
@@ -441,35 +447,19 @@ public class HttpConnectionManager
             int count = ai.decrementAndGet();
             if (_log.isDebugEnabled())
                 _log.debug("urlConWasRead - count (after) " + count);
-            // Can have a count of < 0 during a reset
 
-            // Diagnostic only
-            if (false && count < 10)
-            {
-                dumpAll = true;
-                dumpCount = count;
-            }
-
+            // count < 0 can happen during an immediateShutdown
+            
             if (count <= 0)
             {
                 _pipelineLock.notifyAll();
                 _threadUrlConCountMap.remove(thread);
             }
         }
-
-        // Diagnostic only
-        if (dumpAll)
-        {
-            System.out.println("Dumping all because the end is near: "
-                + dumpCount);
-            HttpURLConnection.dumpAll();
-            if (_checkResults != null)
-                _checkResults.checkCounts();
-        }
     }
 
     // Used during shutdown to wake everyone waiting because everything
-    // has been cancelled
+    // has been canceled
     void wakeAllBlockers()
     {
         synchronized (_pipelineLock)
@@ -793,8 +783,7 @@ public class HttpConnectionManager
                         + "info for: "
                         + connectionKey);
                 }
-                ci = new ConnectionInfo(this,
-                                        connectionKey);
+                ci = new ConnectionInfo(this, connectionKey);
                 _hostMap.put(connectionKey, ci);
             }
             return ci;
@@ -924,7 +913,7 @@ public class HttpConnectionManager
      * Returns the number of connections currently in use for the specified
      * host/port.
      */
-    int getActiveConnectionCount(String url)
+    public int getActiveConnectionCount(String url)
     {
         synchronized (this)
         {
@@ -967,7 +956,7 @@ public class HttpConnectionManager
         {
             _log.error("_threadUrlConCountMap not empty: "
                 + _threadConnectionMap.size());
-            System.out.println(_threadUrlConCountMap);
+            _log.error(_threadUrlConCountMap);
             return false;
         }
         return true;
@@ -1129,8 +1118,10 @@ public class HttpConnectionManager
         }
     }
 
-    void dumpConnectionPool()
+    String getConnectionPool()
     {
+        StringBuffer sb = new StringBuffer();
+
         synchronized (this)
         {
             _connLog.trace("dumpConnectionPool");
@@ -1141,10 +1132,11 @@ public class HttpConnectionManager
             {
                 ConnectionInfo ci = (ConnectionInfo)it.next();
                 String s = ci.dump(0);
-                System.out.println(s);
+                sb.append(s);
                 _connLog.debug(s);
             }
         }
+        return sb.toString();
     }
 
     // Statistics

@@ -194,7 +194,8 @@ abstract class SmbComTransaction extends ServerMessageBlock implements Enumerati
         }
         writeInt2( parameterCount, dst, dstIndex );
         dstIndex += 2;
-        writeInt2(( parameterCount == 0 ? 0 : parameterOffset ), dst, dstIndex );
+//        writeInt2(( parameterCount == 0 ? 0 : parameterOffset ), dst, dstIndex );
+        writeInt2(parameterOffset, dst, dstIndex );
         dstIndex += 2;
         if( command == SMB_COM_TRANSACTION_SECONDARY ) {
             writeInt2( parameterDisplacement, dst, dstIndex );

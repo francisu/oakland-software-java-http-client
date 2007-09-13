@@ -120,8 +120,10 @@ abstract class AndXServerMessageBlock extends ServerMessageBlock {
 
             dst[start + ANDX_COMMAND_OFFSET] = (byte)0xFF;
             dst[start + ANDX_RESERVED_OFFSET] = (byte)0x00;
-            dst[start + ANDX_OFFSET_OFFSET] = (byte)0x00;
-            dst[start + ANDX_OFFSET_OFFSET + 1] = (byte)0x00;
+//            dst[start + ANDX_OFFSET_OFFSET] = (byte)0x00;
+//            dst[start + ANDX_OFFSET_OFFSET + 1] = (byte)0x00;
+            dst[start + ANDX_OFFSET_OFFSET] = (byte)0xde;
+            dst[start + ANDX_OFFSET_OFFSET + 1] = (byte)0xde;
 
             // andx not used; return
             return dstIndex - start;
@@ -183,6 +185,8 @@ abstract class AndXServerMessageBlock extends ServerMessageBlock {
         int start = bufferIndex;
 
         wordCount = buffer[bufferIndex++];
+if (command == SMB_COM_NT_CREATE_ANDX)
+    wordCount = 42;
 
         if( wordCount != 0 ) {
             /*
@@ -204,6 +208,12 @@ abstract class AndXServerMessageBlock extends ServerMessageBlock {
  
             if( wordCount > 2 ) {
                 bufferIndex += readParameterWordsWireFormat( buffer, bufferIndex );
+/* required for signing verification
+ */
+if (command == SMB_COM_NT_CREATE_ANDX) {
+    if (((SmbComNTCreateAndXResponse)this).isExtended)
+        bufferIndex += 32;
+}
             }
         }
 

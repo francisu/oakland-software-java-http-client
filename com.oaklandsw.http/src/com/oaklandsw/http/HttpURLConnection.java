@@ -6,7 +6,6 @@
 //
 package com.oaklandsw.http;
 
-import java.io.BufferedOutputStream;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -14,6 +13,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.InterruptedIOException;
 import java.io.OutputStream;
+import java.io.PrintWriter;
 import java.io.Reader;
 import java.lang.reflect.Method;
 import java.net.MalformedURLException;
@@ -443,7 +443,7 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
 
     // The streams associated with the connection we are bound to
     protected ExposedBufferInputStream _conInStream;
-    protected BufferedOutputStream     _conOutStream;
+    protected OutputStream             _conOutStream;
 
     // The connection should be released when finished. This is
     // not the case for a CONNECT request
@@ -658,10 +658,8 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
     protected static byte[]            USER_AGENT;
 
     // This userAgent string is necessary for NTLM/IIS
-    public static String               DEFAULT_USER_AGENT                   = "oaklandsoftware-HttpClient/"
-                                                                                + Version.VERSION
-                                                                                + " Mozilla/4.0 (compatible; "
-                                                                                + "MSIE 6.0; Windows NT 5.0)";
+    public static String               DEFAULT_USER_AGENT                   = "OaklandSoftware/"
+                                                                                + Version.VERSION;
 
     static byte[]                      DEFAULT_USER_AGENT_BYTES             = DEFAULT_USER_AGENT
                                                                                     .getBytes();
@@ -2675,7 +2673,7 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
 
     /**
      * Set the option to include the HTTP 1.0 Keep-Alive headers in HTTP
-     * requests. The default is that they are included.
+     * requests. The default is that they are not included.
      * 
      * @param use
      *            true if HTTP 1.0 Keep-Alive headers are included
@@ -2772,7 +2770,7 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
     }
 
     /**
-     * Get the number of of forwards and authentication retries allowed
+     * Get the number of forwards and authentication retries allowed.
      * 
      * @return The number of times to redirect or retry authentication.
      */
@@ -3648,11 +3646,34 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
     }
 
     /**
+     * Resets the statistics counters.
+     */
+    public static void resetStatistics()
+    {
+        checkConnectionManager().resetStatistics();
+    }
+
+    public static String dumpAll()
+    {
+        StringBuffer sb = new StringBuffer();
+        
+        sb.append(getStaticConfiguration());
+        sb.append(getStatistics());
+        sb.append(getConnectionPool());
+        return sb.toString();
+    }
+
+    public static void dumpAll(PrintWriter out)
+    {
+        out.println(dumpAll());
+    }
+
+    /**
      * Prints all pooled connections to System.out.
      */
-    public static void dumpConnectionPool()
+    public static String getConnectionPool()
     {
-        checkConnectionManager().dumpConnectionPool();
+        return checkConnectionManager().getConnectionPool();
     }
 
     /**
@@ -3661,21 +3682,6 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
     public static String getStatistics()
     {
         return checkConnectionManager().getStatistics();
-    }
-
-    /**
-     * Resets the statistics counters.
-     */
-    public static void resetStatistics()
-    {
-        checkConnectionManager().resetStatistics();
-    }
-
-    public static void dumpAll()
-    {
-        System.out.println(getStaticConfiguration());
-        System.out.println(getStatistics());
-        dumpConnectionPool();
     }
 
     public static String getStaticConfiguration()
@@ -3886,7 +3892,7 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
         return propVal.intValue();
     }
 
-    String getUrlString()
+    public String getUrlString()
     {
         return _urlString;
     }

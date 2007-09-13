@@ -135,7 +135,7 @@ public class SmbException extends IOException implements NtStatus, DosError, Win
         this.rootCause = rootCause;
         status = NT_STATUS_UNSUCCESSFUL;
     }
-    SmbException( int errcode, boolean winerr ) {
+    public SmbException( int errcode, boolean winerr ) {
         super( winerr ? getMessageByWinerrCode( errcode ) : getMessageByCode( errcode ));
         status = winerr ? errcode : getStatusByCode( errcode );
     }

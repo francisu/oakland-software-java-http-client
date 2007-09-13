@@ -24,44 +24,6 @@ import jcifs.util.Hexdump;
 
 class NetShareEnumResponse extends SmbComTransactionResponse {
 
-    class ShareInfo1 implements FileEntry {
-        String netName;
-        int type;
-        String remark;
-
-        public String getName() {
-            return netName;
-        }
-        public int getType() {
-            switch( type ) {
-                case 1:
-                    return SmbFile.TYPE_PRINTER;
-                case 3:
-                    return SmbFile.TYPE_NAMED_PIPE;
-            }
-            return SmbFile.TYPE_SHARE;
-        }
-        public int getAttributes() {
-            return SmbFile.ATTR_READONLY | SmbFile.ATTR_DIRECTORY;
-        }
-        public long createTime() {
-            return 0L;
-        }
-        public long lastModified() {
-            return 0L;
-        }
-        public long length() {
-            return 0L;
-        }
-
-        public String toString() {
-            return new String( "ShareInfo1[" +
-                    "netName=" + netName +
-                    ",type=0x" + Hexdump.toHexString( type, 4 ) +
-                    ",remark=" + remark + "]" );
-        }
-    }
-
     private int converter, totalAvailableEntries;
 
     NetShareEnumResponse() {
@@ -95,13 +57,13 @@ class NetShareEnumResponse extends SmbComTransactionResponse {
     }
     int readDataWireFormat( byte[] buffer, int bufferIndex, int len ) {
         int start = bufferIndex;
-        ShareInfo1 e;
+        SmbShareInfo e;
 
         useUnicode = false;
 
-        results = new ShareInfo1[numEntries];
+        results = new SmbShareInfo[numEntries];
         for( int i = 0; i < numEntries; i++ ) {
-            results[i] = e = new ShareInfo1();
+            results[i] = e = new SmbShareInfo();
             e.netName = readString( buffer, bufferIndex, 13, false );
             bufferIndex += 14;
             e.type = readInt2( buffer, bufferIndex );

@@ -83,7 +83,7 @@ public class TestMethods extends TestWebappBase
         URL url = new URL(bigHttp + RequestBodyServlet.NAME);
         int response = 0;
 
-        HttpURLConnection urlCon = (HttpURLConnection)url.openConnection();
+        HttpURLConnection urlCon = HttpURLConnection.openConnection(url);
         urlCon.setRequestMethod("GET");
         response = urlCon.getResponseCode();
         assertEquals(200, response);
@@ -103,7 +103,7 @@ public class TestMethods extends TestWebappBase
                                   + RequestBodyServlet.NAME);
             int response = 0;
 
-            HttpURLConnection urlCon = (HttpURLConnection)url.openConnection();
+            HttpURLConnection urlCon = HttpURLConnection.openConnection(url);
             urlCon.setRequestMethod("GET");
             response = urlCon.getResponseCode();
             assertEquals(200, response);
@@ -130,7 +130,7 @@ public class TestMethods extends TestWebappBase
         for (int i = 0; i < com.oaklandsw.http.HttpURLConnection
                 .getMaxConnectionsPerHost() + 5; i++)
         {
-            HttpURLConnection urlCon = (HttpURLConnection)url.openConnection();
+            HttpURLConnection urlCon = HttpURLConnection.openConnection(url);
             urlCon.setRequestMethod("HEAD");
             assertEquals(200, urlCon.getResponseCode());
         }
@@ -141,7 +141,7 @@ public class TestMethods extends TestWebappBase
     {
         URL url = new URL(_urlBase + RequestBodyServlet.NAME);
 
-        HttpURLConnection urlCon = (HttpURLConnection)url.openConnection();
+        HttpURLConnection urlCon = HttpURLConnection.openConnection(url);
 
         urlCon.getHeaderField(1);
 

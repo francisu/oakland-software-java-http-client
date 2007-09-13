@@ -187,6 +187,15 @@ write, and/or delete the file while the jCIFS user has the file open.
         write( b, 0, b.length );
     }
 
+    void ensureOpen() throws IOException {
+        // ensure file is open
+        if( file.isOpen() == false ) {
+            file.open( openFlags, access | SmbConstants.FILE_WRITE_DATA, SmbFile.ATTR_NORMAL, 0 );
+            if( append ) {
+                fp = file.length();
+            }
+        }
+    }
 /**
  * Writes len bytes from the specified byte array starting at
  * offset off to this file output stream.
@@ -196,6 +205,16 @@ write, and/or delete the file while the jCIFS user has the file open.
  */
 
     public void write( byte[] b, int off, int len ) throws IOException {
+        if( file.isOpen() == false && file instanceof SmbNamedPipe ) {
+            file.send( new TransWaitNamedPipe( "\\pipe" + file.unc ),
+                                    new TransWaitNamedPipeResponse() );
+        }
+        writeDirect( b, off, len, 0 );
+    }
+/**
+ * Just bypasses TransWaitNamedPipe - used by DCERPC bind.
+ */
+    public void writeDirect( byte[] b, int off, int len, int flags ) throws IOException {
         if( len <= 0 ) {
             return;
         }
@@ -203,17 +222,7 @@ write, and/or delete the file while the jCIFS user has the file open.
         if( tmp == null ) {
             throw new IOException( "Bad file descriptor" );
         }
-        // ensure file is open
-        if( file.isOpen() == false ) {
-            if( file instanceof SmbNamedPipe ) {
-                file.send( new TransWaitNamedPipe( "\\pipe" + file.unc ),
-                                        new TransWaitNamedPipeResponse() );
-            }
-            file.open( openFlags, access | SmbConstants.FILE_WRITE_DATA, SmbFile.ATTR_NORMAL, 0 );
-            if( append ) {
-                fp = file.length();
-            }
-        }
+        ensureOpen();
 
         if( file.log.level >= 4 )
             file.log.println( "write: fid=" + file.fid + ",off=" + off + ",len=" + len );
@@ -223,6 +232,12 @@ write, and/or delete the file while the jCIFS user has the file open.
             w = len > writeSize ? writeSize : len;
             if( useNTSmbs ) {
                 reqx.setParam( file.fid, fp, len - w, b, off, w );
+if ((flags & 1) != 0) {
+    reqx.setParam( file.fid, fp, len, b, off, w );
+    reqx.writeMode = 0x8;
+} else {
+    reqx.writeMode = 0;
+}
                 file.send( reqx, rspx );
                 fp += rspx.count;
                 len -= rspx.count;

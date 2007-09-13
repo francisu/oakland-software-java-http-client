@@ -74,7 +74,7 @@ public class GlobalState
 
     int                            _defaultConnectionRequestLimit   = DEFAULT_CONNECTION_REQUEST_LIMIT;
 
-    protected static final boolean DEFAULT_USE_10_KEEPALIVE         = true;
+    protected static final boolean DEFAULT_USE_10_KEEPALIVE         = false;
     boolean                        _use10KeepAlive                  = DEFAULT_USE_10_KEEPALIVE;
 
     int                            _ntlmPreferredEncoding           = HttpURLConnection.NTLM_ENCODING_UNICODE;

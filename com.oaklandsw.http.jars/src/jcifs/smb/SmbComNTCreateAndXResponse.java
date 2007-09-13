@@ -40,6 +40,7 @@ class SmbComNTCreateAndXResponse extends AndXServerMessageBlock {
         allocationSize,
         endOfFile;
     boolean directory;
+boolean isExtended;
 
     SmbComNTCreateAndXResponse() {
     }

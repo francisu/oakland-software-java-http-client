@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.httpclient.Credentials;
+import org.apache.commons.httpclient.DefaultHttpMethodRetryHandler;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpConnectionManager;
 import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
@@ -15,6 +16,7 @@ import org.apache.commons.httpclient.SimpleHttpConnectionManager;
 import org.apache.commons.httpclient.auth.AuthScope;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.params.HttpConnectionManagerParams;
+import org.apache.commons.httpclient.params.HttpMethodParams;
 import org.apache.commons.logging.Log;
 
 import com.oaklandsw.http.AutomaticHttpRetryException;
@@ -32,7 +34,9 @@ public class TestPerf
     static final Log      _log             = LogUtils
                                                    .makeLogger("com.oaklandsw.http.TestPerf");
 
-    byte[]                _buffer          = new byte[16384];
+    byte[]                _buffer;
+
+    static final int      RETRY_COUNT      = 20;
 
     int                   _timesPerThread;
     int                   _totalTimes;
@@ -41,7 +45,22 @@ public class TestPerf
     int                   _repeatTestTimes = 1;
     int                   _repeatIndex     = 0;
 
-    int                   _actualTimes;
+    int                   _expectedSize    = -1;
+
+    static final int      REQ_NO_QUERY     = 0;
+    static final int      REQ_DELAY        = 1;
+    static final int      REQ_ID           = 2;
+
+    int                   _requestType;
+
+    String                _startTime;
+
+    // Per thread - to synchronize _actualTimes between the blocking
+    // thread and the writing thread
+    Thread                _threadObjects[];
+    int                   _actualTimes[];
+
+    int                   _totalActualTimes;
 
     int                   _failed;
 
@@ -71,6 +90,11 @@ public class TestPerf
     int                   _reqsPerConn;
 
     int                   _actualPipeMaxDepth;
+    int                   _actualForcedFlushes;
+    int                   _actualBufferFlushes;
+    int                   _actualAvoidFlushes;
+    int                   _actualRetries;
+    int                   _actualPipelineRetries;
 
     // Append these in order to each url
     int                   _suffixIndex;
@@ -78,12 +102,7 @@ public class TestPerf
 
     boolean               _ipv4            = true;
 
-    static final String[] _suffixes        = new String[] { "a", "b", "c", "d",
-        "e", "f", "g", "h", "i"           };
-
     boolean               _doLog;
-
-    boolean               _useSuffixes;
 
     long                  _totalTime;
     float                 _transTime;
@@ -100,6 +119,13 @@ public class TestPerf
 
     public class PipelineCallback implements Callback
     {
+        int _threadNum;
+
+        public PipelineCallback(int threadNum)
+        {
+            _threadNum = threadNum;
+        }
+
         public int _responses;
 
         public void writeRequest(com.oaklandsw.http.HttpURLConnection urlCon,
@@ -115,7 +141,7 @@ public class TestPerf
             {
                 processStream(urlCon.getInputStream());
 
-                incrementActualtimes();
+                incrementActualtimes(_threadNum);
             }
             catch (AutomaticHttpRetryException arex)
             {
@@ -173,10 +199,6 @@ public class TestPerf
             else if (args[i].equalsIgnoreCase("-threads"))
             {
                 _threads = Integer.parseInt(args[++i]);
-            }
-            else if (args[i].equalsIgnoreCase("-suff"))
-            {
-                _useSuffixes = true;
             }
             else if (args[i].equalsIgnoreCase("-dump"))
             {
@@ -262,10 +284,25 @@ public class TestPerf
         // Thread.sleep(1000000);
     }
 
+    public void log(String str)
+    {
+        _log.info(str);
+        System.out.println(str);
+    }
+
     public void run() throws Exception
     {
+        // LogUtils.logFile("/home/francis/log4jperf1.txt");
 
-        // LogUtils.logFile("/home/francis/log4jperf.txt");
+        if (_expectedSize >= 0)
+        {
+            _buffer = new byte[_expectedSize];
+        }
+        else
+        {
+            // 1MB
+            _buffer = new byte[(int)Math.pow(2, 20)];
+        }
 
         for (int i = 0; i < _repeatTestTimes; i++)
         {
@@ -312,11 +349,14 @@ public class TestPerf
             case IMP_OAKLAND:
             case IMP_OAKLAND_PIPE:
 
-                // Make sure we don't get stuck for a long time if a connection
+                // Make sure we don't get stuck for a long time if something
                 // hangs
                 com.oaklandsw.http.HttpURLConnection
-                        .setDefaultRequestTimeout(10000);
-                com.oaklandsw.http.HttpURLConnection.setDefaultMaxTries(10);
+                        .setDefaultRequestTimeout(5000);
+                com.oaklandsw.http.HttpURLConnection
+                        .setDefaultConnectionTimeout(5000);
+                com.oaklandsw.http.HttpURLConnection
+                        .setDefaultMaxTries(RETRY_COUNT);
 
                 if (_maxConn > 0)
                 {
@@ -373,9 +413,13 @@ public class TestPerf
 
                 if (_useAuth)
                 {
-                    Ntlm._authMessageLmResponse = Ntlm.V1;
-                    Ntlm._authMessageNtResponse = Ntlm.NONE;
-                    Ntlm._authMessageFlags = 0x5206;
+                    if (false)
+                    {
+                        // Jakarta config
+                        Ntlm._authMessageLmResponse = Ntlm.V1;
+                        Ntlm._authMessageNtResponse = Ntlm.NONE;
+                        Ntlm._authMessageFlags = 0x5206;
+                    }
                     SampleUserAgent ua = new SampleUserAgent();
                     ua._normalCredential = new NtlmCredential();
                     ua._normalCredential.setUser(_user);
@@ -407,7 +451,15 @@ public class TestPerf
                 HttpConnectionManagerParams params = new HttpConnectionManagerParams();
                 if (_maxConn > 0)
                     params.setDefaultMaxConnectionsPerHost(_maxConn);
+                // This makes it go faster, but does not match Oakland
+                // implementation
                 params.setStaleCheckingEnabled(false);
+                // Set retry count, and turn on retrying a method that has
+                // successfully been sent to match the Oakland implementation
+                params
+                        .setParameter(HttpMethodParams.RETRY_HANDLER,
+                                      new DefaultHttpMethodRetryHandler(RETRY_COUNT,
+                                                                        true));
                 if (_threads == 1)
                     _jakartaConnMgr = new SimpleHttpConnectionManager();
                 else
@@ -430,83 +482,107 @@ public class TestPerf
 
         if (!_quiet)
         {
-            System.out.println("Using: "
-                + _impNames[_implementation]
-                + " implementation");
-            System.out.println("URL: " + _urlString);
-            System.out.println("Times/thread: " + _timesPerThread);
-            System.out.println("Threads: " + _threads);
+            log("Start Time: " + _startTime);
+            log("Using: " + _impNames[_implementation] + " implementation");
+            log("URL: " + _urlString);
+            log("Times/thread: " + _timesPerThread);
+            log("Threads: " + _threads);
+            if (_implementation == IMP_OAKLAND_PIPE)
+                log("Pipelining");
             if (_maxConn > 0)
-                System.out.println("Using max: " + _maxConn + " connections.");
+                log("Using max: " + _maxConn + " connections.");
+            if (_pipeDepth > 0)
+                log("Using pipeline depth: " + _pipeDepth);
             if (_reqsPerConn > 0)
             {
-                System.out.println("Using max: "
-                    + _reqsPerConn
-                    + " requests/connection.");
+                log("Using max: " + _reqsPerConn + " requests/connection.");
             }
-            // System.out.println("http.maxConnections:
+            // log("http.maxConnections:
             // " +
             // System.getProperty("http.maxConnections"));
         }
+
+        _actualTimes = null;
 
         // Do one to initialize everything but don't count that
         // in the timing
         if (_warmUp)
         {
-            runOneThread(1);
+            runOneThread(1, 0);
         }
 
         // Start clean
         System.gc();
 
-        System.out.println("Test starting");
-
-        _actualTimes = 0;
+        _totalActualTimes = 0;
 
         long startTime = System.currentTimeMillis();
-        _log.debug("START time: " + startTime);
+        // log("START time: " + startTime);
 
         runAllThreads();
 
         long endTime = System.currentTimeMillis();
         _totalTime = endTime - startTime;
-        _log.debug("END/Total time: " + endTime + "/" + _totalTime);
+        // log("END/Total time: " + endTime + "/" + _totalTime);
 
-        if (_actualTimes != _timesPerThread * _threads)
+        for (int i = 0; i < _actualTimes.length; i++)
         {
-            System.out.println("!!!Expected "
+            synchronized (_threadObjects[i])
+            {
+                _totalActualTimes += _actualTimes[i];
+            }
+        }
+
+        if (_totalActualTimes != _timesPerThread * _threads)
+        {
+            log("!!!Expected "
                 + (_timesPerThread * _threads)
                 + " got: "
-                + _actualTimes);
+                + _totalActualTimes);
             // Make it a high number since the test results are invalid
             _transTime = 999999;
         }
         else
         {
-            _transTime = (float)_totalTime / (float)_actualTimes;
+            _transTime = (float)_totalTime / (float)_totalActualTimes;
         }
 
         _actualPipeMaxDepth = com.oaklandsw.http.HttpURLConnection
                 .getConnectionManager()
                 .getCount(com.oaklandsw.http.HttpConnectionManager.COUNT_PIPELINE_DEPTH_HIGH);
+        _actualForcedFlushes = com.oaklandsw.http.HttpURLConnection
+                .getConnectionManager()
+                .getCount(com.oaklandsw.http.HttpConnectionManager.COUNT_FORCED_FLUSHES);
+        _actualBufferFlushes = com.oaklandsw.http.HttpURLConnection
+                .getConnectionManager()
+                .getCount(com.oaklandsw.http.HttpConnectionManager.COUNT_BUFFER_FLUSHES);
+        _actualAvoidFlushes = com.oaklandsw.http.HttpURLConnection
+                .getConnectionManager()
+                .getCount(com.oaklandsw.http.HttpConnectionManager.COUNT_AVOIDED_FLUSHES);
+        _actualPipelineRetries = com.oaklandsw.http.HttpURLConnection
+                .getConnectionManager()
+                .getCount(com.oaklandsw.http.HttpConnectionManager.COUNT_TOTAL_PIPELINE_RETRY);
+        _actualRetries = com.oaklandsw.http.HttpURLConnection
+                .getConnectionManager()
+                .getCount(com.oaklandsw.http.HttpConnectionManager.COUNT_TOTAL_RETRY);
 
         if (!_quiet)
         {
             if (_implementation == IMP_OAKLAND
                 || _implementation == IMP_OAKLAND_PIPE)
             {
-                System.out.println("connection pool before close");
-                com.oaklandsw.http.HttpURLConnection.dumpAll();
+                log("connection pool before close");
+                log(com.oaklandsw.http.HttpURLConnection.dumpAll());
                 if (_doClose)
                 {
                     com.oaklandsw.http.HttpURLConnection
                             .closeAllPooledConnections();
-                    System.out.println("connection pool after close");
-                    com.oaklandsw.http.HttpURLConnection.dumpAll();
+                    log("connection pool after close");
+                    log(com.oaklandsw.http.HttpURLConnection.dumpAll());
                 }
             }
 
-            System.out.println("Total Time (ms): "
+            log("Total Time (ms): "
                 + _totalTime
                 + " Time/trans (ms): "
                 + _transTime);
@@ -534,8 +610,6 @@ public class TestPerf
         System.out.println("  -threads <num> - number of threads (def 1)");
         System.out.println("  -repeat <num> - run test num times (def 1)");
         System.out.println("  -nowarm - include the initialization in timing");
-        System.out
-                .println("  -suff - append a suffix to each URL in a round robin fashion");
         System.out.println("  -ip4 - prefer the IPv4 stack (default)");
         System.out.println("  -ip6 - prefer the IPv6 stack");
         System.out.println("  -close - explicitly close all connections");
@@ -545,7 +619,7 @@ public class TestPerf
                 .println("  -dump <num> - dump the statistics at this interval");
     }
 
-    void runOne(PipelineCallback cb, int times) throws Exception
+    void runOne(PipelineCallback cb, int times, int threadNum) throws Exception
     {
         for (int i = 0; i < times; i++)
         {
@@ -553,18 +627,31 @@ public class TestPerf
 
             String urlToUse = _urlString;
 
-            if (_useSuffixes)
+            URL url;
+
+            char queryStart = '?';
+            if (_urlString.indexOf("?") >= 0)
+                queryStart = '&';
+
+            switch (_requestType)
             {
-                synchronized (this)
-                {
-                    urlToUse += _suffixes[_suffixIndex++];
-                    if (_suffixIndex >= _suffixes.length)
-                        _suffixIndex = 0;
-                }
+                case REQ_NO_QUERY:
+                    urlToUse = _urlString;
+                    break;
+                case REQ_ID:
+                    urlToUse = _urlString
+                        + queryStart
+                        + "rep="
+                        + _repeatIndex
+                        + "&seq="
+                        + i;
+                    break;
+                case REQ_DELAY:
+                    urlToUse = _urlString + queryStart + "delay=5";
+                    break;
             }
 
-            URL url = new URL(urlToUse + "?rep=" + _repeatIndex + "&seq=" + i);
-            // URL url = new URL(urlToUse);
+            url = new URL(urlToUse);
 
             int responseCode = 0;
             switch (_implementation)
@@ -574,7 +661,7 @@ public class TestPerf
                             .openConnection(url);
                     responseCode = urlCon.getResponseCode();
                     processStream(urlCon.getInputStream());
-                    incrementActualtimes();
+                    incrementActualtimes(threadNum);
                     break;
 
                 case IMP_OAKLAND_PIPE:
@@ -590,11 +677,11 @@ public class TestPerf
                     urlCon = (HttpURLConnection)url.openConnection();
                     responseCode = urlCon.getResponseCode();
                     processStream(urlCon.getInputStream());
-                    incrementActualtimes();
+                    incrementActualtimes(threadNum);
                     break;
 
                 case IMP_JAKARTA:
-                    GetMethod method = new GetMethod(_urlString);
+                    GetMethod method = new GetMethod(urlToUse);
                     _jakartaClient.executeMethod(method);
                     responseCode = method.getStatusCode();
 
@@ -602,7 +689,7 @@ public class TestPerf
                     InputStream is = method.getResponseBodyAsStream();
                     processStream(is);
                     method.releaseConnection();
-                    incrementActualtimes();
+                    incrementActualtimes(threadNum);
                     break;
 
                 default:
@@ -619,22 +706,20 @@ public class TestPerf
     }
 
     // Runs a thread for the test
-    void runOneThread(int times)
+    void runOneThread(int times, int threadNum)
     {
         try
         {
             PipelineCallback cb = null;
             if (_implementation == IMP_OAKLAND_PIPE)
             {
-                cb = new PipelineCallback();
+                cb = new PipelineCallback(threadNum);
             }
 
-            runOne(cb, times);
+            runOne(cb, times, threadNum);
 
             if (_implementation == IMP_OAKLAND_PIPE)
-            {
                 com.oaklandsw.http.HttpURLConnection.pipelineBlock();
-            }
         }
         catch (Exception ex)
         {
@@ -644,18 +729,23 @@ public class TestPerf
         }
     }
 
-    void incrementActualtimes()
+    void incrementActualtimes(int threadNum)
     {
-        synchronized (this)
+        if (_actualTimes == null)
+            return;
+        synchronized (_threadObjects[threadNum])
         {
-            _actualTimes++;
-            if (_dumpAllInterval > 0 && (_actualTimes % _dumpAllInterval == 0))
+            _actualTimes[threadNum]++;
+            if (_dumpAllInterval > 0
+                && (_actualTimes[threadNum] % _dumpAllInterval == 0))
             {
                 System.out.println(_actualTimes
                     + " ---------------------------------------");
-                com.oaklandsw.http.HttpURLConnection.dumpAll();
+                System.out.println(com.oaklandsw.http.HttpURLConnection
+                        .dumpAll());
             }
         }
+
     }
 
     void runAllThreads() throws Exception
@@ -663,6 +753,9 @@ public class TestPerf
         Thread t;
 
         _failed = 0;
+
+        _actualTimes = new int[_threads];
+        _threadObjects = new Thread[_threads];
 
         List threads = new ArrayList();
         for (int i = 0; i < _threads; i++)
@@ -672,12 +765,15 @@ public class TestPerf
             {
                 public void run()
                 {
-                    Thread.currentThread().setName("TestMultiThread"
+                    Thread.currentThread().setName("TestPerf"
+                        + _repeatIndex
+                        + "_"
                         + threadNum);
-                    runOneThread(_timesPerThread);
+                    runOneThread(_timesPerThread, threadNum);
                 }
             };
 
+            _threadObjects[threadNum] = t;
             t.start();
             threads.add(t);
         }
@@ -693,12 +789,27 @@ public class TestPerf
 
     public void processStream(InputStream inputStream) throws IOException
     {
+        int totalBytes = 0;
         int nb = 0;
-        while (true)
+        if (_buffer.length > 0)
         {
-            nb = inputStream.read(_buffer);
-            if (nb == -1)
-                break;
+            // Since the buffer is exactly the size of the response, we provide
+            // the opportunity to read the entire thing with one read
+            while (true)
+            {
+                nb = inputStream.read(_buffer);
+                if (nb == -1)
+                    break;
+                totalBytes += nb;
+            }
+        }
+
+        if (_expectedSize != -1 && _expectedSize != totalBytes)
+        {
+            throw new RuntimeException("Expected: "
+                + _expectedSize
+                + " got: "
+                + totalBytes);
         }
         inputStream.close();
     }

@@ -1,6 +1,5 @@
 package com.oaklandsw.http.webapp;
 
-import java.net.HttpURLConnection;
 import java.net.URL;
 
 import org.apache.commons.logging.Log;
@@ -8,6 +7,7 @@ import org.apache.commons.logging.Log;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
+import com.oaklandsw.http.HttpURLConnection;
 import com.oaklandsw.http.servlet.HeaderServlet;
 import com.oaklandsw.util.LogUtils;
 
@@ -41,7 +41,7 @@ public class TestURLMultiConn extends TestWebappBase
         for (int i = 0; i < 50; i++)
         {
             System.out.println("Connect: " + i);
-            HttpURLConnection urlCon = (HttpURLConnection)url.openConnection();
+            HttpURLConnection urlCon = HttpURLConnection.openConnection(url);
             urlCon.connect();
             assertEquals(200, urlCon.getResponseCode());
             // urlCon.getInputStream().close();

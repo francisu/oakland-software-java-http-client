@@ -80,9 +80,9 @@ public class HttpTestEnv
     public static int          TEST_IIS_PORT                     = 80;
 
     // All of these are served through the same apache server
-    public static int          TEST_WEBDAV_PORT                  = 80;
-    public static int          TEST_WEBSERVER_PORT               = 80;
-    public static int          TEST_PROXY_PORT                   = 80;
+    public static int          TEST_WEBDAV_PORT                  = 8091;
+    public static int          TEST_WEBSERVER_PORT               = 8091;
+    public static int          TEST_PROXY_PORT                   = 8091;
 
     // Tomcat
     public static int          TEST_WEBAPP_PORT                  = 8080;

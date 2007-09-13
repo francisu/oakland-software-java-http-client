@@ -191,6 +191,17 @@ public class ParamServlet extends MultiMethodServlet
 
             out.println();
 
+            out.println("");
+            out.println("<FORM action=\"http://berlioz:8080/oaklandsw-http/ntlm2params\" "
+                + "method=\"post\">");
+            out.println("    <P>");
+            out.println("    <LABEL for=\"firstname\">First name: </LABEL>");
+            out.println("<INPUT type=\"text\" id=\"firstname\"><BR>");
+            out.println("     <INPUT type=\"submit\" value=\"Send\"> "
+                + "<INPUT type=\"reset\">");
+            out.println(" </P> ");
+            out.println("  </FORM>");
+
             out.println("</body>");
             out.println("</html>");
 

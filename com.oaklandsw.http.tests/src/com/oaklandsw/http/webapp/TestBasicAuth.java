@@ -40,7 +40,7 @@ public class TestBasicAuth extends TestWebappBase
         URL url = new URL(_urlBase + BasicAuthServlet.NAME);
         int response = 0;
 
-        HttpURLConnection urlCon = (HttpURLConnection)url.openConnection();
+        HttpURLConnection urlCon = HttpURLConnection.openConnection(url);
         urlCon.setRequestMethod("GET");
 
         urlCon.connect();
@@ -55,7 +55,7 @@ public class TestBasicAuth extends TestWebappBase
         checkNoActiveConns(url);
 
         // Try it again, getting the same connection hopefully
-        urlCon = (HttpURLConnection)url.openConnection();
+        urlCon = HttpURLConnection.openConnection(url);
         urlCon.setRequestMethod("GET");
 
         urlCon.connect();
@@ -77,7 +77,7 @@ public class TestBasicAuth extends TestWebappBase
         URL url = new URL(_urlBase + BasicAuthServlet.NAME);
         int response = 0;
 
-        HttpURLConnection urlCon = (HttpURLConnection)url.openConnection();
+        HttpURLConnection urlCon = HttpURLConnection.openConnection(url);
         urlCon.setRequestMethod("POST");
         urlCon.setDoOutput(true);
         OutputStream out = urlCon.getOutputStream();
@@ -104,7 +104,7 @@ public class TestBasicAuth extends TestWebappBase
         URL url = new URL(_urlBase + BasicAuthServlet.NAME);
         int response = 0;
 
-        HttpURLConnection urlCon = (HttpURLConnection)url.openConnection();
+        HttpURLConnection urlCon = HttpURLConnection.openConnection(url);
         urlCon.setRequestMethod("PUT");
         urlCon.setDoOutput(true);
         OutputStream out = urlCon.getOutputStream();
@@ -128,7 +128,7 @@ public class TestBasicAuth extends TestWebappBase
         URL url = new URL(_urlBase + BasicAuthServlet.NAME);
         int response = 0;
 
-        HttpURLConnection urlCon = (HttpURLConnection)url.openConnection();
+        HttpURLConnection urlCon = HttpURLConnection.openConnection(url);
         urlCon.setRequestMethod("GET");
 
         urlCon.connect();
@@ -143,7 +143,7 @@ public class TestBasicAuth extends TestWebappBase
 
         TestUserAgent._type = TestUserAgent.GOOD;
         url = new URL(_urlBase + BasicAuthServlet.NAME);
-        urlCon = (HttpURLConnection)url.openConnection();
+        urlCon = HttpURLConnection.openConnection(url);
         urlCon.setRequestMethod("GET");
 
         urlCon.connect();
@@ -165,7 +165,7 @@ public class TestBasicAuth extends TestWebappBase
         URL url = new URL(_urlBase + BasicAuthServlet.NAME);
         int response = 0;
 
-        HttpURLConnection urlCon = (HttpURLConnection)url.openConnection();
+        HttpURLConnection urlCon = HttpURLConnection.openConnection(url);
         urlCon.setRequestMethod("GET");
 
         urlCon.connect();
@@ -180,7 +180,7 @@ public class TestBasicAuth extends TestWebappBase
 
         TestUserAgent._type = TestUserAgent.BAD;
         url = new URL(_urlBase + BasicAuthServlet.NAME);
-        urlCon = (HttpURLConnection)url.openConnection();
+        urlCon = HttpURLConnection.openConnection(url);
         urlCon.setRequestMethod("GET");
 
         urlCon.connect();

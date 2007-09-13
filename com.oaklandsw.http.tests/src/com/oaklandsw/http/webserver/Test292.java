@@ -1,6 +1,5 @@
 package com.oaklandsw.http.webserver;
 
-import java.net.HttpURLConnection;
 import java.net.URL;
 
 import junit.framework.Test;
@@ -8,6 +7,7 @@ import junit.framework.TestSuite;
 
 import com.oaklandsw.http.HttpTestBase;
 import com.oaklandsw.http.HttpTestEnv;
+import com.oaklandsw.http.HttpURLConnection;
 
 public class Test292 extends HttpTestBase
 {
@@ -32,7 +32,7 @@ public class Test292 extends HttpTestBase
     {
         try
         {
-            HttpURLConnection urlCon = (HttpURLConnection)url.openConnection();
+            HttpURLConnection urlCon = HttpURLConnection.openConnection(url);
             urlCon.setRequestMethod("GET");
             urlCon.connect();
             assertEquals(200, urlCon.getResponseCode());

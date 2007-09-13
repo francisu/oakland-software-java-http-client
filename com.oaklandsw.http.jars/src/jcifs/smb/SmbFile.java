@@ -26,6 +26,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.security.Principal;
 import jcifs.Config;
 import jcifs.util.LogStream;
@@ -617,7 +619,6 @@ public class SmbFile extends URLConnection implements SmbConstants {
             new URL( null, "smb://" + name + "/", Handler.SMB_HANDLER ) :
             new URL( context.url, name + (( attributes & ATTR_DIRECTORY ) > 0 ? "/" : "" )));
 
-
         /* why was this removed before? DFS? copyTo? Am I going around in circles? */
         auth = context.auth;
 
@@ -733,7 +734,17 @@ public class SmbFile extends URLConnection implements SmbConstants {
         return null;
     }
 
+UniAddress[] addresses;
+int addressIndex;
+
     UniAddress getAddress() throws UnknownHostException {
+        if (addressIndex == 0)
+            return getFirstAddress();
+        return addresses[addressIndex - 1];
+    }
+    UniAddress getFirstAddress() throws UnknownHostException {
+        addressIndex = 0;
+
         String host = url.getHost();
         String path = url.getPath();
         String query = url.getQuery();
@@ -741,27 +752,41 @@ public class SmbFile extends URLConnection implements SmbConstants {
         if( query != null ) {
             String server = queryLookup( query, "server" );
             if( server != null && server.length() > 0 ) {
-                return UniAddress.getByName( server );
+                addresses = new UniAddress[1];
+                addresses[0] = UniAddress.getByName( server );
+                return getNextAddress();
             }
         }
 
-        if( host.length() == 0 ) {
+        if (host.length() == 0) {
             try {
                 NbtAddress addr = NbtAddress.getByName(
                         NbtAddress.MASTER_BROWSER_NAME, 0x01, null);
-                return UniAddress.getByName( addr.getHostAddress() );
+                addresses = new UniAddress[1];
+                addresses[0] = UniAddress.getByName( addr.getHostAddress() );
             } catch( UnknownHostException uhe ) {
                 NtlmPasswordAuthentication.initDefaults();
                 if( NtlmPasswordAuthentication.DEFAULT_DOMAIN.equals( "?" )) {
                     throw uhe;
                 }
-                return UniAddress.getByName( NtlmPasswordAuthentication.DEFAULT_DOMAIN, true );
+                addresses = UniAddress.getAllByName( NtlmPasswordAuthentication.DEFAULT_DOMAIN, true );
             }
         } else if( path.length() == 0 || path.equals( "/" )) {
-            return UniAddress.getByName( host, true );
+            addresses = UniAddress.getAllByName( host, true );
         } else {
-            return UniAddress.getByName( host );
+            addresses = UniAddress.getAllByName(host, false);
         }
+
+        return getNextAddress();
+    }
+    UniAddress getNextAddress() {
+        UniAddress addr = null;
+        if (addressIndex < addresses.length)
+            addr = addresses[addressIndex++];
+        return addr;
+    }
+    boolean hasNextAddress() {
+        return addressIndex < addresses.length;
     }
     void connect0() throws SmbException {
         try {
@@ -772,6 +797,41 @@ public class SmbFile extends URLConnection implements SmbConstants {
             throw se;
         } catch( IOException ioe ) {
             throw new SmbException( "Failed to connect to server", ioe );
+        }
+    }
+    void doConnect() throws IOException {
+        SmbTransport trans;
+        SmbSession ssn;
+        UniAddress addr;
+
+        addr = getAddress();
+        trans = SmbTransport.getSmbTransport(addr, url.getPort());
+        ssn = trans.getSmbSession(auth);
+        tree = ssn.getSmbTree(share, null);
+
+        try {
+            if( log.level >= 3 )
+                log.println( "doConnect: " + addr );
+
+            tree.treeConnect(null, null);
+        } catch (SmbAuthException sae) {
+            NtlmPasswordAuthentication a;
+
+            if (share == null) { // IPC$ - try "anonymous" credentials
+                ssn = trans.getSmbSession(NtlmPasswordAuthentication.NULL);
+                tree = ssn.getSmbTree(null, null);
+                tree.treeConnect(null, null);
+            } else if ((a = NtlmAuthenticator.requestNtlmPasswordAuthentication(
+                        url.toString(), sae)) != null) {
+                auth = a;
+                ssn = trans.getSmbSession(auth);
+                tree = ssn.getSmbTree(share, null);
+                tree.treeConnect(null, null);
+            } else {
+                if (log.level >= 1 && hasNextAddress())
+                    sae.printStackTrace(log);
+                throw sae;
+            }
         }
     }
 /**
@@ -788,34 +848,21 @@ public class SmbFile extends URLConnection implements SmbConstants {
         }
 
         getUncPath0();
-        addr = getAddress();
-
-        trans = SmbTransport.getSmbTransport( addr, url.getPort() );
-        ssn = trans.getSmbSession( auth );
-        tree = ssn.getSmbTree( share, null );
-
-        try {
-            tree.treeConnect( null, null );
-        } catch( SmbAuthException sae ) {
-            NtlmPasswordAuthentication a;
-
-            if( share == null ) { // IPC$ - try "anonymous" credentials
-                ssn = trans.getSmbSession( NtlmPasswordAuthentication.NULL );
-                tree = ssn.getSmbTree( null, null );
-                tree.treeConnect( null, null );
-            } else if(( a = NtlmAuthenticator.requestNtlmPasswordAuthentication(
-                        url.toString(), sae )) != null ) {
-                auth = a;
-                ssn = trans.getSmbSession( auth );
-                tree = ssn.getSmbTree( share, null );
-                tree.treeConnect( null, null );
-            } else {
-                throw sae;
+        getFirstAddress();
+        for ( ;; ) {
+            try {
+                doConnect();
+                return;
+            } catch(SmbException se) {
+                if (getNextAddress() == null) 
+                    throw se;
+                if (log.level >= 3)
+                    se.printStackTrace(log);
             }
         }
     }
     boolean isConnected() {
-        return (connected = tree != null && tree.treeConnected);
+        return tree != null && tree.treeConnected;
     }
     int open0( int flags, int access, int attrs, int options ) throws SmbException {
         int f;
@@ -831,8 +878,13 @@ public class SmbFile extends URLConnection implements SmbConstants {
 
         if( tree.session.transport.hasCapability( ServerMessageBlock.CAP_NT_SMBS )) {
             SmbComNTCreateAndXResponse response = new SmbComNTCreateAndXResponse();
-            send( new SmbComNTCreateAndX( unc, flags, access, shareAccess,
-                    attrs, options, null ), response );
+SmbComNTCreateAndX request = new SmbComNTCreateAndX( unc, flags, access, shareAccess, attrs, options, null );
+if (this instanceof SmbNamedPipe) {
+    request.flags0 |= 0x16;
+    request.desiredAccess |= 0x20000;
+    response.isExtended = true;
+}
+            send( request, response );
             f = response.fid;
             attributes = response.extFileAttributes & ATTR_GET_MASK;
             attrExpiration = System.currentTimeMillis() + attrExpirationPeriod;
@@ -854,7 +906,8 @@ public class SmbFile extends URLConnection implements SmbConstants {
         tree_num = tree.tree_num;
     }
     boolean isOpen() {
-        return opened && isConnected() && tree_num == tree.tree_num;
+        boolean ans =  opened && isConnected() && tree_num == tree.tree_num;
+        return ans;
     }
     void close( int f, long lastWriteTime ) throws SmbException {
 
@@ -1149,7 +1202,7 @@ public class SmbFile extends URLConnection implements SmbConstants {
                 } else {
                     type = TYPE_SHARE;
                 }
-            } else if( url.getAuthority().length() == 0 ) {
+            } else if( url.getAuthority() == null || url.getAuthority().length() == 0 ) {
                 type = TYPE_WORKGROUP;
             } else {
                 UniAddress addr;
@@ -1569,117 +1622,137 @@ public class SmbFile extends URLConnection implements SmbConstants {
     String[] list( String wildcard, int searchAttributes,
                 SmbFilenameFilter fnf, SmbFileFilter ff ) throws SmbException {
         ArrayList list = new ArrayList();
-
-        try {
-            int hostlen = url.getHost().length();
-            if( hostlen == 0 || share == null ) {
-                boolean done = false;
-                if (hostlen != 0 && getType() == TYPE_SERVER) {
-                    try {
-                        doMsrpcEnum(list, false, wildcard, searchAttributes, fnf, ff);
-                        done = true;
-                    } catch(IOException ioe) {
-                        if (log.level >= 3)
-                            ioe.printStackTrace(log);
-                    }
-                }
-                if (!done)
-                    doNetEnum( list, false, wildcard, searchAttributes, fnf, ff );
-            } else {
-                doFindFirstNext( list, false, wildcard, searchAttributes, fnf, ff );
-            }
-        } catch( UnknownHostException uhe ) {
-            throw new SmbException( url.toString(), uhe );
-        } catch( MalformedURLException mue ) {
-            throw new SmbException( url.toString(), mue );
-        }
-
+        doEnum(list, false, wildcard, searchAttributes, fnf, ff);
         return (String[])list.toArray(new String[list.size()]);
     }
     SmbFile[] listFiles( String wildcard, int searchAttributes,
                 SmbFilenameFilter fnf, SmbFileFilter ff ) throws SmbException {
         ArrayList list = new ArrayList();
-
-        if( ff != null && ff instanceof DosFileFilter ) {
+        doEnum(list, true, wildcard, searchAttributes, fnf, ff);
+        return (SmbFile[])list.toArray(new SmbFile[list.size()]);
+    }
+    void doEnum(ArrayList list,
+                    boolean files,
+                    String wildcard,
+                    int searchAttributes,
+                    SmbFilenameFilter fnf,
+                    SmbFileFilter ff) throws SmbException {
+        if (ff != null && ff instanceof DosFileFilter) {
             DosFileFilter dff = (DosFileFilter)ff;
-            if( dff.wildcard != null ) {
+            if (dff.wildcard != null)
                 wildcard = dff.wildcard;
-            }
             searchAttributes = dff.attributes;
         }
 
         try {
             int hostlen = url.getHost().length();
-            if( hostlen == 0 || share == null ) {
-                boolean done = false;
-                if (hostlen != 0 && getType() == TYPE_SERVER) {
-                    try {
-                        doMsrpcEnum(list, true, wildcard, searchAttributes, fnf, ff);
-                        done = true;
-                    } catch(IOException ioe) {
-                        if (log.level >= 3)
-                            ioe.printStackTrace(log);
-                    }
-                }
-                if (!done)
-                    doNetEnum( list, true, wildcard, searchAttributes, fnf, ff );
+            if (hostlen == 0 || getType() == TYPE_WORKGROUP) {
+                doNetServerEnum(list, files, wildcard, searchAttributes, fnf, ff);
+            } else if (share == null) {
+                doShareEnum(list, files, wildcard, searchAttributes, fnf, ff);
             } else {
-                doFindFirstNext( list, true, wildcard, searchAttributes, fnf, ff );
+                doFindFirstNext(list, files, wildcard, searchAttributes, fnf, ff);
             }
-        } catch( UnknownHostException uhe ) {
-            throw new SmbException( url.toString(), uhe );
-        } catch( MalformedURLException mue ) {
-            throw new SmbException( url.toString(), mue );
+        } catch (UnknownHostException uhe) {
+            throw new SmbException(url.toString(), uhe);
+        } catch (MalformedURLException mue) {
+            throw new SmbException(url.toString(), mue);
         }
-
-        return (SmbFile[])list.toArray(new SmbFile[list.size()]);
     }
-    void doMsrpcEnum( ArrayList list,
+    void doShareEnum(ArrayList list,
                 boolean files,
                 String wildcard,
                 int searchAttributes,
                 SmbFilenameFilter fnf,
-                SmbFileFilter ff ) throws IOException,
-                        UnknownHostException,
-                        MalformedURLException {
+                SmbFileFilter ff) throws SmbException,
+                                UnknownHostException,
+                                MalformedURLException {
         String p = url.getPath();
+        IOException last = null;
+        FileEntry[] entries;
+        UniAddress addr;
+        FileEntry e;
+        HashMap map;
+
+        if (p.lastIndexOf('/') != (p.length() - 1))
+            throw new SmbException(url.toString() + " directory must end with '/'");
+        if (getType() != TYPE_SERVER)
+            throw new SmbException("The requested list operations is invalid: " + url.toString());
+
+        map = new HashMap();
+
+        addr = getFirstAddress();
+        while (addr != null) {
+            try {
+                doConnect();
+                try {
+                    entries = doMsrpcShareEnum();
+                } catch(IOException ioe) {
+                    if (log.level >= 3)
+                        ioe.printStackTrace(log);
+                    entries = doNetShareEnum();
+                }
+                for (int ei = 0; ei < entries.length; ei++) {
+                    e = entries[ei];
+                    if (map.containsKey(e) == false)
+                        map.put(e, e);
+                }
+            } catch(IOException ioe) {
+                if (log.level >= 3)
+                    ioe.printStackTrace(log);
+                last = ioe;
+            }
+            addr = getNextAddress();
+        }
+
+        if (last != null && map.isEmpty()) {
+            if (last instanceof SmbException == false)
+                throw new SmbException(url.toString(), last);
+            throw (SmbException)last;
+        }
+
+        Iterator iter = map.keySet().iterator();
+        while (iter.hasNext()) {
+            e = (FileEntry)iter.next();
+            String name = e.getName();
+            if (fnf != null && fnf.accept(this, name) == false)
+                continue;
+            if (name.length() > 0) {
+                // if !files we don't need to create SmbFiles here
+                SmbFile f = new SmbFile(this, name, e.getType(),
+                            ATTR_READONLY | ATTR_DIRECTORY, 0L, 0L, 0L );
+                if (ff != null && ff.accept(f) == false)
+                    continue;
+                if (files) {
+                    list.add(f);
+                } else {
+                    list.add(name);
+                }
+            }
+        }
+    }
+    FileEntry[] doMsrpcShareEnum() throws IOException {
         MsrpcShareEnum rpc;
         DcerpcHandle handle;
 
-        if( p.lastIndexOf( '/' ) != ( p.length() - 1 )) {
-            throw new SmbException( url.toString() + " directory must end with '/'" );
-        }
-        if (getType() != TYPE_SERVER)
-            throw new SmbException( "The requested list operations is invalid: " + url.toString() );
-
         rpc = new MsrpcShareEnum(url.getHost());
-        handle = DcerpcHandle.getHandle("ncacn_np:" + url.getHost() + "[\\PIPE\\srvsvc]", auth);
+
+        /* JCIFS will build a composite list of shares if the target host has
+         * multiple IP addresses such as when domain-based DFS is in play. Because
+         * of this, to ensure that we query each IP individually without re-resolving
+         * the hostname and getting a different IP, we must use the current addresses
+         * IP rather than just url.getHost() like we were using prior to 1.2.16.
+         */
+
+        handle = DcerpcHandle.getHandle("ncacn_np:" +
+                    getAddress().getHostAddress() +
+                    "[\\PIPE\\srvsvc]", auth);
 
         try {
             handle.sendrecv(rpc);
             if (rpc.retval != 0)
                 throw new SmbException(rpc.retval, true);
-            FileEntry[] entries = rpc.getEntries();
-            for( int i = 0; i < entries.length; i++ ) {
-                FileEntry e = entries[i];
-                String name = e.getName();
-                if( fnf != null && fnf.accept( this, name ) == false ) {
-                    continue;
-                }
-                if( name.length() > 0 ) {
-                    SmbFile f = new SmbFile( this, name,
-                                e.getType(),
-                                ATTR_READONLY | ATTR_DIRECTORY, 0L, 0L, 0L );
-                    if( ff != null && ff.accept( f ) == false ) {
-                        continue;
-                    }
-                    if( files ) {
-                        list.add( f );
-                    } else {
-                        list.add( name );
-                    }
-                }
-            }
+            return rpc.getEntries();
         } finally {
             try {
                 handle.close();
@@ -1689,7 +1762,81 @@ public class SmbFile extends URLConnection implements SmbConstants {
             }
         }
     }
-    void doNetEnum( ArrayList list,
+    FileEntry[] doNetShareEnum() throws SmbException {
+        SmbComTransaction req = new NetShareEnum();
+        SmbComTransactionResponse resp = new NetShareEnumResponse();
+
+        send(req, resp);
+
+        if (resp.status != SmbException.ERROR_SUCCESS)
+            throw new SmbException(resp.status, true);
+
+        return resp.results;
+    }
+    void doNetServerEnum(ArrayList list,
+                boolean files,
+                String wildcard,
+                int searchAttributes,
+                SmbFilenameFilter fnf,
+                SmbFileFilter ff) throws SmbException,
+                                UnknownHostException,
+                                MalformedURLException {
+        int listType = url.getHost().length() == 0 ? 0 : getType();
+        SmbComTransaction req;
+        SmbComTransactionResponse resp;
+
+        if (listType == 0) {
+            connect0();
+            req = new NetServerEnum2(tree.session.transport.server.oemDomainName,
+                        NetServerEnum2.SV_TYPE_DOMAIN_ENUM );
+            resp = new NetServerEnum2Response();
+        } else if (listType == TYPE_WORKGROUP) {
+            req = new NetServerEnum2(url.getHost(), NetServerEnum2.SV_TYPE_ALL);
+            resp = new NetServerEnum2Response();
+        } else {
+            throw new SmbException( "The requested list operations is invalid: " + url.toString() );
+        }
+
+        boolean more;
+        do {
+            int n;
+
+            send(req, resp);
+
+            if (resp.status != SmbException.ERROR_SUCCESS &&
+                    resp.status != SmbException.ERROR_MORE_DATA) {
+                throw new SmbException( resp.status, true );
+            }
+            more = resp.status == SmbException.ERROR_MORE_DATA;
+
+            n = more ? resp.numEntries - 1 : resp.numEntries;
+            for (int i = 0; i < n; i++) {
+                FileEntry e = resp.results[i];
+                String name = e.getName();
+                if (fnf != null && fnf.accept(this, name) == false)
+                    continue;
+                if (name.length() > 0) {
+                    // if !files we don't need to create SmbFiles here
+                    SmbFile f = new SmbFile(this, name, e.getType(),
+                                ATTR_READONLY | ATTR_DIRECTORY, 0L, 0L, 0L );
+                    if (ff != null && ff.accept(f) == false)
+                        continue;
+                    if (files) {
+                        list.add(f);
+                    } else {
+                        list.add(name);
+                    }
+                }
+            }
+            if (getType() != TYPE_WORKGROUP) {
+                break;
+            }
+            req.subCommand = (byte)SmbComTransaction.NET_SERVER_ENUM3;
+            req.reset(0, ((NetServerEnum2Response)resp).lastName);
+            resp.reset();
+        } while(more);
+    }
+    void doNetEnumX( ArrayList list,
                 boolean files,
                 String wildcard,
                 int searchAttributes,
@@ -1805,7 +1952,8 @@ public class SmbFile extends URLConnection implements SmbConstants {
                 if( name.length() < 3 ) {
                     int h = name.hashCode();
                     if( h == HASH_DOT || h == HASH_DOT_DOT ) {
-                        continue;
+                        if (name.equals(".") || name.equals(".."))
+                            continue;
                     }
                 }
                 if( fnf != null && fnf.accept( this, name ) == false ) {
