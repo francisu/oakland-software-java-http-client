@@ -7,6 +7,8 @@
         */
         package sharepoint;
 
+import org.apache.axis2.databinding.utils.writer.MTOMAwareXMLStreamWriter;
+
         
 
         /*
@@ -3365,7 +3367,7 @@
                        new org.apache.axis2.databinding.ADBDataSource(this,parentQName){
 
          public void serialize(
-                                  javax.xml.stream.XMLStreamWriter xmlWriter) throws javax.xml.stream.XMLStreamException {
+                                 MTOMAwareXMLStreamWriter xmlWriter) throws javax.xml.stream.XMLStreamException {
             
                 
 
@@ -3653,7 +3655,7 @@
                        new org.apache.axis2.databinding.ADBDataSource(this,parentQName){
 
          public void serialize(
-                                  javax.xml.stream.XMLStreamWriter xmlWriter) throws javax.xml.stream.XMLStreamException {
+                                  MTOMAwareXMLStreamWriter xmlWriter) throws javax.xml.stream.XMLStreamException {
             
                 
 
@@ -3942,7 +3944,7 @@
                        new org.apache.axis2.databinding.ADBDataSource(this,parentQName){
 
          public void serialize(
-                                  javax.xml.stream.XMLStreamWriter xmlWriter) throws javax.xml.stream.XMLStreamException {
+                                  MTOMAwareXMLStreamWriter xmlWriter) throws javax.xml.stream.XMLStreamException {
             
                 
 
@@ -4245,7 +4247,7 @@
                        new org.apache.axis2.databinding.ADBDataSource(this,parentQName){
 
          public void serialize(
-                                  javax.xml.stream.XMLStreamWriter xmlWriter) throws javax.xml.stream.XMLStreamException {
+                                  MTOMAwareXMLStreamWriter xmlWriter) throws javax.xml.stream.XMLStreamException {
             
                 
 
@@ -4550,7 +4552,7 @@
                        new org.apache.axis2.databinding.ADBDataSource(this,parentQName){
 
          public void serialize(
-                                  javax.xml.stream.XMLStreamWriter xmlWriter) throws javax.xml.stream.XMLStreamException {
+                                  MTOMAwareXMLStreamWriter xmlWriter) throws javax.xml.stream.XMLStreamException {
             
                 
                 //We can safely assume an element has only one type associated with it
@@ -4797,7 +4799,7 @@
                        new org.apache.axis2.databinding.ADBDataSource(this,parentQName){
 
          public void serialize(
-                                  javax.xml.stream.XMLStreamWriter xmlWriter) throws javax.xml.stream.XMLStreamException {
+                                  MTOMAwareXMLStreamWriter xmlWriter) throws javax.xml.stream.XMLStreamException {
             
                 
 
@@ -5199,7 +5201,7 @@
                        new org.apache.axis2.databinding.ADBDataSource(this,parentQName){
 
          public void serialize(
-                                  javax.xml.stream.XMLStreamWriter xmlWriter) throws javax.xml.stream.XMLStreamException {
+                                  MTOMAwareXMLStreamWriter xmlWriter) throws javax.xml.stream.XMLStreamException {
             
                 
 
@@ -5784,7 +5786,7 @@
                        new org.apache.axis2.databinding.ADBDataSource(this,parentQName){
 
          public void serialize(
-                                  javax.xml.stream.XMLStreamWriter xmlWriter) throws javax.xml.stream.XMLStreamException {
+                                  MTOMAwareXMLStreamWriter xmlWriter) throws javax.xml.stream.XMLStreamException {
             
                 
 
@@ -6254,7 +6256,7 @@
                        new org.apache.axis2.databinding.ADBDataSource(this,parentQName){
 
          public void serialize(
-                                  javax.xml.stream.XMLStreamWriter xmlWriter) throws javax.xml.stream.XMLStreamException {
+                                  MTOMAwareXMLStreamWriter xmlWriter) throws javax.xml.stream.XMLStreamException {
             
                 
 
@@ -6495,7 +6497,7 @@
                        new org.apache.axis2.databinding.ADBDataSource(this,parentQName){
 
          public void serialize(
-                                  javax.xml.stream.XMLStreamWriter xmlWriter) throws javax.xml.stream.XMLStreamException {
+                                  MTOMAwareXMLStreamWriter xmlWriter) throws javax.xml.stream.XMLStreamException {
             
                 
 
@@ -6839,7 +6841,7 @@
                        new org.apache.axis2.databinding.ADBDataSource(this,parentQName){
 
          public void serialize(
-                                  javax.xml.stream.XMLStreamWriter xmlWriter) throws javax.xml.stream.XMLStreamException {
+                                  MTOMAwareXMLStreamWriter xmlWriter) throws javax.xml.stream.XMLStreamException {
             
                 
 
@@ -7169,7 +7171,7 @@
                        new org.apache.axis2.databinding.ADBDataSource(this,parentQName){
 
          public void serialize(
-                                  javax.xml.stream.XMLStreamWriter xmlWriter) throws javax.xml.stream.XMLStreamException {
+                                  MTOMAwareXMLStreamWriter xmlWriter) throws javax.xml.stream.XMLStreamException {
             
                 
 
@@ -7455,7 +7457,7 @@
                        new org.apache.axis2.databinding.ADBDataSource(this,parentQName){
 
          public void serialize(
-                                  javax.xml.stream.XMLStreamWriter xmlWriter) throws javax.xml.stream.XMLStreamException {
+                                  MTOMAwareXMLStreamWriter xmlWriter) throws javax.xml.stream.XMLStreamException {
             
                 
 
@@ -7741,7 +7743,7 @@
                        new org.apache.axis2.databinding.ADBDataSource(this,parentQName){
 
          public void serialize(
-                                  javax.xml.stream.XMLStreamWriter xmlWriter) throws javax.xml.stream.XMLStreamException {
+                                  MTOMAwareXMLStreamWriter xmlWriter) throws javax.xml.stream.XMLStreamException {
             
                 
 
@@ -8042,7 +8044,7 @@
                        new org.apache.axis2.databinding.ADBDataSource(this,parentQName){
 
          public void serialize(
-                                  javax.xml.stream.XMLStreamWriter xmlWriter) throws javax.xml.stream.XMLStreamException {
+                                  MTOMAwareXMLStreamWriter xmlWriter) throws javax.xml.stream.XMLStreamException {
             
                 
 
@@ -8546,7 +8548,7 @@
                        new org.apache.axis2.databinding.ADBDataSource(this,parentQName){
 
          public void serialize(
-                                  javax.xml.stream.XMLStreamWriter xmlWriter) throws javax.xml.stream.XMLStreamException {
+                                  MTOMAwareXMLStreamWriter xmlWriter) throws javax.xml.stream.XMLStreamException {
             
                 
 
@@ -9075,7 +9077,7 @@
                        new org.apache.axis2.databinding.ADBDataSource(this,parentQName){
 
          public void serialize(
-                                  javax.xml.stream.XMLStreamWriter xmlWriter) throws javax.xml.stream.XMLStreamException {
+                                  MTOMAwareXMLStreamWriter xmlWriter) throws javax.xml.stream.XMLStreamException {
             
                 
 
@@ -9382,7 +9384,7 @@
                        new org.apache.axis2.databinding.ADBDataSource(this,parentQName){
 
          public void serialize(
-                                  javax.xml.stream.XMLStreamWriter xmlWriter) throws javax.xml.stream.XMLStreamException {
+                                  MTOMAwareXMLStreamWriter xmlWriter) throws javax.xml.stream.XMLStreamException {
             
                 
 
@@ -9676,7 +9678,7 @@
                        new org.apache.axis2.databinding.ADBDataSource(this,parentQName){
 
          public void serialize(
-                                  javax.xml.stream.XMLStreamWriter xmlWriter) throws javax.xml.stream.XMLStreamException {
+                                  MTOMAwareXMLStreamWriter xmlWriter) throws javax.xml.stream.XMLStreamException {
             
                 
 
@@ -10433,7 +10435,7 @@
                        new org.apache.axis2.databinding.ADBDataSource(this,parentQName){
 
          public void serialize(
-                                  javax.xml.stream.XMLStreamWriter xmlWriter) throws javax.xml.stream.XMLStreamException {
+                                  MTOMAwareXMLStreamWriter xmlWriter) throws javax.xml.stream.XMLStreamException {
             
                 
 
@@ -10701,7 +10703,7 @@
                        new org.apache.axis2.databinding.ADBDataSource(this,parentQName){
 
          public void serialize(
-                                  javax.xml.stream.XMLStreamWriter xmlWriter) throws javax.xml.stream.XMLStreamException {
+                                  MTOMAwareXMLStreamWriter xmlWriter) throws javax.xml.stream.XMLStreamException {
             
                 
 
@@ -10942,7 +10944,7 @@
                        new org.apache.axis2.databinding.ADBDataSource(this,parentQName){
 
          public void serialize(
-                                  javax.xml.stream.XMLStreamWriter xmlWriter) throws javax.xml.stream.XMLStreamException {
+                                  MTOMAwareXMLStreamWriter xmlWriter) throws javax.xml.stream.XMLStreamException {
             
                 
 
@@ -11331,7 +11333,7 @@
                        new org.apache.axis2.databinding.ADBDataSource(this,parentQName){
 
          public void serialize(
-                                  javax.xml.stream.XMLStreamWriter xmlWriter) throws javax.xml.stream.XMLStreamException {
+                                  MTOMAwareXMLStreamWriter xmlWriter) throws javax.xml.stream.XMLStreamException {
             
                 
 
@@ -11850,7 +11852,7 @@
                        new org.apache.axis2.databinding.ADBDataSource(this,parentQName){
 
          public void serialize(
-                                  javax.xml.stream.XMLStreamWriter xmlWriter) throws javax.xml.stream.XMLStreamException {
+                                  MTOMAwareXMLStreamWriter xmlWriter) throws javax.xml.stream.XMLStreamException {
             
                 
 
@@ -12510,7 +12512,7 @@
                        new org.apache.axis2.databinding.ADBDataSource(this,parentQName){
 
          public void serialize(
-                                  javax.xml.stream.XMLStreamWriter xmlWriter) throws javax.xml.stream.XMLStreamException {
+                                  MTOMAwareXMLStreamWriter xmlWriter) throws javax.xml.stream.XMLStreamException {
             
                 
 
@@ -13037,7 +13039,7 @@
                        new org.apache.axis2.databinding.ADBDataSource(this,parentQName){
 
          public void serialize(
-                                  javax.xml.stream.XMLStreamWriter xmlWriter) throws javax.xml.stream.XMLStreamException {
+                                  MTOMAwareXMLStreamWriter xmlWriter) throws javax.xml.stream.XMLStreamException {
             
                 
 
@@ -13382,7 +13384,7 @@
                        new org.apache.axis2.databinding.ADBDataSource(this,parentQName){
 
          public void serialize(
-                                  javax.xml.stream.XMLStreamWriter xmlWriter) throws javax.xml.stream.XMLStreamException {
+                                  MTOMAwareXMLStreamWriter xmlWriter) throws javax.xml.stream.XMLStreamException {
             
                 
 
@@ -13843,7 +13845,7 @@
                        new org.apache.axis2.databinding.ADBDataSource(this,parentQName){
 
          public void serialize(
-                                  javax.xml.stream.XMLStreamWriter xmlWriter) throws javax.xml.stream.XMLStreamException {
+                                  MTOMAwareXMLStreamWriter xmlWriter) throws javax.xml.stream.XMLStreamException {
             
                 
 
@@ -14260,7 +14262,7 @@
                        new org.apache.axis2.databinding.ADBDataSource(this,parentQName){
 
          public void serialize(
-                                  javax.xml.stream.XMLStreamWriter xmlWriter) throws javax.xml.stream.XMLStreamException {
+                                  MTOMAwareXMLStreamWriter xmlWriter) throws javax.xml.stream.XMLStreamException {
             
                 
 
@@ -14545,7 +14547,7 @@
                        new org.apache.axis2.databinding.ADBDataSource(this,parentQName){
 
          public void serialize(
-                                  javax.xml.stream.XMLStreamWriter xmlWriter) throws javax.xml.stream.XMLStreamException {
+                                  MTOMAwareXMLStreamWriter xmlWriter) throws javax.xml.stream.XMLStreamException {
             
                 
 
@@ -14846,7 +14848,7 @@
                        new org.apache.axis2.databinding.ADBDataSource(this,parentQName){
 
          public void serialize(
-                                  javax.xml.stream.XMLStreamWriter xmlWriter) throws javax.xml.stream.XMLStreamException {
+                                  MTOMAwareXMLStreamWriter xmlWriter) throws javax.xml.stream.XMLStreamException {
             
                 
 
@@ -15119,7 +15121,7 @@
                        new org.apache.axis2.databinding.ADBDataSource(this,parentQName){
 
          public void serialize(
-                                  javax.xml.stream.XMLStreamWriter xmlWriter) throws javax.xml.stream.XMLStreamException {
+                                  MTOMAwareXMLStreamWriter xmlWriter) throws javax.xml.stream.XMLStreamException {
             
                 
 
@@ -15406,7 +15408,7 @@
                        new org.apache.axis2.databinding.ADBDataSource(this,parentQName){
 
          public void serialize(
-                                  javax.xml.stream.XMLStreamWriter xmlWriter) throws javax.xml.stream.XMLStreamException {
+                                  MTOMAwareXMLStreamWriter xmlWriter) throws javax.xml.stream.XMLStreamException {
             
                 
 
@@ -15707,7 +15709,7 @@
                        new org.apache.axis2.databinding.ADBDataSource(this,parentQName){
 
          public void serialize(
-                                  javax.xml.stream.XMLStreamWriter xmlWriter) throws javax.xml.stream.XMLStreamException {
+                                  MTOMAwareXMLStreamWriter xmlWriter) throws javax.xml.stream.XMLStreamException {
             
                 
 
@@ -15980,7 +15982,7 @@
                        new org.apache.axis2.databinding.ADBDataSource(this,parentQName){
 
          public void serialize(
-                                  javax.xml.stream.XMLStreamWriter xmlWriter) throws javax.xml.stream.XMLStreamException {
+                                  MTOMAwareXMLStreamWriter xmlWriter) throws javax.xml.stream.XMLStreamException {
             
                 
 
@@ -16281,7 +16283,7 @@
                        new org.apache.axis2.databinding.ADBDataSource(this,parentQName){
 
          public void serialize(
-                                  javax.xml.stream.XMLStreamWriter xmlWriter) throws javax.xml.stream.XMLStreamException {
+                                  MTOMAwareXMLStreamWriter xmlWriter) throws javax.xml.stream.XMLStreamException {
             
                 
 
@@ -16554,7 +16556,7 @@
                        new org.apache.axis2.databinding.ADBDataSource(this,parentQName){
 
          public void serialize(
-                                  javax.xml.stream.XMLStreamWriter xmlWriter) throws javax.xml.stream.XMLStreamException {
+                                  MTOMAwareXMLStreamWriter xmlWriter) throws javax.xml.stream.XMLStreamException {
             
                 
 
@@ -16840,7 +16842,7 @@
                        new org.apache.axis2.databinding.ADBDataSource(this,parentQName){
 
          public void serialize(
-                                  javax.xml.stream.XMLStreamWriter xmlWriter) throws javax.xml.stream.XMLStreamException {
+                                  MTOMAwareXMLStreamWriter xmlWriter) throws javax.xml.stream.XMLStreamException {
             
                 
 
@@ -17126,7 +17128,7 @@
                        new org.apache.axis2.databinding.ADBDataSource(this,parentQName){
 
          public void serialize(
-                                  javax.xml.stream.XMLStreamWriter xmlWriter) throws javax.xml.stream.XMLStreamException {
+                                  MTOMAwareXMLStreamWriter xmlWriter) throws javax.xml.stream.XMLStreamException {
             
                 
 
@@ -17421,7 +17423,7 @@
                        new org.apache.axis2.databinding.ADBDataSource(this,parentQName){
 
          public void serialize(
-                                  javax.xml.stream.XMLStreamWriter xmlWriter) throws javax.xml.stream.XMLStreamException {
+                                  MTOMAwareXMLStreamWriter xmlWriter) throws javax.xml.stream.XMLStreamException {
             
                 
 
@@ -17722,7 +17724,7 @@
                        new org.apache.axis2.databinding.ADBDataSource(this,parentQName){
 
          public void serialize(
-                                  javax.xml.stream.XMLStreamWriter xmlWriter) throws javax.xml.stream.XMLStreamException {
+                                  MTOMAwareXMLStreamWriter xmlWriter) throws javax.xml.stream.XMLStreamException {
             
                 
 
@@ -18010,7 +18012,7 @@
                        new org.apache.axis2.databinding.ADBDataSource(this,parentQName){
 
          public void serialize(
-                                  javax.xml.stream.XMLStreamWriter xmlWriter) throws javax.xml.stream.XMLStreamException {
+                                  MTOMAwareXMLStreamWriter xmlWriter) throws javax.xml.stream.XMLStreamException {
             
                 
 
@@ -18414,7 +18416,7 @@
                        new org.apache.axis2.databinding.ADBDataSource(this,parentQName){
 
          public void serialize(
-                                  javax.xml.stream.XMLStreamWriter xmlWriter) throws javax.xml.stream.XMLStreamException {
+                                  MTOMAwareXMLStreamWriter xmlWriter) throws javax.xml.stream.XMLStreamException {
             
                 
 
@@ -18830,7 +18832,7 @@
                        new org.apache.axis2.databinding.ADBDataSource(this,parentQName){
 
          public void serialize(
-                                  javax.xml.stream.XMLStreamWriter xmlWriter) throws javax.xml.stream.XMLStreamException {
+                                  MTOMAwareXMLStreamWriter xmlWriter) throws javax.xml.stream.XMLStreamException {
             
                 
 
@@ -19131,7 +19133,7 @@
                        new org.apache.axis2.databinding.ADBDataSource(this,parentQName){
 
          public void serialize(
-                                  javax.xml.stream.XMLStreamWriter xmlWriter) throws javax.xml.stream.XMLStreamException {
+                                  MTOMAwareXMLStreamWriter xmlWriter) throws javax.xml.stream.XMLStreamException {
             
                 
 
@@ -19405,7 +19407,7 @@
                        new org.apache.axis2.databinding.ADBDataSource(this,parentQName){
 
          public void serialize(
-                                  javax.xml.stream.XMLStreamWriter xmlWriter) throws javax.xml.stream.XMLStreamException {
+                                  MTOMAwareXMLStreamWriter xmlWriter) throws javax.xml.stream.XMLStreamException {
             
                 
 
@@ -19778,7 +19780,7 @@
                        new org.apache.axis2.databinding.ADBDataSource(this,parentQName){
 
          public void serialize(
-                                  javax.xml.stream.XMLStreamWriter xmlWriter) throws javax.xml.stream.XMLStreamException {
+                                  MTOMAwareXMLStreamWriter xmlWriter) throws javax.xml.stream.XMLStreamException {
             
                 
 
@@ -20200,7 +20202,7 @@
                        new org.apache.axis2.databinding.ADBDataSource(this,parentQName){
 
          public void serialize(
-                                  javax.xml.stream.XMLStreamWriter xmlWriter) throws javax.xml.stream.XMLStreamException {
+                                  MTOMAwareXMLStreamWriter xmlWriter) throws javax.xml.stream.XMLStreamException {
             
                 
 
@@ -20531,7 +20533,7 @@
                        new org.apache.axis2.databinding.ADBDataSource(this,parentQName){
 
          public void serialize(
-                                  javax.xml.stream.XMLStreamWriter xmlWriter) throws javax.xml.stream.XMLStreamException {
+                                  MTOMAwareXMLStreamWriter xmlWriter) throws javax.xml.stream.XMLStreamException {
             
                 
 
@@ -20949,7 +20951,7 @@
                        new org.apache.axis2.databinding.ADBDataSource(this,parentQName){
 
          public void serialize(
-                                  javax.xml.stream.XMLStreamWriter xmlWriter) throws javax.xml.stream.XMLStreamException {
+                                  MTOMAwareXMLStreamWriter xmlWriter) throws javax.xml.stream.XMLStreamException {
             
                 
 
@@ -21278,7 +21280,7 @@
                        new org.apache.axis2.databinding.ADBDataSource(this,parentQName){
 
          public void serialize(
-                                  javax.xml.stream.XMLStreamWriter xmlWriter) throws javax.xml.stream.XMLStreamException {
+                                  MTOMAwareXMLStreamWriter xmlWriter) throws javax.xml.stream.XMLStreamException {
             
                 
 
@@ -21564,7 +21566,7 @@
                        new org.apache.axis2.databinding.ADBDataSource(this,parentQName){
 
          public void serialize(
-                                  javax.xml.stream.XMLStreamWriter xmlWriter) throws javax.xml.stream.XMLStreamException {
+                                  MTOMAwareXMLStreamWriter xmlWriter) throws javax.xml.stream.XMLStreamException {
             
                 
 
@@ -21864,7 +21866,7 @@
                        new org.apache.axis2.databinding.ADBDataSource(this,parentQName){
 
          public void serialize(
-                                  javax.xml.stream.XMLStreamWriter xmlWriter) throws javax.xml.stream.XMLStreamException {
+                                  MTOMAwareXMLStreamWriter xmlWriter) throws javax.xml.stream.XMLStreamException {
             
                 
 
@@ -22137,7 +22139,7 @@
                        new org.apache.axis2.databinding.ADBDataSource(this,parentQName){
 
          public void serialize(
-                                  javax.xml.stream.XMLStreamWriter xmlWriter) throws javax.xml.stream.XMLStreamException {
+                                  MTOMAwareXMLStreamWriter xmlWriter) throws javax.xml.stream.XMLStreamException {
             
                 
 
@@ -22437,7 +22439,7 @@
                        new org.apache.axis2.databinding.ADBDataSource(this,parentQName){
 
          public void serialize(
-                                  javax.xml.stream.XMLStreamWriter xmlWriter) throws javax.xml.stream.XMLStreamException {
+                                  MTOMAwareXMLStreamWriter xmlWriter) throws javax.xml.stream.XMLStreamException {
             
                 
 
@@ -22767,7 +22769,7 @@
                        new org.apache.axis2.databinding.ADBDataSource(this,parentQName){
 
          public void serialize(
-                                  javax.xml.stream.XMLStreamWriter xmlWriter) throws javax.xml.stream.XMLStreamException {
+                                  MTOMAwareXMLStreamWriter xmlWriter) throws javax.xml.stream.XMLStreamException {
             
                 
 
@@ -23127,7 +23129,7 @@
                        new org.apache.axis2.databinding.ADBDataSource(this,parentQName){
 
          public void serialize(
-                                  javax.xml.stream.XMLStreamWriter xmlWriter) throws javax.xml.stream.XMLStreamException {
+                                  MTOMAwareXMLStreamWriter xmlWriter) throws javax.xml.stream.XMLStreamException {
             
                 
 
@@ -23412,7 +23414,7 @@
                        new org.apache.axis2.databinding.ADBDataSource(this,parentQName){
 
          public void serialize(
-                                  javax.xml.stream.XMLStreamWriter xmlWriter) throws javax.xml.stream.XMLStreamException {
+                                  MTOMAwareXMLStreamWriter xmlWriter) throws javax.xml.stream.XMLStreamException {
             
                 
 
@@ -23713,7 +23715,7 @@
                        new org.apache.axis2.databinding.ADBDataSource(this,parentQName){
 
          public void serialize(
-                                  javax.xml.stream.XMLStreamWriter xmlWriter) throws javax.xml.stream.XMLStreamException {
+                                  MTOMAwareXMLStreamWriter xmlWriter) throws javax.xml.stream.XMLStreamException {
             
                 
 
@@ -23986,7 +23988,7 @@
                        new org.apache.axis2.databinding.ADBDataSource(this,parentQName){
 
          public void serialize(
-                                  javax.xml.stream.XMLStreamWriter xmlWriter) throws javax.xml.stream.XMLStreamException {
+                                  MTOMAwareXMLStreamWriter xmlWriter) throws javax.xml.stream.XMLStreamException {
             
                 
 
@@ -24272,7 +24274,7 @@
                        new org.apache.axis2.databinding.ADBDataSource(this,parentQName){
 
          public void serialize(
-                                  javax.xml.stream.XMLStreamWriter xmlWriter) throws javax.xml.stream.XMLStreamException {
+                                  MTOMAwareXMLStreamWriter xmlWriter) throws javax.xml.stream.XMLStreamException {
             
                 
 
@@ -24566,7 +24568,7 @@
                        new org.apache.axis2.databinding.ADBDataSource(this,parentQName){
 
          public void serialize(
-                                  javax.xml.stream.XMLStreamWriter xmlWriter) throws javax.xml.stream.XMLStreamException {
+                                  MTOMAwareXMLStreamWriter xmlWriter) throws javax.xml.stream.XMLStreamException {
             
                 
 
@@ -24866,7 +24868,7 @@
                        new org.apache.axis2.databinding.ADBDataSource(this,parentQName){
 
          public void serialize(
-                                  javax.xml.stream.XMLStreamWriter xmlWriter) throws javax.xml.stream.XMLStreamException {
+                                  MTOMAwareXMLStreamWriter xmlWriter) throws javax.xml.stream.XMLStreamException {
             
                 
 
@@ -25138,7 +25140,7 @@
                        new org.apache.axis2.databinding.ADBDataSource(this,parentQName){
 
          public void serialize(
-                                  javax.xml.stream.XMLStreamWriter xmlWriter) throws javax.xml.stream.XMLStreamException {
+                                  MTOMAwareXMLStreamWriter xmlWriter) throws javax.xml.stream.XMLStreamException {
             
                 
 
@@ -25423,7 +25425,7 @@
                        new org.apache.axis2.databinding.ADBDataSource(this,parentQName){
 
          public void serialize(
-                                  javax.xml.stream.XMLStreamWriter xmlWriter) throws javax.xml.stream.XMLStreamException {
+                                  MTOMAwareXMLStreamWriter xmlWriter) throws javax.xml.stream.XMLStreamException {
             
                 
 
@@ -25708,7 +25710,7 @@
                        new org.apache.axis2.databinding.ADBDataSource(this,parentQName){
 
          public void serialize(
-                                  javax.xml.stream.XMLStreamWriter xmlWriter) throws javax.xml.stream.XMLStreamException {
+                                  MTOMAwareXMLStreamWriter xmlWriter) throws javax.xml.stream.XMLStreamException {
             
                 
 
@@ -25993,7 +25995,7 @@
                        new org.apache.axis2.databinding.ADBDataSource(this,parentQName){
 
          public void serialize(
-                                  javax.xml.stream.XMLStreamWriter xmlWriter) throws javax.xml.stream.XMLStreamException {
+                                  MTOMAwareXMLStreamWriter xmlWriter) throws javax.xml.stream.XMLStreamException {
             
                 
 
@@ -26337,7 +26339,7 @@
                        new org.apache.axis2.databinding.ADBDataSource(this,parentQName){
 
          public void serialize(
-                                  javax.xml.stream.XMLStreamWriter xmlWriter) throws javax.xml.stream.XMLStreamException {
+                                  MTOMAwareXMLStreamWriter xmlWriter) throws javax.xml.stream.XMLStreamException {
             
                 
 
@@ -26721,7 +26723,7 @@
                        new org.apache.axis2.databinding.ADBDataSource(this,parentQName){
 
          public void serialize(
-                                  javax.xml.stream.XMLStreamWriter xmlWriter) throws javax.xml.stream.XMLStreamException {
+                                  MTOMAwareXMLStreamWriter xmlWriter) throws javax.xml.stream.XMLStreamException {
             
                 
 
@@ -27007,7 +27009,7 @@
                        new org.apache.axis2.databinding.ADBDataSource(this,parentQName){
 
          public void serialize(
-                                  javax.xml.stream.XMLStreamWriter xmlWriter) throws javax.xml.stream.XMLStreamException {
+                                  MTOMAwareXMLStreamWriter xmlWriter) throws javax.xml.stream.XMLStreamException {
             
                 
 
@@ -27307,7 +27309,7 @@
                        new org.apache.axis2.databinding.ADBDataSource(this,parentQName){
 
          public void serialize(
-                                  javax.xml.stream.XMLStreamWriter xmlWriter) throws javax.xml.stream.XMLStreamException {
+                                  MTOMAwareXMLStreamWriter xmlWriter) throws javax.xml.stream.XMLStreamException {
             
                 
 
@@ -27895,7 +27897,7 @@
                        new org.apache.axis2.databinding.ADBDataSource(this,parentQName){
 
          public void serialize(
-                                  javax.xml.stream.XMLStreamWriter xmlWriter) throws javax.xml.stream.XMLStreamException {
+                                  MTOMAwareXMLStreamWriter xmlWriter) throws javax.xml.stream.XMLStreamException {
             
                 
 
@@ -28620,7 +28622,7 @@
                        new org.apache.axis2.databinding.ADBDataSource(this,parentQName){
 
          public void serialize(
-                                  javax.xml.stream.XMLStreamWriter xmlWriter) throws javax.xml.stream.XMLStreamException {
+                                  MTOMAwareXMLStreamWriter xmlWriter) throws javax.xml.stream.XMLStreamException {
             
                 
 
@@ -29034,7 +29036,7 @@
                        new org.apache.axis2.databinding.ADBDataSource(this,parentQName){
 
          public void serialize(
-                                  javax.xml.stream.XMLStreamWriter xmlWriter) throws javax.xml.stream.XMLStreamException {
+                                  MTOMAwareXMLStreamWriter xmlWriter) throws javax.xml.stream.XMLStreamException {
             
                 
 
@@ -29336,7 +29338,7 @@
                        new org.apache.axis2.databinding.ADBDataSource(this,parentQName){
 
          public void serialize(
-                                  javax.xml.stream.XMLStreamWriter xmlWriter) throws javax.xml.stream.XMLStreamException {
+                                  MTOMAwareXMLStreamWriter xmlWriter) throws javax.xml.stream.XMLStreamException {
             
                 
 
@@ -29609,7 +29611,7 @@
                        new org.apache.axis2.databinding.ADBDataSource(this,parentQName){
 
          public void serialize(
-                                  javax.xml.stream.XMLStreamWriter xmlWriter) throws javax.xml.stream.XMLStreamException {
+                                  MTOMAwareXMLStreamWriter xmlWriter) throws javax.xml.stream.XMLStreamException {
             
                 
 
@@ -29909,7 +29911,7 @@
                        new org.apache.axis2.databinding.ADBDataSource(this,parentQName){
 
          public void serialize(
-                                  javax.xml.stream.XMLStreamWriter xmlWriter) throws javax.xml.stream.XMLStreamException {
+                                  MTOMAwareXMLStreamWriter xmlWriter) throws javax.xml.stream.XMLStreamException {
             
                 
 
@@ -30212,7 +30214,7 @@
                        new org.apache.axis2.databinding.ADBDataSource(this,parentQName){
 
          public void serialize(
-                                  javax.xml.stream.XMLStreamWriter xmlWriter) throws javax.xml.stream.XMLStreamException {
+                                  MTOMAwareXMLStreamWriter xmlWriter) throws javax.xml.stream.XMLStreamException {
             
                 
 
@@ -30728,7 +30730,7 @@
                        new org.apache.axis2.databinding.ADBDataSource(this,parentQName){
 
          public void serialize(
-                                  javax.xml.stream.XMLStreamWriter xmlWriter) throws javax.xml.stream.XMLStreamException {
+                                  MTOMAwareXMLStreamWriter xmlWriter) throws javax.xml.stream.XMLStreamException {
             
                 
 
@@ -31212,7 +31214,7 @@
                        new org.apache.axis2.databinding.ADBDataSource(this,parentQName){
 
          public void serialize(
-                                  javax.xml.stream.XMLStreamWriter xmlWriter) throws javax.xml.stream.XMLStreamException {
+                                  MTOMAwareXMLStreamWriter xmlWriter) throws javax.xml.stream.XMLStreamException {
             
                 
 
@@ -31485,7 +31487,7 @@
                        new org.apache.axis2.databinding.ADBDataSource(this,parentQName){
 
          public void serialize(
-                                  javax.xml.stream.XMLStreamWriter xmlWriter) throws javax.xml.stream.XMLStreamException {
+                                  MTOMAwareXMLStreamWriter xmlWriter) throws javax.xml.stream.XMLStreamException {
             
                 
 
@@ -31771,7 +31773,7 @@
                        new org.apache.axis2.databinding.ADBDataSource(this,parentQName){
 
          public void serialize(
-                                  javax.xml.stream.XMLStreamWriter xmlWriter) throws javax.xml.stream.XMLStreamException {
+                                  MTOMAwareXMLStreamWriter xmlWriter) throws javax.xml.stream.XMLStreamException {
             
                 
 
@@ -32056,7 +32058,7 @@
                        new org.apache.axis2.databinding.ADBDataSource(this,parentQName){
 
          public void serialize(
-                                  javax.xml.stream.XMLStreamWriter xmlWriter) throws javax.xml.stream.XMLStreamException {
+                                  MTOMAwareXMLStreamWriter xmlWriter) throws javax.xml.stream.XMLStreamException {
             
                 
 
@@ -32400,7 +32402,7 @@
                        new org.apache.axis2.databinding.ADBDataSource(this,parentQName){
 
          public void serialize(
-                                  javax.xml.stream.XMLStreamWriter xmlWriter) throws javax.xml.stream.XMLStreamException {
+                                  MTOMAwareXMLStreamWriter xmlWriter) throws javax.xml.stream.XMLStreamException {
             
                 
 
@@ -32775,7 +32777,7 @@
                        new org.apache.axis2.databinding.ADBDataSource(this,parentQName){
 
          public void serialize(
-                                  javax.xml.stream.XMLStreamWriter xmlWriter) throws javax.xml.stream.XMLStreamException {
+                                  MTOMAwareXMLStreamWriter xmlWriter) throws javax.xml.stream.XMLStreamException {
             
                 
 
@@ -33062,7 +33064,7 @@
                        new org.apache.axis2.databinding.ADBDataSource(this,parentQName){
 
          public void serialize(
-                                  javax.xml.stream.XMLStreamWriter xmlWriter) throws javax.xml.stream.XMLStreamException {
+                                  MTOMAwareXMLStreamWriter xmlWriter) throws javax.xml.stream.XMLStreamException {
             
                 
 
@@ -33423,7 +33425,7 @@
                        new org.apache.axis2.databinding.ADBDataSource(this,parentQName){
 
          public void serialize(
-                                  javax.xml.stream.XMLStreamWriter xmlWriter) throws javax.xml.stream.XMLStreamException {
+                                  MTOMAwareXMLStreamWriter xmlWriter) throws javax.xml.stream.XMLStreamException {
             
                 
 
@@ -33885,7 +33887,7 @@
                        new org.apache.axis2.databinding.ADBDataSource(this,parentQName){
 
          public void serialize(
-                                  javax.xml.stream.XMLStreamWriter xmlWriter) throws javax.xml.stream.XMLStreamException {
+                                  MTOMAwareXMLStreamWriter xmlWriter) throws javax.xml.stream.XMLStreamException {
             
                 
 
@@ -34403,7 +34405,7 @@
                        new org.apache.axis2.databinding.ADBDataSource(this,parentQName){
 
          public void serialize(
-                                  javax.xml.stream.XMLStreamWriter xmlWriter) throws javax.xml.stream.XMLStreamException {
+                                  MTOMAwareXMLStreamWriter xmlWriter) throws javax.xml.stream.XMLStreamException {
             
                 
 
@@ -34835,7 +34837,7 @@
                        new org.apache.axis2.databinding.ADBDataSource(this,parentQName){
 
          public void serialize(
-                                  javax.xml.stream.XMLStreamWriter xmlWriter) throws javax.xml.stream.XMLStreamException {
+                                  MTOMAwareXMLStreamWriter xmlWriter) throws javax.xml.stream.XMLStreamException {
             
                 
 
@@ -35108,7 +35110,7 @@
                        new org.apache.axis2.databinding.ADBDataSource(this,parentQName){
 
          public void serialize(
-                                  javax.xml.stream.XMLStreamWriter xmlWriter) throws javax.xml.stream.XMLStreamException {
+                                  MTOMAwareXMLStreamWriter xmlWriter) throws javax.xml.stream.XMLStreamException {
             
                 
 
@@ -35666,7 +35668,7 @@
                        new org.apache.axis2.databinding.ADBDataSource(this,parentQName){
 
          public void serialize(
-                                  javax.xml.stream.XMLStreamWriter xmlWriter) throws javax.xml.stream.XMLStreamException {
+                                  MTOMAwareXMLStreamWriter xmlWriter) throws javax.xml.stream.XMLStreamException {
             
                 
 
@@ -36216,7 +36218,7 @@
                        new org.apache.axis2.databinding.ADBDataSource(this,parentQName){
 
          public void serialize(
-                                  javax.xml.stream.XMLStreamWriter xmlWriter) throws javax.xml.stream.XMLStreamException {
+                                  MTOMAwareXMLStreamWriter xmlWriter) throws javax.xml.stream.XMLStreamException {
             
                 
 
@@ -36508,7 +36510,7 @@
                        new org.apache.axis2.databinding.ADBDataSource(this,parentQName){
 
          public void serialize(
-                                  javax.xml.stream.XMLStreamWriter xmlWriter) throws javax.xml.stream.XMLStreamException {
+                                  MTOMAwareXMLStreamWriter xmlWriter) throws javax.xml.stream.XMLStreamException {
             
                 
 
@@ -36815,7 +36817,7 @@
                        new org.apache.axis2.databinding.ADBDataSource(this,parentQName){
 
          public void serialize(
-                                  javax.xml.stream.XMLStreamWriter xmlWriter) throws javax.xml.stream.XMLStreamException {
+                                  MTOMAwareXMLStreamWriter xmlWriter) throws javax.xml.stream.XMLStreamException {
             
                 
 
@@ -37103,7 +37105,7 @@
                        new org.apache.axis2.databinding.ADBDataSource(this,parentQName){
 
          public void serialize(
-                                  javax.xml.stream.XMLStreamWriter xmlWriter) throws javax.xml.stream.XMLStreamException {
+                                  MTOMAwareXMLStreamWriter xmlWriter) throws javax.xml.stream.XMLStreamException {
             
                 
 
@@ -37349,7 +37351,7 @@
                        new org.apache.axis2.databinding.ADBDataSource(this,parentQName){
 
          public void serialize(
-                                  javax.xml.stream.XMLStreamWriter xmlWriter) throws javax.xml.stream.XMLStreamException {
+                                  MTOMAwareXMLStreamWriter xmlWriter) throws javax.xml.stream.XMLStreamException {
             
                 
 
@@ -37605,7 +37607,7 @@
                        new org.apache.axis2.databinding.ADBDataSource(this,parentQName){
 
          public void serialize(
-                                  javax.xml.stream.XMLStreamWriter xmlWriter) throws javax.xml.stream.XMLStreamException {
+                                  MTOMAwareXMLStreamWriter xmlWriter) throws javax.xml.stream.XMLStreamException {
             
                 
 
@@ -37978,7 +37980,7 @@
                        new org.apache.axis2.databinding.ADBDataSource(this,parentQName){
 
          public void serialize(
-                                  javax.xml.stream.XMLStreamWriter xmlWriter) throws javax.xml.stream.XMLStreamException {
+                                  MTOMAwareXMLStreamWriter xmlWriter) throws javax.xml.stream.XMLStreamException {
             
                 
 
@@ -38405,7 +38407,7 @@
                        new org.apache.axis2.databinding.ADBDataSource(this,parentQName){
 
          public void serialize(
-                                  javax.xml.stream.XMLStreamWriter xmlWriter) throws javax.xml.stream.XMLStreamException {
+                                  MTOMAwareXMLStreamWriter xmlWriter) throws javax.xml.stream.XMLStreamException {
             
                 
 

@@ -121,7 +121,7 @@ public class OaklandHTTPTransportSender2 extends AbstractHandler
         catch (IOException e)
         {
             _log.debug(e);
-            throw new AxisFault(e);
+            throw new AxisFault(e.getMessage(), e);
         }
     }
 
@@ -295,17 +295,17 @@ public class OaklandHTTPTransportSender2 extends AbstractHandler
         catch (XMLStreamException e)
         {
             _log.debug(e);
-            throw new AxisFault(e);
+            throw new AxisFault(e.getMessage(), e);
         }
         catch (FactoryConfigurationError e)
         {
             _log.debug(e);
-            throw new AxisFault(e);
+            throw new AxisFault(e.getMessage(), e);
         }
         catch (IOException e)
         {
             _log.debug(e);
-            throw new AxisFault(e);
+            throw new AxisFault(e.getMessage(), e);
         }
         return InvocationResponse.CONTINUE;
     }
@@ -613,11 +613,11 @@ public class OaklandHTTPTransportSender2 extends AbstractHandler
                     }
                     catch (FactoryConfigurationError e)
                     {
-                        throw new AxisFault(e);
+                        throw new AxisFault(e.getMessage(), e);
                     }
                     catch (IOException e)
                     {
-                        throw new AxisFault(e);
+                        throw new AxisFault(e.getMessage(), e);
                     }
                     break;
 
@@ -684,22 +684,22 @@ public class OaklandHTTPTransportSender2 extends AbstractHandler
         catch (MalformedURLException e)
         {
             _log.debug(e);
-            throw new AxisFault(e);
+            throw new AxisFault(e.getMessage(), e);
         }
         catch (HttpException e)
         {
             _log.debug(e);
-            throw new AxisFault(e);
+            throw new AxisFault(e.getMessage(), e);
         }
         catch (IOException e)
         {
             _log.debug(e);
-            throw new AxisFault(e);
+            throw new AxisFault(e.getMessage(), e);
         }
         catch (XMLStreamException e)
         {
             _log.debug(e);
-            throw new AxisFault(e);
+            throw new AxisFault(e.getMessage(), e);
         }
     }
 
