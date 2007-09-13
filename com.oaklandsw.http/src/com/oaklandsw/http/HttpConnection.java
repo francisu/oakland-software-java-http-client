@@ -90,21 +90,18 @@ import edu.emory.mathcs.backport.java.util.concurrent.LinkedBlockingQueue;
 
 public class HttpConnection
 {
-    public static final String WIRE_LOG           = LogUtils.LOG_PREFIX
-                                                      + LogUtils.LOG_WIRE_PREFIX;
-    public static final String CONN_LOG           = LogUtils.LOG_PREFIX
-                                                      + LogUtils.LOG_CONN_PREFIX;
+    public static final String WIRE_LOG         = LogUtils.LOG_PREFIX
+                                                    + LogUtils.LOG_WIRE_PREFIX;
+    public static final String CONN_LOG         = LogUtils.LOG_PREFIX
+                                                    + LogUtils.LOG_CONN_PREFIX;
 
-    private static final Log   _log               = LogUtils.makeLogger();
+    private static final Log   _log             = LogUtils.makeLogger();
 
-    private static final Log   _wireLog           = LogFactory.getLog(WIRE_LOG);
-    private static final Log   _connLog           = LogFactory.getLog(CONN_LOG);
+    private static final Log   _wireLog         = LogFactory.getLog(WIRE_LOG);
+    private static final Log   _connLog         = LogFactory.getLog(CONN_LOG);
 
-    protected static final int MAX_WRITE_BUFFER_SIZE = 16 * 1024;
-    protected static final int MAX_READ_BUFFER_SIZE = 2 * 1024;
-    
     public String              _host;
-    public int                 _port              = -1;
+    public int                 _port            = -1;
 
     /**
      * The host/port string to use when part of a URL. This has the port number
@@ -130,7 +127,7 @@ public class HttpConnection
     HttpConnectionThread       _connectionThread;
 
     String                     _proxyHost;
-    int                        _proxyPort         = -1;
+    int                        _proxyPort       = -1;
 
     Socket                     _socket;
 
@@ -140,16 +137,16 @@ public class HttpConnection
     // A request has been written but not flushed
     boolean                    _needsFlush;
 
-    static final int           CS_VIRGIN          = 0;
-    static final int           CS_OPEN            = 1;
+    static final int           CS_VIRGIN        = 0;
+    static final int           CS_OPEN          = 1;
 
     // This is set when the connection needs to close, but cannot right
     // now because other threads are working on it. When the last thread
     // finishes with the connection, it is closed. This is synchronized
     // using this object.
-    static final int           CS_PENDING_CLOSE   = 2;
+    static final int           CS_PENDING_CLOSE = 2;
 
-    static final int           CS_CLOSED          = 3;
+    static final int           CS_CLOSED        = 3;
 
     int                        _state;
 
@@ -211,12 +208,12 @@ public class HttpConnection
 
     // Credential associated with this connection if the authentication
     // is session-based.
-    UserCredential[]           _credential        = new UserCredential[HttpURLConnection.AUTH_PROXY + 1];
+    UserCredential[]           _credential      = new UserCredential[HttpURLConnection.AUTH_PROXY + 1];
 
     // The authentication protocol associated with the above credential
     // Initially set to -1 meaning unknown. Protocol zero means no
     // authentication is done on the connection
-    int[]                      _authProtocol      = new int[] { -1, -1 };
+    int[]                      _authProtocol    = new int[] { -1, -1 };
 
     /**
      * Indicates that NTLM authentication is being used on this connection. This
@@ -941,6 +938,12 @@ public class HttpConnection
         }
     }
 
+    public Socket getSocket()
+    {
+        return _socket;
+    }
+    
+    
     private final void checkCertificate(X509Certificate cert, String hostName)
         throws IOException
     {
@@ -1062,11 +1065,15 @@ public class HttpConnection
                                             null);
         }
 
+        GlobalState gs = _connManager._globalState;
+
+        if (gs._writeBufferSize != -1)
+            _socket.setSendBufferSize(gs._writeBufferSize);
         int buffSize = _socket.getSendBufferSize();
-        if (buffSize > MAX_WRITE_BUFFER_SIZE)
-            buffSize = MAX_WRITE_BUFFER_SIZE;
+
         if (_connLog.isDebugEnabled())
             _connLog.debug("sendbuf size: " + buffSize);
+        //System.out.println("sendbuf size: " + buffSize);
         _output = new ExposedBufferOutputStream(os, buffSize)
         {
             protected void countFlush()
@@ -1076,9 +1083,10 @@ public class HttpConnection
             }
         };
 
+        if (gs._readBufferSize != -1)
+            _socket.setReceiveBufferSize(gs._readBufferSize);
         buffSize = _socket.getReceiveBufferSize();
-        if (buffSize > MAX_READ_BUFFER_SIZE)
-            buffSize = MAX_READ_BUFFER_SIZE;
+        //System.out.println("recvbuf size: " + buffSize);
         if (_connLog.isDebugEnabled())
             _connLog.debug("recvbuf size: " + buffSize);
         _input = new ExposedBufferInputStream(is, buffSize);

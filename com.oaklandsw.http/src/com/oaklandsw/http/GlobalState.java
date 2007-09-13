@@ -106,6 +106,9 @@ public class GlobalState
 
     HttpUserAgent                  _defaultUserAgent;
 
+    int                            _writeBufferSize                 = HttpURLConnection.DEFAULT_SEND_BUFFER_SIZE;
+    int                            _readBufferSize                  = HttpURLConnection.DEFAULT_RECEIVE_BUFFER_SIZE;
+
     private class DefaultHostnameVerifier implements HostnameVerifier
     {
         public boolean verify(String hostName, SSLSession session)

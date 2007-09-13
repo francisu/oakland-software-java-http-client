@@ -657,7 +657,20 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
 
     protected static byte[]            USER_AGENT;
 
-    // This userAgent string is necessary for NTLM/IIS
+    public static final int            SOCKET_RECEIVE                       = 1;
+    public static final int            SOCKET_SEND                          = 2;
+
+    /**
+     * The default size of the socket write buffer. This is large to exploit
+     * pipelining if that is used.
+     */
+    public static final int            DEFAULT_SEND_BUFFER_SIZE             = -1;
+
+    /**
+     * The default size of the socket read buffer.
+     */
+    public static final int            DEFAULT_RECEIVE_BUFFER_SIZE          = -1;
+
     public static String               DEFAULT_USER_AGENT                   = "OaklandSoftware/"
                                                                                 + Version.VERSION;
 
@@ -3656,7 +3669,7 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
     public static String dumpAll()
     {
         StringBuffer sb = new StringBuffer();
-        
+
         sb.append(getStaticConfiguration());
         sb.append(getStatistics());
         sb.append(getConnectionPool());
@@ -3832,6 +3845,54 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
     public void setSSLSocketFactory(SSLSocketFactory factory)
     {
         _sslSocketFactory = factory;
+    }
+
+    /**
+     * Sets the buffer size to be used for the underlying sockets for all
+     * connections.
+     * 
+     * @param type
+     *            specify either SOCKET_READ or SOCKET_WRITE.
+     * @param size
+     *            the buffer size in bytes. Specify -1 to use the default system
+     *            setting for the buffer size. The defaults are found in the
+     *            constants {@link DEFAULT_SEND_BUFFER_SIZE} and
+     *            {@link DEFAULT_RECEIVE_BUFFER_SIZE}.
+     */
+    public static void setSocketBufferSize(int type, int size)
+    {
+        switch (type)
+        {
+            case SOCKET_RECEIVE:
+                checkConnectionManager()._globalState._readBufferSize = size;
+                break;
+            case SOCKET_SEND:
+                checkConnectionManager()._globalState._writeBufferSize = size;
+                break;
+            default:
+                throw new IllegalArgumentException("Specify SOCKET_READ or SOCKET_WRITE for the type parameter");
+        }
+    }
+
+    /**
+     * Gets the buffer size to be used for the underlying sockets for all
+     * connections.
+     * 
+     * @param type
+     *            specify either SOCKET_READ or SOCKET_WRITE.
+     * @return the buffer size in bytes.
+     */
+    public static int getSocketBufferSize(int type)
+    {
+        switch (type)
+        {
+            case SOCKET_RECEIVE:
+                return checkConnectionManager()._globalState._readBufferSize;
+            case SOCKET_SEND:
+                return checkConnectionManager()._globalState._writeBufferSize;
+            default:
+                throw new IllegalArgumentException("Specify SOCKET_READ or SOCKET_WRITE for the type parameter");
+        }
     }
 
     /**

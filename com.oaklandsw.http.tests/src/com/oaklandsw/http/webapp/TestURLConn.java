@@ -3,6 +3,7 @@ package com.oaklandsw.http.webapp;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.Socket;
 import java.net.URL;
 import java.net.URLConnection;
 
@@ -11,6 +12,7 @@ import org.apache.commons.logging.Log;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
+import com.oaklandsw.http.HttpConnection;
 import com.oaklandsw.http.HttpURLConnection;
 import com.oaklandsw.http.servlet.HeaderServlet;
 import com.oaklandsw.http.servlet.ParamServlet;
@@ -292,6 +294,67 @@ public class TestURLConn extends TestWebappBase
         catch (IOException ex)
         {
             // got expected exception
+        }
+    }
+
+    public void testBufferSizesDefault() throws Exception
+    {
+        HttpURLConnection urlCon;
+
+        // Create a new connection
+        URL url = new URL(_urlBase + HeaderServlet.NAME);
+        urlCon = HttpURLConnection.openConnection(url);
+        urlCon.getResponseCode();
+        HttpConnection conn = urlCon.getConnection();
+        Socket socket = conn.getSocket();
+        assertEquals(HttpURLConnection.DEFAULT_SEND_BUFFER_SIZE, socket
+                .getSendBufferSize());
+        assertEquals(HttpURLConnection.DEFAULT_RECEIVE_BUFFER_SIZE, socket
+                .getReceiveBufferSize());
+    }
+
+    
+    public void testBufferSizesReceive() throws Exception
+    {
+        URL url = new URL(_urlBase + HeaderServlet.NAME);
+        HttpURLConnection urlCon;
+
+        HttpURLConnection.setSocketBufferSize(HttpURLConnection.SOCKET_RECEIVE,
+                                              16000);
+        urlCon = HttpURLConnection.openConnection(url);
+        urlCon.getResponseCode();
+        HttpConnection conn = urlCon.getConnection();
+        Socket socket = conn.getSocket();
+        assertEquals(16000, socket.getReceiveBufferSize());
+        assertEquals(HttpURLConnection.DEFAULT_SEND_BUFFER_SIZE, socket
+                .getSendBufferSize());
+    }
+
+    public void testBufferSizesSend() throws Exception
+    {
+        URL url = new URL(_urlBase + HeaderServlet.NAME);
+        HttpURLConnection urlCon;
+        HttpURLConnection.setSocketBufferSize(HttpURLConnection.SOCKET_SEND,
+                                              32000);
+        urlCon = HttpURLConnection.openConnection(url);
+        urlCon.getResponseCode();
+        HttpConnection conn = urlCon.getConnection();
+        Socket socket = conn.getSocket();
+        assertEquals(32000, socket.getSendBufferSize());
+        assertEquals(HttpURLConnection.DEFAULT_RECEIVE_BUFFER_SIZE, socket
+                .getReceiveBufferSize());
+    }
+
+    public void testBufferSizesBad() throws Exception
+    {
+        try
+        {
+            HttpURLConnection.setSocketBufferSize(0, 1000);
+            fail("did not get exception");
+        }
+        catch (IllegalArgumentException ex)
+        {
+            // Expected
         }
     }
 
