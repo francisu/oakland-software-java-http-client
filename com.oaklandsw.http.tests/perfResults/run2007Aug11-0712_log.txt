@@ -1,0 +1,3619 @@
+0     INFO [main]    com.oaklandsw.http.TestPerf - Where,Product,Size (K),Avg ms/Trans,Connections,Threads,Avg Pipe Depth,Count,Repeats,Min ms/Trans,Max ms/Trans,Total ms,ms/Trans,PipeDepth,ForceFlushes,BufferFlushes,AvoidedFlushes,Retry,PLRetry,StartTime
+1     INFO [main]    com.oaklandsw.http.TestPerf - Where,Product,Size (K),ms/Trans,Connections,Threads,Pipe Depth,Count,Repeats,Total ms,ForceFlushes,BufferFlushes,AvoidedFlushes,Retry,PLRetry,StartTime
+157   INFO [main]    com.oaklandsw.http.TestPerf - Start Time: 07:12:16.682
+157   INFO [main]    com.oaklandsw.http.TestPerf - Using: Oakland implementation
+157   INFO [main]    com.oaklandsw.http.TestPerf - URL: http://repoman:8081/4k
+157   INFO [main]    com.oaklandsw.http.TestPerf - Times/thread: 2000
+157   INFO [main]    com.oaklandsw.http.TestPerf - Threads: 1
+158   INFO [main]    com.oaklandsw.http.TestPerf - Using max: 10 connections.
+173   INFO [main]    com.oaklandsw.http.TestPerf - START time: 1186841536848
+898   INFO [main]    com.oaklandsw.http.TestPerf - END/Total time: 1186841537573/725
+898   INFO [main]    com.oaklandsw.http.TestPerf - connection pool before close
+899   INFO [main]    com.oaklandsw.http.TestPerf - Max connections/host:    10
+Pipelining options:    PIPE_PIPELINE PIPE_MAX_CONNECTIONS 
+Pipelining max depth:  1
+Authentication Type:   NONE (0)
+Retry counts: 
+Pipeline Retry counts: 
+Counts: 
+UrlCons Attempted:               2000
+UrlCons Success:                 2000
+Total retries:                   0
+Total pipelined retries:         0
+UrlCons Failed Max Retries:      0
+UrlCons Failed > 400:            0
+Pipeline max depth (all conns):  1
+Forced Flushes:                  4000
+Buffer Flushes:                  0
+Avoided Flushes:                 0
+Flush IOExceptions:              0
+Connection: http://repoman:8081
+  Total connections created: 10
+  Avail connections:         10
+  Assigned connections:      0
+  Observed max urlcons before close: 0
+Assigned connections: 
+Available connections: 
+    10625551 repoman:8081 (53899) CS_OPEN 
+      Total requested urlcons:      191
+      Total responded urlcons:      191
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 1
+    5253145 repoman:8081 (53904) CS_OPEN 
+      Total requested urlcons:      222
+      Total responded urlcons:      222
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 1
+    121226 repoman:8081 (53905) CS_OPEN 
+      Total requested urlcons:      186
+      Total responded urlcons:      186
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 1
+    25865024 repoman:8081 (53906) CS_OPEN 
+      Total requested urlcons:      199
+      Total responded urlcons:      199
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 1
+    10481832 repoman:8081 (53902) CS_OPEN 
+      Total requested urlcons:      202
+      Total responded urlcons:      202
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 1
+    31248093 repoman:8081 (53900) CS_OPEN 
+      Total requested urlcons:      206
+      Total responded urlcons:      206
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 1
+    15758165 repoman:8081 (53907) CS_OPEN 
+      Total requested urlcons:      170
+      Total responded urlcons:      170
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 1
+    672904 repoman:8081 (53901) CS_OPEN 
+      Total requested urlcons:      215
+      Total responded urlcons:      215
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 1
+    32308743 repoman:8081 (53903) CS_OPEN 
+      Total requested urlcons:      214
+      Total responded urlcons:      214
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 1
+    30167145 repoman:8081 (53898) CS_OPEN 
+      Total requested urlcons:      195
+      Total responded urlcons:      195
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 1
+
+899   INFO [main]    com.oaklandsw.http.TestPerf - Total Time (ms): 725 Time/trans (ms): 0.3625
+901   INFO [main]    com.oaklandsw.http.TestPerf - Start Time: 07:12:16.682
+901   INFO [main]    com.oaklandsw.http.TestPerf - Using: Oakland implementation
+901   INFO [main]    com.oaklandsw.http.TestPerf - URL: http://repoman:8081/4k
+901   INFO [main]    com.oaklandsw.http.TestPerf - Times/thread: 2000
+901   INFO [main]    com.oaklandsw.http.TestPerf - Threads: 1
+902   INFO [main]    com.oaklandsw.http.TestPerf - Using max: 10 connections.
+943   INFO [main]    com.oaklandsw.http.TestPerf - START time: 1186841537618
+1405  INFO [main]    com.oaklandsw.http.TestPerf - END/Total time: 1186841538080/462
+1405  INFO [main]    com.oaklandsw.http.TestPerf - connection pool before close
+1405  INFO [main]    com.oaklandsw.http.TestPerf - Max connections/host:    10
+Pipelining options:    PIPE_PIPELINE PIPE_MAX_CONNECTIONS 
+Pipelining max depth:  1
+Authentication Type:   NONE (0)
+Retry counts: 
+Pipeline Retry counts: 
+Counts: 
+UrlCons Attempted:               2000
+UrlCons Success:                 2000
+Total retries:                   0
+Total pipelined retries:         0
+UrlCons Failed Max Retries:      0
+UrlCons Failed > 400:            0
+Pipeline max depth (all conns):  1
+Forced Flushes:                  4000
+Buffer Flushes:                  0
+Avoided Flushes:                 0
+Flush IOExceptions:              0
+Connection: http://repoman:8081
+  Total connections created: 10
+  Avail connections:         10
+  Assigned connections:      0
+  Observed max urlcons before close: 0
+Assigned connections: 
+Available connections: 
+    16900 repoman:8081 (53917) CS_OPEN 
+      Total requested urlcons:      158
+      Total responded urlcons:      158
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 1
+    28142411 repoman:8081 (53910) CS_OPEN 
+      Total requested urlcons:      149
+      Total responded urlcons:      149
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 1
+    11576309 repoman:8081 (53911) CS_OPEN 
+      Total requested urlcons:      191
+      Total responded urlcons:      191
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 1
+    6427893 repoman:8081 (53912) CS_OPEN 
+      Total requested urlcons:      294
+      Total responded urlcons:      294
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 1
+    3157607 repoman:8081 (53909) CS_OPEN 
+      Total requested urlcons:      239
+      Total responded urlcons:      239
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 1
+    26598747 repoman:8081 (53914) CS_OPEN 
+      Total requested urlcons:      142
+      Total responded urlcons:      142
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 1
+    5076660 repoman:8081 (53913) CS_OPEN 
+      Total requested urlcons:      223
+      Total responded urlcons:      223
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 1
+    30462244 repoman:8081 (53908) CS_OPEN 
+      Total requested urlcons:      245
+      Total responded urlcons:      245
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 1
+    14779369 repoman:8081 (53915) CS_OPEN 
+      Total requested urlcons:      185
+      Total responded urlcons:      185
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 1
+    21573890 repoman:8081 (53916) CS_OPEN 
+      Total requested urlcons:      174
+      Total responded urlcons:      174
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 1
+
+1405  INFO [main]    com.oaklandsw.http.TestPerf - Total Time (ms): 462 Time/trans (ms): 0.231
+1407  INFO [main]    com.oaklandsw.http.TestPerf - Start Time: 07:12:16.682
+1407  INFO [main]    com.oaklandsw.http.TestPerf - Using: Oakland implementation
+1407  INFO [main]    com.oaklandsw.http.TestPerf - URL: http://repoman:8081/4k
+1407  INFO [main]    com.oaklandsw.http.TestPerf - Times/thread: 2000
+1407  INFO [main]    com.oaklandsw.http.TestPerf - Threads: 1
+1407  INFO [main]    com.oaklandsw.http.TestPerf - Using max: 10 connections.
+1473  INFO [main]    com.oaklandsw.http.TestPerf - START time: 1186841538148
+2052  INFO [main]    com.oaklandsw.http.TestPerf - END/Total time: 1186841538727/579
+2052  INFO [main]    com.oaklandsw.http.TestPerf - connection pool before close
+2052  INFO [main]    com.oaklandsw.http.TestPerf - Max connections/host:    10
+Pipelining options:    PIPE_PIPELINE PIPE_MAX_CONNECTIONS 
+Pipelining max depth:  1
+Authentication Type:   NONE (0)
+Retry counts: 
+Pipeline Retry counts: 
+Counts: 
+UrlCons Attempted:               2000
+UrlCons Success:                 2000
+Total retries:                   0
+Total pipelined retries:         0
+UrlCons Failed Max Retries:      0
+UrlCons Failed > 400:            0
+Pipeline max depth (all conns):  1
+Forced Flushes:                  4000
+Buffer Flushes:                  0
+Avoided Flushes:                 0
+Flush IOExceptions:              0
+Connection: http://repoman:8081
+  Total connections created: 10
+  Avail connections:         10
+  Assigned connections:      0
+  Observed max urlcons before close: 0
+Assigned connections: 
+Available connections: 
+    6758293 repoman:8081 (53927) CS_OPEN 
+      Total requested urlcons:      131
+      Total responded urlcons:      131
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 1
+    19140890 repoman:8081 (53921) CS_OPEN 
+      Total requested urlcons:      191
+      Total responded urlcons:      191
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 1
+    31761534 repoman:8081 (53928) CS_OPEN 
+      Total requested urlcons:      280
+      Total responded urlcons:      280
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 1
+    26255574 repoman:8081 (53925) CS_OPEN 
+      Total requested urlcons:      163
+      Total responded urlcons:      163
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 1
+    3807284 repoman:8081 (53924) CS_OPEN 
+      Total requested urlcons:      199
+      Total responded urlcons:      199
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 1
+    7832149 repoman:8081 (53920) CS_OPEN 
+      Total requested urlcons:      178
+      Total responded urlcons:      178
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 1
+    24463001 repoman:8081 (53929) CS_OPEN 
+      Total requested urlcons:      173
+      Total responded urlcons:      173
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 1
+    17689439 repoman:8081 (53926) CS_OPEN 
+      Total requested urlcons:      207
+      Total responded urlcons:      207
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 1
+    2159683 repoman:8081 (53923) CS_OPEN 
+      Total requested urlcons:      236
+      Total responded urlcons:      236
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 1
+    4881910 repoman:8081 (53922) CS_OPEN 
+      Total requested urlcons:      242
+      Total responded urlcons:      242
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 1
+
+2052  INFO [main]    com.oaklandsw.http.TestPerf - Total Time (ms): 579 Time/trans (ms): 0.2895
+2054  INFO [main]    com.oaklandsw.http.TestPerf - Start Time: 07:12:16.682
+2054  INFO [main]    com.oaklandsw.http.TestPerf - Using: Oakland implementation
+2054  INFO [main]    com.oaklandsw.http.TestPerf - URL: http://repoman:8081/4k
+2054  INFO [main]    com.oaklandsw.http.TestPerf - Times/thread: 2000
+2054  INFO [main]    com.oaklandsw.http.TestPerf - Threads: 1
+2054  INFO [main]    com.oaklandsw.http.TestPerf - Using max: 10 connections.
+2102  INFO [main]    com.oaklandsw.http.TestPerf - START time: 1186841538776
+2529  INFO [main]    com.oaklandsw.http.TestPerf - END/Total time: 1186841539204/428
+2529  INFO [main]    com.oaklandsw.http.TestPerf - !!!Expected 2000 got: 1999
+2529  INFO [main]    com.oaklandsw.http.TestPerf - connection pool before close
+2529  INFO [main]    com.oaklandsw.http.TestPerf - Max connections/host:    10
+Pipelining options:    PIPE_PIPELINE PIPE_MAX_CONNECTIONS 
+Pipelining max depth:  1
+Authentication Type:   NONE (0)
+Retry counts: 
+Pipeline Retry counts: 
+Counts: 
+UrlCons Attempted:               2000
+UrlCons Success:                 2000
+Total retries:                   0
+Total pipelined retries:         0
+UrlCons Failed Max Retries:      0
+UrlCons Failed > 400:            0
+Pipeline max depth (all conns):  1
+Forced Flushes:                  4000
+Buffer Flushes:                  0
+Avoided Flushes:                 0
+Flush IOExceptions:              0
+Connection: http://repoman:8081
+  Total connections created: 10
+  Avail connections:         10
+  Assigned connections:      0
+  Observed max urlcons before close: 0
+Assigned connections: 
+Available connections: 
+    2799187 repoman:8081 (53936) CS_OPEN 
+      Total requested urlcons:      256
+      Total responded urlcons:      256
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 1
+    24737685 repoman:8081 (53934) CS_OPEN 
+      Total requested urlcons:      154
+      Total responded urlcons:      154
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 1
+    31534957 repoman:8081 (53939) CS_OPEN 
+      Total requested urlcons:      212
+      Total responded urlcons:      212
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 1
+    11328770 repoman:8081 (53938) CS_OPEN 
+      Total requested urlcons:      192
+      Total responded urlcons:      192
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 1
+    8345839 repoman:8081 (53937) CS_OPEN 
+      Total requested urlcons:      220
+      Total responded urlcons:      220
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 1
+    33175995 repoman:8081 (53935) CS_OPEN 
+      Total requested urlcons:      161
+      Total responded urlcons:      161
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 1
+    14894886 repoman:8081 (53940) CS_OPEN 
+      Total requested urlcons:      211
+      Total responded urlcons:      211
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 1
+    20348456 repoman:8081 (53933) CS_OPEN 
+      Total requested urlcons:      228
+      Total responded urlcons:      228
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 1
+    18481629 repoman:8081 (53931) CS_OPEN 
+      Total requested urlcons:      186
+      Total responded urlcons:      186
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 1
+    4101839 repoman:8081 (53932) CS_OPEN 
+      Total requested urlcons:      180
+      Total responded urlcons:      180
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 1
+
+2529  INFO [main]    com.oaklandsw.http.TestPerf - Total Time (ms): 428 Time/trans (ms): 999999.0
+2531  INFO [main]    com.oaklandsw.http.TestPerf - Start Time: 07:12:16.682
+2531  INFO [main]    com.oaklandsw.http.TestPerf - Using: Oakland implementation
+2531  INFO [main]    com.oaklandsw.http.TestPerf - URL: http://repoman:8081/4k
+2531  INFO [main]    com.oaklandsw.http.TestPerf - Times/thread: 2000
+2531  INFO [main]    com.oaklandsw.http.TestPerf - Threads: 1
+2531  INFO [main]    com.oaklandsw.http.TestPerf - Using max: 10 connections.
+2559  INFO [main]    com.oaklandsw.http.TestPerf - START time: 1186841539234
+3245  INFO [main]    com.oaklandsw.http.TestPerf - END/Total time: 1186841539920/686
+3245  INFO [main]    com.oaklandsw.http.TestPerf - connection pool before close
+3246  INFO [main]    com.oaklandsw.http.TestPerf - Max connections/host:    10
+Pipelining options:    PIPE_PIPELINE PIPE_MAX_CONNECTIONS 
+Pipelining max depth:  1
+Authentication Type:   NONE (0)
+Retry counts: 
+Pipeline Retry counts: 
+Counts: 
+UrlCons Attempted:               2000
+UrlCons Success:                 2000
+Total retries:                   0
+Total pipelined retries:         0
+UrlCons Failed Max Retries:      0
+UrlCons Failed > 400:            0
+Pipeline max depth (all conns):  1
+Forced Flushes:                  4000
+Buffer Flushes:                  0
+Avoided Flushes:                 0
+Flush IOExceptions:              0
+Connection: http://repoman:8081
+  Total connections created: 10
+  Avail connections:         10
+  Assigned connections:      0
+  Observed max urlcons before close: 0
+Assigned connections: 
+Available connections: 
+    19032695 repoman:8081 (53950) CS_OPEN 
+      Total requested urlcons:      290
+      Total responded urlcons:      290
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 1
+    32516997 repoman:8081 (53941) CS_OPEN 
+      Total requested urlcons:      215
+      Total responded urlcons:      215
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 1
+    9102426 repoman:8081 (53947) CS_OPEN 
+      Total requested urlcons:      185
+      Total responded urlcons:      185
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 1
+    18788761 repoman:8081 (53946) CS_OPEN 
+      Total requested urlcons:      171
+      Total responded urlcons:      171
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 1
+    934469 repoman:8081 (53945) CS_OPEN 
+      Total requested urlcons:      168
+      Total responded urlcons:      168
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 1
+    2736644 repoman:8081 (53948) CS_OPEN 
+      Total requested urlcons:      200
+      Total responded urlcons:      200
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 1
+    22892006 repoman:8081 (53942) CS_OPEN 
+      Total requested urlcons:      185
+      Total responded urlcons:      185
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 1
+    27318374 repoman:8081 (53949) CS_OPEN 
+      Total requested urlcons:      208
+      Total responded urlcons:      208
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 1
+    8550760 repoman:8081 (53943) CS_OPEN 
+      Total requested urlcons:      193
+      Total responded urlcons:      193
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 1
+    3521295 repoman:8081 (53944) CS_OPEN 
+      Total requested urlcons:      185
+      Total responded urlcons:      185
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 1
+
+3246  INFO [main]    com.oaklandsw.http.TestPerf - Total Time (ms): 686 Time/trans (ms): 0.343
+3246  INFO [main]    com.oaklandsw.http.TestPerf - 
+3256  INFO [main]    com.oaklandsw.http.TestPerf - Start Time: 07:12:16.682
+3256  INFO [main]    com.oaklandsw.http.TestPerf - Using: Oakland implementation
+3256  INFO [main]    com.oaklandsw.http.TestPerf - URL: http://repoman:8081/4k
+3256  INFO [main]    com.oaklandsw.http.TestPerf - Times/thread: 2000
+3256  INFO [main]    com.oaklandsw.http.TestPerf - Threads: 1
+3256  INFO [main]    com.oaklandsw.http.TestPerf - Using max: 10 connections.
+3401  INFO [main]    com.oaklandsw.http.TestPerf - START time: 1186841540076
+4011  INFO [main]    com.oaklandsw.http.TestPerf - END/Total time: 1186841540686/610
+4011  INFO [main]    com.oaklandsw.http.TestPerf - connection pool before close
+4011  INFO [main]    com.oaklandsw.http.TestPerf - Max connections/host:    10
+Pipelining options:    PIPE_PIPELINE PIPE_MAX_CONNECTIONS 
+Pipelining max depth:  1
+Authentication Type:   NONE (0)
+Retry counts: 
+Pipeline Retry counts: 
+Counts: 
+UrlCons Attempted:               2000
+UrlCons Success:                 2000
+Total retries:                   0
+Total pipelined retries:         0
+UrlCons Failed Max Retries:      0
+UrlCons Failed > 400:            0
+Pipeline max depth (all conns):  1
+Forced Flushes:                  4000
+Buffer Flushes:                  0
+Avoided Flushes:                 0
+Flush IOExceptions:              0
+Connection: http://repoman:8081
+  Total connections created: 10
+  Avail connections:         10
+  Assigned connections:      0
+  Observed max urlcons before close: 0
+Assigned connections: 
+Available connections: 
+    27255889 repoman:8081 (53954) CS_OPEN 
+      Total requested urlcons:      124
+      Total responded urlcons:      124
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 1
+    12898381 repoman:8081 (53953) CS_OPEN 
+      Total requested urlcons:      233
+      Total responded urlcons:      233
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 1
+    12366398 repoman:8081 (53960) CS_OPEN 
+      Total requested urlcons:      308
+      Total responded urlcons:      308
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 1
+    3865497 repoman:8081 (53952) CS_OPEN 
+      Total requested urlcons:      217
+      Total responded urlcons:      217
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 1
+    26275602 repoman:8081 (53956) CS_OPEN 
+      Total requested urlcons:      230
+      Total responded urlcons:      230
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 1
+    19948346 repoman:8081 (53958) CS_OPEN 
+      Total requested urlcons:      201
+      Total responded urlcons:      201
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 1
+    18769836 repoman:8081 (53955) CS_OPEN 
+      Total requested urlcons:      127
+      Total responded urlcons:      127
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 1
+    13506221 repoman:8081 (53957) CS_OPEN 
+      Total requested urlcons:      200
+      Total responded urlcons:      200
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 1
+    2457371 repoman:8081 (53959) CS_OPEN 
+      Total requested urlcons:      188
+      Total responded urlcons:      188
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 1
+    14850080 repoman:8081 (53951) CS_OPEN 
+      Total requested urlcons:      172
+      Total responded urlcons:      172
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 1
+
+4011  INFO [main]    com.oaklandsw.http.TestPerf - Total Time (ms): 610 Time/trans (ms): 0.305
+4011  INFO [main]    com.oaklandsw.http.TestPerf - Total run bytes: 8000
+4011  INFO [main]    com.oaklandsw.http.TestPerf - Total run conns: 20
+4012  INFO [main]    com.oaklandsw.http.TestPerf - LAN,Oakland,4,0.305,10,1,1,2000,3,610,4000,0,0,0,0,07:12:16.682
+4012  INFO [main]    com.oaklandsw.http.TestPerf - 
+4013  INFO [main]    com.oaklandsw.http.TestPerf - Start Time: 07:12:16.682
+4013  INFO [main]    com.oaklandsw.http.TestPerf - Using: Oakland implementation
+4014  INFO [main]    com.oaklandsw.http.TestPerf - URL: http://repoman:8081/4k
+4014  INFO [main]    com.oaklandsw.http.TestPerf - Times/thread: 2000
+4014  INFO [main]    com.oaklandsw.http.TestPerf - Threads: 1
+4014  INFO [main]    com.oaklandsw.http.TestPerf - Using max: 10 connections.
+4088  INFO [main]    com.oaklandsw.http.TestPerf - START time: 1186841540763
+4427  INFO [main]    com.oaklandsw.http.TestPerf - END/Total time: 1186841541102/339
+4427  INFO [main]    com.oaklandsw.http.TestPerf - connection pool before close
+4427  INFO [main]    com.oaklandsw.http.TestPerf - Max connections/host:    10
+Pipelining options:    PIPE_PIPELINE PIPE_MAX_CONNECTIONS 
+Pipelining max depth:  1
+Authentication Type:   NONE (0)
+Retry counts: 
+Pipeline Retry counts: 
+Counts: 
+UrlCons Attempted:               2000
+UrlCons Success:                 2000
+Total retries:                   0
+Total pipelined retries:         0
+UrlCons Failed Max Retries:      0
+UrlCons Failed > 400:            0
+Pipeline max depth (all conns):  1
+Forced Flushes:                  4000
+Buffer Flushes:                  0
+Avoided Flushes:                 0
+Flush IOExceptions:              0
+Connection: http://repoman:8081
+  Total connections created: 10
+  Avail connections:         10
+  Assigned connections:      0
+  Observed max urlcons before close: 0
+Assigned connections: 
+Available connections: 
+    12954112 repoman:8081 (53962) CS_OPEN 
+      Total requested urlcons:      118
+      Total responded urlcons:      118
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 1
+    22667604 repoman:8081 (53968) CS_OPEN 
+      Total requested urlcons:      201
+      Total responded urlcons:      201
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 1
+    31344098 repoman:8081 (53967) CS_OPEN 
+      Total requested urlcons:      188
+      Total responded urlcons:      188
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 1
+    10028020 repoman:8081 (53961) CS_OPEN 
+      Total requested urlcons:      192
+      Total responded urlcons:      192
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 1
+    27003862 repoman:8081 (53964) CS_OPEN 
+      Total requested urlcons:      158
+      Total responded urlcons:      158
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 1
+    11681042 repoman:8081 (53963) CS_OPEN 
+      Total requested urlcons:      199
+      Total responded urlcons:      199
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 1
+    10668 repoman:8081 (53965) CS_OPEN 
+      Total requested urlcons:      207
+      Total responded urlcons:      207
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 1
+    20371928 repoman:8081 (53966) CS_OPEN 
+      Total requested urlcons:      335
+      Total responded urlcons:      335
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 1
+    16954038 repoman:8081 (53970) CS_OPEN 
+      Total requested urlcons:      251
+      Total responded urlcons:      251
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 1
+    26577913 repoman:8081 (53969) CS_OPEN 
+      Total requested urlcons:      151
+      Total responded urlcons:      151
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 1
+
+4427  INFO [main]    com.oaklandsw.http.TestPerf - Total Time (ms): 339 Time/trans (ms): 0.1695
+4427  INFO [main]    com.oaklandsw.http.TestPerf - Total run bytes: 8000
+4427  INFO [main]    com.oaklandsw.http.TestPerf - Total run conns: 20
+4427  INFO [main]    com.oaklandsw.http.TestPerf - LAN,Oakland,4,0.1695,10,1,1,2000,3,339,4000,0,0,0,0,07:12:16.682
+4427  INFO [main]    com.oaklandsw.http.TestPerf - 
+4429  INFO [main]    com.oaklandsw.http.TestPerf - Start Time: 07:12:16.682
+4429  INFO [main]    com.oaklandsw.http.TestPerf - Using: Oakland implementation
+4429  INFO [main]    com.oaklandsw.http.TestPerf - URL: http://repoman:8081/4k
+4429  INFO [main]    com.oaklandsw.http.TestPerf - Times/thread: 2000
+4429  INFO [main]    com.oaklandsw.http.TestPerf - Threads: 1
+4429  INFO [main]    com.oaklandsw.http.TestPerf - Using max: 10 connections.
+4491  INFO [main]    com.oaklandsw.http.TestPerf - START time: 1186841541166
+4871  INFO [main]    com.oaklandsw.http.TestPerf - END/Total time: 1186841541546/380
+4871  INFO [main]    com.oaklandsw.http.TestPerf - connection pool before close
+4872  INFO [main]    com.oaklandsw.http.TestPerf - Max connections/host:    10
+Pipelining options:    PIPE_PIPELINE PIPE_MAX_CONNECTIONS 
+Pipelining max depth:  1
+Authentication Type:   NONE (0)
+Retry counts: 
+Pipeline Retry counts: 
+Counts: 
+UrlCons Attempted:               2000
+UrlCons Success:                 2000
+Total retries:                   0
+Total pipelined retries:         0
+UrlCons Failed Max Retries:      0
+UrlCons Failed > 400:            0
+Pipeline max depth (all conns):  1
+Forced Flushes:                  4000
+Buffer Flushes:                  0
+Avoided Flushes:                 0
+Flush IOExceptions:              0
+Connection: http://repoman:8081
+  Total connections created: 10
+  Avail connections:         10
+  Assigned connections:      0
+  Observed max urlcons before close: 0
+Assigned connections: 
+Available connections: 
+    7192009 repoman:8081 (53975) CS_OPEN 
+      Total requested urlcons:      38
+      Total responded urlcons:      38
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 1
+    16267615 repoman:8081 (53974) CS_OPEN 
+      Total requested urlcons:      168
+      Total responded urlcons:      168
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 1
+    11794872 repoman:8081 (53976) CS_OPEN 
+      Total requested urlcons:      143
+      Total responded urlcons:      143
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 1
+    23585701 repoman:8081 (53971) CS_OPEN 
+      Total requested urlcons:      194
+      Total responded urlcons:      194
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 1
+    16862753 repoman:8081 (53980) CS_OPEN 
+      Total requested urlcons:      158
+      Total responded urlcons:      158
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 1
+    11143287 repoman:8081 (53978) CS_OPEN 
+      Total requested urlcons:      177
+      Total responded urlcons:      177
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 1
+    3916302 repoman:8081 (53979) CS_OPEN 
+      Total requested urlcons:      159
+      Total responded urlcons:      159
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 1
+    1882017 repoman:8081 (53972) CS_OPEN 
+      Total requested urlcons:      283
+      Total responded urlcons:      283
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 1
+    5734515 repoman:8081 (53973) CS_OPEN 
+      Total requested urlcons:      390
+      Total responded urlcons:      390
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 1
+    3786945 repoman:8081 (53977) CS_OPEN 
+      Total requested urlcons:      290
+      Total responded urlcons:      290
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 1
+
+4872  INFO [main]    com.oaklandsw.http.TestPerf - Total Time (ms): 380 Time/trans (ms): 0.19
+4872  INFO [main]    com.oaklandsw.http.TestPerf - Total run bytes: 8000
+4872  INFO [main]    com.oaklandsw.http.TestPerf - Total run conns: 20
+4872  INFO [main]    com.oaklandsw.http.TestPerf - LAN,Oakland,4,0.19,10,1,1,2000,3,380,4000,0,0,0,0,07:12:16.682
+4872  INFO [main]    com.oaklandsw.http.TestPerf - LAN,Oakland,4,0.2215,10,1,1,2000,3,0.1695,0.305,1329,3,12000,0,0,0,0,07:12:16.682
+4872  INFO [main]    com.oaklandsw.http.TestPerf - 
+4874  INFO [main]    com.oaklandsw.http.TestPerf - Start Time: 07:12:21.547
+4874  INFO [main]    com.oaklandsw.http.TestPerf - Using: Oakland implementation
+4874  INFO [main]    com.oaklandsw.http.TestPerf - URL: http://repoman:8081/4k
+4874  INFO [main]    com.oaklandsw.http.TestPerf - Times/thread: 1000
+4874  INFO [main]    com.oaklandsw.http.TestPerf - Threads: 2
+4874  INFO [main]    com.oaklandsw.http.TestPerf - Using max: 10 connections.
+4942  INFO [main]    com.oaklandsw.http.TestPerf - START time: 1186841541617
+5377  INFO [main]    com.oaklandsw.http.TestPerf - END/Total time: 1186841542052/435
+5377  INFO [main]    com.oaklandsw.http.TestPerf - connection pool before close
+5377  INFO [main]    com.oaklandsw.http.TestPerf - Max connections/host:    10
+Pipelining options:    PIPE_PIPELINE PIPE_MAX_CONNECTIONS 
+Pipelining max depth:  1
+Authentication Type:   NONE (0)
+Retry counts: 
+Pipeline Retry counts: 
+Counts: 
+UrlCons Attempted:               2000
+UrlCons Success:                 2000
+Total retries:                   0
+Total pipelined retries:         0
+UrlCons Failed Max Retries:      0
+UrlCons Failed > 400:            0
+Pipeline max depth (all conns):  1
+Forced Flushes:                  4000
+Buffer Flushes:                  0
+Avoided Flushes:                 0
+Flush IOExceptions:              0
+Connection: http://repoman:8081
+  Total connections created: 10
+  Avail connections:         10
+  Assigned connections:      0
+  Observed max urlcons before close: 0
+Assigned connections: 
+Available connections: 
+    11875256 repoman:8081 (53990) CS_OPEN 
+      Total requested urlcons:      134
+      Total responded urlcons:      134
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 1
+    653967 repoman:8081 (53983) CS_OPEN 
+      Total requested urlcons:      190
+      Total responded urlcons:      190
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 1
+    9715140 repoman:8081 (53989) CS_OPEN 
+      Total requested urlcons:      188
+      Total responded urlcons:      188
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 1
+    20700470 repoman:8081 (53982) CS_OPEN 
+      Total requested urlcons:      182
+      Total responded urlcons:      182
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 1
+    22518320 repoman:8081 (53986) CS_OPEN 
+      Total requested urlcons:      167
+      Total responded urlcons:      167
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 1
+    9199266 repoman:8081 (53985) CS_OPEN 
+      Total requested urlcons:      225
+      Total responded urlcons:      225
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 1
+    13372929 repoman:8081 (53981) CS_OPEN 
+      Total requested urlcons:      232
+      Total responded urlcons:      232
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 1
+    21720045 repoman:8081 (53987) CS_OPEN 
+      Total requested urlcons:      228
+      Total responded urlcons:      228
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 1
+    14008569 repoman:8081 (53984) CS_OPEN 
+      Total requested urlcons:      265
+      Total responded urlcons:      265
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 1
+    20870565 repoman:8081 (53988) CS_OPEN 
+      Total requested urlcons:      189
+      Total responded urlcons:      189
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 1
+
+5377  INFO [main]    com.oaklandsw.http.TestPerf - Total Time (ms): 435 Time/trans (ms): 0.2175
+5377  INFO [main]    com.oaklandsw.http.TestPerf - Total run bytes: 8000
+5378  INFO [main]    com.oaklandsw.http.TestPerf - Total run conns: 20
+5378  INFO [main]    com.oaklandsw.http.TestPerf - LAN,Oakland,4,0.2175,10,2,1,2000,3,435,4000,0,0,0,0,07:12:21.547
+5378  INFO [main]    com.oaklandsw.http.TestPerf - 
+5389  INFO [main]    com.oaklandsw.http.TestPerf - Start Time: 07:12:21.547
+5389  INFO [main]    com.oaklandsw.http.TestPerf - Using: Oakland implementation
+5389  INFO [main]    com.oaklandsw.http.TestPerf - URL: http://repoman:8081/4k
+5389  INFO [main]    com.oaklandsw.http.TestPerf - Times/thread: 1000
+5389  INFO [main]    com.oaklandsw.http.TestPerf - Threads: 2
+5389  INFO [main]    com.oaklandsw.http.TestPerf - Using max: 10 connections.
+5466  INFO [main]    com.oaklandsw.http.TestPerf - START time: 1186841542141
+5941  INFO [main]    com.oaklandsw.http.TestPerf - END/Total time: 1186841542616/475
+5941  INFO [main]    com.oaklandsw.http.TestPerf - connection pool before close
+5953  INFO [main]    com.oaklandsw.http.TestPerf - Max connections/host:    10
+Pipelining options:    PIPE_PIPELINE PIPE_MAX_CONNECTIONS 
+Pipelining max depth:  1
+Authentication Type:   NONE (0)
+Retry counts: 
+Pipeline Retry counts: 
+Counts: 
+UrlCons Attempted:               2000
+UrlCons Success:                 2000
+Total retries:                   0
+Total pipelined retries:         0
+UrlCons Failed Max Retries:      0
+UrlCons Failed > 400:            0
+Pipeline max depth (all conns):  1
+Forced Flushes:                  4000
+Buffer Flushes:                  0
+Avoided Flushes:                 0
+Flush IOExceptions:              0
+Connection: http://repoman:8081
+  Total connections created: 10
+  Avail connections:         10
+  Assigned connections:      0
+  Observed max urlcons before close: 0
+Assigned connections: 
+Available connections: 
+    24118161 repoman:8081 (53999) CS_OPEN 
+      Total requested urlcons:      149
+      Total responded urlcons:      149
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 1
+    20436132 repoman:8081 (53998) CS_OPEN 
+      Total requested urlcons:      194
+      Total responded urlcons:      194
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 1
+    22881581 repoman:8081 (53997) CS_OPEN 
+      Total requested urlcons:      171
+      Total responded urlcons:      171
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 1
+    4176892 repoman:8081 (53994) CS_OPEN 
+      Total requested urlcons:      205
+      Total responded urlcons:      205
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 1
+    22741811 repoman:8081 (53991) CS_OPEN 
+      Total requested urlcons:      170
+      Total responded urlcons:      170
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 1
+    4395216 repoman:8081 (54000) CS_OPEN 
+      Total requested urlcons:      213
+      Total responded urlcons:      213
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 1
+    25849454 repoman:8081 (53993) CS_OPEN 
+      Total requested urlcons:      188
+      Total responded urlcons:      188
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 1
+    21906867 repoman:8081 (53995) CS_OPEN 
+      Total requested urlcons:      170
+      Total responded urlcons:      170
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 1
+    9411122 repoman:8081 (53992) CS_OPEN 
+      Total requested urlcons:      320
+      Total responded urlcons:      320
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 1
+    20684718 repoman:8081 (53996) CS_OPEN 
+      Total requested urlcons:      220
+      Total responded urlcons:      220
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 1
+
+5953  INFO [main]    com.oaklandsw.http.TestPerf - Total Time (ms): 475 Time/trans (ms): 0.2375
+5953  INFO [main]    com.oaklandsw.http.TestPerf - Total run bytes: 8000
+5953  INFO [main]    com.oaklandsw.http.TestPerf - Total run conns: 20
+5953  INFO [main]    com.oaklandsw.http.TestPerf - LAN,Oakland,4,0.2375,10,2,1,2000,3,475,4000,0,0,0,0,07:12:21.547
+5953  INFO [main]    com.oaklandsw.http.TestPerf - 
+5957  INFO [main]    com.oaklandsw.http.TestPerf - Start Time: 07:12:21.547
+5957  INFO [main]    com.oaklandsw.http.TestPerf - Using: Oakland implementation
+5957  INFO [main]    com.oaklandsw.http.TestPerf - URL: http://repoman:8081/4k
+5957  INFO [main]    com.oaklandsw.http.TestPerf - Times/thread: 1000
+5958  INFO [main]    com.oaklandsw.http.TestPerf - Threads: 2
+5958  INFO [main]    com.oaklandsw.http.TestPerf - Using max: 10 connections.
+6025  INFO [main]    com.oaklandsw.http.TestPerf - START time: 1186841542700
+6364  INFO [main]    com.oaklandsw.http.TestPerf - END/Total time: 1186841543039/339
+6364  INFO [main]    com.oaklandsw.http.TestPerf - connection pool before close
+6364  INFO [main]    com.oaklandsw.http.TestPerf - Max connections/host:    10
+Pipelining options:    PIPE_PIPELINE PIPE_MAX_CONNECTIONS 
+Pipelining max depth:  1
+Authentication Type:   NONE (0)
+Retry counts: 
+Pipeline Retry counts: 
+Counts: 
+UrlCons Attempted:               2000
+UrlCons Success:                 2000
+Total retries:                   0
+Total pipelined retries:         0
+UrlCons Failed Max Retries:      0
+UrlCons Failed > 400:            0
+Pipeline max depth (all conns):  1
+Forced Flushes:                  4000
+Buffer Flushes:                  0
+Avoided Flushes:                 0
+Flush IOExceptions:              0
+Connection: http://repoman:8081
+  Total connections created: 10
+  Avail connections:         10
+  Assigned connections:      0
+  Observed max urlcons before close: 0
+Assigned connections: 
+Available connections: 
+    2978880 repoman:8081 (54004) CS_OPEN 
+      Total requested urlcons:      183
+      Total responded urlcons:      183
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 1
+    13044493 repoman:8081 (54001) CS_OPEN 
+      Total requested urlcons:      178
+      Total responded urlcons:      178
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 1
+    30949581 repoman:8081 (54002) CS_OPEN 
+      Total requested urlcons:      297
+      Total responded urlcons:      297
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 1
+    16748627 repoman:8081 (54010) CS_OPEN 
+      Total requested urlcons:      189
+      Total responded urlcons:      189
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 1
+    28656482 repoman:8081 (54009) CS_OPEN 
+      Total requested urlcons:      217
+      Total responded urlcons:      217
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 1
+    12342678 repoman:8081 (54007) CS_OPEN 
+      Total requested urlcons:      174
+      Total responded urlcons:      174
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 1
+    31128495 repoman:8081 (54005) CS_OPEN 
+      Total requested urlcons:      179
+      Total responded urlcons:      179
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 1
+    4815108 repoman:8081 (54008) CS_OPEN 
+      Total requested urlcons:      216
+      Total responded urlcons:      216
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 1
+    15357025 repoman:8081 (54006) CS_OPEN 
+      Total requested urlcons:      186
+      Total responded urlcons:      186
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 1
+    3113238 repoman:8081 (54003) CS_OPEN 
+      Total requested urlcons:      181
+      Total responded urlcons:      181
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 1
+
+6364  INFO [main]    com.oaklandsw.http.TestPerf - Total Time (ms): 339 Time/trans (ms): 0.1695
+6364  INFO [main]    com.oaklandsw.http.TestPerf - Total run bytes: 8000
+6364  INFO [main]    com.oaklandsw.http.TestPerf - Total run conns: 20
+6364  INFO [main]    com.oaklandsw.http.TestPerf - LAN,Oakland,4,0.1695,10,2,1,2000,3,339,4000,0,0,0,0,07:12:21.547
+6364  INFO [main]    com.oaklandsw.http.TestPerf - LAN,Oakland,4,0.20816666,10,2,1,2000,3,0.1695,0.2375,1249,3,12000,0,0,0,0,07:12:21.547
+6364  INFO [main]    com.oaklandsw.http.TestPerf - 
+6369  INFO [main]    com.oaklandsw.http.TestPerf - Start Time: 07:12:23.039
+6369  INFO [main]    com.oaklandsw.http.TestPerf - Using: Oakland implementation
+6370  INFO [main]    com.oaklandsw.http.TestPerf - URL: http://repoman:8081/4k
+6370  INFO [main]    com.oaklandsw.http.TestPerf - Times/thread: 400
+6370  INFO [main]    com.oaklandsw.http.TestPerf - Threads: 5
+6370  INFO [main]    com.oaklandsw.http.TestPerf - Using max: 10 connections.
+6434  INFO [main]    com.oaklandsw.http.TestPerf - START time: 1186841543109
+6816  INFO [main]    com.oaklandsw.http.TestPerf - END/Total time: 1186841543491/382
+6816  INFO [main]    com.oaklandsw.http.TestPerf - connection pool before close
+6816  INFO [main]    com.oaklandsw.http.TestPerf - Max connections/host:    10
+Pipelining options:    PIPE_PIPELINE PIPE_MAX_CONNECTIONS 
+Pipelining max depth:  1
+Authentication Type:   NONE (0)
+Retry counts: 
+Pipeline Retry counts: 
+Counts: 
+UrlCons Attempted:               2000
+UrlCons Success:                 2000
+Total retries:                   0
+Total pipelined retries:         0
+UrlCons Failed Max Retries:      0
+UrlCons Failed > 400:            0
+Pipeline max depth (all conns):  1
+Forced Flushes:                  4000
+Buffer Flushes:                  0
+Avoided Flushes:                 0
+Flush IOExceptions:              0
+Connection: http://repoman:8081
+  Total connections created: 10
+  Avail connections:         10
+  Assigned connections:      0
+  Observed max urlcons before close: 0
+Assigned connections: 
+Available connections: 
+    23011228 repoman:8081 (54018) CS_OPEN 
+      Total requested urlcons:      219
+      Total responded urlcons:      219
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 1
+    6447371 repoman:8081 (54011) CS_OPEN 
+      Total requested urlcons:      186
+      Total responded urlcons:      186
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 1
+    40717 repoman:8081 (54020) CS_OPEN 
+      Total requested urlcons:      213
+      Total responded urlcons:      213
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 1
+    31220901 repoman:8081 (54016) CS_OPEN 
+      Total requested urlcons:      183
+      Total responded urlcons:      183
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 1
+    17030800 repoman:8081 (54012) CS_OPEN 
+      Total requested urlcons:      223
+      Total responded urlcons:      223
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 1
+    16886931 repoman:8081 (54017) CS_OPEN 
+      Total requested urlcons:      213
+      Total responded urlcons:      213
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 1
+    17284365 repoman:8081 (54019) CS_OPEN 
+      Total requested urlcons:      189
+      Total responded urlcons:      189
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 1
+    27790058 repoman:8081 (54015) CS_OPEN 
+      Total requested urlcons:      211
+      Total responded urlcons:      211
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 1
+    3885854 repoman:8081 (54014) CS_OPEN 
+      Total requested urlcons:      169
+      Total responded urlcons:      169
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 1
+    10656878 repoman:8081 (54013) CS_OPEN 
+      Total requested urlcons:      194
+      Total responded urlcons:      194
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 1
+
+6816  INFO [main]    com.oaklandsw.http.TestPerf - Total Time (ms): 382 Time/trans (ms): 0.191
+6816  INFO [main]    com.oaklandsw.http.TestPerf - Total run bytes: 8000
+6816  INFO [main]    com.oaklandsw.http.TestPerf - Total run conns: 20
+6816  INFO [main]    com.oaklandsw.http.TestPerf - LAN,Oakland,4,0.191,10,5,1,2000,3,382,4000,0,0,0,0,07:12:23.039
+6816  INFO [main]    com.oaklandsw.http.TestPerf - 
+6821  INFO [main]    com.oaklandsw.http.TestPerf - Start Time: 07:12:23.039
+6821  INFO [main]    com.oaklandsw.http.TestPerf - Using: Oakland implementation
+6821  INFO [main]    com.oaklandsw.http.TestPerf - URL: http://repoman:8081/4k
+6821  INFO [main]    com.oaklandsw.http.TestPerf - Times/thread: 400
+6821  INFO [main]    com.oaklandsw.http.TestPerf - Threads: 5
+6821  INFO [main]    com.oaklandsw.http.TestPerf - Using max: 10 connections.
+6886  INFO [main]    com.oaklandsw.http.TestPerf - START time: 1186841543561
+7246  INFO [main]    com.oaklandsw.http.TestPerf - END/Total time: 1186841543920/359
+7246  INFO [main]    com.oaklandsw.http.TestPerf - connection pool before close
+7246  INFO [main]    com.oaklandsw.http.TestPerf - Max connections/host:    10
+Pipelining options:    PIPE_PIPELINE PIPE_MAX_CONNECTIONS 
+Pipelining max depth:  1
+Authentication Type:   NONE (0)
+Retry counts: 
+Pipeline Retry counts: 
+Counts: 
+UrlCons Attempted:               2000
+UrlCons Success:                 2000
+Total retries:                   0
+Total pipelined retries:         0
+UrlCons Failed Max Retries:      0
+UrlCons Failed > 400:            0
+Pipeline max depth (all conns):  1
+Forced Flushes:                  4000
+Buffer Flushes:                  0
+Avoided Flushes:                 0
+Flush IOExceptions:              0
+Connection: http://repoman:8081
+  Total connections created: 10
+  Avail connections:         10
+  Assigned connections:      0
+  Observed max urlcons before close: 0
+Assigned connections: 
+Available connections: 
+    26030331 repoman:8081 (54029) CS_OPEN 
+      Total requested urlcons:      210
+      Total responded urlcons:      210
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 1
+    2159159 repoman:8081 (54023) CS_OPEN 
+      Total requested urlcons:      226
+      Total responded urlcons:      226
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 1
+    18423897 repoman:8081 (54022) CS_OPEN 
+      Total requested urlcons:      166
+      Total responded urlcons:      166
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 1
+    5958617 repoman:8081 (54024) CS_OPEN 
+      Total requested urlcons:      207
+      Total responded urlcons:      207
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 1
+    2622421 repoman:8081 (54025) CS_OPEN 
+      Total requested urlcons:      166
+      Total responded urlcons:      166
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 1
+    21860890 repoman:8081 (54030) CS_OPEN 
+      Total requested urlcons:      330
+      Total responded urlcons:      330
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 1
+    23538619 repoman:8081 (54026) CS_OPEN 
+      Total requested urlcons:      131
+      Total responded urlcons:      131
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 1
+    14513572 repoman:8081 (54028) CS_OPEN 
+      Total requested urlcons:      242
+      Total responded urlcons:      242
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 1
+    18721294 repoman:8081 (54021) CS_OPEN 
+      Total requested urlcons:      159
+      Total responded urlcons:      159
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 1
+    19559385 repoman:8081 (54027) CS_OPEN 
+      Total requested urlcons:      163
+      Total responded urlcons:      163
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 1
+
+7246  INFO [main]    com.oaklandsw.http.TestPerf - Total Time (ms): 359 Time/trans (ms): 0.1795
+7246  INFO [main]    com.oaklandsw.http.TestPerf - Total run bytes: 8000
+7246  INFO [main]    com.oaklandsw.http.TestPerf - Total run conns: 20
+7246  INFO [main]    com.oaklandsw.http.TestPerf - LAN,Oakland,4,0.1795,10,5,1,2000,3,359,4000,0,0,0,0,07:12:23.039
+7246  INFO [main]    com.oaklandsw.http.TestPerf - 
+7249  INFO [main]    com.oaklandsw.http.TestPerf - Start Time: 07:12:23.039
+7249  INFO [main]    com.oaklandsw.http.TestPerf - Using: Oakland implementation
+7249  INFO [main]    com.oaklandsw.http.TestPerf - URL: http://repoman:8081/4k
+7249  INFO [main]    com.oaklandsw.http.TestPerf - Times/thread: 400
+7249  INFO [main]    com.oaklandsw.http.TestPerf - Threads: 5
+7249  INFO [main]    com.oaklandsw.http.TestPerf - Using max: 10 connections.
+7315  INFO [main]    com.oaklandsw.http.TestPerf - START time: 1186841543990
+7661  INFO [main]    com.oaklandsw.http.TestPerf - END/Total time: 1186841544336/346
+7661  INFO [main]    com.oaklandsw.http.TestPerf - connection pool before close
+7662  INFO [main]    com.oaklandsw.http.TestPerf - Max connections/host:    10
+Pipelining options:    PIPE_PIPELINE PIPE_MAX_CONNECTIONS 
+Pipelining max depth:  1
+Authentication Type:   NONE (0)
+Retry counts: 
+Pipeline Retry counts: 
+Counts: 
+UrlCons Attempted:               2000
+UrlCons Success:                 2000
+Total retries:                   0
+Total pipelined retries:         0
+UrlCons Failed Max Retries:      0
+UrlCons Failed > 400:            0
+Pipeline max depth (all conns):  1
+Forced Flushes:                  4000
+Buffer Flushes:                  0
+Avoided Flushes:                 0
+Flush IOExceptions:              0
+Connection: http://repoman:8081
+  Total connections created: 10
+  Avail connections:         10
+  Assigned connections:      0
+  Observed max urlcons before close: 0
+Assigned connections: 
+Available connections: 
+    32623606 repoman:8081 (54038) CS_OPEN 
+      Total requested urlcons:      153
+      Total responded urlcons:      153
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 1
+    7099522 repoman:8081 (54032) CS_OPEN 
+      Total requested urlcons:      140
+      Total responded urlcons:      140
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 1
+    15427560 repoman:8081 (54037) CS_OPEN 
+      Total requested urlcons:      315
+      Total responded urlcons:      315
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 1
+    1173553 repoman:8081 (54035) CS_OPEN 
+      Total requested urlcons:      231
+      Total responded urlcons:      231
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 1
+    17165167 repoman:8081 (54031) CS_OPEN 
+      Total requested urlcons:      208
+      Total responded urlcons:      208
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 1
+    5263041 repoman:8081 (54039) CS_OPEN 
+      Total requested urlcons:      173
+      Total responded urlcons:      173
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 1
+    10480266 repoman:8081 (54034) CS_OPEN 
+      Total requested urlcons:      179
+      Total responded urlcons:      179
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 1
+    4618641 repoman:8081 (54036) CS_OPEN 
+      Total requested urlcons:      237
+      Total responded urlcons:      237
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 1
+    21363001 repoman:8081 (54033) CS_OPEN 
+      Total requested urlcons:      201
+      Total responded urlcons:      201
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 1
+    9324549 repoman:8081 (54040) CS_OPEN 
+      Total requested urlcons:      163
+      Total responded urlcons:      163
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 1
+
+7662  INFO [main]    com.oaklandsw.http.TestPerf - Total Time (ms): 346 Time/trans (ms): 0.173
+7662  INFO [main]    com.oaklandsw.http.TestPerf - Total run bytes: 8000
+7662  INFO [main]    com.oaklandsw.http.TestPerf - Total run conns: 20
+7662  INFO [main]    com.oaklandsw.http.TestPerf - LAN,Oakland,4,0.173,10,5,1,2000,3,346,4000,0,0,0,0,07:12:23.039
+7662  INFO [main]    com.oaklandsw.http.TestPerf - LAN,Oakland,4,0.18116666,10,5,1,2000,3,0.173,0.191,1087,3,12000,0,0,0,0,07:12:23.039
+7662  INFO [main]    com.oaklandsw.http.TestPerf - 
+7668  INFO [main]    com.oaklandsw.http.TestPerf - Start Time: 07:12:24.337
+7668  INFO [main]    com.oaklandsw.http.TestPerf - Using: Oakland implementation
+7668  INFO [main]    com.oaklandsw.http.TestPerf - URL: http://repoman:8081/4k
+7668  INFO [main]    com.oaklandsw.http.TestPerf - Times/thread: 200
+7668  INFO [main]    com.oaklandsw.http.TestPerf - Threads: 10
+7668  INFO [main]    com.oaklandsw.http.TestPerf - Using max: 10 connections.
+7736  INFO [main]    com.oaklandsw.http.TestPerf - START time: 1186841544411
+8094  INFO [main]    com.oaklandsw.http.TestPerf - END/Total time: 1186841544769/358
+8094  INFO [main]    com.oaklandsw.http.TestPerf - connection pool before close
+8095  INFO [main]    com.oaklandsw.http.TestPerf - Max connections/host:    10
+Pipelining options:    PIPE_PIPELINE PIPE_MAX_CONNECTIONS 
+Pipelining max depth:  1
+Authentication Type:   NONE (0)
+Retry counts: 
+Pipeline Retry counts: 
+Counts: 
+UrlCons Attempted:               2000
+UrlCons Success:                 2000
+Total retries:                   0
+Total pipelined retries:         0
+UrlCons Failed Max Retries:      0
+UrlCons Failed > 400:            0
+Pipeline max depth (all conns):  1
+Forced Flushes:                  4000
+Buffer Flushes:                  0
+Avoided Flushes:                 0
+Flush IOExceptions:              0
+Connection: http://repoman:8081
+  Total connections created: 10
+  Avail connections:         10
+  Assigned connections:      0
+  Observed max urlcons before close: 0
+Assigned connections: 
+Available connections: 
+    12893236 repoman:8081 (54041) CS_OPEN 
+      Total requested urlcons:      212
+      Total responded urlcons:      212
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 1
+    32739270 repoman:8081 (54044) CS_OPEN 
+      Total requested urlcons:      164
+      Total responded urlcons:      164
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 1
+    24769387 repoman:8081 (54045) CS_OPEN 
+      Total requested urlcons:      169
+      Total responded urlcons:      169
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 1
+    7654146 repoman:8081 (54048) CS_OPEN 
+      Total requested urlcons:      227
+      Total responded urlcons:      227
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 1
+    7310123 repoman:8081 (54046) CS_OPEN 
+      Total requested urlcons:      122
+      Total responded urlcons:      122
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 1
+    25106497 repoman:8081 (54050) CS_OPEN 
+      Total requested urlcons:      214
+      Total responded urlcons:      214
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 1
+    19601861 repoman:8081 (54047) CS_OPEN 
+      Total requested urlcons:      357
+      Total responded urlcons:      357
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 1
+    20545116 repoman:8081 (54042) CS_OPEN 
+      Total requested urlcons:      186
+      Total responded urlcons:      186
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 1
+    29812760 repoman:8081 (54049) CS_OPEN 
+      Total requested urlcons:      194
+      Total responded urlcons:      194
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 1
+    12085572 repoman:8081 (54043) CS_OPEN 
+      Total requested urlcons:      155
+      Total responded urlcons:      155
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 1
+
+8095  INFO [main]    com.oaklandsw.http.TestPerf - Total Time (ms): 358 Time/trans (ms): 0.179
+8095  INFO [main]    com.oaklandsw.http.TestPerf - Total run bytes: 8000
+8095  INFO [main]    com.oaklandsw.http.TestPerf - Total run conns: 20
+8095  INFO [main]    com.oaklandsw.http.TestPerf - LAN,Oakland,4,0.179,10,10,1,2000,3,358,4000,0,0,0,0,07:12:24.337
+8095  INFO [main]    com.oaklandsw.http.TestPerf - 
+8096  INFO [main]    com.oaklandsw.http.TestPerf - Start Time: 07:12:24.337
+8096  INFO [main]    com.oaklandsw.http.TestPerf - Using: Oakland implementation
+8097  INFO [main]    com.oaklandsw.http.TestPerf - URL: http://repoman:8081/4k
+8097  INFO [main]    com.oaklandsw.http.TestPerf - Times/thread: 200
+8097  INFO [main]    com.oaklandsw.http.TestPerf - Threads: 10
+8097  INFO [main]    com.oaklandsw.http.TestPerf - Using max: 10 connections.
+8164  INFO [main]    com.oaklandsw.http.TestPerf - START time: 1186841544839
+8516  INFO [main]    com.oaklandsw.http.TestPerf - END/Total time: 1186841545191/352
+8516  INFO [main]    com.oaklandsw.http.TestPerf - connection pool before close
+8516  INFO [main]    com.oaklandsw.http.TestPerf - Max connections/host:    10
+Pipelining options:    PIPE_PIPELINE PIPE_MAX_CONNECTIONS 
+Pipelining max depth:  1
+Authentication Type:   NONE (0)
+Retry counts: 
+Pipeline Retry counts: 
+Counts: 
+UrlCons Attempted:               2000
+UrlCons Success:                 2000
+Total retries:                   0
+Total pipelined retries:         0
+UrlCons Failed Max Retries:      0
+UrlCons Failed > 400:            0
+Pipeline max depth (all conns):  1
+Forced Flushes:                  4000
+Buffer Flushes:                  0
+Avoided Flushes:                 0
+Flush IOExceptions:              0
+Connection: http://repoman:8081
+  Total connections created: 10
+  Avail connections:         10
+  Assigned connections:      0
+  Observed max urlcons before close: 0
+Assigned connections: 
+Available connections: 
+    4873336 repoman:8081 (54059) CS_OPEN 
+      Total requested urlcons:      200
+      Total responded urlcons:      200
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 1
+    7577407 repoman:8081 (54052) CS_OPEN 
+      Total requested urlcons:      171
+      Total responded urlcons:      171
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 1
+    12730771 repoman:8081 (54053) CS_OPEN 
+      Total requested urlcons:      193
+      Total responded urlcons:      193
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 1
+    18082301 repoman:8081 (54054) CS_OPEN 
+      Total requested urlcons:      193
+      Total responded urlcons:      193
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 1
+    22459270 repoman:8081 (54055) CS_OPEN 
+      Total requested urlcons:      179
+      Total responded urlcons:      179
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 1
+    23954271 repoman:8081 (54051) CS_OPEN 
+      Total requested urlcons:      205
+      Total responded urlcons:      205
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 1
+    30145090 repoman:8081 (54056) CS_OPEN 
+      Total requested urlcons:      288
+      Total responded urlcons:      288
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 1
+    20056641 repoman:8081 (54058) CS_OPEN 
+      Total requested urlcons:      163
+      Total responded urlcons:      163
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 1
+    14765441 repoman:8081 (54060) CS_OPEN 
+      Total requested urlcons:      211
+      Total responded urlcons:      211
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 1
+    31346136 repoman:8081 (54057) CS_OPEN 
+      Total requested urlcons:      197
+      Total responded urlcons:      197
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 1
+
+8516  INFO [main]    com.oaklandsw.http.TestPerf - Total Time (ms): 352 Time/trans (ms): 0.176
+8516  INFO [main]    com.oaklandsw.http.TestPerf - Total run bytes: 8000
+8516  INFO [main]    com.oaklandsw.http.TestPerf - Total run conns: 20
+8516  INFO [main]    com.oaklandsw.http.TestPerf - LAN,Oakland,4,0.176,10,10,1,2000,3,352,4000,0,0,0,0,07:12:24.337
+8516  INFO [main]    com.oaklandsw.http.TestPerf - 
+8518  INFO [main]    com.oaklandsw.http.TestPerf - Start Time: 07:12:24.337
+8518  INFO [main]    com.oaklandsw.http.TestPerf - Using: Oakland implementation
+8518  INFO [main]    com.oaklandsw.http.TestPerf - URL: http://repoman:8081/4k
+8518  INFO [main]    com.oaklandsw.http.TestPerf - Times/thread: 200
+8518  INFO [main]    com.oaklandsw.http.TestPerf - Threads: 10
+8518  INFO [main]    com.oaklandsw.http.TestPerf - Using max: 10 connections.
+8585  INFO [main]    com.oaklandsw.http.TestPerf - START time: 1186841545260
+8934  INFO [main]    com.oaklandsw.http.TestPerf - END/Total time: 1186841545609/349
+8934  INFO [main]    com.oaklandsw.http.TestPerf - connection pool before close
+8935  INFO [main]    com.oaklandsw.http.TestPerf - Max connections/host:    10
+Pipelining options:    PIPE_PIPELINE PIPE_MAX_CONNECTIONS 
+Pipelining max depth:  1
+Authentication Type:   NONE (0)
+Retry counts: 
+Pipeline Retry counts: 
+Counts: 
+UrlCons Attempted:               2000
+UrlCons Success:                 2000
+Total retries:                   0
+Total pipelined retries:         0
+UrlCons Failed Max Retries:      0
+UrlCons Failed > 400:            0
+Pipeline max depth (all conns):  1
+Forced Flushes:                  4000
+Buffer Flushes:                  0
+Avoided Flushes:                 0
+Flush IOExceptions:              0
+Connection: http://repoman:8081
+  Total connections created: 10
+  Avail connections:         10
+  Assigned connections:      0
+  Observed max urlcons before close: 0
+Assigned connections: 
+Available connections: 
+    17578504 repoman:8081 (54063) CS_OPEN 
+      Total requested urlcons:      187
+      Total responded urlcons:      187
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 1
+    2280960 repoman:8081 (54070) CS_OPEN 
+      Total requested urlcons:      215
+      Total responded urlcons:      215
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 1
+    29118152 repoman:8081 (54065) CS_OPEN 
+      Total requested urlcons:      233
+      Total responded urlcons:      233
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 1
+    3658896 repoman:8081 (54067) CS_OPEN 
+      Total requested urlcons:      141
+      Total responded urlcons:      141
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 1
+    13320911 repoman:8081 (54064) CS_OPEN 
+      Total requested urlcons:      202
+      Total responded urlcons:      202
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 1
+    26684986 repoman:8081 (54068) CS_OPEN 
+      Total requested urlcons:      164
+      Total responded urlcons:      164
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 1
+    24957277 repoman:8081 (54069) CS_OPEN 
+      Total requested urlcons:      117
+      Total responded urlcons:      117
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 1
+    12578138 repoman:8081 (54062) CS_OPEN 
+      Total requested urlcons:      203
+      Total responded urlcons:      203
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 1
+    20194874 repoman:8081 (54061) CS_OPEN 
+      Total requested urlcons:      192
+      Total responded urlcons:      192
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 1
+    9012544 repoman:8081 (54066) CS_OPEN 
+      Total requested urlcons:      346
+      Total responded urlcons:      346
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 1
+
+8935  INFO [main]    com.oaklandsw.http.TestPerf - Total Time (ms): 349 Time/trans (ms): 0.1745
+8935  INFO [main]    com.oaklandsw.http.TestPerf - Total run bytes: 8000
+8935  INFO [main]    com.oaklandsw.http.TestPerf - Total run conns: 20
+8935  INFO [main]    com.oaklandsw.http.TestPerf - LAN,Oakland,4,0.1745,10,10,1,2000,3,349,4000,0,0,0,0,07:12:24.337
+8935  INFO [main]    com.oaklandsw.http.TestPerf - LAN,Oakland,4,0.17650001,10,10,1,2000,3,0.1745,0.179,1059,3,12000,0,0,0,0,07:12:24.337
+8935  INFO [main]    com.oaklandsw.http.TestPerf - 
+8937  INFO [main]    com.oaklandsw.http.TestPerf - Start Time: 07:12:25.610
+8937  INFO [main]    com.oaklandsw.http.TestPerf - Using: Oakland implementation
+8937  INFO [main]    com.oaklandsw.http.TestPerf - URL: http://repoman:8081/4k
+8937  INFO [main]    com.oaklandsw.http.TestPerf - Times/thread: 100
+8937  INFO [main]    com.oaklandsw.http.TestPerf - Threads: 20
+8937  INFO [main]    com.oaklandsw.http.TestPerf - Using max: 10 connections.
+9007  INFO [main]    com.oaklandsw.http.TestPerf - START time: 1186841545682
+9402  INFO [main]    com.oaklandsw.http.TestPerf - END/Total time: 1186841546077/395
+9402  INFO [main]    com.oaklandsw.http.TestPerf - connection pool before close
+9403  INFO [main]    com.oaklandsw.http.TestPerf - Max connections/host:    10
+Pipelining options:    PIPE_PIPELINE PIPE_MAX_CONNECTIONS 
+Pipelining max depth:  1
+Authentication Type:   NONE (0)
+Retry counts: 
+Pipeline Retry counts: 
+Counts: 
+UrlCons Attempted:               2000
+UrlCons Success:                 2000
+Total retries:                   0
+Total pipelined retries:         0
+UrlCons Failed Max Retries:      0
+UrlCons Failed > 400:            0
+Pipeline max depth (all conns):  1
+Forced Flushes:                  4000
+Buffer Flushes:                  0
+Avoided Flushes:                 0
+Flush IOExceptions:              0
+Connection: http://repoman:8081
+  Total connections created: 10
+  Avail connections:         10
+  Assigned connections:      0
+  Observed max urlcons before close: 0
+Assigned connections: 
+Available connections: 
+    9593070 repoman:8081 (54072) CS_OPEN 
+      Total requested urlcons:      172
+      Total responded urlcons:      172
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 1
+    14846251 repoman:8081 (54077) CS_OPEN 
+      Total requested urlcons:      284
+      Total responded urlcons:      284
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 1
+    4387666 repoman:8081 (54073) CS_OPEN 
+      Total requested urlcons:      214
+      Total responded urlcons:      214
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 1
+    6128991 repoman:8081 (54074) CS_OPEN 
+      Total requested urlcons:      151
+      Total responded urlcons:      151
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 1
+    31299729 repoman:8081 (54080) CS_OPEN 
+      Total requested urlcons:      244
+      Total responded urlcons:      244
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 1
+    3125250 repoman:8081 (54076) CS_OPEN 
+      Total requested urlcons:      156
+      Total responded urlcons:      156
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 1
+    15555997 repoman:8081 (54078) CS_OPEN 
+      Total requested urlcons:      178
+      Total responded urlcons:      178
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 1
+    1475050 repoman:8081 (54075) CS_OPEN 
+      Total requested urlcons:      206
+      Total responded urlcons:      206
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 1
+    20780034 repoman:8081 (54079) CS_OPEN 
+      Total requested urlcons:      201
+      Total responded urlcons:      201
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 1
+    26578114 repoman:8081 (54071) CS_OPEN 
+      Total requested urlcons:      194
+      Total responded urlcons:      194
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 1
+
+9403  INFO [main]    com.oaklandsw.http.TestPerf - Total Time (ms): 395 Time/trans (ms): 0.1975
+9403  INFO [main]    com.oaklandsw.http.TestPerf - Total run bytes: 8000
+9403  INFO [main]    com.oaklandsw.http.TestPerf - Total run conns: 20
+9403  INFO [main]    com.oaklandsw.http.TestPerf - LAN,Oakland,4,0.1975,10,20,1,2000,3,395,4000,0,0,0,0,07:12:25.610
+9403  INFO [main]    com.oaklandsw.http.TestPerf - 
+9405  INFO [main]    com.oaklandsw.http.TestPerf - Start Time: 07:12:25.610
+9405  INFO [main]    com.oaklandsw.http.TestPerf - Using: Oakland implementation
+9405  INFO [main]    com.oaklandsw.http.TestPerf - URL: http://repoman:8081/4k
+9405  INFO [main]    com.oaklandsw.http.TestPerf - Times/thread: 100
+9405  INFO [main]    com.oaklandsw.http.TestPerf - Threads: 20
+9405  INFO [main]    com.oaklandsw.http.TestPerf - Using max: 10 connections.
+9477  INFO [main]    com.oaklandsw.http.TestPerf - START time: 1186841546152
+9863  INFO [main]    com.oaklandsw.http.TestPerf - END/Total time: 1186841546538/386
+9863  INFO [main]    com.oaklandsw.http.TestPerf - connection pool before close
+9863  INFO [main]    com.oaklandsw.http.TestPerf - Max connections/host:    10
+Pipelining options:    PIPE_PIPELINE PIPE_MAX_CONNECTIONS 
+Pipelining max depth:  1
+Authentication Type:   NONE (0)
+Retry counts: 
+Pipeline Retry counts: 
+Counts: 
+UrlCons Attempted:               2000
+UrlCons Success:                 2000
+Total retries:                   0
+Total pipelined retries:         0
+UrlCons Failed Max Retries:      0
+UrlCons Failed > 400:            0
+Pipeline max depth (all conns):  1
+Forced Flushes:                  4000
+Buffer Flushes:                  0
+Avoided Flushes:                 0
+Flush IOExceptions:              0
+Connection: http://repoman:8081
+  Total connections created: 10
+  Avail connections:         10
+  Assigned connections:      0
+  Observed max urlcons before close: 0
+Assigned connections: 
+Available connections: 
+    5746264 repoman:8081 (54088) CS_OPEN 
+      Total requested urlcons:      171
+      Total responded urlcons:      171
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 1
+    32498805 repoman:8081 (54084) CS_OPEN 
+      Total requested urlcons:      191
+      Total responded urlcons:      191
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 1
+    15430449 repoman:8081 (54083) CS_OPEN 
+      Total requested urlcons:      170
+      Total responded urlcons:      170
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 1
+    25268096 repoman:8081 (54082) CS_OPEN 
+      Total requested urlcons:      169
+      Total responded urlcons:      169
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 1
+    20327011 repoman:8081 (54086) CS_OPEN 
+      Total requested urlcons:      298
+      Total responded urlcons:      298
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 1
+    14454885 repoman:8081 (54085) CS_OPEN 
+      Total requested urlcons:      214
+      Total responded urlcons:      214
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 1
+    13007496 repoman:8081 (54087) CS_OPEN 
+      Total requested urlcons:      230
+      Total responded urlcons:      230
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 1
+    17667533 repoman:8081 (54081) CS_OPEN 
+      Total requested urlcons:      215
+      Total responded urlcons:      215
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 1
+    33074396 repoman:8081 (54090) CS_OPEN 
+      Total requested urlcons:      162
+      Total responded urlcons:      162
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 1
+    24080548 repoman:8081 (54089) CS_OPEN 
+      Total requested urlcons:      180
+      Total responded urlcons:      180
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 1
+
+9864  INFO [main]    com.oaklandsw.http.TestPerf - Total Time (ms): 386 Time/trans (ms): 0.193
+9864  INFO [main]    com.oaklandsw.http.TestPerf - Total run bytes: 8000
+9864  INFO [main]    com.oaklandsw.http.TestPerf - Total run conns: 20
+9864  INFO [main]    com.oaklandsw.http.TestPerf - LAN,Oakland,4,0.193,10,20,1,2000,3,386,4000,0,0,0,0,07:12:25.610
+9864  INFO [main]    com.oaklandsw.http.TestPerf - 
+9865  INFO [main]    com.oaklandsw.http.TestPerf - Start Time: 07:12:25.610
+9865  INFO [main]    com.oaklandsw.http.TestPerf - Using: Oakland implementation
+9866  INFO [main]    com.oaklandsw.http.TestPerf - URL: http://repoman:8081/4k
+9866  INFO [main]    com.oaklandsw.http.TestPerf - Times/thread: 100
+9866  INFO [main]    com.oaklandsw.http.TestPerf - Threads: 20
+9866  INFO [main]    com.oaklandsw.http.TestPerf - Using max: 10 connections.
+9935  INFO [main]    com.oaklandsw.http.TestPerf - START time: 1186841546610
+10272  INFO [main]    com.oaklandsw.http.TestPerf - END/Total time: 1186841546947/337
+10272  INFO [main]    com.oaklandsw.http.TestPerf - connection pool before close
+10272  INFO [main]    com.oaklandsw.http.TestPerf - Max connections/host:    10
+Pipelining options:    PIPE_PIPELINE PIPE_MAX_CONNECTIONS 
+Pipelining max depth:  1
+Authentication Type:   NONE (0)
+Retry counts: 
+Pipeline Retry counts: 
+Counts: 
+UrlCons Attempted:               2000
+UrlCons Success:                 2000
+Total retries:                   0
+Total pipelined retries:         0
+UrlCons Failed Max Retries:      0
+UrlCons Failed > 400:            0
+Pipeline max depth (all conns):  1
+Forced Flushes:                  4000
+Buffer Flushes:                  0
+Avoided Flushes:                 0
+Flush IOExceptions:              0
+Connection: http://repoman:8081
+  Total connections created: 10
+  Avail connections:         10
+  Assigned connections:      0
+  Observed max urlcons before close: 0
+Assigned connections: 
+Available connections: 
+    6901522 repoman:8081 (54093) CS_OPEN 
+      Total requested urlcons:      181
+      Total responded urlcons:      181
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 1
+    5427620 repoman:8081 (54099) CS_OPEN 
+      Total requested urlcons:      208
+      Total responded urlcons:      208
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 1
+    30568553 repoman:8081 (54098) CS_OPEN 
+      Total requested urlcons:      210
+      Total responded urlcons:      210
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 1
+    3186591 repoman:8081 (54096) CS_OPEN 
+      Total requested urlcons:      185
+      Total responded urlcons:      185
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 1
+    13563633 repoman:8081 (54100) CS_OPEN 
+      Total requested urlcons:      207
+      Total responded urlcons:      207
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 1
+    14672643 repoman:8081 (54097) CS_OPEN 
+      Total requested urlcons:      207
+      Total responded urlcons:      207
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 1
+    13452612 repoman:8081 (54092) CS_OPEN 
+      Total requested urlcons:      228
+      Total responded urlcons:      228
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 1
+    11782857 repoman:8081 (54091) CS_OPEN 
+      Total requested urlcons:      186
+      Total responded urlcons:      186
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 1
+    33500699 repoman:8081 (54095) CS_OPEN 
+      Total requested urlcons:      203
+      Total responded urlcons:      203
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 1
+    3431235 repoman:8081 (54094) CS_OPEN 
+      Total requested urlcons:      185
+      Total responded urlcons:      185
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 1
+
+10272  INFO [main]    com.oaklandsw.http.TestPerf - Total Time (ms): 337 Time/trans (ms): 0.1685
+10272  INFO [main]    com.oaklandsw.http.TestPerf - Total run bytes: 8000
+10272  INFO [main]    com.oaklandsw.http.TestPerf - Total run conns: 20
+10272  INFO [main]    com.oaklandsw.http.TestPerf - LAN,Oakland,4,0.1685,10,20,1,2000,3,337,4000,0,0,0,0,07:12:25.610
+10272  INFO [main]    com.oaklandsw.http.TestPerf - LAN,Oakland,4,0.18633334,10,20,1,2000,3,0.1685,0.1975,1118,3,12000,0,0,0,0,07:12:25.610
+10273  INFO [main]    com.oaklandsw.http.TestPerf - 
+10274  INFO [main]    com.oaklandsw.http.TestPerf - Start Time: 07:12:26.947
+10274  INFO [main]    com.oaklandsw.http.TestPerf - Using: Oakland implementation
+10274  INFO [main]    com.oaklandsw.http.TestPerf - URL: http://repoman:8081/4k
+10274  INFO [main]    com.oaklandsw.http.TestPerf - Times/thread: 2000
+10274  INFO [main]    com.oaklandsw.http.TestPerf - Threads: 1
+10274  INFO [main]    com.oaklandsw.http.TestPerf - Using max: 10 connections.
+10345  INFO [main]    com.oaklandsw.http.TestPerf - START time: 1186841547020
+10607  INFO [main]    com.oaklandsw.http.TestPerf - END/Total time: 1186841547282/262
+10607  INFO [main]    com.oaklandsw.http.TestPerf - connection pool before close
+10608  INFO [main]    com.oaklandsw.http.TestPerf - Max connections/host:    10
+Pipelining options:    PIPE_PIPELINE PIPE_MAX_CONNECTIONS 
+Pipelining max depth:  2
+Authentication Type:   NONE (0)
+Retry counts: 
+Pipeline Retry counts: 
+Counts: 
+UrlCons Attempted:               2000
+UrlCons Success:                 2000
+Total retries:                   0
+Total pipelined retries:         0
+UrlCons Failed Max Retries:      0
+UrlCons Failed > 400:            0
+Pipeline max depth (all conns):  2
+Forced Flushes:                  3148
+Buffer Flushes:                  0
+Avoided Flushes:                 861
+Flush IOExceptions:              0
+Connection: http://repoman:8081
+  Total connections created: 10
+  Avail connections:         10
+  Assigned connections:      0
+  Observed max urlcons before close: 0
+Assigned connections: 
+Available connections: 
+    14327460 repoman:8081 (54107) CS_OPEN 
+      Total requested urlcons:      105
+      Total responded urlcons:      105
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 2
+    2003979 repoman:8081 (54106) CS_OPEN 
+      Total requested urlcons:      157
+      Total responded urlcons:      157
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 2
+    7225781 repoman:8081 (54109) CS_OPEN 
+      Total requested urlcons:      175
+      Total responded urlcons:      175
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 2
+    7339385 repoman:8081 (54104) CS_OPEN 
+      Total requested urlcons:      157
+      Total responded urlcons:      157
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 2
+    13305839 repoman:8081 (54101) CS_OPEN 
+      Total requested urlcons:      228
+      Total responded urlcons:      228
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 2
+    6289686 repoman:8081 (54108) CS_OPEN 
+      Total requested urlcons:      284
+      Total responded urlcons:      284
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 2
+    7149392 repoman:8081 (54105) CS_OPEN 
+      Total requested urlcons:      248
+      Total responded urlcons:      248
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 2
+    4254944 repoman:8081 (54110) CS_OPEN 
+      Total requested urlcons:      124
+      Total responded urlcons:      124
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 2
+    33212498 repoman:8081 (54103) CS_OPEN 
+      Total requested urlcons:      242
+      Total responded urlcons:      242
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 2
+    14425860 repoman:8081 (54102) CS_OPEN 
+      Total requested urlcons:      280
+      Total responded urlcons:      280
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 2
+
+10608  INFO [main]    com.oaklandsw.http.TestPerf - Total Time (ms): 262 Time/trans (ms): 0.131
+10608  INFO [main]    com.oaklandsw.http.TestPerf - Total run bytes: 8000
+10608  INFO [main]    com.oaklandsw.http.TestPerf - Total run conns: 20
+10608  INFO [main]    com.oaklandsw.http.TestPerf - LAN,Oakland,4,0.131,10,1,2,2000,3,262,3148,0,861,0,0,07:12:26.947
+10608  INFO [main]    com.oaklandsw.http.TestPerf - 
+10614  INFO [main]    com.oaklandsw.http.TestPerf - Start Time: 07:12:26.947
+10614  INFO [main]    com.oaklandsw.http.TestPerf - Using: Oakland implementation
+10614  INFO [main]    com.oaklandsw.http.TestPerf - URL: http://repoman:8081/4k
+10615  INFO [main]    com.oaklandsw.http.TestPerf - Times/thread: 2000
+10615  INFO [main]    com.oaklandsw.http.TestPerf - Threads: 1
+10615  INFO [main]    com.oaklandsw.http.TestPerf - Using max: 10 connections.
+10683  INFO [main]    com.oaklandsw.http.TestPerf - START time: 1186841547357
+10993  INFO [main]    com.oaklandsw.http.TestPerf - END/Total time: 1186841547668/311
+10994  INFO [main]    com.oaklandsw.http.TestPerf - connection pool before close
+10994  INFO [main]    com.oaklandsw.http.TestPerf - Max connections/host:    10
+Pipelining options:    PIPE_PIPELINE PIPE_MAX_CONNECTIONS 
+Pipelining max depth:  2
+Authentication Type:   NONE (0)
+Retry counts: 
+Pipeline Retry counts: 
+Counts: 
+UrlCons Attempted:               2000
+UrlCons Success:                 2000
+Total retries:                   0
+Total pipelined retries:         0
+UrlCons Failed Max Retries:      0
+UrlCons Failed > 400:            0
+Pipeline max depth (all conns):  2
+Forced Flushes:                  3208
+Buffer Flushes:                  0
+Avoided Flushes:                 792
+Flush IOExceptions:              0
+Connection: http://repoman:8081
+  Total connections created: 10
+  Avail connections:         10
+  Assigned connections:      0
+  Observed max urlcons before close: 0
+Assigned connections: 
+Available connections: 
+    6533862 repoman:8081 (54118) CS_OPEN 
+      Total requested urlcons:      69
+      Total responded urlcons:      69
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 2
+    13685038 repoman:8081 (54113) CS_OPEN 
+      Total requested urlcons:      248
+      Total responded urlcons:      248
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 2
+    33114244 repoman:8081 (54117) CS_OPEN 
+      Total requested urlcons:      152
+      Total responded urlcons:      152
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 2
+    24845668 repoman:8081 (54115) CS_OPEN 
+      Total requested urlcons:      246
+      Total responded urlcons:      246
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 2
+    24422114 repoman:8081 (54111) CS_OPEN 
+      Total requested urlcons:      193
+      Total responded urlcons:      193
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 2
+    27887470 repoman:8081 (54116) CS_OPEN 
+      Total requested urlcons:      117
+      Total responded urlcons:      117
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 2
+    17227669 repoman:8081 (54112) CS_OPEN 
+      Total requested urlcons:      257
+      Total responded urlcons:      257
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 2
+    7158674 repoman:8081 (54114) CS_OPEN 
+      Total requested urlcons:      282
+      Total responded urlcons:      282
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 2
+    13452238 repoman:8081 (54120) CS_OPEN 
+      Total requested urlcons:      212
+      Total responded urlcons:      212
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 2
+    3862294 repoman:8081 (54119) CS_OPEN 
+      Total requested urlcons:      224
+      Total responded urlcons:      224
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 2
+
+10994  INFO [main]    com.oaklandsw.http.TestPerf - Total Time (ms): 311 Time/trans (ms): 0.1555
+10994  INFO [main]    com.oaklandsw.http.TestPerf - Total run bytes: 8000
+10994  INFO [main]    com.oaklandsw.http.TestPerf - Total run conns: 20
+10994  INFO [main]    com.oaklandsw.http.TestPerf - LAN,Oakland,4,0.1555,10,1,2,2000,3,311,3208,0,792,0,0,07:12:26.947
+10994  INFO [main]    com.oaklandsw.http.TestPerf - 
+10996  INFO [main]    com.oaklandsw.http.TestPerf - Start Time: 07:12:26.947
+10996  INFO [main]    com.oaklandsw.http.TestPerf - Using: Oakland implementation
+10996  INFO [main]    com.oaklandsw.http.TestPerf - URL: http://repoman:8081/4k
+10996  INFO [main]    com.oaklandsw.http.TestPerf - Times/thread: 2000
+10996  INFO [main]    com.oaklandsw.http.TestPerf - Threads: 1
+10996  INFO [main]    com.oaklandsw.http.TestPerf - Using max: 10 connections.
+11077  INFO [main]    com.oaklandsw.http.TestPerf - START time: 1186841547752
+11345  INFO [main]    com.oaklandsw.http.TestPerf - END/Total time: 1186841548020/268
+11346  INFO [main]    com.oaklandsw.http.TestPerf - connection pool before close
+11346  INFO [main]    com.oaklandsw.http.TestPerf - Max connections/host:    10
+Pipelining options:    PIPE_PIPELINE PIPE_MAX_CONNECTIONS 
+Pipelining max depth:  2
+Authentication Type:   NONE (0)
+Retry counts: 
+Pipeline Retry counts: 
+Counts: 
+UrlCons Attempted:               2000
+UrlCons Success:                 2000
+Total retries:                   0
+Total pipelined retries:         0
+UrlCons Failed Max Retries:      0
+UrlCons Failed > 400:            0
+Pipeline max depth (all conns):  2
+Forced Flushes:                  3272
+Buffer Flushes:                  0
+Avoided Flushes:                 728
+Flush IOExceptions:              0
+Connection: http://repoman:8081
+  Total connections created: 10
+  Avail connections:         10
+  Assigned connections:      0
+  Observed max urlcons before close: 0
+Assigned connections: 
+Available connections: 
+    22823147 repoman:8081 (54129) CS_OPEN 
+      Total requested urlcons:      180
+      Total responded urlcons:      180
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 2
+    24145591 repoman:8081 (54121) CS_OPEN 
+      Total requested urlcons:      134
+      Total responded urlcons:      134
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 2
+    12950229 repoman:8081 (54125) CS_OPEN 
+      Total requested urlcons:      132
+      Total responded urlcons:      132
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 2
+    4365337 repoman:8081 (54126) CS_OPEN 
+      Total requested urlcons:      164
+      Total responded urlcons:      164
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 2
+    967734 repoman:8081 (54127) CS_OPEN 
+      Total requested urlcons:      160
+      Total responded urlcons:      160
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 2
+    9296787 repoman:8081 (54122) CS_OPEN 
+      Total requested urlcons:      181
+      Total responded urlcons:      181
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 2
+    11363603 repoman:8081 (54123) CS_OPEN 
+      Total requested urlcons:      117
+      Total responded urlcons:      117
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 2
+    28681679 repoman:8081 (54128) CS_OPEN 
+      Total requested urlcons:      236
+      Total responded urlcons:      236
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 2
+    25971327 repoman:8081 (54130) CS_OPEN 
+      Total requested urlcons:      479
+      Total responded urlcons:      479
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 2
+    30023838 repoman:8081 (54124) CS_OPEN 
+      Total requested urlcons:      217
+      Total responded urlcons:      217
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 2
+
+11346  INFO [main]    com.oaklandsw.http.TestPerf - Total Time (ms): 268 Time/trans (ms): 0.134
+11346  INFO [main]    com.oaklandsw.http.TestPerf - Total run bytes: 8000
+11346  INFO [main]    com.oaklandsw.http.TestPerf - Total run conns: 20
+11346  INFO [main]    com.oaklandsw.http.TestPerf - LAN,Oakland,4,0.134,10,1,2,2000,3,268,3272,0,728,0,0,07:12:26.947
+11346  INFO [main]    com.oaklandsw.http.TestPerf - LAN,Oakland,4,0.14016666,10,1,2,2000,3,0.131,0.1555,841,6,9628,0,2381,0,0,07:12:26.947
+11346  INFO [main]    com.oaklandsw.http.TestPerf - 
+11348  INFO [main]    com.oaklandsw.http.TestPerf - Start Time: 07:12:28.021
+11348  INFO [main]    com.oaklandsw.http.TestPerf - Using: Oakland implementation
+11348  INFO [main]    com.oaklandsw.http.TestPerf - URL: http://repoman:8081/4k
+11348  INFO [main]    com.oaklandsw.http.TestPerf - Times/thread: 1000
+11348  INFO [main]    com.oaklandsw.http.TestPerf - Threads: 2
+11348  INFO [main]    com.oaklandsw.http.TestPerf - Using max: 10 connections.
+11430  INFO [main]    com.oaklandsw.http.TestPerf - START time: 1186841548105
+11689  INFO [main]    com.oaklandsw.http.TestPerf - END/Total time: 1186841548364/259
+11690  INFO [main]    com.oaklandsw.http.TestPerf - connection pool before close
+11690  INFO [main]    com.oaklandsw.http.TestPerf - Max connections/host:    10
+Pipelining options:    PIPE_PIPELINE PIPE_MAX_CONNECTIONS 
+Pipelining max depth:  2
+Authentication Type:   NONE (0)
+Retry counts: 
+Pipeline Retry counts: 
+Counts: 
+UrlCons Attempted:               2000
+UrlCons Success:                 2000
+Total retries:                   0
+Total pipelined retries:         0
+UrlCons Failed Max Retries:      0
+UrlCons Failed > 400:            0
+Pipeline max depth (all conns):  2
+Forced Flushes:                  3351
+Buffer Flushes:                  0
+Avoided Flushes:                 649
+Flush IOExceptions:              0
+Connection: http://repoman:8081
+  Total connections created: 10
+  Avail connections:         10
+  Assigned connections:      0
+  Observed max urlcons before close: 0
+Assigned connections: 
+Available connections: 
+    32558929 repoman:8081 (54131) CS_OPEN 
+      Total requested urlcons:      70
+      Total responded urlcons:      70
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 2
+    31742556 repoman:8081 (54138) CS_OPEN 
+      Total requested urlcons:      92
+      Total responded urlcons:      92
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 2
+    1497769 repoman:8081 (54134) CS_OPEN 
+      Total requested urlcons:      170
+      Total responded urlcons:      170
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 2
+    20275290 repoman:8081 (54140) CS_OPEN 
+      Total requested urlcons:      190
+      Total responded urlcons:      190
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 2
+    27916412 repoman:8081 (54132) CS_OPEN 
+      Total requested urlcons:      161
+      Total responded urlcons:      161
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 2
+    1214005 repoman:8081 (54139) CS_OPEN 
+      Total requested urlcons:      203
+      Total responded urlcons:      203
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 2
+    11832081 repoman:8081 (54133) CS_OPEN 
+      Total requested urlcons:      189
+      Total responded urlcons:      189
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 2
+    21694491 repoman:8081 (54137) CS_OPEN 
+      Total requested urlcons:      477
+      Total responded urlcons:      477
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 2
+    8993129 repoman:8081 (54136) CS_OPEN 
+      Total requested urlcons:      196
+      Total responded urlcons:      196
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 2
+    25120699 repoman:8081 (54135) CS_OPEN 
+      Total requested urlcons:      252
+      Total responded urlcons:      252
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 2
+
+11690  INFO [main]    com.oaklandsw.http.TestPerf - Total Time (ms): 259 Time/trans (ms): 0.1295
+11690  INFO [main]    com.oaklandsw.http.TestPerf - Total run bytes: 8000
+11690  INFO [main]    com.oaklandsw.http.TestPerf - Total run conns: 20
+11690  INFO [main]    com.oaklandsw.http.TestPerf - LAN,Oakland,4,0.1295,10,2,2,2000,3,259,3351,0,649,0,0,07:12:28.021
+11690  INFO [main]    com.oaklandsw.http.TestPerf - 
+11692  INFO [main]    com.oaklandsw.http.TestPerf - Start Time: 07:12:28.021
+11692  INFO [main]    com.oaklandsw.http.TestPerf - Using: Oakland implementation
+11692  INFO [main]    com.oaklandsw.http.TestPerf - URL: http://repoman:8081/4k
+11692  INFO [main]    com.oaklandsw.http.TestPerf - Times/thread: 1000
+11692  INFO [main]    com.oaklandsw.http.TestPerf - Threads: 2
+11692  INFO [main]    com.oaklandsw.http.TestPerf - Using max: 10 connections.
+11757  INFO [main]    com.oaklandsw.http.TestPerf - START time: 1186841548432
+12028  INFO [main]    com.oaklandsw.http.TestPerf - END/Total time: 1186841548703/271
+12028  INFO [main]    com.oaklandsw.http.TestPerf - connection pool before close
+12028  INFO [main]    com.oaklandsw.http.TestPerf - Max connections/host:    10
+Pipelining options:    PIPE_PIPELINE PIPE_MAX_CONNECTIONS 
+Pipelining max depth:  2
+Authentication Type:   NONE (0)
+Retry counts: 
+Pipeline Retry counts: 
+Counts: 
+UrlCons Attempted:               2000
+UrlCons Success:                 2000
+Total retries:                   0
+Total pipelined retries:         0
+UrlCons Failed Max Retries:      0
+UrlCons Failed > 400:            0
+Pipeline max depth (all conns):  2
+Forced Flushes:                  3268
+Buffer Flushes:                  0
+Avoided Flushes:                 732
+Flush IOExceptions:              0
+Connection: http://repoman:8081
+  Total connections created: 10
+  Avail connections:         10
+  Assigned connections:      0
+  Observed max urlcons before close: 0
+Assigned connections: 
+Available connections: 
+    8622256 repoman:8081 (54149) CS_OPEN 
+      Total requested urlcons:      132
+      Total responded urlcons:      132
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 2
+    2100665 repoman:8081 (54143) CS_OPEN 
+      Total requested urlcons:      129
+      Total responded urlcons:      129
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 2
+    22922109 repoman:8081 (54144) CS_OPEN 
+      Total requested urlcons:      303
+      Total responded urlcons:      303
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 2
+    13872615 repoman:8081 (54148) CS_OPEN 
+      Total requested urlcons:      170
+      Total responded urlcons:      170
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 2
+    1729816 repoman:8081 (54147) CS_OPEN 
+      Total requested urlcons:      165
+      Total responded urlcons:      165
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 2
+    27081530 repoman:8081 (54150) CS_OPEN 
+      Total requested urlcons:      210
+      Total responded urlcons:      210
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 2
+    9102746 repoman:8081 (54145) CS_OPEN 
+      Total requested urlcons:      263
+      Total responded urlcons:      263
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 2
+    32643052 repoman:8081 (54142) CS_OPEN 
+      Total requested urlcons:      262
+      Total responded urlcons:      262
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 2
+    15868511 repoman:8081 (54141) CS_OPEN 
+      Total requested urlcons:      199
+      Total responded urlcons:      199
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 2
+    23903639 repoman:8081 (54146) CS_OPEN 
+      Total requested urlcons:      167
+      Total responded urlcons:      167
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 2
+
+12028  INFO [main]    com.oaklandsw.http.TestPerf - Total Time (ms): 271 Time/trans (ms): 0.1355
+12028  INFO [main]    com.oaklandsw.http.TestPerf - Total run bytes: 8000
+12028  INFO [main]    com.oaklandsw.http.TestPerf - Total run conns: 20
+12028  INFO [main]    com.oaklandsw.http.TestPerf - LAN,Oakland,4,0.1355,10,2,2,2000,3,271,3268,0,732,0,0,07:12:28.021
+12028  INFO [main]    com.oaklandsw.http.TestPerf - 
+12035  INFO [main]    com.oaklandsw.http.TestPerf - Start Time: 07:12:28.021
+12035  INFO [main]    com.oaklandsw.http.TestPerf - Using: Oakland implementation
+12035  INFO [main]    com.oaklandsw.http.TestPerf - URL: http://repoman:8081/4k
+12035  INFO [main]    com.oaklandsw.http.TestPerf - Times/thread: 1000
+12035  INFO [main]    com.oaklandsw.http.TestPerf - Threads: 2
+12035  INFO [main]    com.oaklandsw.http.TestPerf - Using max: 10 connections.
+12098  INFO [main]    com.oaklandsw.http.TestPerf - START time: 1186841548773
+12356  INFO [main]    com.oaklandsw.http.TestPerf - END/Total time: 1186841549031/258
+12356  INFO [main]    com.oaklandsw.http.TestPerf - connection pool before close
+12357  INFO [main]    com.oaklandsw.http.TestPerf - Max connections/host:    10
+Pipelining options:    PIPE_PIPELINE PIPE_MAX_CONNECTIONS 
+Pipelining max depth:  2
+Authentication Type:   NONE (0)
+Retry counts: 
+Pipeline Retry counts: 
+Counts: 
+UrlCons Attempted:               2000
+UrlCons Success:                 2000
+Total retries:                   0
+Total pipelined retries:         0
+UrlCons Failed Max Retries:      0
+UrlCons Failed > 400:            0
+Pipeline max depth (all conns):  2
+Forced Flushes:                  3207
+Buffer Flushes:                  0
+Avoided Flushes:                 793
+Flush IOExceptions:              0
+Connection: http://repoman:8081
+  Total connections created: 10
+  Avail connections:         10
+  Assigned connections:      0
+  Observed max urlcons before close: 0
+Assigned connections: 
+Available connections: 
+    24189261 repoman:8081 (54151) CS_OPEN 
+      Total requested urlcons:      157
+      Total responded urlcons:      157
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 2
+    30783644 repoman:8081 (54159) CS_OPEN 
+      Total requested urlcons:      203
+      Total responded urlcons:      203
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 2
+    26562441 repoman:8081 (54158) CS_OPEN 
+      Total requested urlcons:      139
+      Total responded urlcons:      139
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 2
+    15886558 repoman:8081 (54156) CS_OPEN 
+      Total requested urlcons:      267
+      Total responded urlcons:      267
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 2
+    1133335 repoman:8081 (54152) CS_OPEN 
+      Total requested urlcons:      221
+      Total responded urlcons:      221
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 2
+    15680772 repoman:8081 (54160) CS_OPEN 
+      Total requested urlcons:      168
+      Total responded urlcons:      168
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 2
+    24594643 repoman:8081 (54155) CS_OPEN 
+      Total requested urlcons:      259
+      Total responded urlcons:      259
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 2
+    10023314 repoman:8081 (54154) CS_OPEN 
+      Total requested urlcons:      293
+      Total responded urlcons:      293
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 2
+    29732654 repoman:8081 (54157) CS_OPEN 
+      Total requested urlcons:      140
+      Total responded urlcons:      140
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 2
+    23802395 repoman:8081 (54153) CS_OPEN 
+      Total requested urlcons:      153
+      Total responded urlcons:      153
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 2
+
+12357  INFO [main]    com.oaklandsw.http.TestPerf - Total Time (ms): 258 Time/trans (ms): 0.129
+12357  INFO [main]    com.oaklandsw.http.TestPerf - Total run bytes: 8000
+12357  INFO [main]    com.oaklandsw.http.TestPerf - Total run conns: 20
+12357  INFO [main]    com.oaklandsw.http.TestPerf - LAN,Oakland,4,0.129,10,2,2,2000,3,258,3207,0,793,0,0,07:12:28.021
+12357  INFO [main]    com.oaklandsw.http.TestPerf - LAN,Oakland,4,0.13133334,10,2,2,2000,3,0.129,0.1355,788,6,9826,0,2174,0,0,07:12:28.021
+12357  INFO [main]    com.oaklandsw.http.TestPerf - 
+12358  INFO [main]    com.oaklandsw.http.TestPerf - Start Time: 07:12:29.032
+12358  INFO [main]    com.oaklandsw.http.TestPerf - Using: Oakland implementation
+12359  INFO [main]    com.oaklandsw.http.TestPerf - URL: http://repoman:8081/4k
+12359  INFO [main]    com.oaklandsw.http.TestPerf - Times/thread: 400
+12359  INFO [main]    com.oaklandsw.http.TestPerf - Threads: 5
+12359  INFO [main]    com.oaklandsw.http.TestPerf - Using max: 10 connections.
+12422  INFO [main]    com.oaklandsw.http.TestPerf - START time: 1186841549097
+12696  INFO [main]    com.oaklandsw.http.TestPerf - END/Total time: 1186841549371/274
+12697  INFO [main]    com.oaklandsw.http.TestPerf - connection pool before close
+12697  INFO [main]    com.oaklandsw.http.TestPerf - Max connections/host:    10
+Pipelining options:    PIPE_PIPELINE PIPE_MAX_CONNECTIONS 
+Pipelining max depth:  2
+Authentication Type:   NONE (0)
+Retry counts: 
+Pipeline Retry counts: 
+Counts: 
+UrlCons Attempted:               2000
+UrlCons Success:                 2000
+Total retries:                   0
+Total pipelined retries:         0
+UrlCons Failed Max Retries:      0
+UrlCons Failed > 400:            0
+Pipeline max depth (all conns):  2
+Forced Flushes:                  3187
+Buffer Flushes:                  0
+Avoided Flushes:                 813
+Flush IOExceptions:              0
+Connection: http://repoman:8081
+  Total connections created: 10
+  Avail connections:         10
+  Assigned connections:      0
+  Observed max urlcons before close: 0
+Assigned connections: 
+Available connections: 
+    15245517 repoman:8081 (54164) CS_OPEN 
+      Total requested urlcons:      174
+      Total responded urlcons:      174
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 2
+    12652000 repoman:8081 (54165) CS_OPEN 
+      Total requested urlcons:      183
+      Total responded urlcons:      183
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 2
+    26130360 repoman:8081 (54168) CS_OPEN 
+      Total requested urlcons:      184
+      Total responded urlcons:      184
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 2
+    4273072 repoman:8081 (54161) CS_OPEN 
+      Total requested urlcons:      189
+      Total responded urlcons:      189
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 2
+    21153656 repoman:8081 (54162) CS_OPEN 
+      Total requested urlcons:      147
+      Total responded urlcons:      147
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 2
+    5700630 repoman:8081 (54166) CS_OPEN 
+      Total requested urlcons:      210
+      Total responded urlcons:      210
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 2
+    22221156 repoman:8081 (54163) CS_OPEN 
+      Total requested urlcons:      259
+      Total responded urlcons:      259
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 2
+    29905988 repoman:8081 (54169) CS_OPEN 
+      Total requested urlcons:      196
+      Total responded urlcons:      196
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 2
+    23196574 repoman:8081 (54167) CS_OPEN 
+      Total requested urlcons:      283
+      Total responded urlcons:      283
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 2
+    24223536 repoman:8081 (54170) CS_OPEN 
+      Total requested urlcons:      175
+      Total responded urlcons:      175
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 2
+
+12697  INFO [main]    com.oaklandsw.http.TestPerf - Total Time (ms): 274 Time/trans (ms): 0.137
+12697  INFO [main]    com.oaklandsw.http.TestPerf - Total run bytes: 8000
+12697  INFO [main]    com.oaklandsw.http.TestPerf - Total run conns: 20
+12697  INFO [main]    com.oaklandsw.http.TestPerf - LAN,Oakland,4,0.137,10,5,2,2000,3,274,3187,0,813,0,0,07:12:29.032
+12697  INFO [main]    com.oaklandsw.http.TestPerf - 
+12702  INFO [main]    com.oaklandsw.http.TestPerf - Start Time: 07:12:29.032
+12703  INFO [main]    com.oaklandsw.http.TestPerf - Using: Oakland implementation
+12703  INFO [main]    com.oaklandsw.http.TestPerf - URL: http://repoman:8081/4k
+12703  INFO [main]    com.oaklandsw.http.TestPerf - Times/thread: 400
+12703  INFO [main]    com.oaklandsw.http.TestPerf - Threads: 5
+12703  INFO [main]    com.oaklandsw.http.TestPerf - Using max: 10 connections.
+12772  INFO [main]    com.oaklandsw.http.TestPerf - START time: 1186841549447
+13081  INFO [main]    com.oaklandsw.http.TestPerf - END/Total time: 1186841549756/309
+13081  INFO [main]    com.oaklandsw.http.TestPerf - connection pool before close
+13081  INFO [main]    com.oaklandsw.http.TestPerf - Max connections/host:    10
+Pipelining options:    PIPE_PIPELINE PIPE_MAX_CONNECTIONS 
+Pipelining max depth:  2
+Authentication Type:   NONE (0)
+Retry counts: 
+Pipeline Retry counts: 
+Counts: 
+UrlCons Attempted:               2000
+UrlCons Success:                 2000
+Total retries:                   0
+Total pipelined retries:         0
+UrlCons Failed Max Retries:      0
+UrlCons Failed > 400:            0
+Pipeline max depth (all conns):  2
+Forced Flushes:                  2924
+Buffer Flushes:                  0
+Avoided Flushes:                 1076
+Flush IOExceptions:              0
+Connection: http://repoman:8081
+  Total connections created: 10
+  Avail connections:         10
+  Assigned connections:      0
+  Observed max urlcons before close: 0
+Assigned connections: 
+Available connections: 
+    25277396 repoman:8081 (54173) CS_OPEN 
+      Total requested urlcons:      170
+      Total responded urlcons:      170
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 2
+    4368408 repoman:8081 (54174) CS_OPEN 
+      Total requested urlcons:      195
+      Total responded urlcons:      195
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 2
+    14519821 repoman:8081 (54171) CS_OPEN 
+      Total requested urlcons:      187
+      Total responded urlcons:      187
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 2
+    8991464 repoman:8081 (54172) CS_OPEN 
+      Total requested urlcons:      198
+      Total responded urlcons:      198
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 2
+    23830114 repoman:8081 (54179) CS_OPEN 
+      Total requested urlcons:      174
+      Total responded urlcons:      174
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 2
+    12064621 repoman:8081 (54175) CS_OPEN 
+      Total requested urlcons:      187
+      Total responded urlcons:      187
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 2
+    26188661 repoman:8081 (54178) CS_OPEN 
+      Total requested urlcons:      224
+      Total responded urlcons:      224
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 2
+    2409492 repoman:8081 (54180) CS_OPEN 
+      Total requested urlcons:      244
+      Total responded urlcons:      244
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 2
+    1409681 repoman:8081 (54176) CS_OPEN 
+      Total requested urlcons:      184
+      Total responded urlcons:      184
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 2
+    24688203 repoman:8081 (54177) CS_OPEN 
+      Total requested urlcons:      237
+      Total responded urlcons:      237
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 2
+
+13081  INFO [main]    com.oaklandsw.http.TestPerf - Total Time (ms): 309 Time/trans (ms): 0.1545
+13081  INFO [main]    com.oaklandsw.http.TestPerf - Total run bytes: 8000
+13081  INFO [main]    com.oaklandsw.http.TestPerf - Total run conns: 20
+13081  INFO [main]    com.oaklandsw.http.TestPerf - LAN,Oakland,4,0.1545,10,5,2,2000,3,309,2924,0,1076,0,0,07:12:29.032
+13081  INFO [main]    com.oaklandsw.http.TestPerf - 
+13082  INFO [main]    com.oaklandsw.http.TestPerf - Start Time: 07:12:29.032
+13082  INFO [main]    com.oaklandsw.http.TestPerf - Using: Oakland implementation
+13083  INFO [main]    com.oaklandsw.http.TestPerf - URL: http://repoman:8081/4k
+13083  INFO [main]    com.oaklandsw.http.TestPerf - Times/thread: 400
+13083  INFO [main]    com.oaklandsw.http.TestPerf - Threads: 5
+13083  INFO [main]    com.oaklandsw.http.TestPerf - Using max: 10 connections.
+13156  INFO [main]    com.oaklandsw.http.TestPerf - START time: 1186841549830
+13422  INFO [main]    com.oaklandsw.http.TestPerf - END/Total time: 1186841550097/267
+13423  INFO [main]    com.oaklandsw.http.TestPerf - connection pool before close
+13423  INFO [main]    com.oaklandsw.http.TestPerf - Max connections/host:    10
+Pipelining options:    PIPE_PIPELINE PIPE_MAX_CONNECTIONS 
+Pipelining max depth:  2
+Authentication Type:   NONE (0)
+Retry counts: 
+Pipeline Retry counts: 
+Counts: 
+UrlCons Attempted:               2000
+UrlCons Success:                 2000
+Total retries:                   0
+Total pipelined retries:         0
+UrlCons Failed Max Retries:      0
+UrlCons Failed > 400:            0
+Pipeline max depth (all conns):  2
+Forced Flushes:                  3113
+Buffer Flushes:                  0
+Avoided Flushes:                 887
+Flush IOExceptions:              0
+Connection: http://repoman:8081
+  Total connections created: 10
+  Avail connections:         10
+  Assigned connections:      0
+  Observed max urlcons before close: 0
+Assigned connections: 
+Available connections: 
+    18505680 repoman:8081 (54181) CS_OPEN 
+      Total requested urlcons:      182
+      Total responded urlcons:      182
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 2
+    28735274 repoman:8081 (54190) CS_OPEN 
+      Total requested urlcons:      199
+      Total responded urlcons:      199
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 2
+    13285460 repoman:8081 (54189) CS_OPEN 
+      Total requested urlcons:      146
+      Total responded urlcons:      146
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 2
+    10282147 repoman:8081 (54185) CS_OPEN 
+      Total requested urlcons:      209
+      Total responded urlcons:      209
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 2
+    25621427 repoman:8081 (54184) CS_OPEN 
+      Total requested urlcons:      169
+      Total responded urlcons:      169
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 2
+    32609788 repoman:8081 (54186) CS_OPEN 
+      Total requested urlcons:      217
+      Total responded urlcons:      217
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 2
+    32654289 repoman:8081 (54182) CS_OPEN 
+      Total requested urlcons:      258
+      Total responded urlcons:      258
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 2
+    22199751 repoman:8081 (54187) CS_OPEN 
+      Total requested urlcons:      306
+      Total responded urlcons:      306
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 2
+    7762566 repoman:8081 (54183) CS_OPEN 
+      Total requested urlcons:      130
+      Total responded urlcons:      130
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 2
+    12231451 repoman:8081 (54188) CS_OPEN 
+      Total requested urlcons:      184
+      Total responded urlcons:      184
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 2
+
+13423  INFO [main]    com.oaklandsw.http.TestPerf - Total Time (ms): 267 Time/trans (ms): 0.1335
+13423  INFO [main]    com.oaklandsw.http.TestPerf - Total run bytes: 8000
+13423  INFO [main]    com.oaklandsw.http.TestPerf - Total run conns: 20
+13423  INFO [main]    com.oaklandsw.http.TestPerf - LAN,Oakland,4,0.1335,10,5,2,2000,3,267,3113,0,887,0,0,07:12:29.032
+13423  INFO [main]    com.oaklandsw.http.TestPerf - LAN,Oakland,4,0.14166665,10,5,2,2000,3,0.1335,0.1545,850,6,9224,0,2776,0,0,07:12:29.032
+13423  INFO [main]    com.oaklandsw.http.TestPerf - 
+13425  INFO [main]    com.oaklandsw.http.TestPerf - Start Time: 07:12:30.098
+13425  INFO [main]    com.oaklandsw.http.TestPerf - Using: Oakland implementation
+13425  INFO [main]    com.oaklandsw.http.TestPerf - URL: http://repoman:8081/4k
+13425  INFO [main]    com.oaklandsw.http.TestPerf - Times/thread: 200
+13425  INFO [main]    com.oaklandsw.http.TestPerf - Threads: 10
+13425  INFO [main]    com.oaklandsw.http.TestPerf - Using max: 10 connections.
+13495  INFO [main]    com.oaklandsw.http.TestPerf - START time: 1186841550170
+13809  INFO [main]    com.oaklandsw.http.TestPerf - END/Total time: 1186841550484/314
+13809  INFO [main]    com.oaklandsw.http.TestPerf - connection pool before close
+13810  INFO [main]    com.oaklandsw.http.TestPerf - Max connections/host:    10
+Pipelining options:    PIPE_PIPELINE PIPE_MAX_CONNECTIONS 
+Pipelining max depth:  2
+Authentication Type:   NONE (0)
+Retry counts: 
+Pipeline Retry counts: 
+Counts: 
+UrlCons Attempted:               2000
+UrlCons Success:                 2000
+Total retries:                   0
+Total pipelined retries:         0
+UrlCons Failed Max Retries:      0
+UrlCons Failed > 400:            0
+Pipeline max depth (all conns):  2
+Forced Flushes:                  2986
+Buffer Flushes:                  0
+Avoided Flushes:                 1023
+Flush IOExceptions:              0
+Connection: http://repoman:8081
+  Total connections created: 10
+  Avail connections:         10
+  Assigned connections:      0
+  Observed max urlcons before close: 0
+Assigned connections: 
+Available connections: 
+    32574055 repoman:8081 (54200) CS_OPEN 
+      Total requested urlcons:      190
+      Total responded urlcons:      190
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 2
+    14633980 repoman:8081 (54194) CS_OPEN 
+      Total requested urlcons:      171
+      Total responded urlcons:      171
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 2
+    3289716 repoman:8081 (54195) CS_OPEN 
+      Total requested urlcons:      211
+      Total responded urlcons:      211
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 2
+    31779675 repoman:8081 (54197) CS_OPEN 
+      Total requested urlcons:      194
+      Total responded urlcons:      194
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 2
+    20890333 repoman:8081 (54193) CS_OPEN 
+      Total requested urlcons:      174
+      Total responded urlcons:      174
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 2
+    8125444 repoman:8081 (54191) CS_OPEN 
+      Total requested urlcons:      196
+      Total responded urlcons:      196
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 2
+    30725267 repoman:8081 (54198) CS_OPEN 
+      Total requested urlcons:      360
+      Total responded urlcons:      360
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 2
+    27517983 repoman:8081 (54199) CS_OPEN 
+      Total requested urlcons:      160
+      Total responded urlcons:      160
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 2
+    8254986 repoman:8081 (54192) CS_OPEN 
+      Total requested urlcons:      162
+      Total responded urlcons:      162
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 2
+    10498262 repoman:8081 (54196) CS_OPEN 
+      Total requested urlcons:      182
+      Total responded urlcons:      182
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 2
+
+13810  INFO [main]    com.oaklandsw.http.TestPerf - Total Time (ms): 314 Time/trans (ms): 0.157
+13810  INFO [main]    com.oaklandsw.http.TestPerf - Total run bytes: 8000
+13810  INFO [main]    com.oaklandsw.http.TestPerf - Total run conns: 20
+13810  INFO [main]    com.oaklandsw.http.TestPerf - LAN,Oakland,4,0.157,10,10,2,2000,3,314,2986,0,1023,0,0,07:12:30.098
+13810  INFO [main]    com.oaklandsw.http.TestPerf - 
+13811  INFO [main]    com.oaklandsw.http.TestPerf - Start Time: 07:12:30.098
+13811  INFO [main]    com.oaklandsw.http.TestPerf - Using: Oakland implementation
+13811  INFO [main]    com.oaklandsw.http.TestPerf - URL: http://repoman:8081/4k
+13811  INFO [main]    com.oaklandsw.http.TestPerf - Times/thread: 200
+13811  INFO [main]    com.oaklandsw.http.TestPerf - Threads: 10
+13811  INFO [main]    com.oaklandsw.http.TestPerf - Using max: 10 connections.
+13879  INFO [main]    com.oaklandsw.http.TestPerf - START time: 1186841550554
+14172  INFO [main]    com.oaklandsw.http.TestPerf - END/Total time: 1186841550847/293
+14172  INFO [main]    com.oaklandsw.http.TestPerf - connection pool before close
+14172  INFO [main]    com.oaklandsw.http.TestPerf - Max connections/host:    10
+Pipelining options:    PIPE_PIPELINE PIPE_MAX_CONNECTIONS 
+Pipelining max depth:  2
+Authentication Type:   NONE (0)
+Retry counts: 
+Pipeline Retry counts: 
+Counts: 
+UrlCons Attempted:               2000
+UrlCons Success:                 2000
+Total retries:                   0
+Total pipelined retries:         0
+UrlCons Failed Max Retries:      0
+UrlCons Failed > 400:            0
+Pipeline max depth (all conns):  2
+Forced Flushes:                  3325
+Buffer Flushes:                  0
+Avoided Flushes:                 675
+Flush IOExceptions:              0
+Connection: http://repoman:8081
+  Total connections created: 10
+  Avail connections:         10
+  Assigned connections:      0
+  Observed max urlcons before close: 0
+Assigned connections: 
+Available connections: 
+    28399835 repoman:8081 (54206) CS_OPEN 
+      Total requested urlcons:      149
+      Total responded urlcons:      149
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 2
+    21344303 repoman:8081 (54207) CS_OPEN 
+      Total requested urlcons:      159
+      Total responded urlcons:      159
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 2
+    7806641 repoman:8081 (54205) CS_OPEN 
+      Total requested urlcons:      176
+      Total responded urlcons:      176
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 2
+    6649557 repoman:8081 (54208) CS_OPEN 
+      Total requested urlcons:      194
+      Total responded urlcons:      194
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 2
+    30369327 repoman:8081 (54201) CS_OPEN 
+      Total requested urlcons:      212
+      Total responded urlcons:      212
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 2
+    14418506 repoman:8081 (54209) CS_OPEN 
+      Total requested urlcons:      152
+      Total responded urlcons:      152
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 2
+    17632942 repoman:8081 (54202) CS_OPEN 
+      Total requested urlcons:      397
+      Total responded urlcons:      397
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 2
+    31352855 repoman:8081 (54210) CS_OPEN 
+      Total requested urlcons:      184
+      Total responded urlcons:      184
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 2
+    28117049 repoman:8081 (54204) CS_OPEN 
+      Total requested urlcons:      134
+      Total responded urlcons:      134
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 2
+    17912146 repoman:8081 (54203) CS_OPEN 
+      Total requested urlcons:      243
+      Total responded urlcons:      243
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 2
+
+14172  INFO [main]    com.oaklandsw.http.TestPerf - Total Time (ms): 293 Time/trans (ms): 0.1465
+14172  INFO [main]    com.oaklandsw.http.TestPerf - Total run bytes: 8000
+14172  INFO [main]    com.oaklandsw.http.TestPerf - Total run conns: 20
+14172  INFO [main]    com.oaklandsw.http.TestPerf - LAN,Oakland,4,0.1465,10,10,2,2000,3,293,3325,0,675,0,0,07:12:30.098
+14173  INFO [main]    com.oaklandsw.http.TestPerf - 
+14174  INFO [main]    com.oaklandsw.http.TestPerf - Start Time: 07:12:30.098
+14174  INFO [main]    com.oaklandsw.http.TestPerf - Using: Oakland implementation
+14174  INFO [main]    com.oaklandsw.http.TestPerf - URL: http://repoman:8081/4k
+14174  INFO [main]    com.oaklandsw.http.TestPerf - Times/thread: 200
+14174  INFO [main]    com.oaklandsw.http.TestPerf - Threads: 10
+14174  INFO [main]    com.oaklandsw.http.TestPerf - Using max: 10 connections.
+14244  INFO [main]    com.oaklandsw.http.TestPerf - START time: 1186841550919
+14520  INFO [main]    com.oaklandsw.http.TestPerf - END/Total time: 1186841551195/276
+14520  INFO [main]    com.oaklandsw.http.TestPerf - connection pool before close
+14520  INFO [main]    com.oaklandsw.http.TestPerf - Max connections/host:    10
+Pipelining options:    PIPE_PIPELINE PIPE_MAX_CONNECTIONS 
+Pipelining max depth:  2
+Authentication Type:   NONE (0)
+Retry counts: 
+Pipeline Retry counts: 
+Counts: 
+UrlCons Attempted:               2000
+UrlCons Success:                 2000
+Total retries:                   0
+Total pipelined retries:         0
+UrlCons Failed Max Retries:      0
+UrlCons Failed > 400:            0
+Pipeline max depth (all conns):  2
+Forced Flushes:                  3339
+Buffer Flushes:                  0
+Avoided Flushes:                 661
+Flush IOExceptions:              0
+Connection: http://repoman:8081
+  Total connections created: 10
+  Avail connections:         10
+  Assigned connections:      0
+  Observed max urlcons before close: 0
+Assigned connections: 
+Available connections: 
+    16754411 repoman:8081 (54219) CS_OPEN 
+      Total requested urlcons:      95
+      Total responded urlcons:      95
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 2
+    15607307 repoman:8081 (54217) CS_OPEN 
+      Total requested urlcons:      111
+      Total responded urlcons:      111
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 2
+    31292357 repoman:8081 (54218) CS_OPEN 
+      Total requested urlcons:      137
+      Total responded urlcons:      137
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 2
+    32489992 repoman:8081 (54215) CS_OPEN 
+      Total requested urlcons:      336
+      Total responded urlcons:      336
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 2
+    30021000 repoman:8081 (54214) CS_OPEN 
+      Total requested urlcons:      239
+      Total responded urlcons:      239
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 2
+    18690598 repoman:8081 (54220) CS_OPEN 
+      Total requested urlcons:      200
+      Total responded urlcons:      200
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 2
+    27503148 repoman:8081 (54211) CS_OPEN 
+      Total requested urlcons:      289
+      Total responded urlcons:      289
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 2
+    8820986 repoman:8081 (54213) CS_OPEN 
+      Total requested urlcons:      215
+      Total responded urlcons:      215
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 2
+    27844531 repoman:8081 (54216) CS_OPEN 
+      Total requested urlcons:      167
+      Total responded urlcons:      167
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 2
+    3610207 repoman:8081 (54212) CS_OPEN 
+      Total requested urlcons:      211
+      Total responded urlcons:      211
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 2
+
+14520  INFO [main]    com.oaklandsw.http.TestPerf - Total Time (ms): 276 Time/trans (ms): 0.138
+14520  INFO [main]    com.oaklandsw.http.TestPerf - Total run bytes: 8000
+14520  INFO [main]    com.oaklandsw.http.TestPerf - Total run conns: 20
+14520  INFO [main]    com.oaklandsw.http.TestPerf - LAN,Oakland,4,0.138,10,10,2,2000,3,276,3339,0,661,0,0,07:12:30.098
+14520  INFO [main]    com.oaklandsw.http.TestPerf - LAN,Oakland,4,0.14716667,10,10,2,2000,3,0.138,0.157,883,6,9650,0,2359,0,0,07:12:30.098
+14520  INFO [main]    com.oaklandsw.http.TestPerf - 
+14528  INFO [main]    com.oaklandsw.http.TestPerf - Start Time: 07:12:31.195
+14528  INFO [main]    com.oaklandsw.http.TestPerf - Using: Oakland implementation
+14528  INFO [main]    com.oaklandsw.http.TestPerf - URL: http://repoman:8081/4k
+14528  INFO [main]    com.oaklandsw.http.TestPerf - Times/thread: 100
+14528  INFO [main]    com.oaklandsw.http.TestPerf - Threads: 20
+14528  INFO [main]    com.oaklandsw.http.TestPerf - Using max: 10 connections.
+14592  INFO [main]    com.oaklandsw.http.TestPerf - START time: 1186841551267
+14893  INFO [main]    com.oaklandsw.http.TestPerf - END/Total time: 1186841551568/301
+14893  INFO [main]    com.oaklandsw.http.TestPerf - connection pool before close
+14893  INFO [main]    com.oaklandsw.http.TestPerf - Max connections/host:    10
+Pipelining options:    PIPE_PIPELINE PIPE_MAX_CONNECTIONS 
+Pipelining max depth:  2
+Authentication Type:   NONE (0)
+Retry counts: 
+Pipeline Retry counts: 
+Counts: 
+UrlCons Attempted:               2000
+UrlCons Success:                 2000
+Total retries:                   0
+Total pipelined retries:         0
+UrlCons Failed Max Retries:      0
+UrlCons Failed > 400:            0
+Pipeline max depth (all conns):  2
+Forced Flushes:                  3239
+Buffer Flushes:                  0
+Avoided Flushes:                 770
+Flush IOExceptions:              0
+Connection: http://repoman:8081
+  Total connections created: 10
+  Avail connections:         10
+  Assigned connections:      0
+  Observed max urlcons before close: 0
+Assigned connections: 
+Available connections: 
+    22555260 repoman:8081 (54224) CS_OPEN 
+      Total requested urlcons:      160
+      Total responded urlcons:      160
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 2
+    21364283 repoman:8081 (54230) CS_OPEN 
+      Total requested urlcons:      396
+      Total responded urlcons:      396
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 2
+    2740884 repoman:8081 (54223) CS_OPEN 
+      Total requested urlcons:      194
+      Total responded urlcons:      194
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 2
+    17038506 repoman:8081 (54226) CS_OPEN 
+      Total requested urlcons:      177
+      Total responded urlcons:      177
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 2
+    11467963 repoman:8081 (54221) CS_OPEN 
+      Total requested urlcons:      171
+      Total responded urlcons:      171
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 2
+    6080834 repoman:8081 (54222) CS_OPEN 
+      Total requested urlcons:      121
+      Total responded urlcons:      121
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 2
+    11906408 repoman:8081 (54227) CS_OPEN 
+      Total requested urlcons:      171
+      Total responded urlcons:      171
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 2
+    2347637 repoman:8081 (54225) CS_OPEN 
+      Total requested urlcons:      185
+      Total responded urlcons:      185
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 2
+    27017361 repoman:8081 (54228) CS_OPEN 
+      Total requested urlcons:      236
+      Total responded urlcons:      236
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 2
+    9501189 repoman:8081 (54229) CS_OPEN 
+      Total requested urlcons:      189
+      Total responded urlcons:      189
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 2
+
+14893  INFO [main]    com.oaklandsw.http.TestPerf - Total Time (ms): 301 Time/trans (ms): 0.1505
+14893  INFO [main]    com.oaklandsw.http.TestPerf - Total run bytes: 8000
+14893  INFO [main]    com.oaklandsw.http.TestPerf - Total run conns: 20
+14893  INFO [main]    com.oaklandsw.http.TestPerf - LAN,Oakland,4,0.1505,10,20,2,2000,3,301,3239,0,770,0,0,07:12:31.195
+14893  INFO [main]    com.oaklandsw.http.TestPerf - 
+14895  INFO [main]    com.oaklandsw.http.TestPerf - Start Time: 07:12:31.195
+14895  INFO [main]    com.oaklandsw.http.TestPerf - Using: Oakland implementation
+14895  INFO [main]    com.oaklandsw.http.TestPerf - URL: http://repoman:8081/4k
+14895  INFO [main]    com.oaklandsw.http.TestPerf - Times/thread: 100
+14895  INFO [main]    com.oaklandsw.http.TestPerf - Threads: 20
+14895  INFO [main]    com.oaklandsw.http.TestPerf - Using max: 10 connections.
+14966  INFO [main]    com.oaklandsw.http.TestPerf - START time: 1186841551641
+15264  INFO [main]    com.oaklandsw.http.TestPerf - END/Total time: 1186841551939/298
+15264  INFO [main]    com.oaklandsw.http.TestPerf - connection pool before close
+15265  INFO [main]    com.oaklandsw.http.TestPerf - Max connections/host:    10
+Pipelining options:    PIPE_PIPELINE PIPE_MAX_CONNECTIONS 
+Pipelining max depth:  2
+Authentication Type:   NONE (0)
+Retry counts: 
+Pipeline Retry counts: 
+Counts: 
+UrlCons Attempted:               2000
+UrlCons Success:                 2000
+Total retries:                   0
+Total pipelined retries:         0
+UrlCons Failed Max Retries:      0
+UrlCons Failed > 400:            0
+Pipeline max depth (all conns):  2
+Forced Flushes:                  3152
+Buffer Flushes:                  0
+Avoided Flushes:                 848
+Flush IOExceptions:              0
+Connection: http://repoman:8081
+  Total connections created: 10
+  Avail connections:         10
+  Assigned connections:      0
+  Observed max urlcons before close: 0
+Assigned connections: 
+Available connections: 
+    15522092 repoman:8081 (54234) CS_OPEN 
+      Total requested urlcons:      219
+      Total responded urlcons:      219
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 2
+    29881213 repoman:8081 (54232) CS_OPEN 
+      Total requested urlcons:      178
+      Total responded urlcons:      178
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 2
+    31497899 repoman:8081 (54240) CS_OPEN 
+      Total requested urlcons:      144
+      Total responded urlcons:      144
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 2
+    6942026 repoman:8081 (54236) CS_OPEN 
+      Total requested urlcons:      165
+      Total responded urlcons:      165
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 2
+    31147154 repoman:8081 (54239) CS_OPEN 
+      Total requested urlcons:      155
+      Total responded urlcons:      155
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 2
+    3969812 repoman:8081 (54231) CS_OPEN 
+      Total requested urlcons:      201
+      Total responded urlcons:      201
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 2
+    31245517 repoman:8081 (54233) CS_OPEN 
+      Total requested urlcons:      240
+      Total responded urlcons:      240
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 2
+    12742366 repoman:8081 (54235) CS_OPEN 
+      Total requested urlcons:      158
+      Total responded urlcons:      158
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 2
+    10545552 repoman:8081 (54238) CS_OPEN 
+      Total requested urlcons:      298
+      Total responded urlcons:      298
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 2
+    22445676 repoman:8081 (54237) CS_OPEN 
+      Total requested urlcons:      242
+      Total responded urlcons:      242
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 2
+
+15265  INFO [main]    com.oaklandsw.http.TestPerf - Total Time (ms): 298 Time/trans (ms): 0.149
+15265  INFO [main]    com.oaklandsw.http.TestPerf - Total run bytes: 8000
+15265  INFO [main]    com.oaklandsw.http.TestPerf - Total run conns: 20
+15265  INFO [main]    com.oaklandsw.http.TestPerf - LAN,Oakland,4,0.149,10,20,2,2000,3,298,3152,0,848,0,0,07:12:31.195
+15265  INFO [main]    com.oaklandsw.http.TestPerf - 
+15270  INFO [main]    com.oaklandsw.http.TestPerf - Start Time: 07:12:31.195
+15270  INFO [main]    com.oaklandsw.http.TestPerf - Using: Oakland implementation
+15270  INFO [main]    com.oaklandsw.http.TestPerf - URL: http://repoman:8081/4k
+15270  INFO [main]    com.oaklandsw.http.TestPerf - Times/thread: 100
+15270  INFO [main]    com.oaklandsw.http.TestPerf - Threads: 20
+15270  INFO [main]    com.oaklandsw.http.TestPerf - Using max: 10 connections.
+15343  INFO [main]    com.oaklandsw.http.TestPerf - START time: 1186841552018
+15652  INFO [main]    com.oaklandsw.http.TestPerf - END/Total time: 1186841552327/309
+15652  INFO [main]    com.oaklandsw.http.TestPerf - connection pool before close
+15652  INFO [main]    com.oaklandsw.http.TestPerf - Max connections/host:    10
+Pipelining options:    PIPE_PIPELINE PIPE_MAX_CONNECTIONS 
+Pipelining max depth:  2
+Authentication Type:   NONE (0)
+Retry counts: 
+Pipeline Retry counts: 
+Counts: 
+UrlCons Attempted:               2000
+UrlCons Success:                 2000
+Total retries:                   0
+Total pipelined retries:         0
+UrlCons Failed Max Retries:      0
+UrlCons Failed > 400:            0
+Pipeline max depth (all conns):  2
+Forced Flushes:                  3133
+Buffer Flushes:                  0
+Avoided Flushes:                 867
+Flush IOExceptions:              0
+Connection: http://repoman:8081
+  Total connections created: 10
+  Avail connections:         10
+  Assigned connections:      0
+  Observed max urlcons before close: 0
+Assigned connections: 
+Available connections: 
+    13333839 repoman:8081 (54248) CS_OPEN 
+      Total requested urlcons:      112
+      Total responded urlcons:      112
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 2
+    12657780 repoman:8081 (54244) CS_OPEN 
+      Total requested urlcons:      144
+      Total responded urlcons:      144
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 2
+    5819561 repoman:8081 (54243) CS_OPEN 
+      Total requested urlcons:      93
+      Total responded urlcons:      93
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 2
+    24451742 repoman:8081 (54246) CS_OPEN 
+      Total requested urlcons:      232
+      Total responded urlcons:      232
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 2
+    21335499 repoman:8081 (54250) CS_OPEN 
+      Total requested urlcons:      275
+      Total responded urlcons:      275
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 2
+    14913988 repoman:8081 (54249) CS_OPEN 
+      Total requested urlcons:      165
+      Total responded urlcons:      165
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 2
+    13894365 repoman:8081 (54242) CS_OPEN 
+      Total requested urlcons:      214
+      Total responded urlcons:      214
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 2
+    13963496 repoman:8081 (54245) CS_OPEN 
+      Total requested urlcons:      149
+      Total responded urlcons:      149
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 2
+    26681011 repoman:8081 (54247) CS_OPEN 
+      Total requested urlcons:      439
+      Total responded urlcons:      439
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 2
+    28487985 repoman:8081 (54241) CS_OPEN 
+      Total requested urlcons:      177
+      Total responded urlcons:      177
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 2
+
+15652  INFO [main]    com.oaklandsw.http.TestPerf - Total Time (ms): 309 Time/trans (ms): 0.1545
+15652  INFO [main]    com.oaklandsw.http.TestPerf - Total run bytes: 8000
+15652  INFO [main]    com.oaklandsw.http.TestPerf - Total run conns: 20
+15652  INFO [main]    com.oaklandsw.http.TestPerf - LAN,Oakland,4,0.1545,10,20,2,2000,3,309,3133,0,867,0,0,07:12:31.195
+15652  INFO [main]    com.oaklandsw.http.TestPerf - LAN,Oakland,4,0.15133333,10,20,2,2000,3,0.149,0.1545,908,6,9524,0,2485,0,0,07:12:31.195
+15652  INFO [main]    com.oaklandsw.http.TestPerf - 
+15660  INFO [main]    com.oaklandsw.http.TestPerf - Start Time: 07:12:32.327
+15660  INFO [main]    com.oaklandsw.http.TestPerf - Using: Oakland implementation
+15660  INFO [main]    com.oaklandsw.http.TestPerf - URL: http://repoman:8081/4k
+15660  INFO [main]    com.oaklandsw.http.TestPerf - Times/thread: 2000
+15660  INFO [main]    com.oaklandsw.http.TestPerf - Threads: 1
+15660  INFO [main]    com.oaklandsw.http.TestPerf - Using max: 10 connections.
+15726  INFO [main]    com.oaklandsw.http.TestPerf - START time: 1186841552401
+269084  INFO [main]    com.oaklandsw.http.TestPerf - END/Total time: 1186841805759/253358
+269084  INFO [main]    com.oaklandsw.http.TestPerf - !!!Expected 2000 got: 1971
+269084  INFO [main]    com.oaklandsw.http.TestPerf - connection pool before close
+269084  INFO [main]    com.oaklandsw.http.TestPerf - Max connections/host:    10
+Pipelining options:    PIPE_PIPELINE PIPE_MAX_CONNECTIONS 
+Pipelining max depth:  50
+Authentication Type:   NONE (0)
+Retry counts: 
+  Retry times: 2 count: 1
+  Retry times: 3 count: 6
+Pipeline Retry counts: 
+  Retry times: 2 count: 490
+  Retry times: 3 count: 25
+  Retry times: 4 count: 23
+  Retry times: 5 count: 17
+  Retry times: 6 count: 13
+  Retry times: 7 count: 10
+  Retry times: 8 count: 9
+  Retry times: 9 count: 3
+  Retry times: 10 count: 1
+Counts: 
+UrlCons Attempted:               2000
+UrlCons Success:                 1971
+Total retries:                   7
+Total pipelined retries:         591
+UrlCons Failed Max Retries:      0
+UrlCons Failed > 400:            0
+Pipeline max depth (all conns):  50
+Forced Flushes:                  1136
+Buffer Flushes:                  0
+Avoided Flushes:                 4053
+Flush IOExceptions:              0
+Connection: http://repoman:8081
+  Total connections created: 51
+  Avail connections:         10
+  Assigned connections:      0
+  Observed max urlcons before close: 0
+Assigned connections: 
+Available connections: 
+    5367420 repoman:8081 (35929) CS_OPEN 
+      Total requested urlcons:      50
+      Total responded urlcons:      50
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 50
+    9368661 repoman:8081 (35931) CS_OPEN 
+      Total requested urlcons:      90
+      Total responded urlcons:      90
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 50
+    24391166 repoman:8081 (35923) CS_OPEN 
+      Total requested urlcons:      128
+      Total responded urlcons:      128
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 50
+    13266154 repoman:8081 (35925) CS_OPEN 
+      Total requested urlcons:      132
+      Total responded urlcons:      132
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 50
+    2347640 repoman:8081 (35924) CS_OPEN 
+      Total requested urlcons:      95
+      Total responded urlcons:      95
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 50
+    30335841 repoman:8081 (35926) CS_OPEN 
+      Total requested urlcons:      100
+      Total responded urlcons:      100
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 50
+    9169391 repoman:8081 (35928) CS_OPEN 
+      Total requested urlcons:      96
+      Total responded urlcons:      96
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 50
+    26435815 repoman:8081 (35927) CS_OPEN 
+      Total requested urlcons:      96
+      Total responded urlcons:      96
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 50
+    13610289 repoman:8081 (35930) CS_OPEN 
+      Total requested urlcons:      96
+      Total responded urlcons:      96
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 50
+    26509496 repoman:8081 (35932) CS_OPEN 
+      Total requested urlcons:      96
+      Total responded urlcons:      96
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 50
+
+269084  INFO [main]    com.oaklandsw.http.TestPerf - Total Time (ms): 253358 Time/trans (ms): 999999.0
+269084  INFO [main]    com.oaklandsw.http.TestPerf - Total run bytes: 8000
+269084  INFO [main]    com.oaklandsw.http.TestPerf - Total run conns: 20
+269084  INFO [main]    com.oaklandsw.http.TestPerf - LAN,Oakland,4,999999.0,10,1,50,2000,3,253358,1136,0,4053,7,591,07:12:32.327
+269084  INFO [main]    com.oaklandsw.http.TestPerf - 
+269086  INFO [main]    com.oaklandsw.http.TestPerf - Start Time: 07:12:32.327
+269086  INFO [main]    com.oaklandsw.http.TestPerf - Using: Oakland implementation
+269086  INFO [main]    com.oaklandsw.http.TestPerf - URL: http://repoman:8081/4k
+269086  INFO [main]    com.oaklandsw.http.TestPerf - Times/thread: 2000
+269086  INFO [main]    com.oaklandsw.http.TestPerf - Threads: 1
+269086  INFO [main]    com.oaklandsw.http.TestPerf - Using max: 10 connections.
+269124  INFO [main]    com.oaklandsw.http.TestPerf - START time: 1186841805799
+269398  INFO [main]    com.oaklandsw.http.TestPerf - END/Total time: 1186841806073/274
+269398  INFO [main]    com.oaklandsw.http.TestPerf - connection pool before close
+269398  INFO [main]    com.oaklandsw.http.TestPerf - Max connections/host:    10
+Pipelining options:    PIPE_PIPELINE PIPE_MAX_CONNECTIONS 
+Pipelining max depth:  50
+Authentication Type:   NONE (0)
+Retry counts: 
+Pipeline Retry counts: 
+Counts: 
+UrlCons Attempted:               2000
+UrlCons Success:                 2000
+Total retries:                   0
+Total pipelined retries:         0
+UrlCons Failed Max Retries:      0
+UrlCons Failed > 400:            0
+Pipeline max depth (all conns):  50
+Forced Flushes:                  1308
+Buffer Flushes:                  0
+Avoided Flushes:                 2692
+Flush IOExceptions:              0
+Connection: http://repoman:8081
+  Total connections created: 10
+  Avail connections:         10
+  Assigned connections:      0
+  Observed max urlcons before close: 0
+Assigned connections: 
+Available connections: 
+    18813851 repoman:8081 (35934) CS_OPEN 
+      Total requested urlcons:      174
+      Total responded urlcons:      174
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 50
+    12812631 repoman:8081 (35935) CS_OPEN 
+      Total requested urlcons:      178
+      Total responded urlcons:      178
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 50
+    380480 repoman:8081 (35937) CS_OPEN 
+      Total requested urlcons:      184
+      Total responded urlcons:      184
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 50
+    13443474 repoman:8081 (35933) CS_OPEN 
+      Total requested urlcons:      354
+      Total responded urlcons:      354
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 50
+    26362458 repoman:8081 (35940) CS_OPEN 
+      Total requested urlcons:      176
+      Total responded urlcons:      176
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 50
+    24484300 repoman:8081 (35942) CS_OPEN 
+      Total requested urlcons:      186
+      Total responded urlcons:      186
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 50
+    14273483 repoman:8081 (35938) CS_OPEN 
+      Total requested urlcons:      256
+      Total responded urlcons:      256
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 50
+    27701615 repoman:8081 (35936) CS_OPEN 
+      Total requested urlcons:      132
+      Total responded urlcons:      132
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 50
+    29290924 repoman:8081 (35939) CS_OPEN 
+      Total requested urlcons:      152
+      Total responded urlcons:      152
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 50
+    19514437 repoman:8081 (35941) CS_OPEN 
+      Total requested urlcons:      208
+      Total responded urlcons:      208
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 50
+
+269399  INFO [main]    com.oaklandsw.http.TestPerf - Total Time (ms): 274 Time/trans (ms): 0.137
+269399  INFO [main]    com.oaklandsw.http.TestPerf - Total run bytes: 8000
+269399  INFO [main]    com.oaklandsw.http.TestPerf - Total run conns: 20
+269399  INFO [main]    com.oaklandsw.http.TestPerf - LAN,Oakland,4,0.137,10,1,50,2000,3,274,1308,0,2692,0,0,07:12:32.327
+269399  INFO [main]    com.oaklandsw.http.TestPerf - 
+269400  INFO [main]    com.oaklandsw.http.TestPerf - Start Time: 07:12:32.327
+269400  INFO [main]    com.oaklandsw.http.TestPerf - Using: Oakland implementation
+269400  INFO [main]    com.oaklandsw.http.TestPerf - URL: http://repoman:8081/4k
+269400  INFO [main]    com.oaklandsw.http.TestPerf - Times/thread: 2000
+269400  INFO [main]    com.oaklandsw.http.TestPerf - Threads: 1
+269400  INFO [main]    com.oaklandsw.http.TestPerf - Using max: 10 connections.
+269468  INFO [main]    com.oaklandsw.http.TestPerf - START time: 1186841806143
+269749  INFO [main]    com.oaklandsw.http.TestPerf - END/Total time: 1186841806424/281
+269750  INFO [main]    com.oaklandsw.http.TestPerf - connection pool before close
+269750  INFO [main]    com.oaklandsw.http.TestPerf - Max connections/host:    10
+Pipelining options:    PIPE_PIPELINE PIPE_MAX_CONNECTIONS 
+Pipelining max depth:  50
+Authentication Type:   NONE (0)
+Retry counts: 
+Pipeline Retry counts: 
+Counts: 
+UrlCons Attempted:               2000
+UrlCons Success:                 2000
+Total retries:                   0
+Total pipelined retries:         0
+UrlCons Failed Max Retries:      0
+UrlCons Failed > 400:            0
+Pipeline max depth (all conns):  50
+Forced Flushes:                  1630
+Buffer Flushes:                  0
+Avoided Flushes:                 2379
+Flush IOExceptions:              0
+Connection: http://repoman:8081
+  Total connections created: 10
+  Avail connections:         10
+  Assigned connections:      0
+  Observed max urlcons before close: 0
+Assigned connections: 
+Available connections: 
+    15316155 repoman:8081 (35951) CS_OPEN 
+      Total requested urlcons:      178
+      Total responded urlcons:      178
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 50
+    10936489 repoman:8081 (35944) CS_OPEN 
+      Total requested urlcons:      132
+      Total responded urlcons:      132
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 50
+    8374450 repoman:8081 (35948) CS_OPEN 
+      Total requested urlcons:      150
+      Total responded urlcons:      150
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 50
+    19356212 repoman:8081 (35943) CS_OPEN 
+      Total requested urlcons:      264
+      Total responded urlcons:      264
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 50
+    15749845 repoman:8081 (35947) CS_OPEN 
+      Total requested urlcons:      126
+      Total responded urlcons:      126
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 50
+    29913235 repoman:8081 (35949) CS_OPEN 
+      Total requested urlcons:      180
+      Total responded urlcons:      180
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 50
+    2775737 repoman:8081 (35946) CS_OPEN 
+      Total requested urlcons:      255
+      Total responded urlcons:      255
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 50
+    5329507 repoman:8081 (35950) CS_OPEN 
+      Total requested urlcons:      121
+      Total responded urlcons:      121
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 50
+    4919785 repoman:8081 (35952) CS_OPEN 
+      Total requested urlcons:      297
+      Total responded urlcons:      297
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 50
+    12112029 repoman:8081 (35945) CS_OPEN 
+      Total requested urlcons:      297
+      Total responded urlcons:      297
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 50
+
+269750  INFO [main]    com.oaklandsw.http.TestPerf - Total Time (ms): 281 Time/trans (ms): 0.1405
+269750  INFO [main]    com.oaklandsw.http.TestPerf - Total run bytes: 8000
+269750  INFO [main]    com.oaklandsw.http.TestPerf - Total run conns: 20
+269750  INFO [main]    com.oaklandsw.http.TestPerf - LAN,Oakland,4,0.1405,10,1,50,2000,3,281,1630,0,2379,0,0,07:12:32.327
+269750  INFO [main]    com.oaklandsw.http.TestPerf - LAN,Oakland,4,333333.1,10,1,50,2000,3,0.137,999999.0,253913,150,4074,0,9124,7,591,07:12:32.327
+269750  INFO [main]    com.oaklandsw.http.TestPerf - 
+269751  INFO [main]    com.oaklandsw.http.TestPerf - Start Time: 07:16:46.425
+269752  INFO [main]    com.oaklandsw.http.TestPerf - Using: Oakland implementation
+269752  INFO [main]    com.oaklandsw.http.TestPerf - URL: http://repoman:8081/4k
+269752  INFO [main]    com.oaklandsw.http.TestPerf - Times/thread: 1000
+269752  INFO [main]    com.oaklandsw.http.TestPerf - Threads: 2
+269752  INFO [main]    com.oaklandsw.http.TestPerf - Using max: 10 connections.
+269818  INFO [main]    com.oaklandsw.http.TestPerf - START time: 1186841806493
+270088  INFO [main]    com.oaklandsw.http.TestPerf - END/Total time: 1186841806763/270
+270088  INFO [main]    com.oaklandsw.http.TestPerf - connection pool before close
+270088  INFO [main]    com.oaklandsw.http.TestPerf - Max connections/host:    10
+Pipelining options:    PIPE_PIPELINE PIPE_MAX_CONNECTIONS 
+Pipelining max depth:  50
+Authentication Type:   NONE (0)
+Retry counts: 
+Pipeline Retry counts: 
+Counts: 
+UrlCons Attempted:               2000
+UrlCons Success:                 2000
+Total retries:                   0
+Total pipelined retries:         0
+UrlCons Failed Max Retries:      0
+UrlCons Failed > 400:            0
+Pipeline max depth (all conns):  50
+Forced Flushes:                  2049
+Buffer Flushes:                  0
+Avoided Flushes:                 1951
+Flush IOExceptions:              0
+Connection: http://repoman:8081
+  Total connections created: 10
+  Avail connections:         10
+  Assigned connections:      0
+  Observed max urlcons before close: 0
+Assigned connections: 
+Available connections: 
+    22342265 repoman:8081 (35953) CS_OPEN 
+      Total requested urlcons:      86
+      Total responded urlcons:      86
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 50
+    25648551 repoman:8081 (35955) CS_OPEN 
+      Total requested urlcons:      60
+      Total responded urlcons:      60
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 50
+    25926258 repoman:8081 (35962) CS_OPEN 
+      Total requested urlcons:      66
+      Total responded urlcons:      66
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 50
+    27021384 repoman:8081 (35954) CS_OPEN 
+      Total requested urlcons:      218
+      Total responded urlcons:      218
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 50
+    25934689 repoman:8081 (35959) CS_OPEN 
+      Total requested urlcons:      232
+      Total responded urlcons:      232
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 50
+    18141583 repoman:8081 (35958) CS_OPEN 
+      Total requested urlcons:      291
+      Total responded urlcons:      291
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 50
+    32535959 repoman:8081 (35961) CS_OPEN 
+      Total requested urlcons:      352
+      Total responded urlcons:      352
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 50
+    11117356 repoman:8081 (35956) CS_OPEN 
+      Total requested urlcons:      146
+      Total responded urlcons:      146
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 50
+    346148 repoman:8081 (35960) CS_OPEN 
+      Total requested urlcons:      354
+      Total responded urlcons:      354
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 50
+    8041484 repoman:8081 (35957) CS_OPEN 
+      Total requested urlcons:      195
+      Total responded urlcons:      195
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 50
+
+270088  INFO [main]    com.oaklandsw.http.TestPerf - Total Time (ms): 270 Time/trans (ms): 0.135
+270088  INFO [main]    com.oaklandsw.http.TestPerf - Total run bytes: 8000
+270088  INFO [main]    com.oaklandsw.http.TestPerf - Total run conns: 20
+270088  INFO [main]    com.oaklandsw.http.TestPerf - LAN,Oakland,4,0.135,10,2,50,2000,3,270,2049,0,1951,0,0,07:16:46.425
+270088  INFO [main]    com.oaklandsw.http.TestPerf - 
+270090  INFO [main]    com.oaklandsw.http.TestPerf - Start Time: 07:16:46.425
+270090  INFO [main]    com.oaklandsw.http.TestPerf - Using: Oakland implementation
+270090  INFO [main]    com.oaklandsw.http.TestPerf - URL: http://repoman:8081/4k
+270090  INFO [main]    com.oaklandsw.http.TestPerf - Times/thread: 1000
+270090  INFO [main]    com.oaklandsw.http.TestPerf - Threads: 2
+270090  INFO [main]    com.oaklandsw.http.TestPerf - Using max: 10 connections.
+270154  INFO [main]    com.oaklandsw.http.TestPerf - START time: 1186841806829
+469337  INFO [main]    com.oaklandsw.http.TestPerf - END/Total time: 1186842006012/199183
+469345  INFO [main]    com.oaklandsw.http.TestPerf - !!!Expected 2000 got: 1990
+469345  INFO [main]    com.oaklandsw.http.TestPerf - connection pool before close
+469345  INFO [main]    com.oaklandsw.http.TestPerf - Max connections/host:    10
+Pipelining options:    PIPE_PIPELINE PIPE_MAX_CONNECTIONS 
+Pipelining max depth:  50
+Authentication Type:   NONE (0)
+Retry counts: 
+  Retry times: 2 count: 1
+  Retry times: 3 count: 6
+Pipeline Retry counts: 
+  Retry times: 2 count: 491
+  Retry times: 3 count: 8
+Counts: 
+UrlCons Attempted:               2000
+UrlCons Success:                 1990
+Total retries:                   7
+Total pipelined retries:         499
+UrlCons Failed Max Retries:      0
+UrlCons Failed > 400:            0
+Pipeline max depth (all conns):  50
+Forced Flushes:                  1779
+Buffer Flushes:                  0
+Avoided Flushes:                 3261
+Flush IOExceptions:              0
+Connection: http://repoman:8081
+  Total connections created: 35
+  Avail connections:         10
+  Assigned connections:      0
+  Observed max urlcons before close: 0
+Assigned connections: 
+Available connections: 
+    16133818 repoman:8081 (36033) CS_OPEN 
+      Total requested urlcons:      11
+      Total responded urlcons:      11
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 9
+    1324883 repoman:8081 (36040) CS_OPEN 
+      Total requested urlcons:      4
+      Total responded urlcons:      4
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 4
+    2268884 repoman:8081 (36034) CS_OPEN 
+      Total requested urlcons:      11
+      Total responded urlcons:      11
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 9
+    318747 repoman:8081 (36035) CS_OPEN 
+      Total requested urlcons:      11
+      Total responded urlcons:      11
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 9
+    12303630 repoman:8081 (36037) CS_OPEN 
+      Total requested urlcons:      10
+      Total responded urlcons:      10
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 9
+    21789336 repoman:8081 (36039) CS_OPEN 
+      Total requested urlcons:      9
+      Total responded urlcons:      9
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 9
+    954895 repoman:8081 (36036) CS_OPEN 
+      Total requested urlcons:      9
+      Total responded urlcons:      9
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 9
+    26834877 repoman:8081 (36031) CS_OPEN 
+      Total requested urlcons:      12
+      Total responded urlcons:      12
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 7
+    30940873 repoman:8081 (36038) CS_OPEN 
+      Total requested urlcons:      10
+      Total responded urlcons:      10
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 10
+    26240997 repoman:8081 (36032) CS_OPEN 
+      Total requested urlcons:      12
+      Total responded urlcons:      12
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 10
+
+469345  INFO [main]    com.oaklandsw.http.TestPerf - Total Time (ms): 199183 Time/trans (ms): 999999.0
+469345  INFO [main]    com.oaklandsw.http.TestPerf - Total run bytes: 8000
+469345  INFO [main]    com.oaklandsw.http.TestPerf - Total run conns: 20
+469345  INFO [main]    com.oaklandsw.http.TestPerf - LAN,Oakland,4,999999.0,10,2,50,2000,3,199183,1779,0,3261,7,499,07:16:46.425
+469345  INFO [main]    com.oaklandsw.http.TestPerf - 
+469347  INFO [main]    com.oaklandsw.http.TestPerf - Start Time: 07:16:46.425
+469347  INFO [main]    com.oaklandsw.http.TestPerf - Using: Oakland implementation
+469347  INFO [main]    com.oaklandsw.http.TestPerf - URL: http://repoman:8081/4k
+469347  INFO [main]    com.oaklandsw.http.TestPerf - Times/thread: 1000
+469347  INFO [main]    com.oaklandsw.http.TestPerf - Threads: 2
+469347  INFO [main]    com.oaklandsw.http.TestPerf - Using max: 10 connections.
+469381  INFO [main]    com.oaklandsw.http.TestPerf - START time: 1186842006056

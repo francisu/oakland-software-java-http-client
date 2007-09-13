@@ -1,0 +1,5 @@
+Where,Product,Size (K),ms/Trans,Connections,Threads,Pipe Depth,Count,Repeats,Total ms,ForceFlushes,BufferFlushes,AvoidedFlushes,Retry,PLRetry,StartTime
+Internet,Oakland,0,114.88,1,1,0,100,1,11488,100,0,0,0,0,07:58:30.528
+Internet,Oakland,0,56.93,2,2,0,100,1,5693,100,0,0,0,0,07:58:52.251
+Internet,Oakland,0,23.75,5,5,0,100,1,2375,100,0,0,0,0,07:58:57.964
+Internet,Oakland,0,14.45,10,10,0,100,1,1445,100,0,0,0,0,07:59:00.360

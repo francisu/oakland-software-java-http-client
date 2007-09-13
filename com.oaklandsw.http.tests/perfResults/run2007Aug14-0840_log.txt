@@ -1,0 +1,2760 @@
+0     INFO [main]    com.oaklandsw.http.TestPerf - Where,Product,SizeK,ms/TransAvg,Connections,Threads,PipeDepthObsAvg,PipeDepthLim,Count,Repeats,ms/TransMin,ms/TransMax,msTotal,FlushesForced,FlushesBuffFull,FlushesAvoided,Retry,RetryPL,StartTime
+1     INFO [main]    com.oaklandsw.http.TestPerf - Where,Product,SizeK,ms/Trans,Connections,Threads,PipeDepthObs,PipeDepthLim,Count,Repeats,msTotal,FlushesForced,FlushesBuffFull,FlushesAvoided,Retry,RetryPL,StartTime
+112   INFO [main]    com.oaklandsw.http.TestPerf - Start Time: 08:40:57.340
+112   INFO [main]    com.oaklandsw.http.TestPerf - Using: Oakland implementation
+112   INFO [main]    com.oaklandsw.http.TestPerf - URL: http://localhost:8080/oaklandsw-http/perf?size=0k
+113   INFO [main]    com.oaklandsw.http.TestPerf - Times/thread: 200
+113   INFO [main]    com.oaklandsw.http.TestPerf - Threads: 1
+113   INFO [main]    com.oaklandsw.http.TestPerf - Using max: 1 connections.
+2622  INFO [main]    com.oaklandsw.http.TestPerf - connection pool before close
+2623  INFO [main]    com.oaklandsw.http.TestPerf - Max connections/host:    1
+Pipelining options:    PIPE_NONE
+Pipelining max depth:  0
+Authentication Type:   NONE (0)
+Retry counts: 
+Pipeline Retry counts: 
+Counts: 
+UrlCons Attempted:               200
+UrlCons Success:                 200
+Pipeline write request:          0
+Pipeline read response:          0
+Pipeline error:                  0
+Total retries:                   0
+Total pipelined retries:         0
+UrlCons Failed Max Retries:      0
+UrlCons Failed > 400:            0
+Pipeline max depth (all conns):  0
+Forced Flushes:                  200
+Buffer Flushes:                  0
+Avoided Flushes:                 0
+Flush IOExceptions:              0
+Connection: http://localhost:8080
+  Total connections created: 2
+  Avail connections:         0
+  Assigned connections:      0
+  Observed max urlcons before close: 100
+Assigned connections: 
+Available connections: 
+
+2623  INFO [main]    com.oaklandsw.http.TestPerf - Total Time (ms): 2484 Time/trans (ms): 12.42
+2623  INFO [main]    com.oaklandsw.http.TestPerf - 
+2625  INFO [main]    com.oaklandsw.http.TestPerf - Start Time: 08:40:57.340
+2625  INFO [main]    com.oaklandsw.http.TestPerf - Using: Oakland implementation
+2625  INFO [main]    com.oaklandsw.http.TestPerf - URL: http://localhost:8080/oaklandsw-http/perf?size=0k
+2625  INFO [main]    com.oaklandsw.http.TestPerf - Times/thread: 200
+2625  INFO [main]    com.oaklandsw.http.TestPerf - Threads: 1
+2625  INFO [main]    com.oaklandsw.http.TestPerf - Using max: 1 connections.
+5126  INFO [main]    com.oaklandsw.http.TestPerf - connection pool before close
+5126  INFO [main]    com.oaklandsw.http.TestPerf - Max connections/host:    1
+Pipelining options:    PIPE_NONE
+Pipelining max depth:  0
+Authentication Type:   NONE (0)
+Retry counts: 
+Pipeline Retry counts: 
+Counts: 
+UrlCons Attempted:               200
+UrlCons Success:                 200
+Pipeline write request:          0
+Pipeline read response:          0
+Pipeline error:                  0
+Total retries:                   0
+Total pipelined retries:         0
+UrlCons Failed Max Retries:      0
+UrlCons Failed > 400:            0
+Pipeline max depth (all conns):  0
+Forced Flushes:                  200
+Buffer Flushes:                  0
+Avoided Flushes:                 0
+Flush IOExceptions:              0
+Connection: http://localhost:8080
+  Total connections created: 2
+  Avail connections:         0
+  Assigned connections:      0
+  Observed max urlcons before close: 100
+Assigned connections: 
+Available connections: 
+
+5151  INFO [main]    com.oaklandsw.http.TestPerf - Total Time (ms): 2484 Time/trans (ms): 12.42
+5151  INFO [main]    com.oaklandsw.http.TestPerf - Total run bytes: 0
+5151  INFO [main]    com.oaklandsw.http.TestPerf - Total run conns: 2
+5151  INFO [main]    com.oaklandsw.http.TestPerf - Machine,Oakland,0,12.42,1,1,0,0,200,3,2484,200,0,0,0,0,08:40:57.340
+5151  INFO [main]    com.oaklandsw.http.TestPerf - 
+5154  INFO [main]    com.oaklandsw.http.TestPerf - Start Time: 08:40:57.340
+5154  INFO [main]    com.oaklandsw.http.TestPerf - Using: Oakland implementation
+5154  INFO [main]    com.oaklandsw.http.TestPerf - URL: http://localhost:8080/oaklandsw-http/perf?size=0k
+5154  INFO [main]    com.oaklandsw.http.TestPerf - Times/thread: 200
+5154  INFO [main]    com.oaklandsw.http.TestPerf - Threads: 1
+5154  INFO [main]    com.oaklandsw.http.TestPerf - Using max: 1 connections.
+7670  INFO [main]    com.oaklandsw.http.TestPerf - connection pool before close
+7670  INFO [main]    com.oaklandsw.http.TestPerf - Max connections/host:    1
+Pipelining options:    PIPE_NONE
+Pipelining max depth:  0
+Authentication Type:   NONE (0)
+Retry counts: 
+Pipeline Retry counts: 
+Counts: 
+UrlCons Attempted:               200
+UrlCons Success:                 200
+Pipeline write request:          0
+Pipeline read response:          0
+Pipeline error:                  0
+Total retries:                   0
+Total pipelined retries:         0
+UrlCons Failed Max Retries:      0
+UrlCons Failed > 400:            0
+Pipeline max depth (all conns):  0
+Forced Flushes:                  200
+Buffer Flushes:                  0
+Avoided Flushes:                 0
+Flush IOExceptions:              0
+Connection: http://localhost:8080
+  Total connections created: 2
+  Avail connections:         0
+  Assigned connections:      0
+  Observed max urlcons before close: 100
+Assigned connections: 
+Available connections: 
+
+7670  INFO [main]    com.oaklandsw.http.TestPerf - Total Time (ms): 2499 Time/trans (ms): 12.495
+7671  INFO [main]    com.oaklandsw.http.TestPerf - Total run bytes: 0
+7671  INFO [main]    com.oaklandsw.http.TestPerf - Total run conns: 2
+7671  INFO [main]    com.oaklandsw.http.TestPerf - Machine,Oakland,0,12.495,1,1,0,0,200,3,2499,200,0,0,0,0,08:40:57.340
+7671  INFO [main]    com.oaklandsw.http.TestPerf - 
+7672  INFO [main]    com.oaklandsw.http.TestPerf - Start Time: 08:40:57.340
+7672  INFO [main]    com.oaklandsw.http.TestPerf - Using: Oakland implementation
+7672  INFO [main]    com.oaklandsw.http.TestPerf - URL: http://localhost:8080/oaklandsw-http/perf?size=0k
+7672  INFO [main]    com.oaklandsw.http.TestPerf - Times/thread: 200
+7672  INFO [main]    com.oaklandsw.http.TestPerf - Threads: 1
+7672  INFO [main]    com.oaklandsw.http.TestPerf - Using max: 1 connections.
+10990  INFO [main]    com.oaklandsw.http.TestPerf - connection pool before close
+10990  INFO [main]    com.oaklandsw.http.TestPerf - Max connections/host:    1
+Pipelining options:    PIPE_NONE
+Pipelining max depth:  0
+Authentication Type:   NONE (0)
+Retry counts: 
+Pipeline Retry counts: 
+Counts: 
+UrlCons Attempted:               200
+UrlCons Success:                 200
+Pipeline write request:          0
+Pipeline read response:          0
+Pipeline error:                  0
+Total retries:                   0
+Total pipelined retries:         0
+UrlCons Failed Max Retries:      0
+UrlCons Failed > 400:            0
+Pipeline max depth (all conns):  0
+Forced Flushes:                  200
+Buffer Flushes:                  0
+Avoided Flushes:                 0
+Flush IOExceptions:              0
+Connection: http://localhost:8080
+  Total connections created: 2
+  Avail connections:         0
+  Assigned connections:      0
+  Observed max urlcons before close: 100
+Assigned connections: 
+Available connections: 
+
+10990  INFO [main]    com.oaklandsw.http.TestPerf - Total Time (ms): 3298 Time/trans (ms): 16.49
+10990  INFO [main]    com.oaklandsw.http.TestPerf - Total run bytes: 0
+10990  INFO [main]    com.oaklandsw.http.TestPerf - Total run conns: 2
+10990  INFO [main]    com.oaklandsw.http.TestPerf - Machine,Oakland,0,16.49,1,1,0,0,200,3,3298,200,0,0,0,0,08:40:57.340
+10991  INFO [main]    com.oaklandsw.http.TestPerf - Machine,Oakland,0,13.801666,1,1,,0,200,3,12.42,16.49,8281,600,0,0,0,0,08:40:57.340
+10991  INFO [main]    com.oaklandsw.http.TestPerf - 
+10992  INFO [main]    com.oaklandsw.http.TestPerf - Start Time: 08:41:08.324
+10992  INFO [main]    com.oaklandsw.http.TestPerf - Using: Oakland implementation
+10992  INFO [main]    com.oaklandsw.http.TestPerf - URL: http://localhost:8080/oaklandsw-http/perf?size=0k
+10993  INFO [main]    com.oaklandsw.http.TestPerf - Times/thread: 100
+10993  INFO [main]    com.oaklandsw.http.TestPerf - Threads: 2
+10993  INFO [main]    com.oaklandsw.http.TestPerf - Using max: 2 connections.
+12647  INFO [main]    com.oaklandsw.http.TestPerf - connection pool before close
+12648  INFO [main]    com.oaklandsw.http.TestPerf - Max connections/host:    2
+Pipelining options:    PIPE_NONE
+Pipelining max depth:  0
+Authentication Type:   NONE (0)
+Retry counts: 
+Pipeline Retry counts: 
+Counts: 
+UrlCons Attempted:               200
+UrlCons Success:                 200
+Pipeline write request:          0
+Pipeline read response:          0
+Pipeline error:                  0
+Total retries:                   0
+Total pipelined retries:         0
+UrlCons Failed Max Retries:      0
+UrlCons Failed > 400:            0
+Pipeline max depth (all conns):  0
+Forced Flushes:                  200
+Buffer Flushes:                  0
+Avoided Flushes:                 0
+Flush IOExceptions:              0
+Connection: http://localhost:8080
+  Total connections created: 3
+  Avail connections:         2
+  Assigned connections:      0
+  Observed max urlcons before close: 100
+Assigned connections: 
+Available connections: 
+    4999541 localhost:8080 (55590) CS_OPEN 
+      Total requested urlcons:      89
+      Total responded urlcons:      89
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    6997089 localhost:8080 (55592) CS_OPEN 
+      Total requested urlcons:      11
+      Total responded urlcons:      11
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+
+12648  INFO [main]    com.oaklandsw.http.TestPerf - Total Time (ms): 1635 Time/trans (ms): 8.175
+12648  INFO [main]    com.oaklandsw.http.TestPerf - Total run bytes: 0
+12648  INFO [main]    com.oaklandsw.http.TestPerf - Total run conns: 2
+12648  INFO [main]    com.oaklandsw.http.TestPerf - Machine,Oakland,0,8.175,2,2,0,0,200,3,1635,200,0,0,0,0,08:41:08.324
+12648  INFO [main]    com.oaklandsw.http.TestPerf - 
+12650  INFO [main]    com.oaklandsw.http.TestPerf - Start Time: 08:41:08.324
+12650  INFO [main]    com.oaklandsw.http.TestPerf - Using: Oakland implementation
+12650  INFO [main]    com.oaklandsw.http.TestPerf - URL: http://localhost:8080/oaklandsw-http/perf?size=0k
+12650  INFO [main]    com.oaklandsw.http.TestPerf - Times/thread: 100
+12650  INFO [main]    com.oaklandsw.http.TestPerf - Threads: 2
+12650  INFO [main]    com.oaklandsw.http.TestPerf - Using max: 2 connections.
+14238  INFO [main]    com.oaklandsw.http.TestPerf - connection pool before close
+14238  INFO [main]    com.oaklandsw.http.TestPerf - Max connections/host:    2
+Pipelining options:    PIPE_NONE
+Pipelining max depth:  0
+Authentication Type:   NONE (0)
+Retry counts: 
+Pipeline Retry counts: 
+Counts: 
+UrlCons Attempted:               200
+UrlCons Success:                 200
+Pipeline write request:          0
+Pipeline read response:          0
+Pipeline error:                  0
+Total retries:                   0
+Total pipelined retries:         0
+UrlCons Failed Max Retries:      0
+UrlCons Failed > 400:            0
+Pipeline max depth (all conns):  0
+Forced Flushes:                  200
+Buffer Flushes:                  0
+Avoided Flushes:                 0
+Flush IOExceptions:              0
+Connection: http://localhost:8080
+  Total connections created: 2
+  Avail connections:         0
+  Assigned connections:      0
+  Observed max urlcons before close: 100
+Assigned connections: 
+Available connections: 
+
+14238  INFO [main]    com.oaklandsw.http.TestPerf - Total Time (ms): 1554 Time/trans (ms): 7.77
+14238  INFO [main]    com.oaklandsw.http.TestPerf - Total run bytes: 0
+14238  INFO [main]    com.oaklandsw.http.TestPerf - Total run conns: 2
+14238  INFO [main]    com.oaklandsw.http.TestPerf - Machine,Oakland,0,7.77,2,2,0,0,200,3,1554,200,0,0,0,0,08:41:08.324
+14238  INFO [main]    com.oaklandsw.http.TestPerf - 
+14240  INFO [main]    com.oaklandsw.http.TestPerf - Start Time: 08:41:08.324
+14240  INFO [main]    com.oaklandsw.http.TestPerf - Using: Oakland implementation
+14240  INFO [main]    com.oaklandsw.http.TestPerf - URL: http://localhost:8080/oaklandsw-http/perf?size=0k
+14240  INFO [main]    com.oaklandsw.http.TestPerf - Times/thread: 100
+14240  INFO [main]    com.oaklandsw.http.TestPerf - Threads: 2
+14240  INFO [main]    com.oaklandsw.http.TestPerf - Using max: 2 connections.
+15960  INFO [main]    com.oaklandsw.http.TestPerf - connection pool before close
+15960  INFO [main]    com.oaklandsw.http.TestPerf - Max connections/host:    2
+Pipelining options:    PIPE_NONE
+Pipelining max depth:  0
+Authentication Type:   NONE (0)
+Retry counts: 
+Pipeline Retry counts: 
+Counts: 
+UrlCons Attempted:               200
+UrlCons Success:                 200
+Pipeline write request:          0
+Pipeline read response:          0
+Pipeline error:                  0
+Total retries:                   0
+Total pipelined retries:         0
+UrlCons Failed Max Retries:      0
+UrlCons Failed > 400:            0
+Pipeline max depth (all conns):  0
+Forced Flushes:                  200
+Buffer Flushes:                  0
+Avoided Flushes:                 0
+Flush IOExceptions:              0
+Connection: http://localhost:8080
+  Total connections created: 2
+  Avail connections:         0
+  Assigned connections:      0
+  Observed max urlcons before close: 100
+Assigned connections: 
+Available connections: 
+
+15960  INFO [main]    com.oaklandsw.http.TestPerf - Total Time (ms): 1702 Time/trans (ms): 8.51
+15960  INFO [main]    com.oaklandsw.http.TestPerf - Total run bytes: 0
+15960  INFO [main]    com.oaklandsw.http.TestPerf - Total run conns: 2
+15960  INFO [main]    com.oaklandsw.http.TestPerf - Machine,Oakland,0,8.51,2,2,0,0,200,3,1702,200,0,0,0,0,08:41:08.324
+15960  INFO [main]    com.oaklandsw.http.TestPerf - Machine,Oakland,0,8.151667,2,2,,0,200,3,7.77,8.51,4891,600,0,0,0,0,08:41:08.324
+15960  INFO [main]    com.oaklandsw.http.TestPerf - 
+15965  INFO [main]    com.oaklandsw.http.TestPerf - Start Time: 08:41:13.293
+15965  INFO [main]    com.oaklandsw.http.TestPerf - Using: Oakland implementation
+15965  INFO [main]    com.oaklandsw.http.TestPerf - URL: http://localhost:8080/oaklandsw-http/perf?size=0k
+15965  INFO [main]    com.oaklandsw.http.TestPerf - Times/thread: 40
+15965  INFO [main]    com.oaklandsw.http.TestPerf - Threads: 5
+15965  INFO [main]    com.oaklandsw.http.TestPerf - Using max: 5 connections.
+16682  INFO [main]    com.oaklandsw.http.TestPerf - connection pool before close
+16682  INFO [main]    com.oaklandsw.http.TestPerf - Max connections/host:    5
+Pipelining options:    PIPE_NONE
+Pipelining max depth:  0
+Authentication Type:   NONE (0)
+Retry counts: 
+Pipeline Retry counts: 
+Counts: 
+UrlCons Attempted:               200
+UrlCons Success:                 200
+Pipeline write request:          0
+Pipeline read response:          0
+Pipeline error:                  0
+Total retries:                   0
+Total pipelined retries:         0
+UrlCons Failed Max Retries:      0
+UrlCons Failed > 400:            0
+Pipeline max depth (all conns):  0
+Forced Flushes:                  200
+Buffer Flushes:                  0
+Avoided Flushes:                 0
+Flush IOExceptions:              0
+Connection: http://localhost:8080
+  Total connections created: 5
+  Avail connections:         5
+  Assigned connections:      0
+  Observed max urlcons before close: 0
+Assigned connections: 
+Available connections: 
+    14306161 localhost:8080 (55597) CS_OPEN 
+      Total requested urlcons:      35
+      Total responded urlcons:      35
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    26156414 localhost:8080 (55601) CS_OPEN 
+      Total requested urlcons:      38
+      Total responded urlcons:      38
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    14247437 localhost:8080 (55598) CS_OPEN 
+      Total requested urlcons:      47
+      Total responded urlcons:      47
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    12258573 localhost:8080 (55599) CS_OPEN 
+      Total requested urlcons:      40
+      Total responded urlcons:      40
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    5629279 localhost:8080 (55600) CS_OPEN 
+      Total requested urlcons:      40
+      Total responded urlcons:      40
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+
+16682  INFO [main]    com.oaklandsw.http.TestPerf - Total Time (ms): 698 Time/trans (ms): 3.49
+16682  INFO [main]    com.oaklandsw.http.TestPerf - Total run bytes: 0
+16682  INFO [main]    com.oaklandsw.http.TestPerf - Total run conns: 5
+16682  INFO [main]    com.oaklandsw.http.TestPerf - Machine,Oakland,0,3.49,5,5,0,0,200,3,698,200,0,0,0,0,08:41:13.293
+16682  INFO [main]    com.oaklandsw.http.TestPerf - 
+16685  INFO [main]    com.oaklandsw.http.TestPerf - Start Time: 08:41:13.293
+16685  INFO [main]    com.oaklandsw.http.TestPerf - Using: Oakland implementation
+16685  INFO [main]    com.oaklandsw.http.TestPerf - URL: http://localhost:8080/oaklandsw-http/perf?size=0k
+16685  INFO [main]    com.oaklandsw.http.TestPerf - Times/thread: 40
+16685  INFO [main]    com.oaklandsw.http.TestPerf - Threads: 5
+16685  INFO [main]    com.oaklandsw.http.TestPerf - Using max: 5 connections.
+17480  INFO [main]    com.oaklandsw.http.TestPerf - connection pool before close
+17480  INFO [main]    com.oaklandsw.http.TestPerf - Max connections/host:    5
+Pipelining options:    PIPE_NONE
+Pipelining max depth:  0
+Authentication Type:   NONE (0)
+Retry counts: 
+Pipeline Retry counts: 
+Counts: 
+UrlCons Attempted:               200
+UrlCons Success:                 200
+Pipeline write request:          0
+Pipeline read response:          0
+Pipeline error:                  0
+Total retries:                   0
+Total pipelined retries:         0
+UrlCons Failed Max Retries:      0
+UrlCons Failed > 400:            0
+Pipeline max depth (all conns):  0
+Forced Flushes:                  200
+Buffer Flushes:                  0
+Avoided Flushes:                 0
+Flush IOExceptions:              0
+Connection: http://localhost:8080
+  Total connections created: 5
+  Avail connections:         5
+  Assigned connections:      0
+  Observed max urlcons before close: 0
+Assigned connections: 
+Available connections: 
+    2691004 localhost:8080 (55605) CS_OPEN 
+      Total requested urlcons:      39
+      Total responded urlcons:      39
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    29887233 localhost:8080 (55602) CS_OPEN 
+      Total requested urlcons:      46
+      Total responded urlcons:      46
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    4890830 localhost:8080 (55603) CS_OPEN 
+      Total requested urlcons:      33
+      Total responded urlcons:      33
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    25378506 localhost:8080 (55604) CS_OPEN 
+      Total requested urlcons:      35
+      Total responded urlcons:      35
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    26171428 localhost:8080 (55606) CS_OPEN 
+      Total requested urlcons:      47
+      Total responded urlcons:      47
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+
+17480  INFO [main]    com.oaklandsw.http.TestPerf - Total Time (ms): 776 Time/trans (ms): 3.88
+17480  INFO [main]    com.oaklandsw.http.TestPerf - Total run bytes: 0
+17480  INFO [main]    com.oaklandsw.http.TestPerf - Total run conns: 5
+17480  INFO [main]    com.oaklandsw.http.TestPerf - Machine,Oakland,0,3.88,5,5,0,0,200,3,776,200,0,0,0,0,08:41:13.293
+17480  INFO [main]    com.oaklandsw.http.TestPerf - 
+17482  INFO [main]    com.oaklandsw.http.TestPerf - Start Time: 08:41:13.293
+17482  INFO [main]    com.oaklandsw.http.TestPerf - Using: Oakland implementation
+17482  INFO [main]    com.oaklandsw.http.TestPerf - URL: http://localhost:8080/oaklandsw-http/perf?size=0k
+17482  INFO [main]    com.oaklandsw.http.TestPerf - Times/thread: 40
+17482  INFO [main]    com.oaklandsw.http.TestPerf - Threads: 5
+17482  INFO [main]    com.oaklandsw.http.TestPerf - Using max: 5 connections.
+18548  INFO [main]    com.oaklandsw.http.TestPerf - connection pool before close
+18548  INFO [main]    com.oaklandsw.http.TestPerf - Max connections/host:    5
+Pipelining options:    PIPE_NONE
+Pipelining max depth:  0
+Authentication Type:   NONE (0)
+Retry counts: 
+Pipeline Retry counts: 
+Counts: 
+UrlCons Attempted:               200
+UrlCons Success:                 200
+Pipeline write request:          0
+Pipeline read response:          0
+Pipeline error:                  0
+Total retries:                   0
+Total pipelined retries:         0
+UrlCons Failed Max Retries:      0
+UrlCons Failed > 400:            0
+Pipeline max depth (all conns):  0
+Forced Flushes:                  200
+Buffer Flushes:                  0
+Avoided Flushes:                 0
+Flush IOExceptions:              0
+Connection: http://localhost:8080
+  Total connections created: 5
+  Avail connections:         5
+  Assigned connections:      0
+  Observed max urlcons before close: 0
+Assigned connections: 
+Available connections: 
+    32189467 localhost:8080 (55608) CS_OPEN 
+      Total requested urlcons:      33
+      Total responded urlcons:      33
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    10272075 localhost:8080 (55610) CS_OPEN 
+      Total requested urlcons:      48
+      Total responded urlcons:      48
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    5218268 localhost:8080 (55607) CS_OPEN 
+      Total requested urlcons:      41
+      Total responded urlcons:      41
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    25699763 localhost:8080 (55609) CS_OPEN 
+      Total requested urlcons:      34
+      Total responded urlcons:      34
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    23275591 localhost:8080 (55611) CS_OPEN 
+      Total requested urlcons:      44
+      Total responded urlcons:      44
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+
+18548  INFO [main]    com.oaklandsw.http.TestPerf - Total Time (ms): 1038 Time/trans (ms): 5.19
+18548  INFO [main]    com.oaklandsw.http.TestPerf - Total run bytes: 0
+18548  INFO [main]    com.oaklandsw.http.TestPerf - Total run conns: 5
+18548  INFO [main]    com.oaklandsw.http.TestPerf - Machine,Oakland,0,5.19,5,5,0,0,200,3,1038,200,0,0,0,0,08:41:13.293
+18548  INFO [main]    com.oaklandsw.http.TestPerf - Machine,Oakland,0,4.1866665,5,5,,0,200,3,3.49,5.19,2512,600,0,0,0,0,08:41:13.293
+18549  INFO [main]    com.oaklandsw.http.TestPerf - 
+18551  INFO [main]    com.oaklandsw.http.TestPerf - Start Time: 08:41:15.882
+18551  INFO [main]    com.oaklandsw.http.TestPerf - Using: Oakland implementation
+18551  INFO [main]    com.oaklandsw.http.TestPerf - URL: http://localhost:8080/oaklandsw-http/perf?size=0k
+18551  INFO [main]    com.oaklandsw.http.TestPerf - Times/thread: 20
+18551  INFO [main]    com.oaklandsw.http.TestPerf - Threads: 10
+18551  INFO [main]    com.oaklandsw.http.TestPerf - Using max: 10 connections.
+19039  INFO [main]    com.oaklandsw.http.TestPerf - connection pool before close
+19047  INFO [main]    com.oaklandsw.http.TestPerf - Max connections/host:    10
+Pipelining options:    PIPE_NONE
+Pipelining max depth:  0
+Authentication Type:   NONE (0)
+Retry counts: 
+Pipeline Retry counts: 
+Counts: 
+UrlCons Attempted:               200
+UrlCons Success:                 200
+Pipeline write request:          0
+Pipeline read response:          0
+Pipeline error:                  0
+Total retries:                   0
+Total pipelined retries:         0
+UrlCons Failed Max Retries:      0
+UrlCons Failed > 400:            0
+Pipeline max depth (all conns):  0
+Forced Flushes:                  200
+Buffer Flushes:                  0
+Avoided Flushes:                 0
+Flush IOExceptions:              0
+Connection: http://localhost:8080
+  Total connections created: 10
+  Avail connections:         10
+  Assigned connections:      0
+  Observed max urlcons before close: 0
+Assigned connections: 
+Available connections: 
+    31999426 localhost:8080 (55615) CS_OPEN 
+      Total requested urlcons:      21
+      Total responded urlcons:      21
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    3932167 localhost:8080 (55621) CS_OPEN 
+      Total requested urlcons:      18
+      Total responded urlcons:      18
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    19267322 localhost:8080 (55617) CS_OPEN 
+      Total requested urlcons:      20
+      Total responded urlcons:      20
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    25616143 localhost:8080 (55614) CS_OPEN 
+      Total requested urlcons:      21
+      Total responded urlcons:      21
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    27168535 localhost:8080 (55620) CS_OPEN 
+      Total requested urlcons:      18
+      Total responded urlcons:      18
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    12864392 localhost:8080 (55618) CS_OPEN 
+      Total requested urlcons:      18
+      Total responded urlcons:      18
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    20632381 localhost:8080 (55612) CS_OPEN 
+      Total requested urlcons:      22
+      Total responded urlcons:      22
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    16939420 localhost:8080 (55616) CS_OPEN 
+      Total requested urlcons:      22
+      Total responded urlcons:      22
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    25039388 localhost:8080 (55613) CS_OPEN 
+      Total requested urlcons:      22
+      Total responded urlcons:      22
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    7408068 localhost:8080 (55619) CS_OPEN 
+      Total requested urlcons:      18
+      Total responded urlcons:      18
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+
+19047  INFO [main]    com.oaklandsw.http.TestPerf - Total Time (ms): 440 Time/trans (ms): 2.2
+19047  INFO [main]    com.oaklandsw.http.TestPerf - Total run bytes: 0
+19047  INFO [main]    com.oaklandsw.http.TestPerf - Total run conns: 10
+19047  INFO [main]    com.oaklandsw.http.TestPerf - Machine,Oakland,0,2.2,10,10,0,0,200,3,440,200,0,0,0,0,08:41:15.882
+19047  INFO [main]    com.oaklandsw.http.TestPerf - 
+19050  INFO [main]    com.oaklandsw.http.TestPerf - Start Time: 08:41:15.882
+19050  INFO [main]    com.oaklandsw.http.TestPerf - Using: Oakland implementation
+19050  INFO [main]    com.oaklandsw.http.TestPerf - URL: http://localhost:8080/oaklandsw-http/perf?size=0k
+19050  INFO [main]    com.oaklandsw.http.TestPerf - Times/thread: 20
+19050  INFO [main]    com.oaklandsw.http.TestPerf - Threads: 10
+19050  INFO [main]    com.oaklandsw.http.TestPerf - Using max: 10 connections.
+19398  INFO [main]    com.oaklandsw.http.TestPerf - connection pool before close
+19399  INFO [main]    com.oaklandsw.http.TestPerf - Max connections/host:    10
+Pipelining options:    PIPE_NONE
+Pipelining max depth:  0
+Authentication Type:   NONE (0)
+Retry counts: 
+Pipeline Retry counts: 
+Counts: 
+UrlCons Attempted:               200
+UrlCons Success:                 200
+Pipeline write request:          0
+Pipeline read response:          0
+Pipeline error:                  0
+Total retries:                   0
+Total pipelined retries:         0
+UrlCons Failed Max Retries:      0
+UrlCons Failed > 400:            0
+Pipeline max depth (all conns):  0
+Forced Flushes:                  200
+Buffer Flushes:                  0
+Avoided Flushes:                 0
+Flush IOExceptions:              0
+Connection: http://localhost:8080
+  Total connections created: 10
+  Avail connections:         10
+  Assigned connections:      0
+  Observed max urlcons before close: 0
+Assigned connections: 
+Available connections: 
+    1152907 localhost:8080 (55624) CS_OPEN 
+      Total requested urlcons:      20
+      Total responded urlcons:      20
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    16001744 localhost:8080 (55628) CS_OPEN 
+      Total requested urlcons:      20
+      Total responded urlcons:      20
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    2546668 localhost:8080 (55626) CS_OPEN 
+      Total requested urlcons:      20
+      Total responded urlcons:      20
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    16237341 localhost:8080 (55622) CS_OPEN 
+      Total requested urlcons:      20
+      Total responded urlcons:      20
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    2804837 localhost:8080 (55627) CS_OPEN 
+      Total requested urlcons:      20
+      Total responded urlcons:      20
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    30476892 localhost:8080 (55623) CS_OPEN 
+      Total requested urlcons:      19
+      Total responded urlcons:      19
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    16720915 localhost:8080 (55631) CS_OPEN 
+      Total requested urlcons:      19
+      Total responded urlcons:      19
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    10059989 localhost:8080 (55625) CS_OPEN 
+      Total requested urlcons:      21
+      Total responded urlcons:      21
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    31020178 localhost:8080 (55630) CS_OPEN 
+      Total requested urlcons:      20
+      Total responded urlcons:      20
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    20935297 localhost:8080 (55629) CS_OPEN 
+      Total requested urlcons:      21
+      Total responded urlcons:      21
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+
+19399  INFO [main]    com.oaklandsw.http.TestPerf - Total Time (ms): 320 Time/trans (ms): 1.6
+19399  INFO [main]    com.oaklandsw.http.TestPerf - Total run bytes: 0
+19399  INFO [main]    com.oaklandsw.http.TestPerf - Total run conns: 10
+19399  INFO [main]    com.oaklandsw.http.TestPerf - Machine,Oakland,0,1.6,10,10,0,0,200,3,320,200,0,0,0,0,08:41:15.882
+19399  INFO [main]    com.oaklandsw.http.TestPerf - 
+19402  INFO [main]    com.oaklandsw.http.TestPerf - Start Time: 08:41:15.882
+19402  INFO [main]    com.oaklandsw.http.TestPerf - Using: Oakland implementation
+19402  INFO [main]    com.oaklandsw.http.TestPerf - URL: http://localhost:8080/oaklandsw-http/perf?size=0k
+19402  INFO [main]    com.oaklandsw.http.TestPerf - Times/thread: 20
+19403  INFO [main]    com.oaklandsw.http.TestPerf - Threads: 10
+19403  INFO [main]    com.oaklandsw.http.TestPerf - Using max: 10 connections.
+19726  INFO [main]    com.oaklandsw.http.TestPerf - connection pool before close
+19727  INFO [main]    com.oaklandsw.http.TestPerf - Max connections/host:    10
+Pipelining options:    PIPE_NONE
+Pipelining max depth:  0
+Authentication Type:   NONE (0)
+Retry counts: 
+Pipeline Retry counts: 
+Counts: 
+UrlCons Attempted:               200
+UrlCons Success:                 200
+Pipeline write request:          0
+Pipeline read response:          0
+Pipeline error:                  0
+Total retries:                   0
+Total pipelined retries:         0
+UrlCons Failed Max Retries:      0
+UrlCons Failed > 400:            0
+Pipeline max depth (all conns):  0
+Forced Flushes:                  200
+Buffer Flushes:                  0
+Avoided Flushes:                 0
+Flush IOExceptions:              0
+Connection: http://localhost:8080
+  Total connections created: 10
+  Avail connections:         10
+  Assigned connections:      0
+  Observed max urlcons before close: 0
+Assigned connections: 
+Available connections: 
+    15091334 localhost:8080 (55639) CS_OPEN 
+      Total requested urlcons:      19
+      Total responded urlcons:      19
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    2112561 localhost:8080 (55640) CS_OPEN 
+      Total requested urlcons:      19
+      Total responded urlcons:      19
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    5226838 localhost:8080 (55637) CS_OPEN 
+      Total requested urlcons:      19
+      Total responded urlcons:      19
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    1977511 localhost:8080 (55641) CS_OPEN 
+      Total requested urlcons:      19
+      Total responded urlcons:      19
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    17153368 localhost:8080 (55638) CS_OPEN 
+      Total requested urlcons:      19
+      Total responded urlcons:      19
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    30533424 localhost:8080 (55632) CS_OPEN 
+      Total requested urlcons:      21
+      Total responded urlcons:      21
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    27334345 localhost:8080 (55635) CS_OPEN 
+      Total requested urlcons:      21
+      Total responded urlcons:      21
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    14620722 localhost:8080 (55633) CS_OPEN 
+      Total requested urlcons:      21
+      Total responded urlcons:      21
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    11372121 localhost:8080 (55636) CS_OPEN 
+      Total requested urlcons:      21
+      Total responded urlcons:      21
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    5195164 localhost:8080 (55634) CS_OPEN 
+      Total requested urlcons:      21
+      Total responded urlcons:      21
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+
+19727  INFO [main]    com.oaklandsw.http.TestPerf - Total Time (ms): 283 Time/trans (ms): 1.415
+19727  INFO [main]    com.oaklandsw.http.TestPerf - Total run bytes: 0
+19727  INFO [main]    com.oaklandsw.http.TestPerf - Total run conns: 10
+19727  INFO [main]    com.oaklandsw.http.TestPerf - Machine,Oakland,0,1.415,10,10,0,0,200,3,283,200,0,0,0,0,08:41:15.882
+19727  INFO [main]    com.oaklandsw.http.TestPerf - Machine,Oakland,0,1.7383333,10,10,,0,200,3,1.415,2.2,1043,600,0,0,0,0,08:41:15.882
+19729  INFO [main]    com.oaklandsw.http.TestPerf - Start Time: 08:41:17.060
+19729  INFO [main]    com.oaklandsw.http.TestPerf - Using: Oakland implementation
+19729  INFO [main]    com.oaklandsw.http.TestPerf - URL: http://localhost:8080/oaklandsw-http/perf?size=0k
+19730  INFO [main]    com.oaklandsw.http.TestPerf - Times/thread: 10
+19730  INFO [main]    com.oaklandsw.http.TestPerf - Threads: 20
+19730  INFO [main]    com.oaklandsw.http.TestPerf - Using max: 20 connections.
+19939  INFO [main]    com.oaklandsw.http.TestPerf - connection pool before close
+19939  INFO [main]    com.oaklandsw.http.TestPerf - Max connections/host:    20
+Pipelining options:    PIPE_NONE
+Pipelining max depth:  0
+Authentication Type:   NONE (0)
+Retry counts: 
+Pipeline Retry counts: 
+Counts: 
+UrlCons Attempted:               200
+UrlCons Success:                 200
+Pipeline write request:          0
+Pipeline read response:          0
+Pipeline error:                  0
+Total retries:                   0
+Total pipelined retries:         0
+UrlCons Failed Max Retries:      0
+UrlCons Failed > 400:            0
+Pipeline max depth (all conns):  0
+Forced Flushes:                  200
+Buffer Flushes:                  0
+Avoided Flushes:                 0
+Flush IOExceptions:              0
+Connection: http://localhost:8080
+  Total connections created: 20
+  Avail connections:         20
+  Assigned connections:      0
+  Observed max urlcons before close: 0
+Assigned connections: 
+Available connections: 
+    14314484 localhost:8080 (55655) CS_OPEN 
+      Total requested urlcons:      9
+      Total responded urlcons:      9
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    31820984 localhost:8080 (55660) CS_OPEN 
+      Total requested urlcons:      8
+      Total responded urlcons:      8
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    24744797 localhost:8080 (55661) CS_OPEN 
+      Total requested urlcons:      8
+      Total responded urlcons:      8
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    12182618 localhost:8080 (55651) CS_OPEN 
+      Total requested urlcons:      10
+      Total responded urlcons:      10
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    4126736 localhost:8080 (55645) CS_OPEN 
+      Total requested urlcons:      11
+      Total responded urlcons:      11
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    1049443 localhost:8080 (55643) CS_OPEN 
+      Total requested urlcons:      11
+      Total responded urlcons:      11
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    21925102 localhost:8080 (55648) CS_OPEN 
+      Total requested urlcons:      11
+      Total responded urlcons:      11
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    421988 localhost:8080 (55644) CS_OPEN 
+      Total requested urlcons:      12
+      Total responded urlcons:      12
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    12376621 localhost:8080 (55646) CS_OPEN 
+      Total requested urlcons:      11
+      Total responded urlcons:      11
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    9949215 localhost:8080 (55649) CS_OPEN 
+      Total requested urlcons:      10
+      Total responded urlcons:      10
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    14721926 localhost:8080 (55650) CS_OPEN 
+      Total requested urlcons:      10
+      Total responded urlcons:      10
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    1043272 localhost:8080 (55647) CS_OPEN 
+      Total requested urlcons:      11
+      Total responded urlcons:      11
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    18871350 localhost:8080 (55642) CS_OPEN 
+      Total requested urlcons:      12
+      Total responded urlcons:      12
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    14301726 localhost:8080 (55656) CS_OPEN 
+      Total requested urlcons:      9
+      Total responded urlcons:      9
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    18725445 localhost:8080 (55657) CS_OPEN 
+      Total requested urlcons:      9
+      Total responded urlcons:      9
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    11549664 localhost:8080 (55652) CS_OPEN 
+      Total requested urlcons:      10
+      Total responded urlcons:      10
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    2814081 localhost:8080 (55653) CS_OPEN 
+      Total requested urlcons:      10
+      Total responded urlcons:      10
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    18064701 localhost:8080 (55658) CS_OPEN 
+      Total requested urlcons:      9
+      Total responded urlcons:      9
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    12929374 localhost:8080 (55659) CS_OPEN 
+      Total requested urlcons:      9
+      Total responded urlcons:      9
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    5503831 localhost:8080 (55654) CS_OPEN 
+      Total requested urlcons:      10
+      Total responded urlcons:      10
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+
+19939  INFO [main]    com.oaklandsw.http.TestPerf - Total Time (ms): 189 Time/trans (ms): 0.945
+19939  INFO [main]    com.oaklandsw.http.TestPerf - 
+19942  INFO [main]    com.oaklandsw.http.TestPerf - Start Time: 08:41:17.060
+19942  INFO [main]    com.oaklandsw.http.TestPerf - Using: Oakland implementation
+19942  INFO [main]    com.oaklandsw.http.TestPerf - URL: http://localhost:8080/oaklandsw-http/perf?size=0k
+19942  INFO [main]    com.oaklandsw.http.TestPerf - Times/thread: 10
+19942  INFO [main]    com.oaklandsw.http.TestPerf - Threads: 20
+19942  INFO [main]    com.oaklandsw.http.TestPerf - Using max: 20 connections.
+20143  INFO [main]    com.oaklandsw.http.TestPerf - connection pool before close
+20143  INFO [main]    com.oaklandsw.http.TestPerf - Max connections/host:    20
+Pipelining options:    PIPE_NONE
+Pipelining max depth:  0
+Authentication Type:   NONE (0)
+Retry counts: 
+Pipeline Retry counts: 
+Counts: 
+UrlCons Attempted:               200
+UrlCons Success:                 200
+Pipeline write request:          0
+Pipeline read response:          0
+Pipeline error:                  0
+Total retries:                   0
+Total pipelined retries:         0
+UrlCons Failed Max Retries:      0
+UrlCons Failed > 400:            0
+Pipeline max depth (all conns):  0
+Forced Flushes:                  200
+Buffer Flushes:                  0
+Avoided Flushes:                 0
+Flush IOExceptions:              0
+Connection: http://localhost:8080
+  Total connections created: 20
+  Avail connections:         20
+  Assigned connections:      0
+  Observed max urlcons before close: 0
+Assigned connections: 
+Available connections: 
+    13080585 localhost:8080 (55663) CS_OPEN 
+      Total requested urlcons:      10
+      Total responded urlcons:      10
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    30308427 localhost:8080 (55673) CS_OPEN 
+      Total requested urlcons:      10
+      Total responded urlcons:      10
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    3916915 localhost:8080 (55672) CS_OPEN 
+      Total requested urlcons:      10
+      Total responded urlcons:      10
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    31365828 localhost:8080 (55671) CS_OPEN 
+      Total requested urlcons:      10
+      Total responded urlcons:      10
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    25345246 localhost:8080 (55670) CS_OPEN 
+      Total requested urlcons:      10
+      Total responded urlcons:      10
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    4047035 localhost:8080 (55669) CS_OPEN 
+      Total requested urlcons:      10
+      Total responded urlcons:      10
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    3686501 localhost:8080 (55668) CS_OPEN 
+      Total requested urlcons:      10
+      Total responded urlcons:      10
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    17547166 localhost:8080 (55667) CS_OPEN 
+      Total requested urlcons:      10
+      Total responded urlcons:      10
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    5324129 localhost:8080 (55666) CS_OPEN 
+      Total requested urlcons:      10
+      Total responded urlcons:      10
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    26530674 localhost:8080 (55665) CS_OPEN 
+      Total requested urlcons:      10
+      Total responded urlcons:      10
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    29752800 localhost:8080 (55674) CS_OPEN 
+      Total requested urlcons:      9
+      Total responded urlcons:      9
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    27165481 localhost:8080 (55675) CS_OPEN 
+      Total requested urlcons:      9
+      Total responded urlcons:      9
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    28652556 localhost:8080 (55662) CS_OPEN 
+      Total requested urlcons:      11
+      Total responded urlcons:      11
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    23860799 localhost:8080 (55664) CS_OPEN 
+      Total requested urlcons:      11
+      Total responded urlcons:      11
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    19432672 localhost:8080 (55676) CS_OPEN 
+      Total requested urlcons:      10
+      Total responded urlcons:      10
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    19647819 localhost:8080 (55677) CS_OPEN 
+      Total requested urlcons:      10
+      Total responded urlcons:      10
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    11732976 localhost:8080 (55678) CS_OPEN 
+      Total requested urlcons:      10
+      Total responded urlcons:      10
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    30293957 localhost:8080 (55679) CS_OPEN 
+      Total requested urlcons:      10
+      Total responded urlcons:      10
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    29154294 localhost:8080 (55680) CS_OPEN 
+      Total requested urlcons:      10
+      Total responded urlcons:      10
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    849515 localhost:8080 (55681) CS_OPEN 
+      Total requested urlcons:      10
+      Total responded urlcons:      10
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+
+20143  INFO [main]    com.oaklandsw.http.TestPerf - Total Time (ms): 177 Time/trans (ms): 0.885
+20144  INFO [main]    com.oaklandsw.http.TestPerf - Total run bytes: 0
+20144  INFO [main]    com.oaklandsw.http.TestPerf - Total run conns: 20
+20144  INFO [main]    com.oaklandsw.http.TestPerf - Machine,Oakland,0,0.885,20,20,0,0,200,3,177,200,0,0,0,0,08:41:17.060
+20144  INFO [main]    com.oaklandsw.http.TestPerf - 
+20146  INFO [main]    com.oaklandsw.http.TestPerf - Start Time: 08:41:17.060
+20146  INFO [main]    com.oaklandsw.http.TestPerf - Using: Oakland implementation
+20146  INFO [main]    com.oaklandsw.http.TestPerf - URL: http://localhost:8080/oaklandsw-http/perf?size=0k
+20146  INFO [main]    com.oaklandsw.http.TestPerf - Times/thread: 10
+20146  INFO [main]    com.oaklandsw.http.TestPerf - Threads: 20
+20146  INFO [main]    com.oaklandsw.http.TestPerf - Using max: 20 connections.
+20411  INFO [main]    com.oaklandsw.http.TestPerf - connection pool before close
+20412  INFO [main]    com.oaklandsw.http.TestPerf - Max connections/host:    20
+Pipelining options:    PIPE_NONE
+Pipelining max depth:  0
+Authentication Type:   NONE (0)
+Retry counts: 
+Pipeline Retry counts: 
+Counts: 
+UrlCons Attempted:               200
+UrlCons Success:                 200
+Pipeline write request:          0
+Pipeline read response:          0
+Pipeline error:                  0
+Total retries:                   0
+Total pipelined retries:         0
+UrlCons Failed Max Retries:      0
+UrlCons Failed > 400:            0
+Pipeline max depth (all conns):  0
+Forced Flushes:                  200
+Buffer Flushes:                  0
+Avoided Flushes:                 0
+Flush IOExceptions:              0
+Connection: http://localhost:8080
+  Total connections created: 20
+  Avail connections:         20
+  Assigned connections:      0
+  Observed max urlcons before close: 0
+Assigned connections: 
+Available connections: 
+    8470547 localhost:8080 (55685) CS_OPEN 
+      Total requested urlcons:      9
+      Total responded urlcons:      9
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    26596606 localhost:8080 (55687) CS_OPEN 
+      Total requested urlcons:      9
+      Total responded urlcons:      9
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    30584859 localhost:8080 (55689) CS_OPEN 
+      Total requested urlcons:      9
+      Total responded urlcons:      9
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    19397138 localhost:8080 (55693) CS_OPEN 
+      Total requested urlcons:      9
+      Total responded urlcons:      9
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    26396889 localhost:8080 (55698) CS_OPEN 
+      Total requested urlcons:      9
+      Total responded urlcons:      9
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    29384701 localhost:8080 (55694) CS_OPEN 
+      Total requested urlcons:      9
+      Total responded urlcons:      9
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    14556042 localhost:8080 (55695) CS_OPEN 
+      Total requested urlcons:      9
+      Total responded urlcons:      9
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    31601333 localhost:8080 (55696) CS_OPEN 
+      Total requested urlcons:      9
+      Total responded urlcons:      9
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    24056908 localhost:8080 (55682) CS_OPEN 
+      Total requested urlcons:      10
+      Total responded urlcons:      10
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    27108604 localhost:8080 (55684) CS_OPEN 
+      Total requested urlcons:      14
+      Total responded urlcons:      14
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    12231782 localhost:8080 (55683) CS_OPEN 
+      Total requested urlcons:      14
+      Total responded urlcons:      14
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    25116828 localhost:8080 (55697) CS_OPEN 
+      Total requested urlcons:      9
+      Total responded urlcons:      9
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    23776721 localhost:8080 (55701) CS_OPEN 
+      Total requested urlcons:      13
+      Total responded urlcons:      13
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    15623809 localhost:8080 (55699) CS_OPEN 
+      Total requested urlcons:      9
+      Total responded urlcons:      9
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    25934938 localhost:8080 (55690) CS_OPEN 
+      Total requested urlcons:      10
+      Total responded urlcons:      10
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    16437003 localhost:8080 (55700) CS_OPEN 
+      Total requested urlcons:      9
+      Total responded urlcons:      9
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    3083761 localhost:8080 (55686) CS_OPEN 
+      Total requested urlcons:      10
+      Total responded urlcons:      10
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    20736546 localhost:8080 (55691) CS_OPEN 
+      Total requested urlcons:      10
+      Total responded urlcons:      10
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    22808536 localhost:8080 (55688) CS_OPEN 
+      Total requested urlcons:      10
+      Total responded urlcons:      10
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    17244592 localhost:8080 (55692) CS_OPEN 
+      Total requested urlcons:      10
+      Total responded urlcons:      10
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+
+20412  INFO [main]    com.oaklandsw.http.TestPerf - Total Time (ms): 204 Time/trans (ms): 1.02
+20412  INFO [main]    com.oaklandsw.http.TestPerf - Total run bytes: 0
+20412  INFO [main]    com.oaklandsw.http.TestPerf - Total run conns: 20
+20412  INFO [main]    com.oaklandsw.http.TestPerf - Machine,Oakland,0,1.02,20,20,0,0,200,3,204,200,0,0,0,0,08:41:17.060
+20412  INFO [main]    com.oaklandsw.http.TestPerf - 
+20414  INFO [main]    com.oaklandsw.http.TestPerf - Start Time: 08:41:17.060
+20414  INFO [main]    com.oaklandsw.http.TestPerf - Using: Oakland implementation
+20414  INFO [main]    com.oaklandsw.http.TestPerf - URL: http://localhost:8080/oaklandsw-http/perf?size=0k
+20414  INFO [main]    com.oaklandsw.http.TestPerf - Times/thread: 10
+20414  INFO [main]    com.oaklandsw.http.TestPerf - Threads: 20
+20414  INFO [main]    com.oaklandsw.http.TestPerf - Using max: 20 connections.
+20798  INFO [main]    com.oaklandsw.http.TestPerf - connection pool before close
+20799  INFO [main]    com.oaklandsw.http.TestPerf - Max connections/host:    20
+Pipelining options:    PIPE_NONE
+Pipelining max depth:  0
+Authentication Type:   NONE (0)
+Retry counts: 
+Pipeline Retry counts: 
+Counts: 
+UrlCons Attempted:               200
+UrlCons Success:                 200
+Pipeline write request:          0
+Pipeline read response:          0
+Pipeline error:                  0
+Total retries:                   0
+Total pipelined retries:         0
+UrlCons Failed Max Retries:      0
+UrlCons Failed > 400:            0
+Pipeline max depth (all conns):  0
+Forced Flushes:                  200
+Buffer Flushes:                  0
+Avoided Flushes:                 0
+Flush IOExceptions:              0
+Connection: http://localhost:8080
+  Total connections created: 20
+  Avail connections:         20
+  Assigned connections:      0
+  Observed max urlcons before close: 0
+Assigned connections: 
+Available connections: 
+    3408129 localhost:8080 (55720) CS_OPEN 
+      Total requested urlcons:      8
+      Total responded urlcons:      8
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    3022623 localhost:8080 (55705) CS_OPEN 
+      Total requested urlcons:      9
+      Total responded urlcons:      9
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    33385450 localhost:8080 (55717) CS_OPEN 
+      Total requested urlcons:      12
+      Total responded urlcons:      12
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    12053597 localhost:8080 (55706) CS_OPEN 
+      Total requested urlcons:      12
+      Total responded urlcons:      12
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    16711231 localhost:8080 (55708) CS_OPEN 
+      Total requested urlcons:      9
+      Total responded urlcons:      9
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    15079989 localhost:8080 (55711) CS_OPEN 
+      Total requested urlcons:      9
+      Total responded urlcons:      9
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    12759798 localhost:8080 (55712) CS_OPEN 
+      Total requested urlcons:      9
+      Total responded urlcons:      9
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    7566193 localhost:8080 (55713) CS_OPEN 
+      Total requested urlcons:      9
+      Total responded urlcons:      9
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    27263487 localhost:8080 (55716) CS_OPEN 
+      Total requested urlcons:      12
+      Total responded urlcons:      12
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    31664352 localhost:8080 (55721) CS_OPEN 
+      Total requested urlcons:      9
+      Total responded urlcons:      9
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    9486447 localhost:8080 (55714) CS_OPEN 
+      Total requested urlcons:      10
+      Total responded urlcons:      10
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    21616774 localhost:8080 (55703) CS_OPEN 
+      Total requested urlcons:      13
+      Total responded urlcons:      13
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    19297865 localhost:8080 (55707) CS_OPEN 
+      Total requested urlcons:      10
+      Total responded urlcons:      10
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    2091149 localhost:8080 (55715) CS_OPEN 
+      Total requested urlcons:      13
+      Total responded urlcons:      13
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    14463035 localhost:8080 (55709) CS_OPEN 
+      Total requested urlcons:      9
+      Total responded urlcons:      9
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    11930515 localhost:8080 (55704) CS_OPEN 
+      Total requested urlcons:      11
+      Total responded urlcons:      11
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    28441588 localhost:8080 (55710) CS_OPEN 
+      Total requested urlcons:      9
+      Total responded urlcons:      9
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    1345122 localhost:8080 (55702) CS_OPEN 
+      Total requested urlcons:      9
+      Total responded urlcons:      9
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    25337455 localhost:8080 (55719) CS_OPEN 
+      Total requested urlcons:      9
+      Total responded urlcons:      9
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    7318012 localhost:8080 (55718) CS_OPEN 
+      Total requested urlcons:      9
+      Total responded urlcons:      9
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+
+20799  INFO [main]    com.oaklandsw.http.TestPerf - Total Time (ms): 364 Time/trans (ms): 1.82
+20799  INFO [main]    com.oaklandsw.http.TestPerf - Total run bytes: 0
+20799  INFO [main]    com.oaklandsw.http.TestPerf - Total run conns: 20
+20799  INFO [main]    com.oaklandsw.http.TestPerf - Machine,Oakland,0,1.82,20,20,0,0,200,3,364,200,0,0,0,0,08:41:17.060
+20799  INFO [main]    com.oaklandsw.http.TestPerf - Machine,Oakland,0,1.2416667,20,20,,0,200,3,0.885,1.82,745,600,0,0,0,0,08:41:17.060
+20800  INFO [main]    com.oaklandsw.http.TestPerf - Start Time: 08:41:18.132
+20800  INFO [main]    com.oaklandsw.http.TestPerf - Using: Sun implementation
+20800  INFO [main]    com.oaklandsw.http.TestPerf - URL: http://localhost:8080/oaklandsw-http/perf?size=0k
+20800  INFO [main]    com.oaklandsw.http.TestPerf - Times/thread: 200
+20800  INFO [main]    com.oaklandsw.http.TestPerf - Threads: 1
+20800  INFO [main]    com.oaklandsw.http.TestPerf - Using max: 1 connections.
+23987  INFO [main]    com.oaklandsw.http.TestPerf - Total Time (ms): 3145 Time/trans (ms): 15.725
+23987  INFO [main]    com.oaklandsw.http.TestPerf - 
+23987  INFO [main]    com.oaklandsw.http.TestPerf - Start Time: 08:41:18.132
+23987  INFO [main]    com.oaklandsw.http.TestPerf - Using: Sun implementation
+23987  INFO [main]    com.oaklandsw.http.TestPerf - URL: http://localhost:8080/oaklandsw-http/perf?size=0k
+23987  INFO [main]    com.oaklandsw.http.TestPerf - Times/thread: 200
+23987  INFO [main]    com.oaklandsw.http.TestPerf - Threads: 1
+23987  INFO [main]    com.oaklandsw.http.TestPerf - Using max: 1 connections.
+26975  INFO [main]    com.oaklandsw.http.TestPerf - Total Time (ms): 2969 Time/trans (ms): 14.845
+26975  INFO [main]    com.oaklandsw.http.TestPerf - Total run bytes: 0
+26975  INFO [main]    com.oaklandsw.http.TestPerf - Total run conns: 2
+26975  INFO [main]    com.oaklandsw.http.TestPerf - Machine,Sun,0,14.845,1,1,0,0,200,3,2969,0,0,0,0,0,08:41:18.132
+26975  INFO [main]    com.oaklandsw.http.TestPerf - 
+26975  INFO [main]    com.oaklandsw.http.TestPerf - Start Time: 08:41:18.132
+26975  INFO [main]    com.oaklandsw.http.TestPerf - Using: Sun implementation
+26975  INFO [main]    com.oaklandsw.http.TestPerf - URL: http://localhost:8080/oaklandsw-http/perf?size=0k
+26975  INFO [main]    com.oaklandsw.http.TestPerf - Times/thread: 200
+26975  INFO [main]    com.oaklandsw.http.TestPerf - Threads: 1
+26975  INFO [main]    com.oaklandsw.http.TestPerf - Using max: 1 connections.
+30095  INFO [main]    com.oaklandsw.http.TestPerf - Total Time (ms): 3101 Time/trans (ms): 15.505
+30095  INFO [main]    com.oaklandsw.http.TestPerf - Total run bytes: 0
+30095  INFO [main]    com.oaklandsw.http.TestPerf - Total run conns: 2
+30095  INFO [main]    com.oaklandsw.http.TestPerf - Machine,Sun,0,15.505,1,1,0,0,200,3,3101,0,0,0,0,0,08:41:18.132
+30095  INFO [main]    com.oaklandsw.http.TestPerf - 
+30095  INFO [main]    com.oaklandsw.http.TestPerf - Start Time: 08:41:18.132
+30095  INFO [main]    com.oaklandsw.http.TestPerf - Using: Sun implementation
+30095  INFO [main]    com.oaklandsw.http.TestPerf - URL: http://localhost:8080/oaklandsw-http/perf?size=0k
+30096  INFO [main]    com.oaklandsw.http.TestPerf - Times/thread: 200
+30096  INFO [main]    com.oaklandsw.http.TestPerf - Threads: 1
+30096  INFO [main]    com.oaklandsw.http.TestPerf - Using max: 1 connections.
+33564  INFO [main]    com.oaklandsw.http.TestPerf - Total Time (ms): 3431 Time/trans (ms): 17.155
+33565  INFO [main]    com.oaklandsw.http.TestPerf - Total run bytes: 0
+33565  INFO [main]    com.oaklandsw.http.TestPerf - Total run conns: 2
+33565  INFO [main]    com.oaklandsw.http.TestPerf - Machine,Sun,0,17.155,1,1,0,0,200,3,3431,0,0,0,0,0,08:41:18.132
+33565  INFO [main]    com.oaklandsw.http.TestPerf - Machine,Sun,0,15.835,1,1,,0,200,3,14.845,17.155,9501,0,0,0,0,0,08:41:18.132
+33565  INFO [main]    com.oaklandsw.http.TestPerf - 
+33565  INFO [main]    com.oaklandsw.http.TestPerf - Start Time: 08:41:30.898
+33565  INFO [main]    com.oaklandsw.http.TestPerf - Using: Sun implementation
+33565  INFO [main]    com.oaklandsw.http.TestPerf - URL: http://localhost:8080/oaklandsw-http/perf?size=0k
+33565  INFO [main]    com.oaklandsw.http.TestPerf - Times/thread: 100
+33565  INFO [main]    com.oaklandsw.http.TestPerf - Threads: 2
+33565  INFO [main]    com.oaklandsw.http.TestPerf - Using max: 2 connections.
+35235  INFO [main]    com.oaklandsw.http.TestPerf - Total Time (ms): 1653 Time/trans (ms): 8.265
+35235  INFO [main]    com.oaklandsw.http.TestPerf - Total run bytes: 0
+35235  INFO [main]    com.oaklandsw.http.TestPerf - Total run conns: 2
+35235  INFO [main]    com.oaklandsw.http.TestPerf - Machine,Sun,0,8.265,2,2,0,0,200,3,1653,0,0,0,0,0,08:41:30.898
+35235  INFO [main]    com.oaklandsw.http.TestPerf - 
+35236  INFO [main]    com.oaklandsw.http.TestPerf - Start Time: 08:41:30.898
+35236  INFO [main]    com.oaklandsw.http.TestPerf - Using: Sun implementation
+35236  INFO [main]    com.oaklandsw.http.TestPerf - URL: http://localhost:8080/oaklandsw-http/perf?size=0k
+35236  INFO [main]    com.oaklandsw.http.TestPerf - Times/thread: 100
+35236  INFO [main]    com.oaklandsw.http.TestPerf - Threads: 2
+35236  INFO [main]    com.oaklandsw.http.TestPerf - Using max: 2 connections.
+36761  INFO [main]    com.oaklandsw.http.TestPerf - Total Time (ms): 1499 Time/trans (ms): 7.495
+36762  INFO [main]    com.oaklandsw.http.TestPerf - Total run bytes: 0
+36762  INFO [main]    com.oaklandsw.http.TestPerf - Total run conns: 2
+36762  INFO [main]    com.oaklandsw.http.TestPerf - Machine,Sun,0,7.495,2,2,0,0,200,3,1499,0,0,0,0,0,08:41:30.898
+36762  INFO [main]    com.oaklandsw.http.TestPerf - 
+36762  INFO [main]    com.oaklandsw.http.TestPerf - Start Time: 08:41:30.898
+36762  INFO [main]    com.oaklandsw.http.TestPerf - Using: Sun implementation
+36762  INFO [main]    com.oaklandsw.http.TestPerf - URL: http://localhost:8080/oaklandsw-http/perf?size=0k
+36762  INFO [main]    com.oaklandsw.http.TestPerf - Times/thread: 100
+36762  INFO [main]    com.oaklandsw.http.TestPerf - Threads: 2
+36762  INFO [main]    com.oaklandsw.http.TestPerf - Using max: 2 connections.
+38603  INFO [main]    com.oaklandsw.http.TestPerf - Total Time (ms): 1824 Time/trans (ms): 9.12
+38603  INFO [main]    com.oaklandsw.http.TestPerf - Total run bytes: 0
+38603  INFO [main]    com.oaklandsw.http.TestPerf - Total run conns: 2
+38603  INFO [main]    com.oaklandsw.http.TestPerf - Machine,Sun,0,9.12,2,2,0,0,200,3,1824,0,0,0,0,0,08:41:30.898
+38603  INFO [main]    com.oaklandsw.http.TestPerf - Machine,Sun,0,8.293334,2,2,,0,200,3,7.495,9.12,4976,0,0,0,0,0,08:41:30.898
+38603  INFO [main]    com.oaklandsw.http.TestPerf - 
+38603  INFO [main]    com.oaklandsw.http.TestPerf - Start Time: 08:41:35.936
+38603  INFO [main]    com.oaklandsw.http.TestPerf - Using: Sun implementation
+38603  INFO [main]    com.oaklandsw.http.TestPerf - URL: http://localhost:8080/oaklandsw-http/perf?size=0k
+38603  INFO [main]    com.oaklandsw.http.TestPerf - Times/thread: 40
+38603  INFO [main]    com.oaklandsw.http.TestPerf - Threads: 5
+38603  INFO [main]    com.oaklandsw.http.TestPerf - Using max: 5 connections.
+39307  INFO [main]    com.oaklandsw.http.TestPerf - Total Time (ms): 670 Time/trans (ms): 3.35
+39307  INFO [main]    com.oaklandsw.http.TestPerf - Total run bytes: 0
+39307  INFO [main]    com.oaklandsw.http.TestPerf - Total run conns: 5
+39307  INFO [main]    com.oaklandsw.http.TestPerf - Machine,Sun,0,3.35,5,5,0,0,200,3,670,0,0,0,0,0,08:41:35.936
+39307  INFO [main]    com.oaklandsw.http.TestPerf - 
+39307  INFO [main]    com.oaklandsw.http.TestPerf - Start Time: 08:41:35.936
+39307  INFO [main]    com.oaklandsw.http.TestPerf - Using: Sun implementation
+39307  INFO [main]    com.oaklandsw.http.TestPerf - URL: http://localhost:8080/oaklandsw-http/perf?size=0k
+39307  INFO [main]    com.oaklandsw.http.TestPerf - Times/thread: 40
+39307  INFO [main]    com.oaklandsw.http.TestPerf - Threads: 5
+39307  INFO [main]    com.oaklandsw.http.TestPerf - Using max: 5 connections.
+40074  INFO [main]    com.oaklandsw.http.TestPerf - Total Time (ms): 750 Time/trans (ms): 3.75
+40074  INFO [main]    com.oaklandsw.http.TestPerf - Total run bytes: 0
+40074  INFO [main]    com.oaklandsw.http.TestPerf - Total run conns: 5
+40075  INFO [main]    com.oaklandsw.http.TestPerf - Machine,Sun,0,3.75,5,5,0,0,200,3,750,0,0,0,0,0,08:41:35.936
+40075  INFO [main]    com.oaklandsw.http.TestPerf - 
+40075  INFO [main]    com.oaklandsw.http.TestPerf - Start Time: 08:41:35.936
+40075  INFO [main]    com.oaklandsw.http.TestPerf - Using: Sun implementation
+40075  INFO [main]    com.oaklandsw.http.TestPerf - URL: http://localhost:8080/oaklandsw-http/perf?size=0k
+40075  INFO [main]    com.oaklandsw.http.TestPerf - Times/thread: 40
+40075  INFO [main]    com.oaklandsw.http.TestPerf - Threads: 5
+40075  INFO [main]    com.oaklandsw.http.TestPerf - Using max: 5 connections.
+40838  INFO [main]    com.oaklandsw.http.TestPerf - Total Time (ms): 728 Time/trans (ms): 3.64
+40838  INFO [main]    com.oaklandsw.http.TestPerf - Total run bytes: 0
+40838  INFO [main]    com.oaklandsw.http.TestPerf - Total run conns: 5
+40838  INFO [main]    com.oaklandsw.http.TestPerf - Machine,Sun,0,3.64,5,5,0,0,200,3,728,0,0,0,0,0,08:41:35.936
+40838  INFO [main]    com.oaklandsw.http.TestPerf - Machine,Sun,0,3.58,5,5,,0,200,3,3.35,3.75,2148,0,0,0,0,0,08:41:35.936
+40839  INFO [main]    com.oaklandsw.http.TestPerf - 
+40839  INFO [main]    com.oaklandsw.http.TestPerf - Start Time: 08:41:38.172
+40839  INFO [main]    com.oaklandsw.http.TestPerf - Using: Sun implementation
+40839  INFO [main]    com.oaklandsw.http.TestPerf - URL: http://localhost:8080/oaklandsw-http/perf?size=0k
+40839  INFO [main]    com.oaklandsw.http.TestPerf - Times/thread: 20
+40839  INFO [main]    com.oaklandsw.http.TestPerf - Threads: 10
+40839  INFO [main]    com.oaklandsw.http.TestPerf - Using max: 10 connections.
+41331  INFO [main]    com.oaklandsw.http.TestPerf - Total Time (ms): 475 Time/trans (ms): 2.375
+41331  INFO [main]    com.oaklandsw.http.TestPerf - Total run bytes: 0
+41331  INFO [main]    com.oaklandsw.http.TestPerf - Total run conns: 10
+41331  INFO [main]    com.oaklandsw.http.TestPerf - Machine,Sun,0,2.375,10,10,0,0,200,3,475,0,0,0,0,0,08:41:38.172
+41331  INFO [main]    com.oaklandsw.http.TestPerf - 
+41331  INFO [main]    com.oaklandsw.http.TestPerf - Start Time: 08:41:38.172
+41331  INFO [main]    com.oaklandsw.http.TestPerf - Using: Sun implementation
+41331  INFO [main]    com.oaklandsw.http.TestPerf - URL: http://localhost:8080/oaklandsw-http/perf?size=0k
+41331  INFO [main]    com.oaklandsw.http.TestPerf - Times/thread: 20
+41332  INFO [main]    com.oaklandsw.http.TestPerf - Threads: 10
+41332  INFO [main]    com.oaklandsw.http.TestPerf - Using max: 10 connections.
+41732  INFO [main]    com.oaklandsw.http.TestPerf - Total Time (ms): 377 Time/trans (ms): 1.885
+41732  INFO [main]    com.oaklandsw.http.TestPerf - Total run bytes: 0
+41732  INFO [main]    com.oaklandsw.http.TestPerf - Total run conns: 10
+41732  INFO [main]    com.oaklandsw.http.TestPerf - Machine,Sun,0,1.885,10,10,0,0,200,3,377,0,0,0,0,0,08:41:38.172
+41732  INFO [main]    com.oaklandsw.http.TestPerf - 
+41732  INFO [main]    com.oaklandsw.http.TestPerf - Start Time: 08:41:38.172
+41732  INFO [main]    com.oaklandsw.http.TestPerf - Using: Sun implementation
+41732  INFO [main]    com.oaklandsw.http.TestPerf - URL: http://localhost:8080/oaklandsw-http/perf?size=0k
+41732  INFO [main]    com.oaklandsw.http.TestPerf - Times/thread: 20
+41732  INFO [main]    com.oaklandsw.http.TestPerf - Threads: 10
+41732  INFO [main]    com.oaklandsw.http.TestPerf - Using max: 10 connections.
+42265  INFO [main]    com.oaklandsw.http.TestPerf - Total Time (ms): 453 Time/trans (ms): 2.265
+42265  INFO [main]    com.oaklandsw.http.TestPerf - Total run bytes: 0
+42265  INFO [main]    com.oaklandsw.http.TestPerf - Total run conns: 10
+42265  INFO [main]    com.oaklandsw.http.TestPerf - Machine,Sun,0,2.265,10,10,0,0,200,3,453,0,0,0,0,0,08:41:38.172
+42265  INFO [main]    com.oaklandsw.http.TestPerf - Machine,Sun,0,2.1750002,10,10,,0,200,3,1.885,2.375,1305,0,0,0,0,0,08:41:38.172
+42266  INFO [main]    com.oaklandsw.http.TestPerf - Start Time: 08:41:39.599
+42266  INFO [main]    com.oaklandsw.http.TestPerf - Using: Sun implementation
+42266  INFO [main]    com.oaklandsw.http.TestPerf - URL: http://localhost:8080/oaklandsw-http/perf?size=0k
+42266  INFO [main]    com.oaklandsw.http.TestPerf - Times/thread: 10
+42266  INFO [main]    com.oaklandsw.http.TestPerf - Threads: 20
+42266  INFO [main]    com.oaklandsw.http.TestPerf - Using max: 20 connections.
+42508  INFO [main]    com.oaklandsw.http.TestPerf - Total Time (ms): 191 Time/trans (ms): 0.955
+42508  INFO [main]    com.oaklandsw.http.TestPerf - 
+42508  INFO [main]    com.oaklandsw.http.TestPerf - Start Time: 08:41:39.599
+42508  INFO [main]    com.oaklandsw.http.TestPerf - Using: Sun implementation
+42508  INFO [main]    com.oaklandsw.http.TestPerf - URL: http://localhost:8080/oaklandsw-http/perf?size=0k
+42508  INFO [main]    com.oaklandsw.http.TestPerf - Times/thread: 10
+42508  INFO [main]    com.oaklandsw.http.TestPerf - Threads: 20
+42508  INFO [main]    com.oaklandsw.http.TestPerf - Using max: 20 connections.
+42748  INFO [main]    com.oaklandsw.http.TestPerf - Total Time (ms): 198 Time/trans (ms): 0.99
+42748  INFO [main]    com.oaklandsw.http.TestPerf - Total run bytes: 0
+42748  INFO [main]    com.oaklandsw.http.TestPerf - Total run conns: 20
+42748  INFO [main]    com.oaklandsw.http.TestPerf - Machine,Sun,0,0.99,20,20,0,0,200,3,198,0,0,0,0,0,08:41:39.599
+42748  INFO [main]    com.oaklandsw.http.TestPerf - 
+42748  INFO [main]    com.oaklandsw.http.TestPerf - Start Time: 08:41:39.599
+42748  INFO [main]    com.oaklandsw.http.TestPerf - Using: Sun implementation
+42748  INFO [main]    com.oaklandsw.http.TestPerf - URL: http://localhost:8080/oaklandsw-http/perf?size=0k
+42748  INFO [main]    com.oaklandsw.http.TestPerf - Times/thread: 10
+42748  INFO [main]    com.oaklandsw.http.TestPerf - Threads: 20
+42756  INFO [main]    com.oaklandsw.http.TestPerf - Using max: 20 connections.
+42978  INFO [main]    com.oaklandsw.http.TestPerf - Total Time (ms): 207 Time/trans (ms): 1.035
+42979  INFO [main]    com.oaklandsw.http.TestPerf - Total run bytes: 0
+42979  INFO [main]    com.oaklandsw.http.TestPerf - Total run conns: 20
+42979  INFO [main]    com.oaklandsw.http.TestPerf - Machine,Sun,0,1.035,20,20,0,0,200,3,207,0,0,0,0,0,08:41:39.599
+42979  INFO [main]    com.oaklandsw.http.TestPerf - 
+42979  INFO [main]    com.oaklandsw.http.TestPerf - Start Time: 08:41:39.599
+42979  INFO [main]    com.oaklandsw.http.TestPerf - Using: Sun implementation
+42979  INFO [main]    com.oaklandsw.http.TestPerf - URL: http://localhost:8080/oaklandsw-http/perf?size=0k
+42979  INFO [main]    com.oaklandsw.http.TestPerf - Times/thread: 10
+42979  INFO [main]    com.oaklandsw.http.TestPerf - Threads: 20
+42979  INFO [main]    com.oaklandsw.http.TestPerf - Using max: 20 connections.
+43198  INFO [main]    com.oaklandsw.http.TestPerf - Total Time (ms): 192 Time/trans (ms): 0.96
+43198  INFO [main]    com.oaklandsw.http.TestPerf - Total run bytes: 0
+43198  INFO [main]    com.oaklandsw.http.TestPerf - Total run conns: 20
+43198  INFO [main]    com.oaklandsw.http.TestPerf - Machine,Sun,0,0.96,20,20,0,0,200,3,192,0,0,0,0,0,08:41:39.599
+43198  INFO [main]    com.oaklandsw.http.TestPerf - Machine,Sun,0,0.99500006,20,20,,0,200,3,0.96,1.035,597,0,0,0,0,0,08:41:39.599
+43211  INFO [main]    com.oaklandsw.http.TestPerf - Start Time: 08:41:40.531
+43211  INFO [main]    com.oaklandsw.http.TestPerf - Using: Jakarta implementation
+43211  INFO [main]    com.oaklandsw.http.TestPerf - URL: http://localhost:8080/oaklandsw-http/perf?size=0k
+43211  INFO [main]    com.oaklandsw.http.TestPerf - Times/thread: 200
+43211  INFO [main]    com.oaklandsw.http.TestPerf - Threads: 1
+43211  INFO [main]    com.oaklandsw.http.TestPerf - Using max: 1 connections.
+43443  INFO [main]    com.oaklandsw.http.TestPerf - Total Time (ms): 214 Time/trans (ms): 1.07
+43443  INFO [main]    com.oaklandsw.http.TestPerf - 
+43444  INFO [main]    com.oaklandsw.http.TestPerf - Start Time: 08:41:40.531
+43444  INFO [main]    com.oaklandsw.http.TestPerf - Using: Jakarta implementation
+43444  INFO [main]    com.oaklandsw.http.TestPerf - URL: http://localhost:8080/oaklandsw-http/perf?size=0k
+43444  INFO [main]    com.oaklandsw.http.TestPerf - Times/thread: 200
+43444  INFO [main]    com.oaklandsw.http.TestPerf - Threads: 1
+43444  INFO [main]    com.oaklandsw.http.TestPerf - Using max: 1 connections.
+43573  INFO [main]    com.oaklandsw.http.TestPerf - Total Time (ms): 109 Time/trans (ms): 0.545
+43573  INFO [main]    com.oaklandsw.http.TestPerf - Total run bytes: 0
+43573  INFO [main]    com.oaklandsw.http.TestPerf - Total run conns: 2
+43573  INFO [main]    com.oaklandsw.http.TestPerf - Machine,Jakarta,0,0.545,1,1,0,0,200,3,109,0,0,0,0,0,08:41:40.531
+43574  INFO [main]    com.oaklandsw.http.TestPerf - 
+43574  INFO [main]    com.oaklandsw.http.TestPerf - Start Time: 08:41:40.531
+43574  INFO [main]    com.oaklandsw.http.TestPerf - Using: Jakarta implementation
+43574  INFO [main]    com.oaklandsw.http.TestPerf - URL: http://localhost:8080/oaklandsw-http/perf?size=0k
+43574  INFO [main]    com.oaklandsw.http.TestPerf - Times/thread: 200
+43574  INFO [main]    com.oaklandsw.http.TestPerf - Threads: 1
+43574  INFO [main]    com.oaklandsw.http.TestPerf - Using max: 1 connections.
+43705  INFO [main]    com.oaklandsw.http.TestPerf - Total Time (ms): 105 Time/trans (ms): 0.525
+43705  INFO [main]    com.oaklandsw.http.TestPerf - Total run bytes: 0
+43705  INFO [main]    com.oaklandsw.http.TestPerf - Total run conns: 2
+43705  INFO [main]    com.oaklandsw.http.TestPerf - Machine,Jakarta,0,0.525,1,1,0,0,200,3,105,0,0,0,0,0,08:41:40.531
+43705  INFO [main]    com.oaklandsw.http.TestPerf - 
+43705  INFO [main]    com.oaklandsw.http.TestPerf - Start Time: 08:41:40.531
+43706  INFO [main]    com.oaklandsw.http.TestPerf - Using: Jakarta implementation
+43706  INFO [main]    com.oaklandsw.http.TestPerf - URL: http://localhost:8080/oaklandsw-http/perf?size=0k
+43706  INFO [main]    com.oaklandsw.http.TestPerf - Times/thread: 200
+43706  INFO [main]    com.oaklandsw.http.TestPerf - Threads: 1
+43706  INFO [main]    com.oaklandsw.http.TestPerf - Using max: 1 connections.
+43838  INFO [main]    com.oaklandsw.http.TestPerf - Total Time (ms): 98 Time/trans (ms): 0.49
+43839  INFO [main]    com.oaklandsw.http.TestPerf - Total run bytes: 0
+43839  INFO [main]    com.oaklandsw.http.TestPerf - Total run conns: 2
+43839  INFO [main]    com.oaklandsw.http.TestPerf - Machine,Jakarta,0,0.49,1,1,0,0,200,3,98,0,0,0,0,0,08:41:40.531
+43839  INFO [main]    com.oaklandsw.http.TestPerf - Machine,Jakarta,0,0.52,1,1,,0,200,3,0.49,0.545,312,0,0,0,0,0,08:41:40.531
+43839  INFO [main]    com.oaklandsw.http.TestPerf - 
+43845  INFO [main]    com.oaklandsw.http.TestPerf - Start Time: 08:41:41.172
+43845  INFO [main]    com.oaklandsw.http.TestPerf - Using: Jakarta implementation
+43845  INFO [main]    com.oaklandsw.http.TestPerf - URL: http://localhost:8080/oaklandsw-http/perf?size=0k
+43845  INFO [main]    com.oaklandsw.http.TestPerf - Times/thread: 100
+43845  INFO [main]    com.oaklandsw.http.TestPerf - Threads: 2
+43845  INFO [main]    com.oaklandsw.http.TestPerf - Using max: 2 connections.
+43993  INFO [main]    com.oaklandsw.http.TestPerf - Total Time (ms): 130 Time/trans (ms): 0.65
+43993  INFO [main]    com.oaklandsw.http.TestPerf - Total run bytes: 0
+43993  INFO [main]    com.oaklandsw.http.TestPerf - Total run conns: 2
+43993  INFO [main]    com.oaklandsw.http.TestPerf - Machine,Jakarta,0,0.65,2,2,0,0,200,3,130,0,0,0,0,0,08:41:41.172
+43993  INFO [main]    com.oaklandsw.http.TestPerf - 
+43993  INFO [main]    com.oaklandsw.http.TestPerf - Start Time: 08:41:41.172
+43993  INFO [main]    com.oaklandsw.http.TestPerf - Using: Jakarta implementation
+43993  INFO [main]    com.oaklandsw.http.TestPerf - URL: http://localhost:8080/oaklandsw-http/perf?size=0k
+43993  INFO [main]    com.oaklandsw.http.TestPerf - Times/thread: 100
+43993  INFO [main]    com.oaklandsw.http.TestPerf - Threads: 2
+43993  INFO [main]    com.oaklandsw.http.TestPerf - Using max: 2 connections.
+44131  INFO [main]    com.oaklandsw.http.TestPerf - Total Time (ms): 113 Time/trans (ms): 0.565
+44131  INFO [main]    com.oaklandsw.http.TestPerf - Total run bytes: 0
+44131  INFO [main]    com.oaklandsw.http.TestPerf - Total run conns: 2
+44131  INFO [main]    com.oaklandsw.http.TestPerf - Machine,Jakarta,0,0.565,2,2,0,0,200,3,113,0,0,0,0,0,08:41:41.172
+44131  INFO [main]    com.oaklandsw.http.TestPerf - 
+44132  INFO [main]    com.oaklandsw.http.TestPerf - Start Time: 08:41:41.172
+44132  INFO [main]    com.oaklandsw.http.TestPerf - Using: Jakarta implementation
+44132  INFO [main]    com.oaklandsw.http.TestPerf - URL: http://localhost:8080/oaklandsw-http/perf?size=0k
+44132  INFO [main]    com.oaklandsw.http.TestPerf - Times/thread: 100
+44132  INFO [main]    com.oaklandsw.http.TestPerf - Threads: 2
+44132  INFO [main]    com.oaklandsw.http.TestPerf - Using max: 2 connections.
+44244  INFO [main]    com.oaklandsw.http.TestPerf - Total Time (ms): 87 Time/trans (ms): 0.435
+44244  INFO [main]    com.oaklandsw.http.TestPerf - Total run bytes: 0
+44244  INFO [main]    com.oaklandsw.http.TestPerf - Total run conns: 2
+44244  INFO [main]    com.oaklandsw.http.TestPerf - Machine,Jakarta,0,0.435,2,2,0,0,200,3,87,0,0,0,0,0,08:41:41.172
+44244  INFO [main]    com.oaklandsw.http.TestPerf - Machine,Jakarta,0,0.54999995,2,2,,0,200,3,0.435,0.65,330,0,0,0,0,0,08:41:41.172
+44245  INFO [main]    com.oaklandsw.http.TestPerf - 
+44245  INFO [main]    com.oaklandsw.http.TestPerf - Start Time: 08:41:41.578
+44245  INFO [main]    com.oaklandsw.http.TestPerf - Using: Jakarta implementation
+44245  INFO [main]    com.oaklandsw.http.TestPerf - URL: http://localhost:8080/oaklandsw-http/perf?size=0k
+44245  INFO [main]    com.oaklandsw.http.TestPerf - Times/thread: 40
+44245  INFO [main]    com.oaklandsw.http.TestPerf - Threads: 5
+44245  INFO [main]    com.oaklandsw.http.TestPerf - Using max: 5 connections.
+44336  INFO [main]    com.oaklandsw.http.TestPerf - Total Time (ms): 69 Time/trans (ms): 0.345
+44336  INFO [main]    com.oaklandsw.http.TestPerf - Total run bytes: 0
+44336  INFO [main]    com.oaklandsw.http.TestPerf - Total run conns: 5
+44336  INFO [main]    com.oaklandsw.http.TestPerf - Machine,Jakarta,0,0.345,5,5,0,0,200,3,69,0,0,0,0,0,08:41:41.578
+44336  INFO [main]    com.oaklandsw.http.TestPerf - 
+44336  INFO [main]    com.oaklandsw.http.TestPerf - Start Time: 08:41:41.578
+44336  INFO [main]    com.oaklandsw.http.TestPerf - Using: Jakarta implementation
+44336  INFO [main]    com.oaklandsw.http.TestPerf - URL: http://localhost:8080/oaklandsw-http/perf?size=0k
+44336  INFO [main]    com.oaklandsw.http.TestPerf - Times/thread: 40
+44336  INFO [main]    com.oaklandsw.http.TestPerf - Threads: 5
+44336  INFO [main]    com.oaklandsw.http.TestPerf - Using max: 5 connections.
+44491  INFO [main]    com.oaklandsw.http.TestPerf - Total Time (ms): 137 Time/trans (ms): 0.685
+44491  INFO [main]    com.oaklandsw.http.TestPerf - Total run bytes: 0
+44492  INFO [main]    com.oaklandsw.http.TestPerf - Total run conns: 5
+44492  INFO [main]    com.oaklandsw.http.TestPerf - Machine,Jakarta,0,0.685,5,5,0,0,200,3,137,0,0,0,0,0,08:41:41.578
+44492  INFO [main]    com.oaklandsw.http.TestPerf - 
+44492  INFO [main]    com.oaklandsw.http.TestPerf - Start Time: 08:41:41.578
+44492  INFO [main]    com.oaklandsw.http.TestPerf - Using: Jakarta implementation
+44493  INFO [main]    com.oaklandsw.http.TestPerf - URL: http://localhost:8080/oaklandsw-http/perf?size=0k
+44493  INFO [main]    com.oaklandsw.http.TestPerf - Times/thread: 40
+44493  INFO [main]    com.oaklandsw.http.TestPerf - Threads: 5
+44493  INFO [main]    com.oaklandsw.http.TestPerf - Using max: 5 connections.
+44594  INFO [main]    com.oaklandsw.http.TestPerf - Total Time (ms): 76 Time/trans (ms): 0.38
+44594  INFO [main]    com.oaklandsw.http.TestPerf - Total run bytes: 0
+44594  INFO [main]    com.oaklandsw.http.TestPerf - Total run conns: 5
+44594  INFO [main]    com.oaklandsw.http.TestPerf - Machine,Jakarta,0,0.38,5,5,0,0,200,3,76,0,0,0,0,0,08:41:41.578
+44594  INFO [main]    com.oaklandsw.http.TestPerf - Machine,Jakarta,0,0.47,5,5,,0,200,3,0.345,0.685,282,0,0,0,0,0,08:41:41.578
+44594  INFO [main]    com.oaklandsw.http.TestPerf - 
+44594  INFO [main]    com.oaklandsw.http.TestPerf - Start Time: 08:41:41.927
+44594  INFO [main]    com.oaklandsw.http.TestPerf - Using: Jakarta implementation
+44594  INFO [main]    com.oaklandsw.http.TestPerf - URL: http://localhost:8080/oaklandsw-http/perf?size=0k
+44594  INFO [main]    com.oaklandsw.http.TestPerf - Times/thread: 20
+44594  INFO [main]    com.oaklandsw.http.TestPerf - Threads: 10
+44594  INFO [main]    com.oaklandsw.http.TestPerf - Using max: 10 connections.
+44679  INFO [main]    com.oaklandsw.http.TestPerf - Total Time (ms): 66 Time/trans (ms): 0.33
+44679  INFO [main]    com.oaklandsw.http.TestPerf - Total run bytes: 0
+44679  INFO [main]    com.oaklandsw.http.TestPerf - Total run conns: 10
+44679  INFO [main]    com.oaklandsw.http.TestPerf - Machine,Jakarta,0,0.33,10,10,0,0,200,3,66,0,0,0,0,0,08:41:41.927
+44679  INFO [main]    com.oaklandsw.http.TestPerf - 
+44679  INFO [main]    com.oaklandsw.http.TestPerf - Start Time: 08:41:41.927
+44679  INFO [main]    com.oaklandsw.http.TestPerf - Using: Jakarta implementation
+44679  INFO [main]    com.oaklandsw.http.TestPerf - URL: http://localhost:8080/oaklandsw-http/perf?size=0k
+44679  INFO [main]    com.oaklandsw.http.TestPerf - Times/thread: 20
+44679  INFO [main]    com.oaklandsw.http.TestPerf - Threads: 10
+44679  INFO [main]    com.oaklandsw.http.TestPerf - Using max: 10 connections.
+44744  INFO [main]    com.oaklandsw.http.TestPerf - Total Time (ms): 46 Time/trans (ms): 0.23
+44744  INFO [main]    com.oaklandsw.http.TestPerf - Total run bytes: 0
+44744  INFO [main]    com.oaklandsw.http.TestPerf - Total run conns: 10
+44744  INFO [main]    com.oaklandsw.http.TestPerf - Machine,Jakarta,0,0.23,10,10,0,0,200,3,46,0,0,0,0,0,08:41:41.927
+44744  INFO [main]    com.oaklandsw.http.TestPerf - 
+44744  INFO [main]    com.oaklandsw.http.TestPerf - Start Time: 08:41:41.927
+44744  INFO [main]    com.oaklandsw.http.TestPerf - Using: Jakarta implementation
+44744  INFO [main]    com.oaklandsw.http.TestPerf - URL: http://localhost:8080/oaklandsw-http/perf?size=0k
+44744  INFO [main]    com.oaklandsw.http.TestPerf - Times/thread: 20
+44744  INFO [main]    com.oaklandsw.http.TestPerf - Threads: 10
+44744  INFO [main]    com.oaklandsw.http.TestPerf - Using max: 10 connections.
+44852  INFO [main]    com.oaklandsw.http.TestPerf - Total Time (ms): 74 Time/trans (ms): 0.37
+44853  INFO [main]    com.oaklandsw.http.TestPerf - Total run bytes: 0
+44853  INFO [main]    com.oaklandsw.http.TestPerf - Total run conns: 10
+44853  INFO [main]    com.oaklandsw.http.TestPerf - Machine,Jakarta,0,0.37,10,10,0,0,200,3,74,0,0,0,0,0,08:41:41.927
+44853  INFO [main]    com.oaklandsw.http.TestPerf - Machine,Jakarta,0,0.31,10,10,,0,200,3,0.23,0.37,186,0,0,0,0,0,08:41:41.927
+44853  INFO [main]    com.oaklandsw.http.TestPerf - Start Time: 08:41:42.186
+44853  INFO [main]    com.oaklandsw.http.TestPerf - Using: Jakarta implementation
+44853  INFO [main]    com.oaklandsw.http.TestPerf - URL: http://localhost:8080/oaklandsw-http/perf?size=0k
+44853  INFO [main]    com.oaklandsw.http.TestPerf - Times/thread: 10
+44853  INFO [main]    com.oaklandsw.http.TestPerf - Threads: 20
+44853  INFO [main]    com.oaklandsw.http.TestPerf - Using max: 20 connections.
+44935  INFO [main]    com.oaklandsw.http.TestPerf - Total Time (ms): 64 Time/trans (ms): 0.32
+44935  INFO [main]    com.oaklandsw.http.TestPerf - 
+44935  INFO [main]    com.oaklandsw.http.TestPerf - Start Time: 08:41:42.186
+44935  INFO [main]    com.oaklandsw.http.TestPerf - Using: Jakarta implementation
+44935  INFO [main]    com.oaklandsw.http.TestPerf - URL: http://localhost:8080/oaklandsw-http/perf?size=0k
+44935  INFO [main]    com.oaklandsw.http.TestPerf - Times/thread: 10
+44935  INFO [main]    com.oaklandsw.http.TestPerf - Threads: 20
+44935  INFO [main]    com.oaklandsw.http.TestPerf - Using max: 20 connections.
+45078  INFO [main]    com.oaklandsw.http.TestPerf - Total Time (ms): 124 Time/trans (ms): 0.62
+45078  INFO [main]    com.oaklandsw.http.TestPerf - Total run bytes: 0
+45079  INFO [main]    com.oaklandsw.http.TestPerf - Total run conns: 20
+45084  INFO [main]    com.oaklandsw.http.TestPerf - Machine,Jakarta,0,0.62,20,20,0,0,200,3,124,0,0,0,0,0,08:41:42.186
+45084  INFO [main]    com.oaklandsw.http.TestPerf - 
+45085  INFO [main]    com.oaklandsw.http.TestPerf - Start Time: 08:41:42.186
+45085  INFO [main]    com.oaklandsw.http.TestPerf - Using: Jakarta implementation
+45085  INFO [main]    com.oaklandsw.http.TestPerf - URL: http://localhost:8080/oaklandsw-http/perf?size=0k
+45085  INFO [main]    com.oaklandsw.http.TestPerf - Times/thread: 10
+45085  INFO [main]    com.oaklandsw.http.TestPerf - Threads: 20
+45085  INFO [main]    com.oaklandsw.http.TestPerf - Using max: 20 connections.
+45188  INFO [main]    com.oaklandsw.http.TestPerf - Total Time (ms): 84 Time/trans (ms): 0.42
+45188  INFO [main]    com.oaklandsw.http.TestPerf - Total run bytes: 0
+45188  INFO [main]    com.oaklandsw.http.TestPerf - Total run conns: 20
+45188  INFO [main]    com.oaklandsw.http.TestPerf - Machine,Jakarta,0,0.42,20,20,0,0,200,3,84,0,0,0,0,0,08:41:42.186
+45188  INFO [main]    com.oaklandsw.http.TestPerf - 
+45188  INFO [main]    com.oaklandsw.http.TestPerf - Start Time: 08:41:42.186
+45188  INFO [main]    com.oaklandsw.http.TestPerf - Using: Jakarta implementation
+45188  INFO [main]    com.oaklandsw.http.TestPerf - URL: http://localhost:8080/oaklandsw-http/perf?size=0k
+45188  INFO [main]    com.oaklandsw.http.TestPerf - Times/thread: 10
+45188  INFO [main]    com.oaklandsw.http.TestPerf - Threads: 20
+45188  INFO [main]    com.oaklandsw.http.TestPerf - Using max: 20 connections.
+45367  INFO [main]    com.oaklandsw.http.TestPerf - Total Time (ms): 143 Time/trans (ms): 0.715
+45367  INFO [main]    com.oaklandsw.http.TestPerf - Total run bytes: 0
+45367  INFO [main]    com.oaklandsw.http.TestPerf - Total run conns: 20
+45367  INFO [main]    com.oaklandsw.http.TestPerf - Machine,Jakarta,0,0.715,20,20,0,0,200,3,143,0,0,0,0,0,08:41:42.186
+45367  INFO [main]    com.oaklandsw.http.TestPerf - Machine,Jakarta,0,0.585,20,20,,0,200,3,0.42,0.715,351,0,0,0,0,0,08:41:42.186
+45368  INFO [main]    com.oaklandsw.http.TestPerf - Start Time: 08:41:42.700
+45368  INFO [main]    com.oaklandsw.http.TestPerf - Using: Oakland implementation
+45368  INFO [main]    com.oaklandsw.http.TestPerf - URL: http://localhost:8080/oaklandsw-http/perf?size=0k
+45368  INFO [main]    com.oaklandsw.http.TestPerf - Times/thread: 200
+45368  INFO [main]    com.oaklandsw.http.TestPerf - Threads: 1
+45368  INFO [main]    com.oaklandsw.http.TestPerf - Pipelining
+45368  INFO [main]    com.oaklandsw.http.TestPerf - Using max: 1 connections.
+45368  INFO [main]    com.oaklandsw.http.TestPerf - Using pipeline depth: 1
+48689  INFO [main]    com.oaklandsw.http.TestPerf - connection pool before close
+48689  INFO [main]    com.oaklandsw.http.TestPerf - Max connections/host:    1
+Pipelining options:    PIPE_PIPELINE PIPE_MAX_CONNECTIONS 
+Pipelining max depth:  1
+Authentication Type:   NONE (0)
+Retry counts: 
+Pipeline Retry counts: 
+Counts: 
+UrlCons Attempted:               200
+UrlCons Success:                 200
+Pipeline write request:          0
+Pipeline read response:          200
+Pipeline error:                  0
+Total retries:                   0
+Total pipelined retries:         0
+UrlCons Failed Max Retries:      0
+UrlCons Failed > 400:            0
+Pipeline max depth (all conns):  1
+Forced Flushes:                  200
+Buffer Flushes:                  0
+Avoided Flushes:                 0
+Flush IOExceptions:              0
+Connection: http://localhost:8080
+  Total connections created: 2
+  Avail connections:         0
+  Assigned connections:      0
+  Observed max urlcons before close: 100
+Assigned connections: 
+Available connections: 
+
+48689  INFO [main]    com.oaklandsw.http.TestPerf - Total Time (ms): 3231 Time/trans (ms): 16.155
+48689  INFO [main]    com.oaklandsw.http.TestPerf - 
+48691  INFO [main]    com.oaklandsw.http.TestPerf - Start Time: 08:41:42.700
+48691  INFO [main]    com.oaklandsw.http.TestPerf - Using: Oakland implementation
+48691  INFO [main]    com.oaklandsw.http.TestPerf - URL: http://localhost:8080/oaklandsw-http/perf?size=0k
+48691  INFO [main]    com.oaklandsw.http.TestPerf - Times/thread: 200
+48691  INFO [main]    com.oaklandsw.http.TestPerf - Threads: 1
+48691  INFO [main]    com.oaklandsw.http.TestPerf - Pipelining
+48691  INFO [main]    com.oaklandsw.http.TestPerf - Using max: 1 connections.
+48691  INFO [main]    com.oaklandsw.http.TestPerf - Using pipeline depth: 1
+51808  INFO [main]    com.oaklandsw.http.TestPerf - connection pool before close
+51808  INFO [main]    com.oaklandsw.http.TestPerf - Max connections/host:    1
+Pipelining options:    PIPE_PIPELINE PIPE_MAX_CONNECTIONS 
+Pipelining max depth:  1
+Authentication Type:   NONE (0)
+Retry counts: 
+Pipeline Retry counts: 
+Counts: 
+UrlCons Attempted:               200
+UrlCons Success:                 200
+Pipeline write request:          0
+Pipeline read response:          200
+Pipeline error:                  0
+Total retries:                   0
+Total pipelined retries:         0
+UrlCons Failed Max Retries:      0
+UrlCons Failed > 400:            0
+Pipeline max depth (all conns):  1
+Forced Flushes:                  200
+Buffer Flushes:                  0
+Avoided Flushes:                 0
+Flush IOExceptions:              0
+Connection: http://localhost:8080
+  Total connections created: 2
+  Avail connections:         0
+  Assigned connections:      0
+  Observed max urlcons before close: 100
+Assigned connections: 
+Available connections: 
+
+51808  INFO [main]    com.oaklandsw.http.TestPerf - Total Time (ms): 3095 Time/trans (ms): 15.475
+51808  INFO [main]    com.oaklandsw.http.TestPerf - Total run bytes: 0
+51808  INFO [main]    com.oaklandsw.http.TestPerf - Total run conns: 2
+51808  INFO [main]    com.oaklandsw.http.TestPerf - Machine,Oakland,0,15.475,1,1,1,1,200,3,3095,200,0,0,0,0,08:41:42.700
+51808  INFO [main]    com.oaklandsw.http.TestPerf - 
+51809  INFO [main]    com.oaklandsw.http.TestPerf - Start Time: 08:41:42.700
+51809  INFO [main]    com.oaklandsw.http.TestPerf - Using: Oakland implementation
+51809  INFO [main]    com.oaklandsw.http.TestPerf - URL: http://localhost:8080/oaklandsw-http/perf?size=0k
+51809  INFO [main]    com.oaklandsw.http.TestPerf - Times/thread: 200
+51809  INFO [main]    com.oaklandsw.http.TestPerf - Threads: 1
+51810  INFO [main]    com.oaklandsw.http.TestPerf - Pipelining
+51810  INFO [main]    com.oaklandsw.http.TestPerf - Using max: 1 connections.
+51810  INFO [main]    com.oaklandsw.http.TestPerf - Using pipeline depth: 1
+55122  INFO [main]    com.oaklandsw.http.TestPerf - connection pool before close
+55123  INFO [main]    com.oaklandsw.http.TestPerf - Max connections/host:    1
+Pipelining options:    PIPE_PIPELINE PIPE_MAX_CONNECTIONS 
+Pipelining max depth:  1
+Authentication Type:   NONE (0)
+Retry counts: 
+Pipeline Retry counts: 
+Counts: 
+UrlCons Attempted:               200
+UrlCons Success:                 200
+Pipeline write request:          0
+Pipeline read response:          200
+Pipeline error:                  0
+Total retries:                   0
+Total pipelined retries:         0
+UrlCons Failed Max Retries:      0
+UrlCons Failed > 400:            0
+Pipeline max depth (all conns):  1
+Forced Flushes:                  200
+Buffer Flushes:                  0
+Avoided Flushes:                 0
+Flush IOExceptions:              0
+Connection: http://localhost:8080
+  Total connections created: 2
+  Avail connections:         0
+  Assigned connections:      0
+  Observed max urlcons before close: 100
+Assigned connections: 
+Available connections: 
+
+55123  INFO [main]    com.oaklandsw.http.TestPerf - Total Time (ms): 3283 Time/trans (ms): 16.415
+55123  INFO [main]    com.oaklandsw.http.TestPerf - Total run bytes: 0
+55123  INFO [main]    com.oaklandsw.http.TestPerf - Total run conns: 2
+55123  INFO [main]    com.oaklandsw.http.TestPerf - Machine,Oakland,0,16.415,1,1,1,1,200,3,3283,200,0,0,0,0,08:41:42.700
+55123  INFO [main]    com.oaklandsw.http.TestPerf - 
+55124  INFO [main]    com.oaklandsw.http.TestPerf - Start Time: 08:41:42.700
+55124  INFO [main]    com.oaklandsw.http.TestPerf - Using: Oakland implementation
+55124  INFO [main]    com.oaklandsw.http.TestPerf - URL: http://localhost:8080/oaklandsw-http/perf?size=0k
+55124  INFO [main]    com.oaklandsw.http.TestPerf - Times/thread: 200
+55124  INFO [main]    com.oaklandsw.http.TestPerf - Threads: 1
+55124  INFO [main]    com.oaklandsw.http.TestPerf - Pipelining
+55124  INFO [main]    com.oaklandsw.http.TestPerf - Using max: 1 connections.
+55124  INFO [main]    com.oaklandsw.http.TestPerf - Using pipeline depth: 1
+58093  INFO [main]    com.oaklandsw.http.TestPerf - connection pool before close
+58093  INFO [main]    com.oaklandsw.http.TestPerf - Max connections/host:    1
+Pipelining options:    PIPE_PIPELINE PIPE_MAX_CONNECTIONS 
+Pipelining max depth:  1
+Authentication Type:   NONE (0)
+Retry counts: 
+Pipeline Retry counts: 
+Counts: 
+UrlCons Attempted:               200
+UrlCons Success:                 200
+Pipeline write request:          0
+Pipeline read response:          200
+Pipeline error:                  0
+Total retries:                   0
+Total pipelined retries:         0
+UrlCons Failed Max Retries:      0
+UrlCons Failed > 400:            0
+Pipeline max depth (all conns):  1
+Forced Flushes:                  200
+Buffer Flushes:                  0
+Avoided Flushes:                 0
+Flush IOExceptions:              0
+Connection: http://localhost:8080
+  Total connections created: 2
+  Avail connections:         0
+  Assigned connections:      0
+  Observed max urlcons before close: 100
+Assigned connections: 
+Available connections: 
+
+58093  INFO [main]    com.oaklandsw.http.TestPerf - Total Time (ms): 2930 Time/trans (ms): 14.65
+58093  INFO [main]    com.oaklandsw.http.TestPerf - Total run bytes: 0
+58093  INFO [main]    com.oaklandsw.http.TestPerf - Total run conns: 2
+58093  INFO [main]    com.oaklandsw.http.TestPerf - Machine,Oakland,0,14.65,1,1,1,1,200,3,2930,200,0,0,0,0,08:41:42.700
+58093  INFO [main]    com.oaklandsw.http.TestPerf - Machine,Oakland,0,15.513333,1,1,1,1,200,3,14.65,16.415,9308,600,0,0,0,0,08:41:42.700
+58093  INFO [main]    com.oaklandsw.http.TestPerf - 
+58094  INFO [main]    com.oaklandsw.http.TestPerf - Start Time: 08:41:55.426
+58094  INFO [main]    com.oaklandsw.http.TestPerf - Using: Oakland implementation
+58094  INFO [main]    com.oaklandsw.http.TestPerf - URL: http://localhost:8080/oaklandsw-http/perf?size=0k
+58095  INFO [main]    com.oaklandsw.http.TestPerf - Times/thread: 200
+58095  INFO [main]    com.oaklandsw.http.TestPerf - Threads: 1
+58095  INFO [main]    com.oaklandsw.http.TestPerf - Pipelining
+58095  INFO [main]    com.oaklandsw.http.TestPerf - Using max: 1 connections.
+58095  INFO [main]    com.oaklandsw.http.TestPerf - Using pipeline depth: 2
+61131  INFO [main]    com.oaklandsw.http.TestPerf - connection pool before close
+61131  INFO [main]    com.oaklandsw.http.TestPerf - Max connections/host:    1
+Pipelining options:    PIPE_PIPELINE PIPE_MAX_CONNECTIONS 
+Pipelining max depth:  2
+Authentication Type:   NONE (0)
+Retry counts: 
+Pipeline Retry counts: 
+  Retry times: 2 count: 1
+Counts: 
+UrlCons Attempted:               200
+UrlCons Success:                 200
+Pipeline write request:          0
+Pipeline read response:          200
+Pipeline error:                  0
+Total retries:                   0
+Total pipelined retries:         1
+UrlCons Failed Max Retries:      0
+UrlCons Failed > 400:            0
+Pipeline max depth (all conns):  2
+Forced Flushes:                  199
+Buffer Flushes:                  0
+Avoided Flushes:                 2
+Flush IOExceptions:              0
+Connection: http://localhost:8080
+  Total connections created: 2
+  Avail connections:         0
+  Assigned connections:      0
+  Observed max urlcons before close: 100
+Assigned connections: 
+Available connections: 
+
+61131  INFO [main]    com.oaklandsw.http.TestPerf - Total Time (ms): 3001 Time/trans (ms): 15.005
+61131  INFO [main]    com.oaklandsw.http.TestPerf - Total run bytes: 0
+61131  INFO [main]    com.oaklandsw.http.TestPerf - Total run conns: 2
+61131  INFO [main]    com.oaklandsw.http.TestPerf - Machine,Oakland,0,15.005,1,1,2,2,200,3,3001,199,0,2,0,1,08:41:55.426
+61131  INFO [main]    com.oaklandsw.http.TestPerf - 
+61132  INFO [main]    com.oaklandsw.http.TestPerf - Start Time: 08:41:55.426
+61132  INFO [main]    com.oaklandsw.http.TestPerf - Using: Oakland implementation
+61132  INFO [main]    com.oaklandsw.http.TestPerf - URL: http://localhost:8080/oaklandsw-http/perf?size=0k
+61132  INFO [main]    com.oaklandsw.http.TestPerf - Times/thread: 200
+61132  INFO [main]    com.oaklandsw.http.TestPerf - Threads: 1
+61132  INFO [main]    com.oaklandsw.http.TestPerf - Pipelining
+61132  INFO [main]    com.oaklandsw.http.TestPerf - Using max: 1 connections.
+61132  INFO [main]    com.oaklandsw.http.TestPerf - Using pipeline depth: 2
+64029  INFO [main]    com.oaklandsw.http.TestPerf - connection pool before close
+64029  INFO [main]    com.oaklandsw.http.TestPerf - Max connections/host:    1
+Pipelining options:    PIPE_PIPELINE PIPE_MAX_CONNECTIONS 
+Pipelining max depth:  2
+Authentication Type:   NONE (0)
+Retry counts: 
+Pipeline Retry counts: 
+  Retry times: 2 count: 1
+Counts: 
+UrlCons Attempted:               200
+UrlCons Success:                 200
+Pipeline write request:          0
+Pipeline read response:          200
+Pipeline error:                  0
+Total retries:                   0
+Total pipelined retries:         1
+UrlCons Failed Max Retries:      0
+UrlCons Failed > 400:            0
+Pipeline max depth (all conns):  2
+Forced Flushes:                  199
+Buffer Flushes:                  0
+Avoided Flushes:                 2
+Flush IOExceptions:              0
+Connection: http://localhost:8080
+  Total connections created: 2
+  Avail connections:         0
+  Assigned connections:      0
+  Observed max urlcons before close: 100
+Assigned connections: 
+Available connections: 
+
+64029  INFO [main]    com.oaklandsw.http.TestPerf - Total Time (ms): 2871 Time/trans (ms): 14.355
+64029  INFO [main]    com.oaklandsw.http.TestPerf - Total run bytes: 0
+64029  INFO [main]    com.oaklandsw.http.TestPerf - Total run conns: 2
+64029  INFO [main]    com.oaklandsw.http.TestPerf - Machine,Oakland,0,14.355,1,1,2,2,200,3,2871,199,0,2,0,1,08:41:55.426
+64029  INFO [main]    com.oaklandsw.http.TestPerf - 
+64032  INFO [main]    com.oaklandsw.http.TestPerf - Start Time: 08:41:55.426
+64032  INFO [main]    com.oaklandsw.http.TestPerf - Using: Oakland implementation
+64032  INFO [main]    com.oaklandsw.http.TestPerf - URL: http://localhost:8080/oaklandsw-http/perf?size=0k
+64032  INFO [main]    com.oaklandsw.http.TestPerf - Times/thread: 200
+64032  INFO [main]    com.oaklandsw.http.TestPerf - Threads: 1
+64032  INFO [main]    com.oaklandsw.http.TestPerf - Pipelining
+64032  INFO [main]    com.oaklandsw.http.TestPerf - Using max: 1 connections.
+64032  INFO [main]    com.oaklandsw.http.TestPerf - Using pipeline depth: 2
+67554  INFO [main]    com.oaklandsw.http.TestPerf - connection pool before close
+67554  INFO [main]    com.oaklandsw.http.TestPerf - Max connections/host:    1
+Pipelining options:    PIPE_PIPELINE PIPE_MAX_CONNECTIONS 
+Pipelining max depth:  2
+Authentication Type:   NONE (0)
+Retry counts: 
+Pipeline Retry counts: 
+  Retry times: 2 count: 1
+Counts: 
+UrlCons Attempted:               200
+UrlCons Success:                 200
+Pipeline write request:          0
+Pipeline read response:          200
+Pipeline error:                  0
+Total retries:                   0
+Total pipelined retries:         1
+UrlCons Failed Max Retries:      0
+UrlCons Failed > 400:            0
+Pipeline max depth (all conns):  2
+Forced Flushes:                  197
+Buffer Flushes:                  0
+Avoided Flushes:                 4
+Flush IOExceptions:              0
+Connection: http://localhost:8080
+  Total connections created: 2
+  Avail connections:         0
+  Assigned connections:      0
+  Observed max urlcons before close: 100
+Assigned connections: 
+Available connections: 
+
+67554  INFO [main]    com.oaklandsw.http.TestPerf - Total Time (ms): 3500 Time/trans (ms): 17.5
+67554  INFO [main]    com.oaklandsw.http.TestPerf - Total run bytes: 0
+67554  INFO [main]    com.oaklandsw.http.TestPerf - Total run conns: 2
+67554  INFO [main]    com.oaklandsw.http.TestPerf - Machine,Oakland,0,17.5,1,1,2,2,200,3,3500,197,0,4,0,1,08:41:55.426
+67554  INFO [main]    com.oaklandsw.http.TestPerf - Machine,Oakland,0,15.62,1,1,2,2,200,3,14.355,17.5,9372,595,0,8,0,3,08:41:55.426
+67554  INFO [main]    com.oaklandsw.http.TestPerf - 
+67555  INFO [main]    com.oaklandsw.http.TestPerf - Start Time: 08:42:04.887
+67555  INFO [main]    com.oaklandsw.http.TestPerf - Using: Oakland implementation
+67555  INFO [main]    com.oaklandsw.http.TestPerf - URL: http://localhost:8080/oaklandsw-http/perf?size=0k
+67555  INFO [main]    com.oaklandsw.http.TestPerf - Times/thread: 200
+67555  INFO [main]    com.oaklandsw.http.TestPerf - Threads: 1
+67555  INFO [main]    com.oaklandsw.http.TestPerf - Pipelining
+67555  INFO [main]    com.oaklandsw.http.TestPerf - Using max: 1 connections.
+67555  INFO [main]    com.oaklandsw.http.TestPerf - Using pipeline depth: 50
+70205  INFO [main]    com.oaklandsw.http.TestPerf - connection pool before close
+70205  INFO [main]    com.oaklandsw.http.TestPerf - Max connections/host:    1
+Pipelining options:    PIPE_PIPELINE PIPE_MAX_CONNECTIONS 
+Pipelining max depth:  50
+Authentication Type:   NONE (0)
+Retry counts: 
+Pipeline Retry counts: 
+  Retry times: 2 count: 49
+Counts: 
+UrlCons Attempted:               200
+UrlCons Success:                 200
+Pipeline write request:          0
+Pipeline read response:          200
+Pipeline error:                  0
+Total retries:                   0
+Total pipelined retries:         49
+UrlCons Failed Max Retries:      0
+UrlCons Failed > 400:            0
+Pipeline max depth (all conns):  50
+Forced Flushes:                  150
+Buffer Flushes:                  0
+Avoided Flushes:                 99
+Flush IOExceptions:              0
+Connection: http://localhost:8080
+  Total connections created: 2
+  Avail connections:         0
+  Assigned connections:      0
+  Observed max urlcons before close: 100
+Assigned connections: 
+Available connections: 
+
+70205  INFO [main]    com.oaklandsw.http.TestPerf - Total Time (ms): 2627 Time/trans (ms): 13.135
+70205  INFO [main]    com.oaklandsw.http.TestPerf - Total run bytes: 0
+70205  INFO [main]    com.oaklandsw.http.TestPerf - Total run conns: 2
+70205  INFO [main]    com.oaklandsw.http.TestPerf - Machine,Oakland,0,13.135,1,1,50,50,200,3,2627,150,0,99,0,49,08:42:04.887
+70205  INFO [main]    com.oaklandsw.http.TestPerf - 
+70206  INFO [main]    com.oaklandsw.http.TestPerf - Start Time: 08:42:04.887
+70206  INFO [main]    com.oaklandsw.http.TestPerf - Using: Oakland implementation
+70206  INFO [main]    com.oaklandsw.http.TestPerf - URL: http://localhost:8080/oaklandsw-http/perf?size=0k
+70206  INFO [main]    com.oaklandsw.http.TestPerf - Times/thread: 200
+70206  INFO [main]    com.oaklandsw.http.TestPerf - Threads: 1
+70206  INFO [main]    com.oaklandsw.http.TestPerf - Pipelining
+70206  INFO [main]    com.oaklandsw.http.TestPerf - Using max: 1 connections.
+70206  INFO [main]    com.oaklandsw.http.TestPerf - Using pipeline depth: 50
+73017  INFO [main]    com.oaklandsw.http.TestPerf - connection pool before close
+73017  INFO [main]    com.oaklandsw.http.TestPerf - Max connections/host:    1
+Pipelining options:    PIPE_PIPELINE PIPE_MAX_CONNECTIONS 
+Pipelining max depth:  50
+Authentication Type:   NONE (0)
+Retry counts: 
+Pipeline Retry counts: 
+  Retry times: 2 count: 49
+Counts: 
+UrlCons Attempted:               200
+UrlCons Success:                 200
+Pipeline write request:          0
+Pipeline read response:          200
+Pipeline error:                  0
+Total retries:                   0
+Total pipelined retries:         49
+UrlCons Failed Max Retries:      0
+UrlCons Failed > 400:            0
+Pipeline max depth (all conns):  50
+Forced Flushes:                  149
+Buffer Flushes:                  0
+Avoided Flushes:                 100
+Flush IOExceptions:              0
+Connection: http://localhost:8080
+  Total connections created: 2
+  Avail connections:         0
+  Assigned connections:      0
+  Observed max urlcons before close: 100
+Assigned connections: 
+Available connections: 
+
+73017  INFO [main]    com.oaklandsw.http.TestPerf - Total Time (ms): 2789 Time/trans (ms): 13.945
+73017  INFO [main]    com.oaklandsw.http.TestPerf - Total run bytes: 0
+73017  INFO [main]    com.oaklandsw.http.TestPerf - Total run conns: 2
+73018  INFO [main]    com.oaklandsw.http.TestPerf - Machine,Oakland,0,13.945,1,1,50,50,200,3,2789,149,0,100,0,49,08:42:04.887
+73018  INFO [main]    com.oaklandsw.http.TestPerf - 
+73019  INFO [main]    com.oaklandsw.http.TestPerf - Start Time: 08:42:04.887
+73019  INFO [main]    com.oaklandsw.http.TestPerf - Using: Oakland implementation
+73019  INFO [main]    com.oaklandsw.http.TestPerf - URL: http://localhost:8080/oaklandsw-http/perf?size=0k
+73019  INFO [main]    com.oaklandsw.http.TestPerf - Times/thread: 200
+73019  INFO [main]    com.oaklandsw.http.TestPerf - Threads: 1
+73019  INFO [main]    com.oaklandsw.http.TestPerf - Pipelining
+73019  INFO [main]    com.oaklandsw.http.TestPerf - Using max: 1 connections.
+73019  INFO [main]    com.oaklandsw.http.TestPerf - Using pipeline depth: 50
+75748  INFO [main]    com.oaklandsw.http.TestPerf - connection pool before close
+75748  INFO [main]    com.oaklandsw.http.TestPerf - Max connections/host:    1
+Pipelining options:    PIPE_PIPELINE PIPE_MAX_CONNECTIONS 
+Pipelining max depth:  50
+Authentication Type:   NONE (0)
+Retry counts: 
+Pipeline Retry counts: 
+  Retry times: 2 count: 49
+Counts: 
+UrlCons Attempted:               200
+UrlCons Success:                 200
+Pipeline write request:          0
+Pipeline read response:          200
+Pipeline error:                  0
+Total retries:                   0
+Total pipelined retries:         49
+UrlCons Failed Max Retries:      0
+UrlCons Failed > 400:            0
+Pipeline max depth (all conns):  50
+Forced Flushes:                  151
+Buffer Flushes:                  0
+Avoided Flushes:                 98
+Flush IOExceptions:              0
+Connection: http://localhost:8080
+  Total connections created: 2
+  Avail connections:         0
+  Assigned connections:      0
+  Observed max urlcons before close: 100
+Assigned connections: 
+Available connections: 
+
+75748  INFO [main]    com.oaklandsw.http.TestPerf - Total Time (ms): 2697 Time/trans (ms): 13.485
+75748  INFO [main]    com.oaklandsw.http.TestPerf - Total run bytes: 0
+75748  INFO [main]    com.oaklandsw.http.TestPerf - Total run conns: 2
+75748  INFO [main]    com.oaklandsw.http.TestPerf - Machine,Oakland,0,13.485,1,1,50,50,200,3,2697,151,0,98,0,49,08:42:04.887
+75748  INFO [main]    com.oaklandsw.http.TestPerf - Machine,Oakland,0,13.521667,1,1,50,50,200,3,13.135,13.945,8113,450,0,297,0,147,08:42:04.887
+75748  INFO [main]    com.oaklandsw.http.TestPerf - 
+75749  INFO [main]    com.oaklandsw.http.TestPerf - Start Time: 08:42:13.081
+75749  INFO [main]    com.oaklandsw.http.TestPerf - Using: Oakland implementation
+75749  INFO [main]    com.oaklandsw.http.TestPerf - URL: http://localhost:8080/oaklandsw-http/perf?size=0k
+75749  INFO [main]    com.oaklandsw.http.TestPerf - Times/thread: 200
+75749  INFO [main]    com.oaklandsw.http.TestPerf - Threads: 1
+75749  INFO [main]    com.oaklandsw.http.TestPerf - Pipelining
+75749  INFO [main]    com.oaklandsw.http.TestPerf - Using max: 1 connections.
+75749  INFO [main]    com.oaklandsw.http.TestPerf - Using pipeline depth: 100
+78653  INFO [main]    com.oaklandsw.http.TestPerf - connection pool before close
+78653  INFO [main]    com.oaklandsw.http.TestPerf - Max connections/host:    1
+Pipelining options:    PIPE_PIPELINE PIPE_MAX_CONNECTIONS 
+Pipelining max depth:  100
+Authentication Type:   NONE (0)
+Retry counts: 
+Pipeline Retry counts: 
+  Retry times: 2 count: 99
+Counts: 
+UrlCons Attempted:               200
+UrlCons Success:                 200
+Pipeline write request:          0
+Pipeline read response:          200
+Pipeline error:                  0
+Total retries:                   0
+Total pipelined retries:         99
+UrlCons Failed Max Retries:      0
+UrlCons Failed > 400:            0
+Pipeline max depth (all conns):  100
+Forced Flushes:                  101
+Buffer Flushes:                  0
+Avoided Flushes:                 198
+Flush IOExceptions:              0
+Connection: http://localhost:8080
+  Total connections created: 2
+  Avail connections:         0
+  Assigned connections:      0
+  Observed max urlcons before close: 100
+Assigned connections: 
+Available connections: 
+
+78653  INFO [main]    com.oaklandsw.http.TestPerf - Total Time (ms): 2881 Time/trans (ms): 14.405
+78653  INFO [main]    com.oaklandsw.http.TestPerf - Total run bytes: 0
+78653  INFO [main]    com.oaklandsw.http.TestPerf - Total run conns: 2
+78653  INFO [main]    com.oaklandsw.http.TestPerf - Machine,Oakland,0,14.405,1,1,100,100,200,3,2881,101,0,198,0,99,08:42:13.081
+78653  INFO [main]    com.oaklandsw.http.TestPerf - 
+78654  INFO [main]    com.oaklandsw.http.TestPerf - Start Time: 08:42:13.081
+78654  INFO [main]    com.oaklandsw.http.TestPerf - Using: Oakland implementation
+78654  INFO [main]    com.oaklandsw.http.TestPerf - URL: http://localhost:8080/oaklandsw-http/perf?size=0k
+78654  INFO [main]    com.oaklandsw.http.TestPerf - Times/thread: 200
+78654  INFO [main]    com.oaklandsw.http.TestPerf - Threads: 1
+78654  INFO [main]    com.oaklandsw.http.TestPerf - Pipelining
+78654  INFO [main]    com.oaklandsw.http.TestPerf - Using max: 1 connections.
+78654  INFO [main]    com.oaklandsw.http.TestPerf - Using pipeline depth: 100
+81765  INFO [main]    com.oaklandsw.http.TestPerf - connection pool before close
+81765  INFO [main]    com.oaklandsw.http.TestPerf - Max connections/host:    1
+Pipelining options:    PIPE_PIPELINE PIPE_MAX_CONNECTIONS 
+Pipelining max depth:  100
+Authentication Type:   NONE (0)
+Retry counts: 
+Pipeline Retry counts: 
+  Retry times: 2 count: 99
+Counts: 
+UrlCons Attempted:               200
+UrlCons Success:                 200
+Pipeline write request:          0
+Pipeline read response:          200
+Pipeline error:                  0
+Total retries:                   0
+Total pipelined retries:         99
+UrlCons Failed Max Retries:      0
+UrlCons Failed > 400:            0
+Pipeline max depth (all conns):  100
+Forced Flushes:                  99
+Buffer Flushes:                  0
+Avoided Flushes:                 200
+Flush IOExceptions:              0
+Connection: http://localhost:8080
+  Total connections created: 2
+  Avail connections:         0
+  Assigned connections:      0
+  Observed max urlcons before close: 100
+Assigned connections: 
+Available connections: 
+
+81765  INFO [main]    com.oaklandsw.http.TestPerf - Total Time (ms): 3088 Time/trans (ms): 15.44
+81765  INFO [main]    com.oaklandsw.http.TestPerf - Total run bytes: 0
+81765  INFO [main]    com.oaklandsw.http.TestPerf - Total run conns: 2
+81765  INFO [main]    com.oaklandsw.http.TestPerf - Machine,Oakland,0,15.44,1,1,100,100,200,3,3088,99,0,200,0,99,08:42:13.081
+81765  INFO [main]    com.oaklandsw.http.TestPerf - 
+81766  INFO [main]    com.oaklandsw.http.TestPerf - Start Time: 08:42:13.081
+81766  INFO [main]    com.oaklandsw.http.TestPerf - Using: Oakland implementation
+81766  INFO [main]    com.oaklandsw.http.TestPerf - URL: http://localhost:8080/oaklandsw-http/perf?size=0k
+81766  INFO [main]    com.oaklandsw.http.TestPerf - Times/thread: 200
+81766  INFO [main]    com.oaklandsw.http.TestPerf - Threads: 1
+81766  INFO [main]    com.oaklandsw.http.TestPerf - Pipelining
+81766  INFO [main]    com.oaklandsw.http.TestPerf - Using max: 1 connections.
+81766  INFO [main]    com.oaklandsw.http.TestPerf - Using pipeline depth: 100
+84460  INFO [main]    com.oaklandsw.http.TestPerf - connection pool before close
+84460  INFO [main]    com.oaklandsw.http.TestPerf - Max connections/host:    1
+Pipelining options:    PIPE_PIPELINE PIPE_MAX_CONNECTIONS 
+Pipelining max depth:  100
+Authentication Type:   NONE (0)
+Retry counts: 
+Pipeline Retry counts: 
+  Retry times: 2 count: 99
+Counts: 
+UrlCons Attempted:               200
+UrlCons Success:                 200
+Pipeline write request:          0
+Pipeline read response:          200
+Pipeline error:                  0
+Total retries:                   0
+Total pipelined retries:         99
+UrlCons Failed Max Retries:      0
+UrlCons Failed > 400:            0
+Pipeline max depth (all conns):  100
+Forced Flushes:                  101
+Buffer Flushes:                  0
+Avoided Flushes:                 198
+Flush IOExceptions:              0
+Connection: http://localhost:8080
+  Total connections created: 2
+  Avail connections:         0
+  Assigned connections:      0
+  Observed max urlcons before close: 100
+Assigned connections: 
+Available connections: 
+
+84460  INFO [main]    com.oaklandsw.http.TestPerf - Total Time (ms): 2659 Time/trans (ms): 13.295
+84461  INFO [main]    com.oaklandsw.http.TestPerf - Total run bytes: 0
+84461  INFO [main]    com.oaklandsw.http.TestPerf - Total run conns: 2
+84461  INFO [main]    com.oaklandsw.http.TestPerf - Machine,Oakland,0,13.295,1,1,100,100,200,3,2659,101,0,198,0,99,08:42:13.081
+84461  INFO [main]    com.oaklandsw.http.TestPerf - Machine,Oakland,0,14.38,1,1,100,100,200,3,13.295,15.44,8628,301,0,596,0,297,08:42:13.081
+84461  INFO [main]    com.oaklandsw.http.TestPerf - 
+84462  INFO [main]    com.oaklandsw.http.TestPerf - Start Time: 08:42:21.794
+84462  INFO [main]    com.oaklandsw.http.TestPerf - Using: Oakland implementation
+84462  INFO [main]    com.oaklandsw.http.TestPerf - URL: http://localhost:8080/oaklandsw-http/perf?size=0k
+84462  INFO [main]    com.oaklandsw.http.TestPerf - Times/thread: 200
+84462  INFO [main]    com.oaklandsw.http.TestPerf - Threads: 1
+84462  INFO [main]    com.oaklandsw.http.TestPerf - Pipelining
+84462  INFO [main]    com.oaklandsw.http.TestPerf - Using max: 1 connections.
+84462  INFO [main]    com.oaklandsw.http.TestPerf - Using pipeline depth: 200
+88161  INFO [main]    com.oaklandsw.http.TestPerf - connection pool before close
+88161  INFO [main]    com.oaklandsw.http.TestPerf - Max connections/host:    1
+Pipelining options:    PIPE_PIPELINE PIPE_MAX_CONNECTIONS 
+Pipelining max depth:  200
+Authentication Type:   NONE (0)
+Retry counts: 
+Pipeline Retry counts: 
+  Retry times: 2 count: 100
+Counts: 
+UrlCons Attempted:               200
+UrlCons Success:                 200
+Pipeline write request:          0
+Pipeline read response:          200
+Pipeline error:                  0
+Total retries:                   0
+Total pipelined retries:         100
+UrlCons Failed Max Retries:      0
+UrlCons Failed > 400:            0
+Pipeline max depth (all conns):  200
+Forced Flushes:                  101
+Buffer Flushes:                  1
+Avoided Flushes:                 199
+Flush IOExceptions:              0
+Connection: http://localhost:8080
+  Total connections created: 2
+  Avail connections:         0
+  Assigned connections:      0
+  Observed max urlcons before close: 100
+Assigned connections: 
+Available connections: 
+
+88161  INFO [main]    com.oaklandsw.http.TestPerf - Total Time (ms): 3678 Time/trans (ms): 18.39
+88161  INFO [main]    com.oaklandsw.http.TestPerf - Total run bytes: 0
+88161  INFO [main]    com.oaklandsw.http.TestPerf - Total run conns: 2
+88161  INFO [main]    com.oaklandsw.http.TestPerf - Machine,Oakland,0,18.39,1,1,200,200,200,3,3678,101,1,199,0,100,08:42:21.794
+88162  INFO [main]    com.oaklandsw.http.TestPerf - 
+88162  INFO [main]    com.oaklandsw.http.TestPerf - Start Time: 08:42:21.794
+88162  INFO [main]    com.oaklandsw.http.TestPerf - Using: Oakland implementation
+88163  INFO [main]    com.oaklandsw.http.TestPerf - URL: http://localhost:8080/oaklandsw-http/perf?size=0k
+88163  INFO [main]    com.oaklandsw.http.TestPerf - Times/thread: 200
+88163  INFO [main]    com.oaklandsw.http.TestPerf - Threads: 1
+88163  INFO [main]    com.oaklandsw.http.TestPerf - Pipelining
+88163  INFO [main]    com.oaklandsw.http.TestPerf - Using max: 1 connections.
+88163  INFO [main]    com.oaklandsw.http.TestPerf - Using pipeline depth: 200
+91580  INFO [main]    com.oaklandsw.http.TestPerf - connection pool before close
+91580  INFO [main]    com.oaklandsw.http.TestPerf - Max connections/host:    1
+Pipelining options:    PIPE_PIPELINE PIPE_MAX_CONNECTIONS 
+Pipelining max depth:  200
+Authentication Type:   NONE (0)
+Retry counts: 
+Pipeline Retry counts: 
+  Retry times: 2 count: 100
+Counts: 
+UrlCons Attempted:               200
+UrlCons Success:                 200
+Pipeline write request:          0
+Pipeline read response:          200
+Pipeline error:                  0
+Total retries:                   0
+Total pipelined retries:         100
+UrlCons Failed Max Retries:      0
+UrlCons Failed > 400:            0
+Pipeline max depth (all conns):  200
+Forced Flushes:                  101
+Buffer Flushes:                  1
+Avoided Flushes:                 199
+Flush IOExceptions:              0
+Connection: http://localhost:8080
+  Total connections created: 2
+  Avail connections:         0
+  Assigned connections:      0
+  Observed max urlcons before close: 100
+Assigned connections: 
+Available connections: 
+
+91580  INFO [main]    com.oaklandsw.http.TestPerf - Total Time (ms): 3355 Time/trans (ms): 16.775
+91580  INFO [main]    com.oaklandsw.http.TestPerf - Total run bytes: 0
+91580  INFO [main]    com.oaklandsw.http.TestPerf - Total run conns: 2
+91580  INFO [main]    com.oaklandsw.http.TestPerf - Machine,Oakland,0,16.775,1,1,200,200,200,3,3355,101,1,199,0,100,08:42:21.794
+91580  INFO [main]    com.oaklandsw.http.TestPerf - 
+91581  INFO [main]    com.oaklandsw.http.TestPerf - Start Time: 08:42:21.794
+91581  INFO [main]    com.oaklandsw.http.TestPerf - Using: Oakland implementation
+91581  INFO [main]    com.oaklandsw.http.TestPerf - URL: http://localhost:8080/oaklandsw-http/perf?size=0k
+91581  INFO [main]    com.oaklandsw.http.TestPerf - Times/thread: 200
+91581  INFO [main]    com.oaklandsw.http.TestPerf - Threads: 1
+91582  INFO [main]    com.oaklandsw.http.TestPerf - Pipelining
+91582  INFO [main]    com.oaklandsw.http.TestPerf - Using max: 1 connections.
+91582  INFO [main]    com.oaklandsw.http.TestPerf - Using pipeline depth: 200
+94725  INFO [main]    com.oaklandsw.http.TestPerf - connection pool before close
+94725  INFO [main]    com.oaklandsw.http.TestPerf - Max connections/host:    1
+Pipelining options:    PIPE_PIPELINE PIPE_MAX_CONNECTIONS 
+Pipelining max depth:  200
+Authentication Type:   NONE (0)
+Retry counts: 
+Pipeline Retry counts: 
+  Retry times: 2 count: 100
+Counts: 
+UrlCons Attempted:               200
+UrlCons Success:                 200
+Pipeline write request:          0
+Pipeline read response:          200
+Pipeline error:                  0
+Total retries:                   0
+Total pipelined retries:         100
+UrlCons Failed Max Retries:      0
+UrlCons Failed > 400:            0
+Pipeline max depth (all conns):  200
+Forced Flushes:                  101
+Buffer Flushes:                  1
+Avoided Flushes:                 199
+Flush IOExceptions:              0
+Connection: http://localhost:8080
+  Total connections created: 2
+  Avail connections:         0
+  Assigned connections:      0
+  Observed max urlcons before close: 100
+Assigned connections: 
+Available connections: 
+
+94725  INFO [main]    com.oaklandsw.http.TestPerf - Total Time (ms): 3121 Time/trans (ms): 15.605
+94726  INFO [main]    com.oaklandsw.http.TestPerf - Total run bytes: 0
+94726  INFO [main]    com.oaklandsw.http.TestPerf - Total run conns: 2
+94726  INFO [main]    com.oaklandsw.http.TestPerf - Machine,Oakland,0,15.605,1,1,200,200,200,3,3121,101,1,199,0,100,08:42:21.794
+94726  INFO [main]    com.oaklandsw.http.TestPerf - Machine,Oakland,0,16.923334,1,1,200,200,200,3,15.605,18.39,10154,303,3,597,0,300,08:42:21.794
+94726  INFO [main]    com.oaklandsw.http.TestPerf - 
+94727  INFO [main]    com.oaklandsw.http.TestPerf - Start Time: 08:42:32.059
+94727  INFO [main]    com.oaklandsw.http.TestPerf - Using: Oakland implementation
+94727  INFO [main]    com.oaklandsw.http.TestPerf - URL: http://localhost:8080/oaklandsw-http/perf?size=0k
+94727  INFO [main]    com.oaklandsw.http.TestPerf - Times/thread: 200
+94727  INFO [main]    com.oaklandsw.http.TestPerf - Threads: 1
+94727  INFO [main]    com.oaklandsw.http.TestPerf - Pipelining
+94727  INFO [main]    com.oaklandsw.http.TestPerf - Using max: 1 connections.
+94727  INFO [main]    com.oaklandsw.http.TestPerf - Using pipeline depth: 500
+97624  INFO [main]    com.oaklandsw.http.TestPerf - connection pool before close
+97624  INFO [main]    com.oaklandsw.http.TestPerf - Max connections/host:    1
+Pipelining options:    PIPE_PIPELINE PIPE_MAX_CONNECTIONS 
+Pipelining max depth:  500
+Authentication Type:   NONE (0)
+Retry counts: 
+Pipeline Retry counts: 
+  Retry times: 2 count: 100
+Counts: 
+UrlCons Attempted:               200
+UrlCons Success:                 200
+Pipeline write request:          0
+Pipeline read response:          200
+Pipeline error:                  0
+Total retries:                   0
+Total pipelined retries:         100
+UrlCons Failed Max Retries:      0
+UrlCons Failed > 400:            0
+Pipeline max depth (all conns):  200
+Forced Flushes:                  101
+Buffer Flushes:                  1
+Avoided Flushes:                 199
+Flush IOExceptions:              0
+Connection: http://localhost:8080
+  Total connections created: 2
+  Avail connections:         0
+  Assigned connections:      0
+  Observed max urlcons before close: 100
+Assigned connections: 
+Available connections: 
+
+97624  INFO [main]    com.oaklandsw.http.TestPerf - Total Time (ms): 2874 Time/trans (ms): 14.37
+97624  INFO [main]    com.oaklandsw.http.TestPerf - Total run bytes: 0
+97624  INFO [main]    com.oaklandsw.http.TestPerf - Total run conns: 2
+97624  INFO [main]    com.oaklandsw.http.TestPerf - Machine,Oakland,0,14.37,1,1,200,500,200,3,2874,101,1,199,0,100,08:42:32.059
+97624  INFO [main]    com.oaklandsw.http.TestPerf - 
+97637  INFO [main]    com.oaklandsw.http.TestPerf - Start Time: 08:42:32.059
+97637  INFO [main]    com.oaklandsw.http.TestPerf - Using: Oakland implementation
+97637  INFO [main]    com.oaklandsw.http.TestPerf - URL: http://localhost:8080/oaklandsw-http/perf?size=0k
+97637  INFO [main]    com.oaklandsw.http.TestPerf - Times/thread: 200
+97637  INFO [main]    com.oaklandsw.http.TestPerf - Threads: 1
+97637  INFO [main]    com.oaklandsw.http.TestPerf - Pipelining
+97637  INFO [main]    com.oaklandsw.http.TestPerf - Using max: 1 connections.
+97637  INFO [main]    com.oaklandsw.http.TestPerf - Using pipeline depth: 500
+100216  INFO [main]    com.oaklandsw.http.TestPerf - connection pool before close
+100216  INFO [main]    com.oaklandsw.http.TestPerf - Max connections/host:    1
+Pipelining options:    PIPE_PIPELINE PIPE_MAX_CONNECTIONS 
+Pipelining max depth:  500
+Authentication Type:   NONE (0)
+Retry counts: 
+Pipeline Retry counts: 
+  Retry times: 2 count: 100
+Counts: 
+UrlCons Attempted:               200
+UrlCons Success:                 200
+Pipeline write request:          0
+Pipeline read response:          200
+Pipeline error:                  0
+Total retries:                   0
+Total pipelined retries:         100
+UrlCons Failed Max Retries:      0
+UrlCons Failed > 400:            0
+Pipeline max depth (all conns):  200
+Forced Flushes:                  101
+Buffer Flushes:                  1
+Avoided Flushes:                 199
+Flush IOExceptions:              0
+Connection: http://localhost:8080
+  Total connections created: 2
+  Avail connections:         0
+  Assigned connections:      0
+  Observed max urlcons before close: 100
+Assigned connections: 
+Available connections: 
+
+100216  INFO [main]    com.oaklandsw.http.TestPerf - Total Time (ms): 2557 Time/trans (ms): 12.785
+100216  INFO [main]    com.oaklandsw.http.TestPerf - Total run bytes: 0
+100216  INFO [main]    com.oaklandsw.http.TestPerf - Total run conns: 2
+100216  INFO [main]    com.oaklandsw.http.TestPerf - Machine,Oakland,0,12.785,1,1,200,500,200,3,2557,101,1,199,0,100,08:42:32.059
+100217  INFO [main]    com.oaklandsw.http.TestPerf - 
+100217  INFO [main]    com.oaklandsw.http.TestPerf - Start Time: 08:42:32.059
+100217  INFO [main]    com.oaklandsw.http.TestPerf - Using: Oakland implementation
+100218  INFO [main]    com.oaklandsw.http.TestPerf - URL: http://localhost:8080/oaklandsw-http/perf?size=0k
+100218  INFO [main]    com.oaklandsw.http.TestPerf - Times/thread: 200
+100218  INFO [main]    com.oaklandsw.http.TestPerf - Threads: 1
+100218  INFO [main]    com.oaklandsw.http.TestPerf - Pipelining
+100218  INFO [main]    com.oaklandsw.http.TestPerf - Using max: 1 connections.
+100218  INFO [main]    com.oaklandsw.http.TestPerf - Using pipeline depth: 500
+103028  INFO [main]    com.oaklandsw.http.TestPerf - connection pool before close
+103028  INFO [main]    com.oaklandsw.http.TestPerf - Max connections/host:    1
+Pipelining options:    PIPE_PIPELINE PIPE_MAX_CONNECTIONS 
+Pipelining max depth:  500
+Authentication Type:   NONE (0)
+Retry counts: 
+Pipeline Retry counts: 
+  Retry times: 2 count: 100
+Counts: 
+UrlCons Attempted:               200
+UrlCons Success:                 200
+Pipeline write request:          0
+Pipeline read response:          200
+Pipeline error:                  0
+Total retries:                   0
+Total pipelined retries:         100
+UrlCons Failed Max Retries:      0
+UrlCons Failed > 400:            0
+Pipeline max depth (all conns):  200
+Forced Flushes:                  101
+Buffer Flushes:                  1
+Avoided Flushes:                 199
+Flush IOExceptions:              0
+Connection: http://localhost:8080
+  Total connections created: 2
+  Avail connections:         0
+  Assigned connections:      0
+  Observed max urlcons before close: 100
+Assigned connections: 
+Available connections: 
+
+103028  INFO [main]    com.oaklandsw.http.TestPerf - Total Time (ms): 2788 Time/trans (ms): 13.94
+103028  INFO [main]    com.oaklandsw.http.TestPerf - Total run bytes: 0
+103028  INFO [main]    com.oaklandsw.http.TestPerf - Total run conns: 2
+103028  INFO [main]    com.oaklandsw.http.TestPerf - Machine,Oakland,0,13.94,1,1,200,500,200,3,2788,101,1,199,0,100,08:42:32.059
+103028  INFO [main]    com.oaklandsw.http.TestPerf - Machine,Oakland,0,13.698333,1,1,500,500,200,3,12.785,14.37,8219,303,3,597,0,300,08:42:32.059
+103028  INFO [main]    com.oaklandsw.http.TestPerf - 
+103029  INFO [main]    com.oaklandsw.http.TestPerf - Start Time: 08:42:40.361
+103029  INFO [main]    com.oaklandsw.http.TestPerf - Using: Oakland implementation
+103029  INFO [main]    com.oaklandsw.http.TestPerf - URL: http://localhost:8080/oaklandsw-http/perf?size=0k
+103029  INFO [main]    com.oaklandsw.http.TestPerf - Times/thread: 200
+103029  INFO [main]    com.oaklandsw.http.TestPerf - Threads: 1
+103029  INFO [main]    com.oaklandsw.http.TestPerf - Pipelining
+103029  INFO [main]    com.oaklandsw.http.TestPerf - Using max: 1 connections.
+103029  INFO [main]    com.oaklandsw.http.TestPerf - Using pipeline depth: 1000
+106040  INFO [main]    com.oaklandsw.http.TestPerf - connection pool before close
+106040  INFO [main]    com.oaklandsw.http.TestPerf - Max connections/host:    1
+Pipelining options:    PIPE_PIPELINE PIPE_MAX_CONNECTIONS 
+Pipelining max depth:  1000
+Authentication Type:   NONE (0)
+Retry counts: 
+Pipeline Retry counts: 
+  Retry times: 2 count: 100
+Counts: 
+UrlCons Attempted:               200
+UrlCons Success:                 200
+Pipeline write request:          0
+Pipeline read response:          200
+Pipeline error:                  0
+Total retries:                   0
+Total pipelined retries:         100
+UrlCons Failed Max Retries:      0
+UrlCons Failed > 400:            0
+Pipeline max depth (all conns):  200
+Forced Flushes:                  101
+Buffer Flushes:                  1
+Avoided Flushes:                 199
+Flush IOExceptions:              0
+Connection: http://localhost:8080
+  Total connections created: 2
+  Avail connections:         0
+  Assigned connections:      0
+  Observed max urlcons before close: 100
+Assigned connections: 
+Available connections: 
+
+106040  INFO [main]    com.oaklandsw.http.TestPerf - Total Time (ms): 2977 Time/trans (ms): 14.885
+106040  INFO [main]    com.oaklandsw.http.TestPerf - Total run bytes: 0
+106040  INFO [main]    com.oaklandsw.http.TestPerf - Total run conns: 2
+106040  INFO [main]    com.oaklandsw.http.TestPerf - Machine,Oakland,0,14.885,1,1,200,1000,200,3,2977,101,1,199,0,100,08:42:40.361
+106040  INFO [main]    com.oaklandsw.http.TestPerf - 
+106041  INFO [main]    com.oaklandsw.http.TestPerf - Start Time: 08:42:40.361
+106041  INFO [main]    com.oaklandsw.http.TestPerf - Using: Oakland implementation
+106041  INFO [main]    com.oaklandsw.http.TestPerf - URL: http://localhost:8080/oaklandsw-http/perf?size=0k
+106041  INFO [main]    com.oaklandsw.http.TestPerf - Times/thread: 200
+106041  INFO [main]    com.oaklandsw.http.TestPerf - Threads: 1
+106041  INFO [main]    com.oaklandsw.http.TestPerf - Pipelining
+106041  INFO [main]    com.oaklandsw.http.TestPerf - Using max: 1 connections.
+106041  INFO [main]    com.oaklandsw.http.TestPerf - Using pipeline depth: 1000
+109293  INFO [main]    com.oaklandsw.http.TestPerf - connection pool before close
+109293  INFO [main]    com.oaklandsw.http.TestPerf - Max connections/host:    1
+Pipelining options:    PIPE_PIPELINE PIPE_MAX_CONNECTIONS 
+Pipelining max depth:  1000
+Authentication Type:   NONE (0)
+Retry counts: 
+Pipeline Retry counts: 
+  Retry times: 2 count: 100
+Counts: 
+UrlCons Attempted:               200
+UrlCons Success:                 200
+Pipeline write request:          0
+Pipeline read response:          200
+Pipeline error:                  0
+Total retries:                   0
+Total pipelined retries:         100
+UrlCons Failed Max Retries:      0
+UrlCons Failed > 400:            0
+Pipeline max depth (all conns):  200
+Forced Flushes:                  101
+Buffer Flushes:                  1
+Avoided Flushes:                 199
+Flush IOExceptions:              0
+Connection: http://localhost:8080
+  Total connections created: 2
+  Avail connections:         0
+  Assigned connections:      0
+  Observed max urlcons before close: 100
+Assigned connections: 
+Available connections: 
+
+109293  INFO [main]    com.oaklandsw.http.TestPerf - Total Time (ms): 3230 Time/trans (ms): 16.15
+109293  INFO [main]    com.oaklandsw.http.TestPerf - Total run bytes: 0
+109293  INFO [main]    com.oaklandsw.http.TestPerf - Total run conns: 2
+109293  INFO [main]    com.oaklandsw.http.TestPerf - Machine,Oakland,0,16.15,1,1,200,1000,200,3,3230,101,1,199,0,100,08:42:40.361
+109293  INFO [main]    com.oaklandsw.http.TestPerf - 
+109294  INFO [main]    com.oaklandsw.http.TestPerf - Start Time: 08:42:40.361
+109294  INFO [main]    com.oaklandsw.http.TestPerf - Using: Oakland implementation
+109294  INFO [main]    com.oaklandsw.http.TestPerf - URL: http://localhost:8080/oaklandsw-http/perf?size=0k
+109294  INFO [main]    com.oaklandsw.http.TestPerf - Times/thread: 200
+109294  INFO [main]    com.oaklandsw.http.TestPerf - Threads: 1
+109294  INFO [main]    com.oaklandsw.http.TestPerf - Pipelining
+109294  INFO [main]    com.oaklandsw.http.TestPerf - Using max: 1 connections.
+109294  INFO [main]    com.oaklandsw.http.TestPerf - Using pipeline depth: 1000
+112164  INFO [main]    com.oaklandsw.http.TestPerf - connection pool before close
+112164  INFO [main]    com.oaklandsw.http.TestPerf - Max connections/host:    1
+Pipelining options:    PIPE_PIPELINE PIPE_MAX_CONNECTIONS 
+Pipelining max depth:  1000
+Authentication Type:   NONE (0)
+Retry counts: 
+Pipeline Retry counts: 
+  Retry times: 2 count: 100
+Counts: 
+UrlCons Attempted:               200
+UrlCons Success:                 200
+Pipeline write request:          0
+Pipeline read response:          200
+Pipeline error:                  0
+Total retries:                   0
+Total pipelined retries:         100
+UrlCons Failed Max Retries:      0
+UrlCons Failed > 400:            0
+Pipeline max depth (all conns):  200
+Forced Flushes:                  101
+Buffer Flushes:                  1
+Avoided Flushes:                 199
+Flush IOExceptions:              0
+Connection: http://localhost:8080
+  Total connections created: 2
+  Avail connections:         0
+  Assigned connections:      0
+  Observed max urlcons before close: 100
+Assigned connections: 
+Available connections: 
+
+112164  INFO [main]    com.oaklandsw.http.TestPerf - Total Time (ms): 2848 Time/trans (ms): 14.24
+112164  INFO [main]    com.oaklandsw.http.TestPerf - Total run bytes: 0
+112164  INFO [main]    com.oaklandsw.http.TestPerf - Total run conns: 2
+112164  INFO [main]    com.oaklandsw.http.TestPerf - Machine,Oakland,0,14.24,1,1,200,1000,200,3,2848,101,1,199,0,100,08:42:40.361
+112164  INFO [main]    com.oaklandsw.http.TestPerf - Machine,Oakland,0,15.091667,1,1,1000,1000,200,3,14.24,16.15,9055,303,3,597,0,300,08:42:40.361
+112165  INFO [main]    com.oaklandsw.http.TestPerf - 
+112165  INFO [main]    com.oaklandsw.http.TestPerf - Start Time: 08:42:49.497
+112166  INFO [main]    com.oaklandsw.http.TestPerf - Using: Oakland implementation
+112166  INFO [main]    com.oaklandsw.http.TestPerf - URL: http://localhost:8080/oaklandsw-http/perf?size=0k
+112166  INFO [main]    com.oaklandsw.http.TestPerf - Times/thread: 200
+112166  INFO [main]    com.oaklandsw.http.TestPerf - Threads: 1
+112166  INFO [main]    com.oaklandsw.http.TestPerf - Pipelining
+112166  INFO [main]    com.oaklandsw.http.TestPerf - Using max: 1 connections.
+114764  INFO [main]    com.oaklandsw.http.TestPerf - connection pool before close
+114764  INFO [main]    com.oaklandsw.http.TestPerf - Max connections/host:    1
+Pipelining options:    PIPE_PIPELINE PIPE_MAX_CONNECTIONS 
+Pipelining max depth:  0
+Authentication Type:   NONE (0)
+Retry counts: 
+Pipeline Retry counts: 
+  Retry times: 2 count: 100
+Counts: 
+UrlCons Attempted:               200
+UrlCons Success:                 200
+Pipeline write request:          0
+Pipeline read response:          200
+Pipeline error:                  0
+Total retries:                   0
+Total pipelined retries:         100
+UrlCons Failed Max Retries:      0
+UrlCons Failed > 400:            0
+Pipeline max depth (all conns):  200
+Forced Flushes:                  101
+Buffer Flushes:                  1
+Avoided Flushes:                 199
+Flush IOExceptions:              0
+Connection: http://localhost:8080
+  Total connections created: 2
+  Avail connections:         0
+  Assigned connections:      0
+  Observed max urlcons before close: 100
+Assigned connections: 
+Available connections: 
+
+114764  INFO [main]    com.oaklandsw.http.TestPerf - Total Time (ms): 2574 Time/trans (ms): 12.87
+114764  INFO [main]    com.oaklandsw.http.TestPerf - Total run bytes: 0
+114764  INFO [main]    com.oaklandsw.http.TestPerf - Total run conns: 2
+114764  INFO [main]    com.oaklandsw.http.TestPerf - Machine,Oakland,0,12.87,1,1,200,0,200,3,2574,101,1,199,0,100,08:42:49.497
+114764  INFO [main]    com.oaklandsw.http.TestPerf - 
+114765  INFO [main]    com.oaklandsw.http.TestPerf - Start Time: 08:42:49.497
+114765  INFO [main]    com.oaklandsw.http.TestPerf - Using: Oakland implementation
+114765  INFO [main]    com.oaklandsw.http.TestPerf - URL: http://localhost:8080/oaklandsw-http/perf?size=0k
+114765  INFO [main]    com.oaklandsw.http.TestPerf - Times/thread: 200
+114765  INFO [main]    com.oaklandsw.http.TestPerf - Threads: 1
+114765  INFO [main]    com.oaklandsw.http.TestPerf - Pipelining
+114765  INFO [main]    com.oaklandsw.http.TestPerf - Using max: 1 connections.
+117672  INFO [main]    com.oaklandsw.http.TestPerf - connection pool before close
+117672  INFO [main]    com.oaklandsw.http.TestPerf - Max connections/host:    1
+Pipelining options:    PIPE_PIPELINE PIPE_MAX_CONNECTIONS 
+Pipelining max depth:  0
+Authentication Type:   NONE (0)
+Retry counts: 
+Pipeline Retry counts: 
+  Retry times: 2 count: 100
+Counts: 
+UrlCons Attempted:               200
+UrlCons Success:                 200
+Pipeline write request:          0
+Pipeline read response:          200
+Pipeline error:                  0
+Total retries:                   0
+Total pipelined retries:         100
+UrlCons Failed Max Retries:      0
+UrlCons Failed > 400:            0
+Pipeline max depth (all conns):  200
+Forced Flushes:                  101
+Buffer Flushes:                  1
+Avoided Flushes:                 199
+Flush IOExceptions:              0
+Connection: http://localhost:8080
+  Total connections created: 2
+  Avail connections:         0
+  Assigned connections:      0
+  Observed max urlcons before close: 100
+Assigned connections: 
+Available connections: 
+
+117672  INFO [main]    com.oaklandsw.http.TestPerf - Total Time (ms): 2883 Time/trans (ms): 14.415
+117672  INFO [main]    com.oaklandsw.http.TestPerf - Total run bytes: 0
+117672  INFO [main]    com.oaklandsw.http.TestPerf - Total run conns: 2
+117672  INFO [main]    com.oaklandsw.http.TestPerf - Machine,Oakland,0,14.415,1,1,200,0,200,3,2883,101,1,199,0,100,08:42:49.497
+117672  INFO [main]    com.oaklandsw.http.TestPerf - 
+117673  INFO [main]    com.oaklandsw.http.TestPerf - Start Time: 08:42:49.497
+117673  INFO [main]    com.oaklandsw.http.TestPerf - Using: Oakland implementation
+117673  INFO [main]    com.oaklandsw.http.TestPerf - URL: http://localhost:8080/oaklandsw-http/perf?size=0k
+117673  INFO [main]    com.oaklandsw.http.TestPerf - Times/thread: 200
+117673  INFO [main]    com.oaklandsw.http.TestPerf - Threads: 1
+117673  INFO [main]    com.oaklandsw.http.TestPerf - Pipelining
+117673  INFO [main]    com.oaklandsw.http.TestPerf - Using max: 1 connections.

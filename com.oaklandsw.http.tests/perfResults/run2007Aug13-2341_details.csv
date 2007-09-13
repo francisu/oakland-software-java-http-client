@@ -1,0 +1,16 @@
+Where,Product,SizeK,ms/Trans,Connections,Threads,PipeDepthObs,PipeDepthLim,Count,Repeats,msTotal,FlushesForced,FlushesBuffFull,FlushesAvoided,Retry,RetryPL,StartTime
+Machine,Oakland,0,0.17,1,1,0,0,200,3,34,200,0,0,0,0,23:41:34.474
+Machine,Oakland,0,0.165,1,1,0,0,200,3,33,200,0,0,0,0,23:41:34.474
+Machine,Oakland,0,0.155,1,1,0,0,200,3,31,200,0,0,0,0,23:41:34.474
+Machine,Oakland,0,0.16,2,2,0,0,200,3,32,200,0,0,0,0,23:41:34.837
+Machine,Oakland,0,0.12,2,2,0,0,200,3,24,200,0,0,0,0,23:41:34.837
+Machine,Oakland,0,0.15,2,2,0,0,200,3,30,200,0,0,0,0,23:41:34.837
+Machine,Oakland,0,0.11,5,5,0,0,200,3,22,200,0,0,0,0,23:41:35.000
+Machine,Oakland,0,0.145,5,5,0,0,200,3,29,200,0,0,0,0,23:41:35.000
+Machine,Oakland,0,0.2,5,5,0,0,200,3,40,200,0,0,0,0,23:41:35.000
+Machine,Oakland,0,0.11,10,10,0,0,200,3,22,200,0,0,0,0,23:41:35.152
+Machine,Oakland,0,0.09,10,10,0,0,200,3,18,200,0,0,0,0,23:41:35.152
+Machine,Oakland,0,0.15,10,10,0,0,200,3,30,200,0,0,0,0,23:41:35.152
+Machine,Oakland,0,0.155,20,20,0,0,200,3,31,200,0,0,0,0,23:41:35.297
+Machine,Oakland,0,0.11,20,20,0,0,200,3,22,200,0,0,0,0,23:41:35.297
+Machine,Oakland,0,0.195,20,20,0,0,200,3,39,200,0,0,0,0,23:41:35.297

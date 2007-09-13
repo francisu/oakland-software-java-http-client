@@ -1,0 +1,8 @@
+Where,Product,Size (K),Avg ms/Trans,Connections,Threads,Pipe Depth,Count,Repeats,Min ms/Trans,Max ms/Trans,Total ms
+
+
+LAN,Oakland,0,0.8785,1,1,0,2000,3,0.783,0.9955,5271
+LAN,Oakland,0,0.7775,1,2,0,2000,3,0.713,0.832,4665
+LAN,Oakland,0,0.71683335,1,5,0,2000,3,0.707,0.7305,4301
+LAN,Oakland,0,0.7225,1,10,0,2000,3,0.715,0.737,4335
+LAN,Oakland,0,0.7166667,1,20,0,2000,3,0.713,0.72,4300

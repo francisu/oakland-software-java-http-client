@@ -1,0 +1,8 @@
+0     INFO [main]    com.oaklandsw.http.TestPerf - Where,Product,SizeK,ms/TransAvg,Connections,Threads,PipeDepthObsAvg,PipeDepthLim,Count,Repeats,ms/TransMin,ms/TransMax,msTotal,FlushesForced,FlushesBuffFull,FlushesAvoided,Retry,RetryPL,StartTime
+1     INFO [main]    com.oaklandsw.http.TestPerf - Where,Product,SizeK,ms/Trans,Connections,Threads,PipeDepthObs,PipeDepthLim,Count,Repeats,msTotal,FlushesForced,FlushesBuffFull,FlushesAvoided,Retry,RetryPL,StartTime
+118   INFO [main]    com.oaklandsw.http.TestPerf - Start Time: 22:17:34.157
+118   INFO [main]    com.oaklandsw.http.TestPerf - Using: Oakland implementation
+118   INFO [main]    com.oaklandsw.http.TestPerf - URL: http://berlioz/cgi-bin/httptest.pl?size=0k
+118   INFO [main]    com.oaklandsw.http.TestPerf - Times/thread: 1000
+118   INFO [main]    com.oaklandsw.http.TestPerf - Threads: 1
+131   INFO [main]    com.oaklandsw.http.TestPerf - Using max: 1 connections.

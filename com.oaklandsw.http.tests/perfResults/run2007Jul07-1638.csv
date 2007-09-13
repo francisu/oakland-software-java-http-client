@@ -1,0 +1,4 @@
+Where,Product,Size (K),Avg ms/Trans,Connections,Threads,Pipe Depth,Count,Repeats,Min ms/Trans,Max ms/Trans,Total ms
+
+
+Machine,Oakland,0,0.28383332,1,1,0,2000,3,0.226,0.3605,1703

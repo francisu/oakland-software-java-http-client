@@ -1,0 +1,49 @@
+263   INFO [main]    com.oaklandsw.http.TestPerf - Total run bytes: 0
+263   INFO [main]    com.oaklandsw.http.TestPerf - Total run conns: 60
+265   INFO [main]    com.oaklandsw.http.TestPerf - Using: Oakland implementation
+265   INFO [main]    com.oaklandsw.http.TestPerf - URL: http://berlioz/oaklandsw-http/0k
+265   INFO [main]    com.oaklandsw.http.TestPerf - Times/thread: 6000
+265   INFO [main]    com.oaklandsw.http.TestPerf - Threads: 1
+265   INFO [main]    com.oaklandsw.http.TestPerf - Using max: 1 connections.
+279   INFO [main]    com.oaklandsw.http.TestPerf - Test starting
+1307  INFO [main]    com.oaklandsw.http.TestPerf - connection pool before close
+1308  INFO [main]    com.oaklandsw.http.TestPerf - Total Time (ms): 1028 Time/trans (ms): 0.17133333
+1308  INFO [main]    com.oaklandsw.http.TestPerf - Total run bytes: 0
+1308  INFO [main]    com.oaklandsw.http.TestPerf - Total run conns: 60
+1310  INFO [main]    com.oaklandsw.http.TestPerf - Using: Oakland implementation
+1310  INFO [main]    com.oaklandsw.http.TestPerf - URL: http://berlioz/oaklandsw-http/0k
+1310  INFO [main]    com.oaklandsw.http.TestPerf - Times/thread: 6000
+1310  INFO [main]    com.oaklandsw.http.TestPerf - Threads: 1
+1310  INFO [main]    com.oaklandsw.http.TestPerf - Using max: 1 connections.
+1345  INFO [main]    com.oaklandsw.http.TestPerf - Test starting
+2438  INFO [main]    com.oaklandsw.http.TestPerf - connection pool before close
+2438  INFO [main]    com.oaklandsw.http.TestPerf - Total Time (ms): 1092 Time/trans (ms): 0.182
+2438  INFO [main]    com.oaklandsw.http.TestPerf - Total run bytes: 0
+2438  INFO [main]    com.oaklandsw.http.TestPerf - Total run conns: 60
+2439  INFO [main]    com.oaklandsw.http.TestPerf - Using: Oakland implementation
+2440  INFO [main]    com.oaklandsw.http.TestPerf - URL: http://berlioz/oaklandsw-http/0k
+2440  INFO [main]    com.oaklandsw.http.TestPerf - Times/thread: 6000
+2440  INFO [main]    com.oaklandsw.http.TestPerf - Threads: 1
+2440  INFO [main]    com.oaklandsw.http.TestPerf - Using max: 1 connections.
+2484  INFO [main]    com.oaklandsw.http.TestPerf - Test starting
+3021  INFO [main]    com.oaklandsw.http.TestPerf - connection pool before close
+3021  INFO [main]    com.oaklandsw.http.TestPerf - Total Time (ms): 537 Time/trans (ms): 0.0895
+3021  INFO [main]    com.oaklandsw.http.TestPerf - Machine,Oakland,0,0.14761111,1,1,,6000,3,0.0895,0.182,2657
+3021  INFO [main]    com.oaklandsw.http.TestPerf - Total run bytes: 0
+3021  INFO [main]    com.oaklandsw.http.TestPerf - Total run conns: 60
+3023  INFO [main]    com.oaklandsw.http.TestPerf - Using: Oakland implementation
+3023  INFO [main]    com.oaklandsw.http.TestPerf - URL: http://berlioz/oaklandsw-http/0k
+3023  INFO [main]    com.oaklandsw.http.TestPerf - Times/thread: 3000
+3023  INFO [main]    com.oaklandsw.http.TestPerf - Threads: 2
+3023  INFO [main]    com.oaklandsw.http.TestPerf - Using max: 1 connections.
+3074  INFO [main]    com.oaklandsw.http.TestPerf - Test starting
+3654  INFO [main]    com.oaklandsw.http.TestPerf - connection pool before close
+3655  INFO [main]    com.oaklandsw.http.TestPerf - Total Time (ms): 580 Time/trans (ms): 0.096666664
+3655  INFO [main]    com.oaklandsw.http.TestPerf - Total run bytes: 0
+3655  INFO [main]    com.oaklandsw.http.TestPerf - Total run conns: 60
+3656  INFO [main]    com.oaklandsw.http.TestPerf - Using: Oakland implementation
+3656  INFO [main]    com.oaklandsw.http.TestPerf - URL: http://berlioz/oaklandsw-http/0k
+3656  INFO [main]    com.oaklandsw.http.TestPerf - Times/thread: 3000
+3656  INFO [main]    com.oaklandsw.http.TestPerf - Threads: 2
+3656  INFO [main]    com.oaklandsw.http.TestPerf - Using max: 1 connections.
+3699  INFO [main]    com.oaklandsw.http.TestPerf - Test starting

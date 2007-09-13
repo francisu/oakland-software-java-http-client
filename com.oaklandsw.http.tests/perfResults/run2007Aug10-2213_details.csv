@@ -1,0 +1,9 @@
+Where,Product,Size (K),ms/Trans,Connections,Threads,Pipe Depth,Count,Repeats,Total ms,ForceFlushes,BufferFlushes,AvoidedFlushes,Retry,PLRetry,StartTime
+Machine,Oakland,0,0.0935,10,10,0,4000,3,374,4000,0,0,0,0,22:13:25.628
+Machine,Oakland,0,0.3565,10,10,0,4000,3,1426,4000,0,0,0,0,22:13:25.628
+Machine,Oakland,0,0.1175,10,10,0,4000,3,470,4000,0,0,0,0,22:13:25.628
+Machine,Oakland,0,0.27675,10,20,0,4000,3,1107,4000,0,0,0,0,22:13:43.127
+Machine,Oakland,0,0.07725,10,20,0,4000,3,309,4000,0,0,0,0,22:13:43.127
+Machine,Oakland,0,0.0885,10,20,0,4000,3,354,4000,0,0,0,0,22:13:43.127
+Machine,Oakland,0,0.0745,10,50,0,4000,3,298,4000,0,0,0,0,22:13:45.023
+Machine,Oakland,0,0.07575,10,50,0,4000,3,303,4000,0,0,0,0,22:13:45.023

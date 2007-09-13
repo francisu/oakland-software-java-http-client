@@ -1,0 +1,6 @@
+Where,Product,Size (K),Avg ms/Trans,Connections,Threads,Pipe Depth,Count,Repeats,Min ms/Trans,Max ms/Trans,Total ms
+Machine,Oakland,0,1.7101666,1,1,1,2000,3,1.613,1.867,10261
+Machine,Oakland,0,1.6801666,1,2,1,2000,3,1.5335,1.9145,10081
+Machine,Oakland,0,1.5406666,1,5,1,2000,3,1.5115,1.5655,9244
+Machine,Oakland,0,1.534,1,10,1,2000,3,1.488,1.5685,9204
+Machine,Oakland,0,1.5376667,1,20,1,2000,3,1.473,1.6155,9226

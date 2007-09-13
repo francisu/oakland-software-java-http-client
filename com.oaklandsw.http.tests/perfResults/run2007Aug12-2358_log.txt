@@ -1,0 +1,2294 @@
+0     INFO [main]    com.oaklandsw.http.TestPerf - Where,Product,SizeK,ms/TransAvg,Connections,Threads,PipeDepthObsAvg,PipeDepthLim,Count,Repeats,ms/TransMin,ms/TransMax,msTotal,FlushesForced,FlushesBuffFull,FlushesAvoided,Retry,RetryPL,StartTime
+1     INFO [main]    com.oaklandsw.http.TestPerf - Where,Product,SizeK,ms/Trans,Connections,Threads,PipeDepthObs,PipeDepthLim,Count,Repeats,msTotal,FlushesForced,FlushesBuffFull,FlushesAvoided,Retry,RetryPL,StartTime
+112   INFO [main]    com.oaklandsw.http.TestPerf - Start Time: 23:58:47.548
+112   INFO [main]    com.oaklandsw.http.TestPerf - Using: Oakland implementation
+113   INFO [main]    com.oaklandsw.http.TestPerf - URL: http://berlioz/oaklandsw-http/512k
+113   INFO [main]    com.oaklandsw.http.TestPerf - Times/thread: 4000
+113   INFO [main]    com.oaklandsw.http.TestPerf - Threads: 1
+113   INFO [main]    com.oaklandsw.http.TestPerf - Using max: 1 connections.
+2597  INFO [main]    com.oaklandsw.http.TestPerf - connection pool before close
+2598  INFO [main]    com.oaklandsw.http.TestPerf - Max connections/host:    1
+Pipelining options:    PIPE_NONE
+Pipelining max depth:  0
+Authentication Type:   NONE (0)
+Retry counts: 
+Pipeline Retry counts: 
+Counts: 
+UrlCons Attempted:               4000
+UrlCons Success:                 4000
+Pipeline write request:          0
+Pipeline read response:          0
+Pipeline error:                  0
+Total retries:                   0
+Total pipelined retries:         0
+UrlCons Failed Max Retries:      0
+UrlCons Failed > 400:            0
+Pipeline max depth (all conns):  0
+Forced Flushes:                  4000
+Buffer Flushes:                  0
+Avoided Flushes:                 0
+Flush IOExceptions:              0
+Connection: http://berlioz
+  Total connections created: 1
+  Avail connections:         1
+  Assigned connections:      0
+  Observed max urlcons before close: 0
+Assigned connections: 
+Available connections: 
+    2780950 berlioz:80 (43193) CS_OPEN 
+      Total requested urlcons:      4000
+      Total responded urlcons:      4000
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+
+2598  INFO [main]    com.oaklandsw.http.TestPerf - Total Time (ms): 2470 Time/trans (ms): 0.6175
+2600  INFO [main]    com.oaklandsw.http.TestPerf - Start Time: 23:58:47.548
+2600  INFO [main]    com.oaklandsw.http.TestPerf - Using: Oakland implementation
+2600  INFO [main]    com.oaklandsw.http.TestPerf - URL: http://berlioz/oaklandsw-http/512k
+2600  INFO [main]    com.oaklandsw.http.TestPerf - Times/thread: 4000
+2600  INFO [main]    com.oaklandsw.http.TestPerf - Threads: 1
+2600  INFO [main]    com.oaklandsw.http.TestPerf - Using max: 1 connections.
+4969  INFO [main]    com.oaklandsw.http.TestPerf - connection pool before close
+4970  INFO [main]    com.oaklandsw.http.TestPerf - Max connections/host:    1
+Pipelining options:    PIPE_NONE
+Pipelining max depth:  0
+Authentication Type:   NONE (0)
+Retry counts: 
+Pipeline Retry counts: 
+Counts: 
+UrlCons Attempted:               4000
+UrlCons Success:                 4000
+Pipeline write request:          0
+Pipeline read response:          0
+Pipeline error:                  0
+Total retries:                   0
+Total pipelined retries:         0
+UrlCons Failed Max Retries:      0
+UrlCons Failed > 400:            0
+Pipeline max depth (all conns):  0
+Forced Flushes:                  4000
+Buffer Flushes:                  0
+Avoided Flushes:                 0
+Flush IOExceptions:              0
+Connection: http://berlioz
+  Total connections created: 1
+  Avail connections:         1
+  Assigned connections:      0
+  Observed max urlcons before close: 0
+Assigned connections: 
+Available connections: 
+    10044878 berlioz:80 (43194) CS_OPEN 
+      Total requested urlcons:      4000
+      Total responded urlcons:      4000
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+
+4970  INFO [main]    com.oaklandsw.http.TestPerf - Total Time (ms): 2343 Time/trans (ms): 0.58575
+4973  INFO [main]    com.oaklandsw.http.TestPerf - Start Time: 23:58:47.548
+4973  INFO [main]    com.oaklandsw.http.TestPerf - Using: Oakland implementation
+4973  INFO [main]    com.oaklandsw.http.TestPerf - URL: http://berlioz/oaklandsw-http/512k
+4973  INFO [main]    com.oaklandsw.http.TestPerf - Times/thread: 4000
+4973  INFO [main]    com.oaklandsw.http.TestPerf - Threads: 1
+4973  INFO [main]    com.oaklandsw.http.TestPerf - Using max: 1 connections.
+7233  INFO [main]    com.oaklandsw.http.TestPerf - connection pool before close
+7234  INFO [main]    com.oaklandsw.http.TestPerf - Max connections/host:    1
+Pipelining options:    PIPE_NONE
+Pipelining max depth:  0
+Authentication Type:   NONE (0)
+Retry counts: 
+Pipeline Retry counts: 
+Counts: 
+UrlCons Attempted:               4000
+UrlCons Success:                 4000
+Pipeline write request:          0
+Pipeline read response:          0
+Pipeline error:                  0
+Total retries:                   0
+Total pipelined retries:         0
+UrlCons Failed Max Retries:      0
+UrlCons Failed > 400:            0
+Pipeline max depth (all conns):  0
+Forced Flushes:                  4000
+Buffer Flushes:                  0
+Avoided Flushes:                 0
+Flush IOExceptions:              0
+Connection: http://berlioz
+  Total connections created: 1
+  Avail connections:         1
+  Assigned connections:      0
+  Observed max urlcons before close: 0
+Assigned connections: 
+Available connections: 
+    13228332 berlioz:80 (43195) CS_OPEN 
+      Total requested urlcons:      4000
+      Total responded urlcons:      4000
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+
+7234  INFO [main]    com.oaklandsw.http.TestPerf - Total Time (ms): 2227 Time/trans (ms): 0.55675
+7237  INFO [main]    com.oaklandsw.http.TestPerf - Start Time: 23:58:47.548
+7237  INFO [main]    com.oaklandsw.http.TestPerf - Using: Oakland implementation
+7237  INFO [main]    com.oaklandsw.http.TestPerf - URL: http://berlioz/oaklandsw-http/512k
+7237  INFO [main]    com.oaklandsw.http.TestPerf - Times/thread: 4000
+7237  INFO [main]    com.oaklandsw.http.TestPerf - Threads: 1
+7237  INFO [main]    com.oaklandsw.http.TestPerf - Using max: 1 connections.
+9102  INFO [main]    com.oaklandsw.http.TestPerf - connection pool before close
+9102  INFO [main]    com.oaklandsw.http.TestPerf - Max connections/host:    1
+Pipelining options:    PIPE_NONE
+Pipelining max depth:  0
+Authentication Type:   NONE (0)
+Retry counts: 
+Pipeline Retry counts: 
+Counts: 
+UrlCons Attempted:               4000
+UrlCons Success:                 4000
+Pipeline write request:          0
+Pipeline read response:          0
+Pipeline error:                  0
+Total retries:                   0
+Total pipelined retries:         0
+UrlCons Failed Max Retries:      0
+UrlCons Failed > 400:            0
+Pipeline max depth (all conns):  0
+Forced Flushes:                  4000
+Buffer Flushes:                  0
+Avoided Flushes:                 0
+Flush IOExceptions:              0
+Connection: http://berlioz
+  Total connections created: 1
+  Avail connections:         1
+  Assigned connections:      0
+  Observed max urlcons before close: 0
+Assigned connections: 
+Available connections: 
+    30214280 berlioz:80 (43196) CS_OPEN 
+      Total requested urlcons:      4000
+      Total responded urlcons:      4000
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+
+9102  INFO [main]    com.oaklandsw.http.TestPerf - Total Time (ms): 1851 Time/trans (ms): 0.46275
+9104  INFO [main]    com.oaklandsw.http.TestPerf - Start Time: 23:58:47.548
+9104  INFO [main]    com.oaklandsw.http.TestPerf - Using: Oakland implementation
+9104  INFO [main]    com.oaklandsw.http.TestPerf - URL: http://berlioz/oaklandsw-http/512k
+9104  INFO [main]    com.oaklandsw.http.TestPerf - Times/thread: 4000
+9104  INFO [main]    com.oaklandsw.http.TestPerf - Threads: 1
+9104  INFO [main]    com.oaklandsw.http.TestPerf - Using max: 1 connections.
+11244  INFO [main]    com.oaklandsw.http.TestPerf - connection pool before close
+11245  INFO [main]    com.oaklandsw.http.TestPerf - Max connections/host:    1
+Pipelining options:    PIPE_NONE
+Pipelining max depth:  0
+Authentication Type:   NONE (0)
+Retry counts: 
+Pipeline Retry counts: 
+Counts: 
+UrlCons Attempted:               4000
+UrlCons Success:                 4000
+Pipeline write request:          0
+Pipeline read response:          0
+Pipeline error:                  0
+Total retries:                   0
+Total pipelined retries:         0
+UrlCons Failed Max Retries:      0
+UrlCons Failed > 400:            0
+Pipeline max depth (all conns):  0
+Forced Flushes:                  4000
+Buffer Flushes:                  0
+Avoided Flushes:                 0
+Flush IOExceptions:              0
+Connection: http://berlioz
+  Total connections created: 1
+  Avail connections:         1
+  Assigned connections:      0
+  Observed max urlcons before close: 0
+Assigned connections: 
+Available connections: 
+    9838079 berlioz:80 (43200) CS_OPEN 
+      Total requested urlcons:      4000
+      Total responded urlcons:      4000
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+
+11245  INFO [main]    com.oaklandsw.http.TestPerf - Total Time (ms): 2111 Time/trans (ms): 0.52775
+11245  INFO [main]    com.oaklandsw.http.TestPerf - 
+11246  INFO [main]    com.oaklandsw.http.TestPerf - Start Time: 23:58:47.548
+11246  INFO [main]    com.oaklandsw.http.TestPerf - Using: Oakland implementation
+11247  INFO [main]    com.oaklandsw.http.TestPerf - URL: http://berlioz/oaklandsw-http/512k
+11247  INFO [main]    com.oaklandsw.http.TestPerf - Times/thread: 4000
+11247  INFO [main]    com.oaklandsw.http.TestPerf - Threads: 1
+11247  INFO [main]    com.oaklandsw.http.TestPerf - Using max: 1 connections.
+13436  INFO [main]    com.oaklandsw.http.TestPerf - connection pool before close
+13436  INFO [main]    com.oaklandsw.http.TestPerf - Max connections/host:    1
+Pipelining options:    PIPE_NONE
+Pipelining max depth:  0
+Authentication Type:   NONE (0)
+Retry counts: 
+Pipeline Retry counts: 
+Counts: 
+UrlCons Attempted:               4000
+UrlCons Success:                 4000
+Pipeline write request:          0
+Pipeline read response:          0
+Pipeline error:                  0
+Total retries:                   0
+Total pipelined retries:         0
+UrlCons Failed Max Retries:      0
+UrlCons Failed > 400:            0
+Pipeline max depth (all conns):  0
+Forced Flushes:                  4000
+Buffer Flushes:                  0
+Avoided Flushes:                 0
+Flush IOExceptions:              0
+Connection: http://berlioz
+  Total connections created: 1
+  Avail connections:         1
+  Assigned connections:      0
+  Observed max urlcons before close: 0
+Assigned connections: 
+Available connections: 
+    4347180 berlioz:80 (43202) CS_OPEN 
+      Total requested urlcons:      4000
+      Total responded urlcons:      4000
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+
+13436  INFO [main]    com.oaklandsw.http.TestPerf - Total Time (ms): 2171 Time/trans (ms): 0.54275
+13436  INFO [main]    com.oaklandsw.http.TestPerf - Total run bytes: 2048000
+13436  INFO [main]    com.oaklandsw.http.TestPerf - Total run conns: 40
+13436  INFO [main]    com.oaklandsw.http.TestPerf - Machine,Oakland,512,0.54275,1,1,0,0,4000,3,2171,4000,0,0,0,0,23:58:47.548
+13436  INFO [main]    com.oaklandsw.http.TestPerf - 
+13438  INFO [main]    com.oaklandsw.http.TestPerf - Start Time: 23:58:47.548
+13438  INFO [main]    com.oaklandsw.http.TestPerf - Using: Oakland implementation
+13438  INFO [main]    com.oaklandsw.http.TestPerf - URL: http://berlioz/oaklandsw-http/512k
+13438  INFO [main]    com.oaklandsw.http.TestPerf - Times/thread: 4000
+13438  INFO [main]    com.oaklandsw.http.TestPerf - Threads: 1
+13439  INFO [main]    com.oaklandsw.http.TestPerf - Using max: 1 connections.
+15352  INFO [main]    com.oaklandsw.http.TestPerf - connection pool before close
+15352  INFO [main]    com.oaklandsw.http.TestPerf - Max connections/host:    1
+Pipelining options:    PIPE_NONE
+Pipelining max depth:  0
+Authentication Type:   NONE (0)
+Retry counts: 
+Pipeline Retry counts: 
+Counts: 
+UrlCons Attempted:               4000
+UrlCons Success:                 4000
+Pipeline write request:          0
+Pipeline read response:          0
+Pipeline error:                  0
+Total retries:                   0
+Total pipelined retries:         0
+UrlCons Failed Max Retries:      0
+UrlCons Failed > 400:            0
+Pipeline max depth (all conns):  0
+Forced Flushes:                  4000
+Buffer Flushes:                  0
+Avoided Flushes:                 0
+Flush IOExceptions:              0
+Connection: http://berlioz
+  Total connections created: 1
+  Avail connections:         1
+  Assigned connections:      0
+  Observed max urlcons before close: 0
+Assigned connections: 
+Available connections: 
+    30810736 berlioz:80 (43203) CS_OPEN 
+      Total requested urlcons:      4000
+      Total responded urlcons:      4000
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+
+15352  INFO [main]    com.oaklandsw.http.TestPerf - Total Time (ms): 1866 Time/trans (ms): 0.4665
+15352  INFO [main]    com.oaklandsw.http.TestPerf - Total run bytes: 2048000
+15352  INFO [main]    com.oaklandsw.http.TestPerf - Total run conns: 40
+15352  INFO [main]    com.oaklandsw.http.TestPerf - Machine,Oakland,512,0.4665,1,1,0,0,4000,3,1866,4000,0,0,0,0,23:58:47.548
+15353  INFO [main]    com.oaklandsw.http.TestPerf - 
+15354  INFO [main]    com.oaklandsw.http.TestPerf - Start Time: 23:58:47.548
+15354  INFO [main]    com.oaklandsw.http.TestPerf - Using: Oakland implementation
+15355  INFO [main]    com.oaklandsw.http.TestPerf - URL: http://berlioz/oaklandsw-http/512k
+15355  INFO [main]    com.oaklandsw.http.TestPerf - Times/thread: 4000
+15355  INFO [main]    com.oaklandsw.http.TestPerf - Threads: 1
+15355  INFO [main]    com.oaklandsw.http.TestPerf - Using max: 1 connections.
+17363  INFO [main]    com.oaklandsw.http.TestPerf - connection pool before close
+17364  INFO [main]    com.oaklandsw.http.TestPerf - Max connections/host:    1
+Pipelining options:    PIPE_NONE
+Pipelining max depth:  0
+Authentication Type:   NONE (0)
+Retry counts: 
+Pipeline Retry counts: 
+Counts: 
+UrlCons Attempted:               4000
+UrlCons Success:                 4000
+Pipeline write request:          0
+Pipeline read response:          0
+Pipeline error:                  0
+Total retries:                   0
+Total pipelined retries:         0
+UrlCons Failed Max Retries:      0
+UrlCons Failed > 400:            0
+Pipeline max depth (all conns):  0
+Forced Flushes:                  4000
+Buffer Flushes:                  0
+Avoided Flushes:                 0
+Flush IOExceptions:              0
+Connection: http://berlioz
+  Total connections created: 1
+  Avail connections:         1
+  Assigned connections:      0
+  Observed max urlcons before close: 0
+Assigned connections: 
+Available connections: 
+    12818976 berlioz:80 (43204) CS_OPEN 
+      Total requested urlcons:      4000
+      Total responded urlcons:      4000
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+
+17364  INFO [main]    com.oaklandsw.http.TestPerf - Total Time (ms): 1973 Time/trans (ms): 0.49325
+17364  INFO [main]    com.oaklandsw.http.TestPerf - Total run bytes: 2048000
+17364  INFO [main]    com.oaklandsw.http.TestPerf - Total run conns: 40
+17365  INFO [main]    com.oaklandsw.http.TestPerf - Machine,Oakland,512,0.49325,1,1,0,0,4000,3,1973,4000,0,0,0,0,23:58:47.548
+17365  INFO [main]    com.oaklandsw.http.TestPerf - Machine,Oakland,512,0.50083333,1,1,,0,4000,3,0.4665,0.54275,6010,12000,0,0,0,0,23:58:47.548
+17365  INFO [main]    com.oaklandsw.http.TestPerf - 
+17367  INFO [main]    com.oaklandsw.http.TestPerf - Start Time: 23:59:04.901
+17367  INFO [main]    com.oaklandsw.http.TestPerf - Using: Oakland implementation
+17367  INFO [main]    com.oaklandsw.http.TestPerf - URL: http://berlioz/oaklandsw-http/512k
+17367  INFO [main]    com.oaklandsw.http.TestPerf - Times/thread: 2000
+17367  INFO [main]    com.oaklandsw.http.TestPerf - Threads: 2
+17367  INFO [main]    com.oaklandsw.http.TestPerf - Using max: 2 connections.
+19125  INFO [main]    com.oaklandsw.http.TestPerf - connection pool before close
+19125  INFO [main]    com.oaklandsw.http.TestPerf - Max connections/host:    2
+Pipelining options:    PIPE_NONE
+Pipelining max depth:  0
+Authentication Type:   NONE (0)
+Retry counts: 
+Pipeline Retry counts: 
+Counts: 
+UrlCons Attempted:               4000
+UrlCons Success:                 4000
+Pipeline write request:          0
+Pipeline read response:          0
+Pipeline error:                  0
+Total retries:                   0
+Total pipelined retries:         0
+UrlCons Failed Max Retries:      0
+UrlCons Failed > 400:            0
+Pipeline max depth (all conns):  0
+Forced Flushes:                  4000
+Buffer Flushes:                  0
+Avoided Flushes:                 0
+Flush IOExceptions:              0
+Connection: http://berlioz
+  Total connections created: 2
+  Avail connections:         2
+  Assigned connections:      0
+  Observed max urlcons before close: 0
+Assigned connections: 
+Available connections: 
+    10884088 berlioz:80 (43206) CS_OPEN 
+      Total requested urlcons:      1851
+      Total responded urlcons:      1851
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    23667197 berlioz:80 (43205) CS_OPEN 
+      Total requested urlcons:      2149
+      Total responded urlcons:      2149
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+
+19125  INFO [main]    com.oaklandsw.http.TestPerf - Total Time (ms): 1727 Time/trans (ms): 0.43175
+19125  INFO [main]    com.oaklandsw.http.TestPerf - Total run bytes: 2048000
+19125  INFO [main]    com.oaklandsw.http.TestPerf - Total run conns: 40
+19125  INFO [main]    com.oaklandsw.http.TestPerf - Machine,Oakland,512,0.43175,2,2,0,0,4000,3,1727,4000,0,0,0,0,23:59:04.901
+19125  INFO [main]    com.oaklandsw.http.TestPerf - 
+19127  INFO [main]    com.oaklandsw.http.TestPerf - Start Time: 23:59:04.901
+19127  INFO [main]    com.oaklandsw.http.TestPerf - Using: Oakland implementation
+19127  INFO [main]    com.oaklandsw.http.TestPerf - URL: http://berlioz/oaklandsw-http/512k
+19128  INFO [main]    com.oaklandsw.http.TestPerf - Times/thread: 2000
+19128  INFO [main]    com.oaklandsw.http.TestPerf - Threads: 2
+19128  INFO [main]    com.oaklandsw.http.TestPerf - Using max: 2 connections.
+20550  INFO [main]    com.oaklandsw.http.TestPerf - connection pool before close
+20550  INFO [main]    com.oaklandsw.http.TestPerf - Max connections/host:    2
+Pipelining options:    PIPE_NONE
+Pipelining max depth:  0
+Authentication Type:   NONE (0)
+Retry counts: 
+Pipeline Retry counts: 
+Counts: 
+UrlCons Attempted:               4000
+UrlCons Success:                 4000
+Pipeline write request:          0
+Pipeline read response:          0
+Pipeline error:                  0
+Total retries:                   0
+Total pipelined retries:         0
+UrlCons Failed Max Retries:      0
+UrlCons Failed > 400:            0
+Pipeline max depth (all conns):  0
+Forced Flushes:                  4000
+Buffer Flushes:                  0
+Avoided Flushes:                 0
+Flush IOExceptions:              0
+Connection: http://berlioz
+  Total connections created: 2
+  Avail connections:         2
+  Assigned connections:      0
+  Observed max urlcons before close: 0
+Assigned connections: 
+Available connections: 
+    5699121 berlioz:80 (43208) CS_OPEN 
+      Total requested urlcons:      1947
+      Total responded urlcons:      1947
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    20785379 berlioz:80 (43207) CS_OPEN 
+      Total requested urlcons:      2053
+      Total responded urlcons:      2053
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+
+20550  INFO [main]    com.oaklandsw.http.TestPerf - Total Time (ms): 1394 Time/trans (ms): 0.3485
+20550  INFO [main]    com.oaklandsw.http.TestPerf - Total run bytes: 2048000
+20550  INFO [main]    com.oaklandsw.http.TestPerf - Total run conns: 40
+20550  INFO [main]    com.oaklandsw.http.TestPerf - Machine,Oakland,512,0.3485,2,2,0,0,4000,3,1394,4000,0,0,0,0,23:59:04.901
+20551  INFO [main]    com.oaklandsw.http.TestPerf - 
+20552  INFO [main]    com.oaklandsw.http.TestPerf - Start Time: 23:59:04.901
+20552  INFO [main]    com.oaklandsw.http.TestPerf - Using: Oakland implementation
+20552  INFO [main]    com.oaklandsw.http.TestPerf - URL: http://berlioz/oaklandsw-http/512k
+20553  INFO [main]    com.oaklandsw.http.TestPerf - Times/thread: 2000
+20553  INFO [main]    com.oaklandsw.http.TestPerf - Threads: 2
+20553  INFO [main]    com.oaklandsw.http.TestPerf - Using max: 2 connections.
+21938  INFO [main]    com.oaklandsw.http.TestPerf - connection pool before close
+21938  INFO [main]    com.oaklandsw.http.TestPerf - Max connections/host:    2
+Pipelining options:    PIPE_NONE
+Pipelining max depth:  0
+Authentication Type:   NONE (0)
+Retry counts: 
+Pipeline Retry counts: 
+Counts: 
+UrlCons Attempted:               4000
+UrlCons Success:                 4000
+Pipeline write request:          0
+Pipeline read response:          0
+Pipeline error:                  0
+Total retries:                   0
+Total pipelined retries:         0
+UrlCons Failed Max Retries:      0
+UrlCons Failed > 400:            0
+Pipeline max depth (all conns):  0
+Forced Flushes:                  4000
+Buffer Flushes:                  0
+Avoided Flushes:                 0
+Flush IOExceptions:              0
+Connection: http://berlioz
+  Total connections created: 2
+  Avail connections:         2
+  Assigned connections:      0
+  Observed max urlcons before close: 0
+Assigned connections: 
+Available connections: 
+    2804837 berlioz:80 (43209) CS_OPEN 
+      Total requested urlcons:      2124
+      Total responded urlcons:      2124
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    30476892 berlioz:80 (43210) CS_OPEN 
+      Total requested urlcons:      1876
+      Total responded urlcons:      1876
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+
+21938  INFO [main]    com.oaklandsw.http.TestPerf - Total Time (ms): 1366 Time/trans (ms): 0.3415
+21938  INFO [main]    com.oaklandsw.http.TestPerf - Total run bytes: 2048000
+21938  INFO [main]    com.oaklandsw.http.TestPerf - Total run conns: 40
+21938  INFO [main]    com.oaklandsw.http.TestPerf - Machine,Oakland,512,0.3415,2,2,0,0,4000,3,1366,4000,0,0,0,0,23:59:04.901
+21938  INFO [main]    com.oaklandsw.http.TestPerf - Machine,Oakland,512,0.37391666,2,2,,0,4000,3,0.3415,0.43175,4487,12000,0,0,0,0,23:59:04.901
+21939  INFO [main]    com.oaklandsw.http.TestPerf - 
+21940  INFO [main]    com.oaklandsw.http.TestPerf - Start Time: 23:59:09.475
+21940  INFO [main]    com.oaklandsw.http.TestPerf - Using: Oakland implementation
+21940  INFO [main]    com.oaklandsw.http.TestPerf - URL: http://berlioz/oaklandsw-http/512k
+21940  INFO [main]    com.oaklandsw.http.TestPerf - Times/thread: 800
+21941  INFO [main]    com.oaklandsw.http.TestPerf - Threads: 5
+21941  INFO [main]    com.oaklandsw.http.TestPerf - Using max: 5 connections.
+24087  INFO [main]    com.oaklandsw.http.TestPerf - connection pool before close
+24087  INFO [main]    com.oaklandsw.http.TestPerf - Max connections/host:    5
+Pipelining options:    PIPE_NONE
+Pipelining max depth:  0
+Authentication Type:   NONE (0)
+Retry counts: 
+Pipeline Retry counts: 
+Counts: 
+UrlCons Attempted:               4000
+UrlCons Success:                 4000
+Pipeline write request:          0
+Pipeline read response:          0
+Pipeline error:                  0
+Total retries:                   0
+Total pipelined retries:         0
+UrlCons Failed Max Retries:      0
+UrlCons Failed > 400:            0
+Pipeline max depth (all conns):  0
+Forced Flushes:                  4000
+Buffer Flushes:                  0
+Avoided Flushes:                 0
+Flush IOExceptions:              0
+Connection: http://berlioz
+  Total connections created: 5
+  Avail connections:         5
+  Assigned connections:      0
+  Observed max urlcons before close: 0
+Assigned connections: 
+Available connections: 
+    15091334 berlioz:80 (43215) CS_OPEN 
+      Total requested urlcons:      1040
+      Total responded urlcons:      1040
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    2112561 berlioz:80 (43212) CS_OPEN 
+      Total requested urlcons:      796
+      Total responded urlcons:      796
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    5226838 berlioz:80 (43213) CS_OPEN 
+      Total requested urlcons:      802
+      Total responded urlcons:      802
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    1977511 berlioz:80 (43211) CS_OPEN 
+      Total requested urlcons:      734
+      Total responded urlcons:      734
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    17153368 berlioz:80 (43214) CS_OPEN 
+      Total requested urlcons:      628
+      Total responded urlcons:      628
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+
+24087  INFO [main]    com.oaklandsw.http.TestPerf - Total Time (ms): 2078 Time/trans (ms): 0.5195
+24087  INFO [main]    com.oaklandsw.http.TestPerf - Total run bytes: 2048000
+24087  INFO [main]    com.oaklandsw.http.TestPerf - Total run conns: 40
+24087  INFO [main]    com.oaklandsw.http.TestPerf - Machine,Oakland,512,0.5195,5,5,0,0,4000,3,2078,4000,0,0,0,0,23:59:09.475
+24088  INFO [main]    com.oaklandsw.http.TestPerf - 
+24106  INFO [main]    com.oaklandsw.http.TestPerf - Start Time: 23:59:09.475
+24106  INFO [main]    com.oaklandsw.http.TestPerf - Using: Oakland implementation
+24106  INFO [main]    com.oaklandsw.http.TestPerf - URL: http://berlioz/oaklandsw-http/512k
+24106  INFO [main]    com.oaklandsw.http.TestPerf - Times/thread: 800
+24106  INFO [main]    com.oaklandsw.http.TestPerf - Threads: 5
+24106  INFO [main]    com.oaklandsw.http.TestPerf - Using max: 5 connections.
+25922  INFO [main]    com.oaklandsw.http.TestPerf - connection pool before close
+25923  INFO [main]    com.oaklandsw.http.TestPerf - Max connections/host:    5
+Pipelining options:    PIPE_NONE
+Pipelining max depth:  0
+Authentication Type:   NONE (0)
+Retry counts: 
+Pipeline Retry counts: 
+Counts: 
+UrlCons Attempted:               4000
+UrlCons Success:                 4000
+Pipeline write request:          0
+Pipeline read response:          0
+Pipeline error:                  0
+Total retries:                   0
+Total pipelined retries:         0
+UrlCons Failed Max Retries:      0
+UrlCons Failed > 400:            0
+Pipeline max depth (all conns):  0
+Forced Flushes:                  4000
+Buffer Flushes:                  0
+Avoided Flushes:                 0
+Flush IOExceptions:              0
+Connection: http://berlioz
+  Total connections created: 5
+  Avail connections:         5
+  Assigned connections:      0
+  Observed max urlcons before close: 0
+Assigned connections: 
+Available connections: 
+    3307594 berlioz:80 (43220) CS_OPEN 
+      Total requested urlcons:      676
+      Total responded urlcons:      676
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    24595355 berlioz:80 (43218) CS_OPEN 
+      Total requested urlcons:      590
+      Total responded urlcons:      590
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    17089909 berlioz:80 (43219) CS_OPEN 
+      Total requested urlcons:      967
+      Total responded urlcons:      967
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    4171180 berlioz:80 (43216) CS_OPEN 
+      Total requested urlcons:      901
+      Total responded urlcons:      901
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    9818046 berlioz:80 (43217) CS_OPEN 
+      Total requested urlcons:      866
+      Total responded urlcons:      866
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+
+25923  INFO [main]    com.oaklandsw.http.TestPerf - Total Time (ms): 1793 Time/trans (ms): 0.44825
+25923  INFO [main]    com.oaklandsw.http.TestPerf - Total run bytes: 2048000
+25923  INFO [main]    com.oaklandsw.http.TestPerf - Total run conns: 40
+25923  INFO [main]    com.oaklandsw.http.TestPerf - Machine,Oakland,512,0.44825,5,5,0,0,4000,3,1793,4000,0,0,0,0,23:59:09.475
+25953  INFO [main]    com.oaklandsw.http.TestPerf - 
+25958  INFO [main]    com.oaklandsw.http.TestPerf - Start Time: 23:59:09.475
+25958  INFO [main]    com.oaklandsw.http.TestPerf - Using: Oakland implementation
+25958  INFO [main]    com.oaklandsw.http.TestPerf - URL: http://berlioz/oaklandsw-http/512k
+25958  INFO [main]    com.oaklandsw.http.TestPerf - Times/thread: 800
+25958  INFO [main]    com.oaklandsw.http.TestPerf - Threads: 5
+25959  INFO [main]    com.oaklandsw.http.TestPerf - Using max: 5 connections.
+27678  INFO [main]    com.oaklandsw.http.TestPerf - connection pool before close
+27678  INFO [main]    com.oaklandsw.http.TestPerf - Max connections/host:    5
+Pipelining options:    PIPE_NONE
+Pipelining max depth:  0
+Authentication Type:   NONE (0)
+Retry counts: 
+Pipeline Retry counts: 
+Counts: 
+UrlCons Attempted:               4000
+UrlCons Success:                 4000
+Pipeline write request:          0
+Pipeline read response:          0
+Pipeline error:                  0
+Total retries:                   0
+Total pipelined retries:         0
+UrlCons Failed Max Retries:      0
+UrlCons Failed > 400:            0
+Pipeline max depth (all conns):  0
+Forced Flushes:                  4000
+Buffer Flushes:                  0
+Avoided Flushes:                 0
+Flush IOExceptions:              0
+Connection: http://berlioz
+  Total connections created: 5
+  Avail connections:         5
+  Assigned connections:      0
+  Observed max urlcons before close: 0
+Assigned connections: 
+Available connections: 
+    9523050 berlioz:80 (43224) CS_OPEN 
+      Total requested urlcons:      968
+      Total responded urlcons:      968
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    32820206 berlioz:80 (43225) CS_OPEN 
+      Total requested urlcons:      711
+      Total responded urlcons:      711
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    7896426 berlioz:80 (43223) CS_OPEN 
+      Total requested urlcons:      1330
+      Total responded urlcons:      1330
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    7461949 berlioz:80 (43227) CS_OPEN 
+      Total requested urlcons:      277
+      Total responded urlcons:      277
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    20079748 berlioz:80 (43226) CS_OPEN 
+      Total requested urlcons:      714
+      Total responded urlcons:      714
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+
+27678  INFO [main]    com.oaklandsw.http.TestPerf - Total Time (ms): 1704 Time/trans (ms): 0.426
+27678  INFO [main]    com.oaklandsw.http.TestPerf - Total run bytes: 2048000
+27678  INFO [main]    com.oaklandsw.http.TestPerf - Total run conns: 40
+27678  INFO [main]    com.oaklandsw.http.TestPerf - Machine,Oakland,512,0.426,5,5,0,0,4000,3,1704,4000,0,0,0,0,23:59:09.475
+27678  INFO [main]    com.oaklandsw.http.TestPerf - Machine,Oakland,512,0.4645833,5,5,,0,4000,3,0.426,0.5195,5575,12000,0,0,0,0,23:59:09.475
+27678  INFO [main]    com.oaklandsw.http.TestPerf - 
+27685  INFO [main]    com.oaklandsw.http.TestPerf - Start Time: 23:59:15.214
+27685  INFO [main]    com.oaklandsw.http.TestPerf - Using: Oakland implementation
+27685  INFO [main]    com.oaklandsw.http.TestPerf - URL: http://berlioz/oaklandsw-http/512k
+27685  INFO [main]    com.oaklandsw.http.TestPerf - Times/thread: 400
+27685  INFO [main]    com.oaklandsw.http.TestPerf - Threads: 10
+27685  INFO [main]    com.oaklandsw.http.TestPerf - Using max: 10 connections.
+29730  INFO [main]    com.oaklandsw.http.TestPerf - connection pool before close
+29730  INFO [main]    com.oaklandsw.http.TestPerf - Max connections/host:    10
+Pipelining options:    PIPE_NONE
+Pipelining max depth:  0
+Authentication Type:   NONE (0)
+Retry counts: 
+Pipeline Retry counts: 
+Counts: 
+UrlCons Attempted:               4000
+UrlCons Success:                 4000
+Pipeline write request:          0
+Pipeline read response:          0
+Pipeline error:                  0
+Total retries:                   0
+Total pipelined retries:         0
+UrlCons Failed Max Retries:      0
+UrlCons Failed > 400:            0
+Pipeline max depth (all conns):  0
+Forced Flushes:                  4000
+Buffer Flushes:                  0
+Avoided Flushes:                 0
+Flush IOExceptions:              0
+Connection: http://berlioz
+  Total connections created: 10
+  Avail connections:         10
+  Assigned connections:      0
+  Observed max urlcons before close: 0
+Assigned connections: 
+Available connections: 
+    849515 berlioz:80 (43233) CS_OPEN 
+      Total requested urlcons:      397
+      Total responded urlcons:      397
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    17171576 berlioz:80 (43229) CS_OPEN 
+      Total requested urlcons:      686
+      Total responded urlcons:      686
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    1023040 berlioz:80 (43232) CS_OPEN 
+      Total requested urlcons:      338
+      Total responded urlcons:      338
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    14372770 berlioz:80 (43238) CS_OPEN 
+      Total requested urlcons:      457
+      Total responded urlcons:      457
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    4791372 berlioz:80 (43231) CS_OPEN 
+      Total requested urlcons:      536
+      Total responded urlcons:      536
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    31519478 berlioz:80 (43234) CS_OPEN 
+      Total requested urlcons:      304
+      Total responded urlcons:      304
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    24061351 berlioz:80 (43230) CS_OPEN 
+      Total requested urlcons:      255
+      Total responded urlcons:      255
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    1117233 berlioz:80 (43236) CS_OPEN 
+      Total requested urlcons:      402
+      Total responded urlcons:      402
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    20415955 berlioz:80 (43237) CS_OPEN 
+      Total requested urlcons:      270
+      Total responded urlcons:      270
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    3338151 berlioz:80 (43235) CS_OPEN 
+      Total requested urlcons:      355
+      Total responded urlcons:      355
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+
+29730  INFO [main]    com.oaklandsw.http.TestPerf - Total Time (ms): 1948 Time/trans (ms): 0.487
+29730  INFO [main]    com.oaklandsw.http.TestPerf - Total run bytes: 2048000
+29730  INFO [main]    com.oaklandsw.http.TestPerf - Total run conns: 40
+29730  INFO [main]    com.oaklandsw.http.TestPerf - Machine,Oakland,512,0.487,10,10,0,0,4000,3,1948,4000,0,0,0,0,23:59:15.214
+29730  INFO [main]    com.oaklandsw.http.TestPerf - 
+29732  INFO [main]    com.oaklandsw.http.TestPerf - Start Time: 23:59:15.214
+29732  INFO [main]    com.oaklandsw.http.TestPerf - Using: Oakland implementation
+29732  INFO [main]    com.oaklandsw.http.TestPerf - URL: http://berlioz/oaklandsw-http/512k
+29732  INFO [main]    com.oaklandsw.http.TestPerf - Times/thread: 400
+29732  INFO [main]    com.oaklandsw.http.TestPerf - Threads: 10
+29732  INFO [main]    com.oaklandsw.http.TestPerf - Using max: 10 connections.
+31828  INFO [main]    com.oaklandsw.http.TestPerf - connection pool before close
+31828  INFO [main]    com.oaklandsw.http.TestPerf - Max connections/host:    10
+Pipelining options:    PIPE_NONE
+Pipelining max depth:  0
+Authentication Type:   NONE (0)
+Retry counts: 
+Pipeline Retry counts: 
+Counts: 
+UrlCons Attempted:               4000
+UrlCons Success:                 4000
+Pipeline write request:          0
+Pipeline read response:          0
+Pipeline error:                  0
+Total retries:                   0
+Total pipelined retries:         0
+UrlCons Failed Max Retries:      0
+UrlCons Failed > 400:            0
+Pipeline max depth (all conns):  0
+Forced Flushes:                  4000
+Buffer Flushes:                  0
+Avoided Flushes:                 0
+Flush IOExceptions:              0
+Connection: http://berlioz
+  Total connections created: 10
+  Avail connections:         10
+  Assigned connections:      0
+  Observed max urlcons before close: 0
+Assigned connections: 
+Available connections: 
+    30584859 berlioz:80 (43248) CS_OPEN 
+      Total requested urlcons:      474
+      Total responded urlcons:      474
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    19397138 berlioz:80 (43246) CS_OPEN 
+      Total requested urlcons:      317
+      Total responded urlcons:      317
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    26396889 berlioz:80 (43241) CS_OPEN 
+      Total requested urlcons:      460
+      Total responded urlcons:      460
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    29384701 berlioz:80 (43245) CS_OPEN 
+      Total requested urlcons:      350
+      Total responded urlcons:      350
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    14556042 berlioz:80 (43244) CS_OPEN 
+      Total requested urlcons:      450
+      Total responded urlcons:      450
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    31601333 berlioz:80 (43242) CS_OPEN 
+      Total requested urlcons:      323
+      Total responded urlcons:      323
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    24056908 berlioz:80 (43243) CS_OPEN 
+      Total requested urlcons:      621
+      Total responded urlcons:      621
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    27108604 berlioz:80 (43239) CS_OPEN 
+      Total requested urlcons:      291
+      Total responded urlcons:      291
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    12231782 berlioz:80 (43240) CS_OPEN 
+      Total requested urlcons:      441
+      Total responded urlcons:      441
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    25116828 berlioz:80 (43247) CS_OPEN 
+      Total requested urlcons:      273
+      Total responded urlcons:      273
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+
+31829  INFO [main]    com.oaklandsw.http.TestPerf - Total Time (ms): 2073 Time/trans (ms): 0.51825
+31829  INFO [main]    com.oaklandsw.http.TestPerf - Total run bytes: 2048000
+31829  INFO [main]    com.oaklandsw.http.TestPerf - Total run conns: 40
+31829  INFO [main]    com.oaklandsw.http.TestPerf - Machine,Oakland,512,0.51825,10,10,0,0,4000,3,2073,4000,0,0,0,0,23:59:15.214
+31829  INFO [main]    com.oaklandsw.http.TestPerf - 
+31831  INFO [main]    com.oaklandsw.http.TestPerf - Start Time: 23:59:15.214
+31831  INFO [main]    com.oaklandsw.http.TestPerf - Using: Oakland implementation
+31831  INFO [main]    com.oaklandsw.http.TestPerf - URL: http://berlioz/oaklandsw-http/512k
+31831  INFO [main]    com.oaklandsw.http.TestPerf - Times/thread: 400
+31831  INFO [main]    com.oaklandsw.http.TestPerf - Threads: 10
+31831  INFO [main]    com.oaklandsw.http.TestPerf - Using max: 10 connections.
+33825  INFO [main]    com.oaklandsw.http.TestPerf - connection pool before close
+33825  INFO [main]    com.oaklandsw.http.TestPerf - Max connections/host:    10
+Pipelining options:    PIPE_NONE
+Pipelining max depth:  0
+Authentication Type:   NONE (0)
+Retry counts: 
+Pipeline Retry counts: 
+Counts: 
+UrlCons Attempted:               4000
+UrlCons Success:                 4000
+Pipeline write request:          0
+Pipeline read response:          0
+Pipeline error:                  0
+Total retries:                   0
+Total pipelined retries:         0
+UrlCons Failed Max Retries:      0
+UrlCons Failed > 400:            0
+Pipeline max depth (all conns):  0
+Forced Flushes:                  4000
+Buffer Flushes:                  0
+Avoided Flushes:                 0
+Flush IOExceptions:              0
+Connection: http://berlioz
+  Total connections created: 10
+  Avail connections:         10
+  Assigned connections:      0
+  Observed max urlcons before close: 0
+Assigned connections: 
+Available connections: 
+    24193850 berlioz:80 (43250) CS_OPEN 
+      Total requested urlcons:      361
+      Total responded urlcons:      361
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    13446707 berlioz:80 (43251) CS_OPEN 
+      Total requested urlcons:      290
+      Total responded urlcons:      290
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    9717476 berlioz:80 (43258) CS_OPEN 
+      Total requested urlcons:      412
+      Total responded urlcons:      412
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    12213370 berlioz:80 (43255) CS_OPEN 
+      Total requested urlcons:      245
+      Total responded urlcons:      245
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    17652030 berlioz:80 (43249) CS_OPEN 
+      Total requested urlcons:      604
+      Total responded urlcons:      604
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    22939763 berlioz:80 (43252) CS_OPEN 
+      Total requested urlcons:      609
+      Total responded urlcons:      609
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    8175078 berlioz:80 (43253) CS_OPEN 
+      Total requested urlcons:      351
+      Total responded urlcons:      351
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    26704795 berlioz:80 (43254) CS_OPEN 
+      Total requested urlcons:      603
+      Total responded urlcons:      603
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    3408129 berlioz:80 (43256) CS_OPEN 
+      Total requested urlcons:      236
+      Total responded urlcons:      236
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    3022623 berlioz:80 (43257) CS_OPEN 
+      Total requested urlcons:      289
+      Total responded urlcons:      289
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+
+33825  INFO [main]    com.oaklandsw.http.TestPerf - Total Time (ms): 1967 Time/trans (ms): 0.49175
+33825  INFO [main]    com.oaklandsw.http.TestPerf - Total run bytes: 2048000
+33825  INFO [main]    com.oaklandsw.http.TestPerf - Total run conns: 40
+33825  INFO [main]    com.oaklandsw.http.TestPerf - Machine,Oakland,512,0.49175,10,10,0,0,4000,3,1967,4000,0,0,0,0,23:59:15.214
+33825  INFO [main]    com.oaklandsw.http.TestPerf - Machine,Oakland,512,0.49899998,10,10,,0,4000,3,0.487,0.51825,5988,12000,0,0,0,0,23:59:15.214
+33828  INFO [main]    com.oaklandsw.http.TestPerf - Start Time: 23:59:21.362
+33828  INFO [main]    com.oaklandsw.http.TestPerf - Using: Oakland implementation
+33828  INFO [main]    com.oaklandsw.http.TestPerf - URL: http://berlioz/oaklandsw-http/512k
+33828  INFO [main]    com.oaklandsw.http.TestPerf - Times/thread: 200
+33828  INFO [main]    com.oaklandsw.http.TestPerf - Threads: 20
+33828  INFO [main]    com.oaklandsw.http.TestPerf - Using max: 20 connections.
+36253  INFO [main]    com.oaklandsw.http.TestPerf - connection pool before close
+36253  INFO [main]    com.oaklandsw.http.TestPerf - Max connections/host:    20
+Pipelining options:    PIPE_NONE
+Pipelining max depth:  0
+Authentication Type:   NONE (0)
+Retry counts: 
+Pipeline Retry counts: 
+Counts: 
+UrlCons Attempted:               4000
+UrlCons Success:                 4000
+Pipeline write request:          0
+Pipeline read response:          0
+Pipeline error:                  0
+Total retries:                   0
+Total pipelined retries:         0
+UrlCons Failed Max Retries:      0
+UrlCons Failed > 400:            0
+Pipeline max depth (all conns):  0
+Forced Flushes:                  4000
+Buffer Flushes:                  0
+Avoided Flushes:                 0
+Flush IOExceptions:              0
+Connection: http://berlioz
+  Total connections created: 19
+  Avail connections:         19
+  Assigned connections:      0
+  Observed max urlcons before close: 0
+Assigned connections: 
+Available connections: 
+    2550265 berlioz:80 (43264) CS_OPEN 
+      Total requested urlcons:      264
+      Total responded urlcons:      264
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    13302614 berlioz:80 (43269) CS_OPEN 
+      Total requested urlcons:      242
+      Total responded urlcons:      242
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    3860801 berlioz:80 (43268) CS_OPEN 
+      Total requested urlcons:      166
+      Total responded urlcons:      166
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    27778511 berlioz:80 (43263) CS_OPEN 
+      Total requested urlcons:      177
+      Total responded urlcons:      177
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    30633470 berlioz:80 (43277) CS_OPEN 
+      Total requested urlcons:      12
+      Total responded urlcons:      12
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    31090332 berlioz:80 (43273) CS_OPEN 
+      Total requested urlcons:      169
+      Total responded urlcons:      169
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    25610032 berlioz:80 (43266) CS_OPEN 
+      Total requested urlcons:      177
+      Total responded urlcons:      177
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    25109548 berlioz:80 (43274) CS_OPEN 
+      Total requested urlcons:      163
+      Total responded urlcons:      163
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    2086370 berlioz:80 (43265) CS_OPEN 
+      Total requested urlcons:      191
+      Total responded urlcons:      191
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    1243630 berlioz:80 (43267) CS_OPEN 
+      Total requested urlcons:      167
+      Total responded urlcons:      167
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    30844270 berlioz:80 (43272) CS_OPEN 
+      Total requested urlcons:      231
+      Total responded urlcons:      231
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    17235092 berlioz:80 (43262) CS_OPEN 
+      Total requested urlcons:      260
+      Total responded urlcons:      260
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    28336193 berlioz:80 (43271) CS_OPEN 
+      Total requested urlcons:      229
+      Total responded urlcons:      229
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    8344960 berlioz:80 (43276) CS_OPEN 
+      Total requested urlcons:      166
+      Total responded urlcons:      166
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    29775659 berlioz:80 (43261) CS_OPEN 
+      Total requested urlcons:      395
+      Total responded urlcons:      395
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    8702985 berlioz:80 (43275) CS_OPEN 
+      Total requested urlcons:      154
+      Total responded urlcons:      154
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    7314318 berlioz:80 (43259) CS_OPEN 
+      Total requested urlcons:      359
+      Total responded urlcons:      359
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    21868771 berlioz:80 (43260) CS_OPEN 
+      Total requested urlcons:      232
+      Total responded urlcons:      232
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    26750913 berlioz:80 (43270) CS_OPEN 
+      Total requested urlcons:      246
+      Total responded urlcons:      246
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+
+36253  INFO [main]    com.oaklandsw.http.TestPerf - Total Time (ms): 2399 Time/trans (ms): 0.59975
+36255  INFO [main]    com.oaklandsw.http.TestPerf - Start Time: 23:59:21.362
+36255  INFO [main]    com.oaklandsw.http.TestPerf - Using: Oakland implementation
+36255  INFO [main]    com.oaklandsw.http.TestPerf - URL: http://berlioz/oaklandsw-http/512k
+36255  INFO [main]    com.oaklandsw.http.TestPerf - Times/thread: 200
+36255  INFO [main]    com.oaklandsw.http.TestPerf - Threads: 20
+36255  INFO [main]    com.oaklandsw.http.TestPerf - Using max: 20 connections.
+38576  INFO [main]    com.oaklandsw.http.TestPerf - connection pool before close
+38577  INFO [main]    com.oaklandsw.http.TestPerf - Max connections/host:    20
+Pipelining options:    PIPE_NONE
+Pipelining max depth:  0
+Authentication Type:   NONE (0)
+Retry counts: 
+Pipeline Retry counts: 
+Counts: 
+UrlCons Attempted:               4000
+UrlCons Success:                 4000
+Pipeline write request:          0
+Pipeline read response:          0
+Pipeline error:                  0
+Total retries:                   0
+Total pipelined retries:         0
+UrlCons Failed Max Retries:      0
+UrlCons Failed > 400:            0
+Pipeline max depth (all conns):  0
+Forced Flushes:                  4000
+Buffer Flushes:                  0
+Avoided Flushes:                 0
+Flush IOExceptions:              0
+Connection: http://berlioz
+  Total connections created: 19
+  Avail connections:         19
+  Assigned connections:      0
+  Observed max urlcons before close: 0
+Assigned connections: 
+Available connections: 
+    10973446 berlioz:80 (43295) CS_OPEN 
+      Total requested urlcons:      13
+      Total responded urlcons:      13
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    15558189 berlioz:80 (43296) CS_OPEN 
+      Total requested urlcons:      144
+      Total responded urlcons:      144
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    30362156 berlioz:80 (43292) CS_OPEN 
+      Total requested urlcons:      238
+      Total responded urlcons:      238
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    961626 berlioz:80 (43284) CS_OPEN 
+      Total requested urlcons:      197
+      Total responded urlcons:      197
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    22377952 berlioz:80 (43294) CS_OPEN 
+      Total requested urlcons:      248
+      Total responded urlcons:      248
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    28171097 berlioz:80 (43291) CS_OPEN 
+      Total requested urlcons:      309
+      Total responded urlcons:      309
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    18607473 berlioz:80 (43288) CS_OPEN 
+      Total requested urlcons:      275
+      Total responded urlcons:      275
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    8499707 berlioz:80 (43289) CS_OPEN 
+      Total requested urlcons:      352
+      Total responded urlcons:      352
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    13359904 berlioz:80 (43286) CS_OPEN 
+      Total requested urlcons:      237
+      Total responded urlcons:      237
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    27211574 berlioz:80 (43283) CS_OPEN 
+      Total requested urlcons:      101
+      Total responded urlcons:      101
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    31578843 berlioz:80 (43297) CS_OPEN 
+      Total requested urlcons:      262
+      Total responded urlcons:      262
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    15177785 berlioz:80 (43282) CS_OPEN 
+      Total requested urlcons:      202
+      Total responded urlcons:      202
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    12241337 berlioz:80 (43285) CS_OPEN 
+      Total requested urlcons:      257
+      Total responded urlcons:      257
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    17938704 berlioz:80 (43287) CS_OPEN 
+      Total requested urlcons:      289
+      Total responded urlcons:      289
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    9236202 berlioz:80 (43300) CS_OPEN 
+      Total requested urlcons:      116
+      Total responded urlcons:      116
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    10050169 berlioz:80 (43298) CS_OPEN 
+      Total requested urlcons:      181
+      Total responded urlcons:      181
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    181086 berlioz:80 (43293) CS_OPEN 
+      Total requested urlcons:      147
+      Total responded urlcons:      147
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    23625340 berlioz:80 (43299) CS_OPEN 
+      Total requested urlcons:      180
+      Total responded urlcons:      180
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    21509627 berlioz:80 (43290) CS_OPEN 
+      Total requested urlcons:      252
+      Total responded urlcons:      252
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+
+38577  INFO [main]    com.oaklandsw.http.TestPerf - Total Time (ms): 2227 Time/trans (ms): 0.55675
+38579  INFO [main]    com.oaklandsw.http.TestPerf - Start Time: 23:59:21.362
+38579  INFO [main]    com.oaklandsw.http.TestPerf - Using: Oakland implementation
+38579  INFO [main]    com.oaklandsw.http.TestPerf - URL: http://berlioz/oaklandsw-http/512k
+38579  INFO [main]    com.oaklandsw.http.TestPerf - Times/thread: 200
+38579  INFO [main]    com.oaklandsw.http.TestPerf - Threads: 20
+38579  INFO [main]    com.oaklandsw.http.TestPerf - Using max: 20 connections.
+40982  INFO [main]    com.oaklandsw.http.TestPerf - connection pool before close
+40983  INFO [main]    com.oaklandsw.http.TestPerf - Max connections/host:    20
+Pipelining options:    PIPE_NONE
+Pipelining max depth:  0
+Authentication Type:   NONE (0)
+Retry counts: 
+Pipeline Retry counts: 
+Counts: 
+UrlCons Attempted:               4000
+UrlCons Success:                 4000
+Pipeline write request:          0
+Pipeline read response:          0
+Pipeline error:                  0
+Total retries:                   0
+Total pipelined retries:         0
+UrlCons Failed Max Retries:      0
+UrlCons Failed > 400:            0
+Pipeline max depth (all conns):  0
+Forced Flushes:                  4000
+Buffer Flushes:                  0
+Avoided Flushes:                 0
+Flush IOExceptions:              0
+Connection: http://berlioz
+  Total connections created: 20
+  Avail connections:         20
+  Assigned connections:      0
+  Observed max urlcons before close: 0
+Assigned connections: 
+Available connections: 
+    17738170 berlioz:80 (43324) CS_OPEN 
+      Total requested urlcons:      187
+      Total responded urlcons:      187
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    27859157 berlioz:80 (43316) CS_OPEN 
+      Total requested urlcons:      186
+      Total responded urlcons:      186
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    10313829 berlioz:80 (43313) CS_OPEN 
+      Total requested urlcons:      206
+      Total responded urlcons:      206
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    2329159 berlioz:80 (43303) CS_OPEN 
+      Total requested urlcons:      206
+      Total responded urlcons:      206
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    21716810 berlioz:80 (43312) CS_OPEN 
+      Total requested urlcons:      151
+      Total responded urlcons:      151
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    22878167 berlioz:80 (43307) CS_OPEN 
+      Total requested urlcons:      256
+      Total responded urlcons:      256
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    13121387 berlioz:80 (43310) CS_OPEN 
+      Total requested urlcons:      12
+      Total responded urlcons:      12
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    11424570 berlioz:80 (43309) CS_OPEN 
+      Total requested urlcons:      227
+      Total responded urlcons:      227
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    14293164 berlioz:80 (43323) CS_OPEN 
+      Total requested urlcons:      177
+      Total responded urlcons:      177
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    9045316 berlioz:80 (43319) CS_OPEN 
+      Total requested urlcons:      259
+      Total responded urlcons:      259
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    23053324 berlioz:80 (43315) CS_OPEN 
+      Total requested urlcons:      202
+      Total responded urlcons:      202
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    4199273 berlioz:80 (43314) CS_OPEN 
+      Total requested urlcons:      261
+      Total responded urlcons:      261
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    12213211 berlioz:80 (43308) CS_OPEN 
+      Total requested urlcons:      198
+      Total responded urlcons:      198
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    14982605 berlioz:80 (43302) CS_OPEN 
+      Total requested urlcons:      33
+      Total responded urlcons:      33
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    20201168 berlioz:80 (43317) CS_OPEN 
+      Total requested urlcons:      171
+      Total responded urlcons:      171
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    17298525 berlioz:80 (43304) CS_OPEN 
+      Total requested urlcons:      158
+      Total responded urlcons:      158
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    20712275 berlioz:80 (43322) CS_OPEN 
+      Total requested urlcons:      232
+      Total responded urlcons:      232
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    17535609 berlioz:80 (43320) CS_OPEN 
+      Total requested urlcons:      287
+      Total responded urlcons:      287
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    12413535 berlioz:80 (43306) CS_OPEN 
+      Total requested urlcons:      221
+      Total responded urlcons:      221
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    26388552 berlioz:80 (43301) CS_OPEN 
+      Total requested urlcons:      370
+      Total responded urlcons:      370
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+
+40983  INFO [main]    com.oaklandsw.http.TestPerf - Total Time (ms): 2337 Time/trans (ms): 0.58425
+40985  INFO [main]    com.oaklandsw.http.TestPerf - Start Time: 23:59:21.362
+40985  INFO [main]    com.oaklandsw.http.TestPerf - Using: Oakland implementation
+40985  INFO [main]    com.oaklandsw.http.TestPerf - URL: http://berlioz/oaklandsw-http/512k
+40985  INFO [main]    com.oaklandsw.http.TestPerf - Times/thread: 200
+40985  INFO [main]    com.oaklandsw.http.TestPerf - Threads: 20
+40985  INFO [main]    com.oaklandsw.http.TestPerf - Using max: 20 connections.
+43263  INFO [main]    com.oaklandsw.http.TestPerf - connection pool before close
+43265  INFO [main]    com.oaklandsw.http.TestPerf - Max connections/host:    20
+Pipelining options:    PIPE_NONE
+Pipelining max depth:  0
+Authentication Type:   NONE (0)
+Retry counts: 
+Pipeline Retry counts: 
+Counts: 
+UrlCons Attempted:               4000
+UrlCons Success:                 4000
+Pipeline write request:          0
+Pipeline read response:          0
+Pipeline error:                  0
+Total retries:                   0
+Total pipelined retries:         0
+UrlCons Failed Max Retries:      0
+UrlCons Failed > 400:            0
+Pipeline max depth (all conns):  0
+Forced Flushes:                  4000
+Buffer Flushes:                  0
+Avoided Flushes:                 0
+Flush IOExceptions:              0
+Connection: http://berlioz
+  Total connections created: 20
+  Avail connections:         20
+  Assigned connections:      0
+  Observed max urlcons before close: 0
+Assigned connections: 
+Available connections: 
+    9492714 berlioz:80 (43329) CS_OPEN 
+      Total requested urlcons:      167
+      Total responded urlcons:      167
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    26285048 berlioz:80 (43334) CS_OPEN 
+      Total requested urlcons:      283
+      Total responded urlcons:      283
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    28715691 berlioz:80 (43341) CS_OPEN 
+      Total requested urlcons:      250
+      Total responded urlcons:      250
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    11228395 berlioz:80 (43344) CS_OPEN 
+      Total requested urlcons:      252
+      Total responded urlcons:      252
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    5514537 berlioz:80 (43333) CS_OPEN 
+      Total requested urlcons:      107
+      Total responded urlcons:      107
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    5483268 berlioz:80 (43330) CS_OPEN 
+      Total requested urlcons:      77
+      Total responded urlcons:      77
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    16825026 berlioz:80 (43336) CS_OPEN 
+      Total requested urlcons:      170
+      Total responded urlcons:      170
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    15014700 berlioz:80 (43335) CS_OPEN 
+      Total requested urlcons:      338
+      Total responded urlcons:      338
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    22736215 berlioz:80 (43325) CS_OPEN 
+      Total requested urlcons:      288
+      Total responded urlcons:      288
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    9706934 berlioz:80 (43338) CS_OPEN 
+      Total requested urlcons:      126
+      Total responded urlcons:      126
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    2804823 berlioz:80 (43328) CS_OPEN 
+      Total requested urlcons:      157
+      Total responded urlcons:      157
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    30238442 berlioz:80 (43339) CS_OPEN 
+      Total requested urlcons:      122
+      Total responded urlcons:      122
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    2080726 berlioz:80 (43343) CS_OPEN 
+      Total requested urlcons:      177
+      Total responded urlcons:      177
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    7052420 berlioz:80 (43342) CS_OPEN 
+      Total requested urlcons:      174
+      Total responded urlcons:      174
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    15775736 berlioz:80 (43326) CS_OPEN 
+      Total requested urlcons:      156
+      Total responded urlcons:      156
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    29234933 berlioz:80 (43332) CS_OPEN 
+      Total requested urlcons:      195
+      Total responded urlcons:      195
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    13986615 berlioz:80 (43340) CS_OPEN 
+      Total requested urlcons:      266
+      Total responded urlcons:      266
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    24244617 berlioz:80 (43337) CS_OPEN 
+      Total requested urlcons:      243
+      Total responded urlcons:      243
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    27826089 berlioz:80 (43331) CS_OPEN 
+      Total requested urlcons:      288
+      Total responded urlcons:      288
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    24964246 berlioz:80 (43327) CS_OPEN 
+      Total requested urlcons:      164
+      Total responded urlcons:      164
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+
+43265  INFO [main]    com.oaklandsw.http.TestPerf - Total Time (ms): 2197 Time/trans (ms): 0.54925
+43268  INFO [main]    com.oaklandsw.http.TestPerf - Start Time: 23:59:21.362
+43268  INFO [main]    com.oaklandsw.http.TestPerf - Using: Oakland implementation
+43268  INFO [main]    com.oaklandsw.http.TestPerf - URL: http://berlioz/oaklandsw-http/512k
+43268  INFO [main]    com.oaklandsw.http.TestPerf - Times/thread: 200
+43268  INFO [main]    com.oaklandsw.http.TestPerf - Threads: 20
+43268  INFO [main]    com.oaklandsw.http.TestPerf - Using max: 20 connections.
+45573  INFO [main]    com.oaklandsw.http.TestPerf - connection pool before close
+45574  INFO [main]    com.oaklandsw.http.TestPerf - Max connections/host:    20
+Pipelining options:    PIPE_NONE
+Pipelining max depth:  0
+Authentication Type:   NONE (0)
+Retry counts: 
+Pipeline Retry counts: 
+Counts: 
+UrlCons Attempted:               4000
+UrlCons Success:                 4000
+Pipeline write request:          0
+Pipeline read response:          0
+Pipeline error:                  0
+Total retries:                   0
+Total pipelined retries:         0
+UrlCons Failed Max Retries:      0
+UrlCons Failed > 400:            0
+Pipeline max depth (all conns):  0
+Forced Flushes:                  4000
+Buffer Flushes:                  0
+Avoided Flushes:                 0
+Flush IOExceptions:              0
+Connection: http://berlioz
+  Total connections created: 19
+  Avail connections:         19
+  Assigned connections:      0
+  Observed max urlcons before close: 0
+Assigned connections: 
+Available connections: 
+    746824 berlioz:80 (43359) CS_OPEN 
+      Total requested urlcons:      298
+      Total responded urlcons:      298
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    2529687 berlioz:80 (43346) CS_OPEN 
+      Total requested urlcons:      265
+      Total responded urlcons:      265
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    2994589 berlioz:80 (43348) CS_OPEN 
+      Total requested urlcons:      224
+      Total responded urlcons:      224
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    31966667 berlioz:80 (43345) CS_OPEN 
+      Total requested urlcons:      216
+      Total responded urlcons:      216
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    23763868 berlioz:80 (43355) CS_OPEN 
+      Total requested urlcons:      225
+      Total responded urlcons:      225
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    926353 berlioz:80 (43362) CS_OPEN 
+      Total requested urlcons:      142
+      Total responded urlcons:      142
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    33526517 berlioz:80 (43349) CS_OPEN 
+      Total requested urlcons:      183
+      Total responded urlcons:      183
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    610399 berlioz:80 (43354) CS_OPEN 
+      Total requested urlcons:      209
+      Total responded urlcons:      209
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    24880015 berlioz:80 (43352) CS_OPEN 
+      Total requested urlcons:      262
+      Total responded urlcons:      262
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    3083604 berlioz:80 (43351) CS_OPEN 
+      Total requested urlcons:      196
+      Total responded urlcons:      196
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    18096534 berlioz:80 (43356) CS_OPEN 
+      Total requested urlcons:      222
+      Total responded urlcons:      222
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    11085148 berlioz:80 (43353) CS_OPEN 
+      Total requested urlcons:      152
+      Total responded urlcons:      152
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    13878947 berlioz:80 (43357) CS_OPEN 
+      Total requested urlcons:      220
+      Total responded urlcons:      220
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    26613121 berlioz:80 (43347) CS_OPEN 
+      Total requested urlcons:      160
+      Total responded urlcons:      160
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    6151022 berlioz:80 (43358) CS_OPEN 
+      Total requested urlcons:      254
+      Total responded urlcons:      254
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    32580443 berlioz:80 (43361) CS_OPEN 
+      Total requested urlcons:      216
+      Total responded urlcons:      216
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    4744654 berlioz:80 (43363) CS_OPEN 
+      Total requested urlcons:      146
+      Total responded urlcons:      146
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    18071221 berlioz:80 (43360) CS_OPEN 
+      Total requested urlcons:      141
+      Total responded urlcons:      141
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    21854021 berlioz:80 (43350) CS_OPEN 
+      Total requested urlcons:      269
+      Total responded urlcons:      269
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+
+45574  INFO [main]    com.oaklandsw.http.TestPerf - Total Time (ms): 2225 Time/trans (ms): 0.55625
+45574  INFO [main]    com.oaklandsw.http.TestPerf - 
+45576  INFO [main]    com.oaklandsw.http.TestPerf - Start Time: 23:59:21.362
+45576  INFO [main]    com.oaklandsw.http.TestPerf - Using: Oakland implementation
+45576  INFO [main]    com.oaklandsw.http.TestPerf - URL: http://berlioz/oaklandsw-http/512k
+45576  INFO [main]    com.oaklandsw.http.TestPerf - Times/thread: 200
+45576  INFO [main]    com.oaklandsw.http.TestPerf - Threads: 20
+45576  INFO [main]    com.oaklandsw.http.TestPerf - Using max: 20 connections.
+47996  INFO [main]    com.oaklandsw.http.TestPerf - connection pool before close
+47997  INFO [main]    com.oaklandsw.http.TestPerf - Max connections/host:    20
+Pipelining options:    PIPE_NONE
+Pipelining max depth:  0
+Authentication Type:   NONE (0)
+Retry counts: 
+Pipeline Retry counts: 
+Counts: 
+UrlCons Attempted:               4000
+UrlCons Success:                 4000
+Pipeline write request:          0
+Pipeline read response:          0
+Pipeline error:                  0
+Total retries:                   0
+Total pipelined retries:         0
+UrlCons Failed Max Retries:      0
+UrlCons Failed > 400:            0
+Pipeline max depth (all conns):  0
+Forced Flushes:                  4000
+Buffer Flushes:                  0
+Avoided Flushes:                 0
+Flush IOExceptions:              0
+Connection: http://berlioz
+  Total connections created: 19
+  Avail connections:         19
+  Assigned connections:      0
+  Observed max urlcons before close: 0
+Assigned connections: 
+Available connections: 
+    23848591 berlioz:80 (43366) CS_OPEN 
+      Total requested urlcons:      179
+      Total responded urlcons:      179
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    15594377 berlioz:80 (43374) CS_OPEN 
+      Total requested urlcons:      178
+      Total responded urlcons:      178
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    1035988 berlioz:80 (43373) CS_OPEN 
+      Total requested urlcons:      200
+      Total responded urlcons:      200
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    30657962 berlioz:80 (43364) CS_OPEN 
+      Total requested urlcons:      213
+      Total responded urlcons:      213
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    6510044 berlioz:80 (43367) CS_OPEN 
+      Total requested urlcons:      190
+      Total responded urlcons:      190
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    26870430 berlioz:80 (43375) CS_OPEN 
+      Total requested urlcons:      210
+      Total responded urlcons:      210
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    2221396 berlioz:80 (43380) CS_OPEN 
+      Total requested urlcons:      213
+      Total responded urlcons:      213
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    22485234 berlioz:80 (43365) CS_OPEN 
+      Total requested urlcons:      268
+      Total responded urlcons:      268
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    19331111 berlioz:80 (43381) CS_OPEN 
+      Total requested urlcons:      146
+      Total responded urlcons:      146
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    23984709 berlioz:80 (43379) CS_OPEN 
+      Total requested urlcons:      239
+      Total responded urlcons:      239
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    21621663 berlioz:80 (43372) CS_OPEN 
+      Total requested urlcons:      234
+      Total responded urlcons:      234
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    798740 berlioz:80 (43377) CS_OPEN 
+      Total requested urlcons:      199
+      Total responded urlcons:      199
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    2661678 berlioz:80 (43369) CS_OPEN 
+      Total requested urlcons:      239
+      Total responded urlcons:      239
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    6771926 berlioz:80 (43371) CS_OPEN 
+      Total requested urlcons:      168
+      Total responded urlcons:      168
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    32689826 berlioz:80 (43370) CS_OPEN 
+      Total requested urlcons:      170
+      Total responded urlcons:      170
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    31198842 berlioz:80 (43382) CS_OPEN 
+      Total requested urlcons:      225
+      Total responded urlcons:      225
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    3840954 berlioz:80 (43378) CS_OPEN 
+      Total requested urlcons:      311
+      Total responded urlcons:      311
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    29744585 berlioz:80 (43368) CS_OPEN 
+      Total requested urlcons:      271
+      Total responded urlcons:      271
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    23328673 berlioz:80 (43376) CS_OPEN 
+      Total requested urlcons:      147
+      Total responded urlcons:      147
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+
+47997  INFO [main]    com.oaklandsw.http.TestPerf - Total Time (ms): 2340 Time/trans (ms): 0.585
+47997  INFO [main]    com.oaklandsw.http.TestPerf - Total run bytes: 2048000
+47997  INFO [main]    com.oaklandsw.http.TestPerf - Total run conns: 40
+47997  INFO [main]    com.oaklandsw.http.TestPerf - Machine,Oakland,512,0.585,20,20,0,0,4000,3,2340,4000,0,0,0,0,23:59:21.362
+47997  INFO [main]    com.oaklandsw.http.TestPerf - 
+48005  INFO [main]    com.oaklandsw.http.TestPerf - Start Time: 23:59:21.362
+48005  INFO [main]    com.oaklandsw.http.TestPerf - Using: Oakland implementation
+48005  INFO [main]    com.oaklandsw.http.TestPerf - URL: http://berlioz/oaklandsw-http/512k
+48006  INFO [main]    com.oaklandsw.http.TestPerf - Times/thread: 200
+48006  INFO [main]    com.oaklandsw.http.TestPerf - Threads: 20
+48006  INFO [main]    com.oaklandsw.http.TestPerf - Using max: 20 connections.
+49816  INFO [main]    com.oaklandsw.http.TestPerf - connection pool before close
+49817  INFO [main]    com.oaklandsw.http.TestPerf - Max connections/host:    20
+Pipelining options:    PIPE_NONE
+Pipelining max depth:  0
+Authentication Type:   NONE (0)
+Retry counts: 
+Pipeline Retry counts: 
+Counts: 
+UrlCons Attempted:               4000
+UrlCons Success:                 4000
+Pipeline write request:          0
+Pipeline read response:          0
+Pipeline error:                  0
+Total retries:                   0
+Total pipelined retries:         0
+UrlCons Failed Max Retries:      0
+UrlCons Failed > 400:            0
+Pipeline max depth (all conns):  0
+Forced Flushes:                  4000
+Buffer Flushes:                  0
+Avoided Flushes:                 0
+Flush IOExceptions:              0
+Connection: http://berlioz
+  Total connections created: 9
+  Avail connections:         9
+  Assigned connections:      0
+  Observed max urlcons before close: 0
+Assigned connections: 
+Available connections: 
+    11800260 berlioz:80 (43394) CS_OPEN 
+      Total requested urlcons:      323
+      Total responded urlcons:      323
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    20280994 berlioz:80 (43391) CS_OPEN 
+      Total requested urlcons:      335
+      Total responded urlcons:      335
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    16747636 berlioz:80 (43390) CS_OPEN 
+      Total requested urlcons:      411
+      Total responded urlcons:      411
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    22949069 berlioz:80 (43389) CS_OPEN 
+      Total requested urlcons:      413
+      Total responded urlcons:      413
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    30373009 berlioz:80 (43387) CS_OPEN 
+      Total requested urlcons:      381
+      Total responded urlcons:      381
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    15595312 berlioz:80 (43393) CS_OPEN 
+      Total requested urlcons:      233
+      Total responded urlcons:      233
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    16749745 berlioz:80 (43392) CS_OPEN 
+      Total requested urlcons:      515
+      Total responded urlcons:      515
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    24840600 berlioz:80 (43386) CS_OPEN 
+      Total requested urlcons:      626
+      Total responded urlcons:      626
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    11733267 berlioz:80 (43388) CS_OPEN 
+      Total requested urlcons:      763
+      Total responded urlcons:      763
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+
+49817  INFO [main]    com.oaklandsw.http.TestPerf - Total Time (ms): 1729 Time/trans (ms): 0.43225
+49817  INFO [main]    com.oaklandsw.http.TestPerf - Total run bytes: 2048000
+49817  INFO [main]    com.oaklandsw.http.TestPerf - Total run conns: 40
+49817  INFO [main]    com.oaklandsw.http.TestPerf - Machine,Oakland,512,0.43225,20,20,0,0,4000,3,1729,4000,0,0,0,0,23:59:21.362
+49817  INFO [main]    com.oaklandsw.http.TestPerf - 
+49819  INFO [main]    com.oaklandsw.http.TestPerf - Start Time: 23:59:21.362
+49819  INFO [main]    com.oaklandsw.http.TestPerf - Using: Oakland implementation
+49819  INFO [main]    com.oaklandsw.http.TestPerf - URL: http://berlioz/oaklandsw-http/512k
+49819  INFO [main]    com.oaklandsw.http.TestPerf - Times/thread: 200
+49819  INFO [main]    com.oaklandsw.http.TestPerf - Threads: 20
+49819  INFO [main]    com.oaklandsw.http.TestPerf - Using max: 20 connections.
+52102  INFO [main]    com.oaklandsw.http.TestPerf - connection pool before close
+52102  INFO [main]    com.oaklandsw.http.TestPerf - Max connections/host:    20
+Pipelining options:    PIPE_NONE
+Pipelining max depth:  0
+Authentication Type:   NONE (0)
+Retry counts: 
+Pipeline Retry counts: 
+Counts: 
+UrlCons Attempted:               4000
+UrlCons Success:                 4000
+Pipeline write request:          0
+Pipeline read response:          0
+Pipeline error:                  0
+Total retries:                   0
+Total pipelined retries:         0
+UrlCons Failed Max Retries:      0
+UrlCons Failed > 400:            0
+Pipeline max depth (all conns):  0
+Forced Flushes:                  4000
+Buffer Flushes:                  0
+Avoided Flushes:                 0
+Flush IOExceptions:              0
+Connection: http://berlioz
+  Total connections created: 20
+  Avail connections:         20
+  Assigned connections:      0
+  Observed max urlcons before close: 0
+Assigned connections: 
+Available connections: 
+    14050342 berlioz:80 (43403) CS_OPEN 
+      Total requested urlcons:      207
+      Total responded urlcons:      207
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    21565109 berlioz:80 (43408) CS_OPEN 
+      Total requested urlcons:      161
+      Total responded urlcons:      161
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    23376028 berlioz:80 (43404) CS_OPEN 
+      Total requested urlcons:      192
+      Total responded urlcons:      192
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    25621063 berlioz:80 (43395) CS_OPEN 
+      Total requested urlcons:      343
+      Total responded urlcons:      343
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    9194103 berlioz:80 (43402) CS_OPEN 
+      Total requested urlcons:      218
+      Total responded urlcons:      218
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    7143488 berlioz:80 (43396) CS_OPEN 
+      Total requested urlcons:      157
+      Total responded urlcons:      157
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    2855942 berlioz:80 (43398) CS_OPEN 
+      Total requested urlcons:      277
+      Total responded urlcons:      277
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    16994425 berlioz:80 (43412) CS_OPEN 
+      Total requested urlcons:      150
+      Total responded urlcons:      150
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    9977237 berlioz:80 (43406) CS_OPEN 
+      Total requested urlcons:      131
+      Total responded urlcons:      131
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    15926420 berlioz:80 (43399) CS_OPEN 
+      Total requested urlcons:      239
+      Total responded urlcons:      239
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    11652231 berlioz:80 (43409) CS_OPEN 
+      Total requested urlcons:      160
+      Total responded urlcons:      160
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    15397900 berlioz:80 (43401) CS_OPEN 
+      Total requested urlcons:      402
+      Total responded urlcons:      402
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    20735553 berlioz:80 (43397) CS_OPEN 
+      Total requested urlcons:      174
+      Total responded urlcons:      174
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    6109469 berlioz:80 (43410) CS_OPEN 
+      Total requested urlcons:      180
+      Total responded urlcons:      180
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    5285449 berlioz:80 (43413) CS_OPEN 
+      Total requested urlcons:      124
+      Total responded urlcons:      124
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    13961193 berlioz:80 (43411) CS_OPEN 
+      Total requested urlcons:      143
+      Total responded urlcons:      143
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    33189144 berlioz:80 (43407) CS_OPEN 
+      Total requested urlcons:      171
+      Total responded urlcons:      171
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    1067475 berlioz:80 (43414) CS_OPEN 
+      Total requested urlcons:      270
+      Total responded urlcons:      270
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    22992473 berlioz:80 (43405) CS_OPEN 
+      Total requested urlcons:      153
+      Total responded urlcons:      153
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+    21658130 berlioz:80 (43400) CS_OPEN 
+      Total requested urlcons:      148
+      Total responded urlcons:      148
+      Current pipelined urlcons:    0
+      High water pipelined urlcons: 0
+
+52102  INFO [main]    com.oaklandsw.http.TestPerf - Total Time (ms): 2207 Time/trans (ms): 0.55175
+52102  INFO [main]    com.oaklandsw.http.TestPerf - Total run bytes: 2048000
+52102  INFO [main]    com.oaklandsw.http.TestPerf - Total run conns: 40
+52102  INFO [main]    com.oaklandsw.http.TestPerf - Machine,Oakland,512,0.55175,20,20,0,0,4000,3,2207,4000,0,0,0,0,23:59:21.362
+52102  INFO [main]    com.oaklandsw.http.TestPerf - Machine,Oakland,512,0.523,20,20,,0,4000,3,0.43225,0.585,6276,12000,0,0,0,0,23:59:21.362
+52104  INFO [main]    com.oaklandsw.http.TestPerf - Start Time: 23:59:39.638
+52104  INFO [main]    com.oaklandsw.http.TestPerf - Using: Sun implementation
+52104  INFO [main]    com.oaklandsw.http.TestPerf - URL: http://berlioz/oaklandsw-http/512k
+52104  INFO [main]    com.oaklandsw.http.TestPerf - Times/thread: 4000
+52104  INFO [main]    com.oaklandsw.http.TestPerf - Threads: 1
+52104  INFO [main]    com.oaklandsw.http.TestPerf - Using max: 1 connections.
+54758  INFO [main]    com.oaklandsw.http.TestPerf - Total Time (ms): 2563 Time/trans (ms): 0.64075
+54759  INFO [main]    com.oaklandsw.http.TestPerf - Start Time: 23:59:39.638
+54760  INFO [main]    com.oaklandsw.http.TestPerf - Using: Sun implementation
+54760  INFO [main]    com.oaklandsw.http.TestPerf - URL: http://berlioz/oaklandsw-http/512k
+54760  INFO [main]    com.oaklandsw.http.TestPerf - Times/thread: 4000
+54760  INFO [main]    com.oaklandsw.http.TestPerf - Threads: 1
+54760  INFO [main]    com.oaklandsw.http.TestPerf - Using max: 1 connections.
+56793  INFO [main]    com.oaklandsw.http.TestPerf - Total Time (ms): 1999 Time/trans (ms): 0.49975
+56793  INFO [main]    com.oaklandsw.http.TestPerf - Start Time: 23:59:39.638
+56793  INFO [main]    com.oaklandsw.http.TestPerf - Using: Sun implementation
+56793  INFO [main]    com.oaklandsw.http.TestPerf - URL: http://berlioz/oaklandsw-http/512k
+56793  INFO [main]    com.oaklandsw.http.TestPerf - Times/thread: 4000
+56793  INFO [main]    com.oaklandsw.http.TestPerf - Threads: 1
+56793  INFO [main]    com.oaklandsw.http.TestPerf - Using max: 1 connections.
+59298  INFO [main]    com.oaklandsw.http.TestPerf - Total Time (ms): 2487 Time/trans (ms): 0.62175
+59298  INFO [main]    com.oaklandsw.http.TestPerf - Start Time: 23:59:39.638
+59298  INFO [main]    com.oaklandsw.http.TestPerf - Using: Sun implementation
+59298  INFO [main]    com.oaklandsw.http.TestPerf - URL: http://berlioz/oaklandsw-http/512k
+59298  INFO [main]    com.oaklandsw.http.TestPerf - Times/thread: 4000
+59298  INFO [main]    com.oaklandsw.http.TestPerf - Threads: 1
+59298  INFO [main]    com.oaklandsw.http.TestPerf - Using max: 1 connections.
+61393  INFO [main]    com.oaklandsw.http.TestPerf - Total Time (ms): 2077 Time/trans (ms): 0.51925
+61394  INFO [main]    com.oaklandsw.http.TestPerf - Start Time: 23:59:39.638
+61394  INFO [main]    com.oaklandsw.http.TestPerf - Using: Sun implementation
+61394  INFO [main]    com.oaklandsw.http.TestPerf - URL: http://berlioz/oaklandsw-http/512k
+61394  INFO [main]    com.oaklandsw.http.TestPerf - Times/thread: 4000
+61394  INFO [main]    com.oaklandsw.http.TestPerf - Threads: 1
+61394  INFO [main]    com.oaklandsw.http.TestPerf - Using max: 1 connections.
+63449  INFO [main]    com.oaklandsw.http.TestPerf - Total Time (ms): 2038 Time/trans (ms): 0.5095
+63449  INFO [main]    com.oaklandsw.http.TestPerf - 
+63449  INFO [main]    com.oaklandsw.http.TestPerf - Start Time: 23:59:39.638
+63449  INFO [main]    com.oaklandsw.http.TestPerf - Using: Sun implementation
+63449  INFO [main]    com.oaklandsw.http.TestPerf - URL: http://berlioz/oaklandsw-http/512k
+63449  INFO [main]    com.oaklandsw.http.TestPerf - Times/thread: 4000
+63449  INFO [main]    com.oaklandsw.http.TestPerf - Threads: 1
+63449  INFO [main]    com.oaklandsw.http.TestPerf - Using max: 1 connections.
+65579  INFO [main]    com.oaklandsw.http.TestPerf - Total Time (ms): 2112 Time/trans (ms): 0.528
+65579  INFO [main]    com.oaklandsw.http.TestPerf - Total run bytes: 2048000
+65579  INFO [main]    com.oaklandsw.http.TestPerf - Total run conns: 40
+65579  INFO [main]    com.oaklandsw.http.TestPerf - Machine,Sun,512,0.528,1,1,0,0,4000,3,2112,0,0,0,0,0,23:59:39.638
+65579  INFO [main]    com.oaklandsw.http.TestPerf - 
+65579  INFO [main]    com.oaklandsw.http.TestPerf - Start Time: 23:59:39.638
+65579  INFO [main]    com.oaklandsw.http.TestPerf - Using: Sun implementation
+65579  INFO [main]    com.oaklandsw.http.TestPerf - URL: http://berlioz/oaklandsw-http/512k
+65580  INFO [main]    com.oaklandsw.http.TestPerf - Times/thread: 4000
+65580  INFO [main]    com.oaklandsw.http.TestPerf - Threads: 1
+65580  INFO [main]    com.oaklandsw.http.TestPerf - Using max: 1 connections.
+67716  INFO [main]    com.oaklandsw.http.TestPerf - Total Time (ms): 2118 Time/trans (ms): 0.5295
+67725  INFO [main]    com.oaklandsw.http.TestPerf - Total run bytes: 2048000
+67725  INFO [main]    com.oaklandsw.http.TestPerf - Total run conns: 40
+67726  INFO [main]    com.oaklandsw.http.TestPerf - Machine,Sun,512,0.5295,1,1,0,0,4000,3,2118,0,0,0,0,0,23:59:39.638
+67726  INFO [main]    com.oaklandsw.http.TestPerf - 
+67726  INFO [main]    com.oaklandsw.http.TestPerf - Start Time: 23:59:39.638
+67726  INFO [main]    com.oaklandsw.http.TestPerf - Using: Sun implementation
+67726  INFO [main]    com.oaklandsw.http.TestPerf - URL: http://berlioz/oaklandsw-http/512k
+67726  INFO [main]    com.oaklandsw.http.TestPerf - Times/thread: 4000
+67726  INFO [main]    com.oaklandsw.http.TestPerf - Threads: 1
+67726  INFO [main]    com.oaklandsw.http.TestPerf - Using max: 1 connections.
+69688  INFO [main]    com.oaklandsw.http.TestPerf - Total Time (ms): 1944 Time/trans (ms): 0.486
+69688  INFO [main]    com.oaklandsw.http.TestPerf - Total run bytes: 2048000
+69688  INFO [main]    com.oaklandsw.http.TestPerf - Total run conns: 40
+69688  INFO [main]    com.oaklandsw.http.TestPerf - Machine,Sun,512,0.486,1,1,0,0,4000,3,1944,0,0,0,0,0,23:59:39.638
+69688  INFO [main]    com.oaklandsw.http.TestPerf - Machine,Sun,512,0.51449996,1,1,,0,4000,3,0.486,0.5295,6174,0,0,0,0,0,23:59:39.638
+69688  INFO [main]    com.oaklandsw.http.TestPerf - 
+69689  INFO [main]    com.oaklandsw.http.TestPerf - Start Time: 23:59:57.224
+69689  INFO [main]    com.oaklandsw.http.TestPerf - Using: Sun implementation
+69689  INFO [main]    com.oaklandsw.http.TestPerf - URL: http://berlioz/oaklandsw-http/512k
+69689  INFO [main]    com.oaklandsw.http.TestPerf - Times/thread: 2000
+69689  INFO [main]    com.oaklandsw.http.TestPerf - Threads: 2
+69689  INFO [main]    com.oaklandsw.http.TestPerf - Using max: 2 connections.
+71209  INFO [main]    com.oaklandsw.http.TestPerf - Total Time (ms): 1502 Time/trans (ms): 0.3755
+71209  INFO [main]    com.oaklandsw.http.TestPerf - Total run bytes: 2048000
+71209  INFO [main]    com.oaklandsw.http.TestPerf - Total run conns: 40
+71209  INFO [main]    com.oaklandsw.http.TestPerf - Machine,Sun,512,0.3755,2,2,0,0,4000,3,1502,0,0,0,0,0,23:59:57.224
+71209  INFO [main]    com.oaklandsw.http.TestPerf - 
+71209  INFO [main]    com.oaklandsw.http.TestPerf - Start Time: 23:59:57.224
+71209  INFO [main]    com.oaklandsw.http.TestPerf - Using: Sun implementation
+71209  INFO [main]    com.oaklandsw.http.TestPerf - URL: http://berlioz/oaklandsw-http/512k
+71209  INFO [main]    com.oaklandsw.http.TestPerf - Times/thread: 2000
+71209  INFO [main]    com.oaklandsw.http.TestPerf - Threads: 2
+71209  INFO [main]    com.oaklandsw.http.TestPerf - Using max: 2 connections.
+72758  INFO [main]    com.oaklandsw.http.TestPerf - Total Time (ms): 1530 Time/trans (ms): 0.3825
+72758  INFO [main]    com.oaklandsw.http.TestPerf - Total run bytes: 2048000
+72758  INFO [main]    com.oaklandsw.http.TestPerf - Total run conns: 40
+72758  INFO [main]    com.oaklandsw.http.TestPerf - Machine,Sun,512,0.3825,2,2,0,0,4000,3,1530,0,0,0,0,0,23:59:57.224
+72758  INFO [main]    com.oaklandsw.http.TestPerf - 
+72758  INFO [main]    com.oaklandsw.http.TestPerf - Start Time: 23:59:57.224
+72758  INFO [main]    com.oaklandsw.http.TestPerf - Using: Sun implementation
+72759  INFO [main]    com.oaklandsw.http.TestPerf - URL: http://berlioz/oaklandsw-http/512k
+72759  INFO [main]    com.oaklandsw.http.TestPerf - Times/thread: 2000
+72759  INFO [main]    com.oaklandsw.http.TestPerf - Threads: 2
+72759  INFO [main]    com.oaklandsw.http.TestPerf - Using max: 2 connections.
+74341  INFO [main]    com.oaklandsw.http.TestPerf - Total Time (ms): 1563 Time/trans (ms): 0.39075
+74341  INFO [main]    com.oaklandsw.http.TestPerf - Total run bytes: 2048000
+74341  INFO [main]    com.oaklandsw.http.TestPerf - Total run conns: 40
+74341  INFO [main]    com.oaklandsw.http.TestPerf - Machine,Sun,512,0.39075,2,2,0,0,4000,3,1563,0,0,0,0,0,23:59:57.224
+74341  INFO [main]    com.oaklandsw.http.TestPerf - Machine,Sun,512,0.3829167,2,2,,0,4000,3,0.3755,0.39075,4595,0,0,0,0,0,23:59:57.224
+74341  INFO [main]    com.oaklandsw.http.TestPerf - 
+74341  INFO [main]    com.oaklandsw.http.TestPerf - Start Time: 00:00:01.877
+74341  INFO [main]    com.oaklandsw.http.TestPerf - Using: Sun implementation
+74341  INFO [main]    com.oaklandsw.http.TestPerf - URL: http://berlioz/oaklandsw-http/512k
+74342  INFO [main]    com.oaklandsw.http.TestPerf - Times/thread: 800
+74342  INFO [main]    com.oaklandsw.http.TestPerf - Threads: 5
+74342  INFO [main]    com.oaklandsw.http.TestPerf - Using max: 5 connections.
+76181  INFO [main]    com.oaklandsw.http.TestPerf - Total Time (ms): 1821 Time/trans (ms): 0.45525
+76568  INFO [main]    com.oaklandsw.http.TestPerf - Total run bytes: 2048000
+76568  INFO [main]    com.oaklandsw.http.TestPerf - Total run conns: 40
+76568  INFO [main]    com.oaklandsw.http.TestPerf - Machine,Sun,512,0.45525,5,5,0,0,4000,3,1821,0,0,0,0,0,00:00:01.877
+76569  INFO [main]    com.oaklandsw.http.TestPerf - 
+76569  INFO [main]    com.oaklandsw.http.TestPerf - Start Time: 00:00:01.877
+76569  INFO [main]    com.oaklandsw.http.TestPerf - Using: Sun implementation
+76569  INFO [main]    com.oaklandsw.http.TestPerf - URL: http://berlioz/oaklandsw-http/512k
+76569  INFO [main]    com.oaklandsw.http.TestPerf - Times/thread: 800
+76569  INFO [main]    com.oaklandsw.http.TestPerf - Threads: 5
+76569  INFO [main]    com.oaklandsw.http.TestPerf - Using max: 5 connections.
+78340  INFO [main]    com.oaklandsw.http.TestPerf - Total Time (ms): 1752 Time/trans (ms): 0.438
+78340  INFO [main]    com.oaklandsw.http.TestPerf - Total run bytes: 2048000
+78340  INFO [main]    com.oaklandsw.http.TestPerf - Total run conns: 40
+78341  INFO [main]    com.oaklandsw.http.TestPerf - Machine,Sun,512,0.438,5,5,0,0,4000,3,1752,0,0,0,0,0,00:00:01.877
+78341  INFO [main]    com.oaklandsw.http.TestPerf - 
+78341  INFO [main]    com.oaklandsw.http.TestPerf - Start Time: 00:00:01.877
+78341  INFO [main]    com.oaklandsw.http.TestPerf - Using: Sun implementation
+78341  INFO [main]    com.oaklandsw.http.TestPerf - URL: http://berlioz/oaklandsw-http/512k
+78341  INFO [main]    com.oaklandsw.http.TestPerf - Times/thread: 800
+78341  INFO [main]    com.oaklandsw.http.TestPerf - Threads: 5
+78341  INFO [main]    com.oaklandsw.http.TestPerf - Using max: 5 connections.
+80094  INFO [main]    com.oaklandsw.http.TestPerf - Total Time (ms): 1735 Time/trans (ms): 0.43375
+80094  INFO [main]    com.oaklandsw.http.TestPerf - Total run bytes: 2048000
+80094  INFO [main]    com.oaklandsw.http.TestPerf - Total run conns: 40
+80094  INFO [main]    com.oaklandsw.http.TestPerf - Machine,Sun,512,0.43375,5,5,0,0,4000,3,1735,0,0,0,0,0,00:00:01.877
+80094  INFO [main]    com.oaklandsw.http.TestPerf - Machine,Sun,512,0.44233334,5,5,,0,4000,3,0.43375,0.45525,5308,0,0,0,0,0,00:00:01.877
+80094  INFO [main]    com.oaklandsw.http.TestPerf - 
+80094  INFO [main]    com.oaklandsw.http.TestPerf - Start Time: 00:00:07.630
+80094  INFO [main]    com.oaklandsw.http.TestPerf - Using: Sun implementation
+80094  INFO [main]    com.oaklandsw.http.TestPerf - URL: http://berlioz/oaklandsw-http/512k
+80095  INFO [main]    com.oaklandsw.http.TestPerf - Times/thread: 400
+80095  INFO [main]    com.oaklandsw.http.TestPerf - Threads: 10
+80095  INFO [main]    com.oaklandsw.http.TestPerf - Using max: 10 connections.
+82043  INFO [main]    com.oaklandsw.http.TestPerf - Total Time (ms): 1931 Time/trans (ms): 0.48275
+82043  INFO [main]    com.oaklandsw.http.TestPerf - Total run bytes: 2048000
+82043  INFO [main]    com.oaklandsw.http.TestPerf - Total run conns: 40
+82043  INFO [main]    com.oaklandsw.http.TestPerf - Machine,Sun,512,0.48275,10,10,0,0,4000,3,1931,0,0,0,0,0,00:00:07.630
+82044  INFO [main]    com.oaklandsw.http.TestPerf - 
+82044  INFO [main]    com.oaklandsw.http.TestPerf - Start Time: 00:00:07.630
+82044  INFO [main]    com.oaklandsw.http.TestPerf - Using: Sun implementation
+82044  INFO [main]    com.oaklandsw.http.TestPerf - URL: http://berlioz/oaklandsw-http/512k
+82044  INFO [main]    com.oaklandsw.http.TestPerf - Times/thread: 400
+82044  INFO [main]    com.oaklandsw.http.TestPerf - Threads: 10
+82044  INFO [main]    com.oaklandsw.http.TestPerf - Using max: 10 connections.
+83901  INFO [main]    com.oaklandsw.http.TestPerf - Total Time (ms): 1839 Time/trans (ms): 0.45975
+83901  INFO [main]    com.oaklandsw.http.TestPerf - Total run bytes: 2048000
+83901  INFO [main]    com.oaklandsw.http.TestPerf - Total run conns: 40
+83901  INFO [main]    com.oaklandsw.http.TestPerf - Machine,Sun,512,0.45975,10,10,0,0,4000,3,1839,0,0,0,0,0,00:00:07.630
+83901  INFO [main]    com.oaklandsw.http.TestPerf - 
+83901  INFO [main]    com.oaklandsw.http.TestPerf - Start Time: 00:00:07.630
+83901  INFO [main]    com.oaklandsw.http.TestPerf - Using: Sun implementation
+83901  INFO [main]    com.oaklandsw.http.TestPerf - URL: http://berlioz/oaklandsw-http/512k
+83901  INFO [main]    com.oaklandsw.http.TestPerf - Times/thread: 400
+83901  INFO [main]    com.oaklandsw.http.TestPerf - Threads: 10
+83901  INFO [main]    com.oaklandsw.http.TestPerf - Using max: 10 connections.
+86050  INFO [main]    com.oaklandsw.http.TestPerf - Total Time (ms): 2131 Time/trans (ms): 0.53275
+86050  INFO [main]    com.oaklandsw.http.TestPerf - Total run bytes: 2048000
+86050  INFO [main]    com.oaklandsw.http.TestPerf - Total run conns: 40
+86050  INFO [main]    com.oaklandsw.http.TestPerf - Machine,Sun,512,0.53275,10,10,0,0,4000,3,2131,0,0,0,0,0,00:00:07.630
+86050  INFO [main]    com.oaklandsw.http.TestPerf - Machine,Sun,512,0.49175,10,10,,0,4000,3,0.45975,0.53275,5901,0,0,0,0,0,00:00:07.630
+86051  INFO [main]    com.oaklandsw.http.TestPerf - Start Time: 00:00:13.586
+86051  INFO [main]    com.oaklandsw.http.TestPerf - Using: Sun implementation
+86051  INFO [main]    com.oaklandsw.http.TestPerf - URL: http://berlioz/oaklandsw-http/512k
+86051  INFO [main]    com.oaklandsw.http.TestPerf - Times/thread: 200
+86051  INFO [main]    com.oaklandsw.http.TestPerf - Threads: 20
+86051  INFO [main]    com.oaklandsw.http.TestPerf - Using max: 20 connections.
+88022  INFO [main]    com.oaklandsw.http.TestPerf - Total Time (ms): 1948 Time/trans (ms): 0.487
+88022  INFO [main]    com.oaklandsw.http.TestPerf - Start Time: 00:00:13.586
+88022  INFO [main]    com.oaklandsw.http.TestPerf - Using: Sun implementation
+88022  INFO [main]    com.oaklandsw.http.TestPerf - URL: http://berlioz/oaklandsw-http/512k
+88022  INFO [main]    com.oaklandsw.http.TestPerf - Times/thread: 200
+88023  INFO [main]    com.oaklandsw.http.TestPerf - Threads: 20
+88023  INFO [main]    com.oaklandsw.http.TestPerf - Using max: 20 connections.
+89876  INFO [main]    com.oaklandsw.http.TestPerf - Total Time (ms): 1816 Time/trans (ms): 0.454
+89879  INFO [main]    com.oaklandsw.http.TestPerf - Start Time: 00:00:13.586
+89879  INFO [main]    com.oaklandsw.http.TestPerf - Using: Sun implementation
+89879  INFO [main]    com.oaklandsw.http.TestPerf - URL: http://berlioz/oaklandsw-http/512k
+89879  INFO [main]    com.oaklandsw.http.TestPerf - Times/thread: 200
+89879  INFO [main]    com.oaklandsw.http.TestPerf - Threads: 20
+89879  INFO [main]    com.oaklandsw.http.TestPerf - Using max: 20 connections.
+91754  INFO [main]    com.oaklandsw.http.TestPerf - Total Time (ms): 1858 Time/trans (ms): 0.4645
+91754  INFO [main]    com.oaklandsw.http.TestPerf - Start Time: 00:00:13.586
+91754  INFO [main]    com.oaklandsw.http.TestPerf - Using: Sun implementation
+91754  INFO [main]    com.oaklandsw.http.TestPerf - URL: http://berlioz/oaklandsw-http/512k
+91754  INFO [main]    com.oaklandsw.http.TestPerf - Times/thread: 200
+91754  INFO [main]    com.oaklandsw.http.TestPerf - Threads: 20
+91754  INFO [main]    com.oaklandsw.http.TestPerf - Using max: 20 connections.
+93619  INFO [main]    com.oaklandsw.http.TestPerf - Total Time (ms): 1844 Time/trans (ms): 0.461
+93619  INFO [main]    com.oaklandsw.http.TestPerf - Start Time: 00:00:13.586
+93619  INFO [main]    com.oaklandsw.http.TestPerf - Using: Sun implementation
+93619  INFO [main]    com.oaklandsw.http.TestPerf - URL: http://berlioz/oaklandsw-http/512k
+93619  INFO [main]    com.oaklandsw.http.TestPerf - Times/thread: 200
+93619  INFO [main]    com.oaklandsw.http.TestPerf - Threads: 20
+93619  INFO [main]    com.oaklandsw.http.TestPerf - Using max: 20 connections.
+95422  INFO [main]    com.oaklandsw.http.TestPerf - Total Time (ms): 1785 Time/trans (ms): 0.44625
+95422  INFO [main]    com.oaklandsw.http.TestPerf - 
+95422  INFO [main]    com.oaklandsw.http.TestPerf - Start Time: 00:00:13.586
+95422  INFO [main]    com.oaklandsw.http.TestPerf - Using: Sun implementation
+95422  INFO [main]    com.oaklandsw.http.TestPerf - URL: http://berlioz/oaklandsw-http/512k
+95422  INFO [main]    com.oaklandsw.http.TestPerf - Times/thread: 200
+95422  INFO [main]    com.oaklandsw.http.TestPerf - Threads: 20
+95422  INFO [main]    com.oaklandsw.http.TestPerf - Using max: 20 connections.
+97415  INFO [main]    com.oaklandsw.http.TestPerf - Total Time (ms): 1976 Time/trans (ms): 0.494
+97415  INFO [main]    com.oaklandsw.http.TestPerf - Total run bytes: 2048000
+97415  INFO [main]    com.oaklandsw.http.TestPerf - Total run conns: 40
+97415  INFO [main]    com.oaklandsw.http.TestPerf - Machine,Sun,512,0.494,20,20,0,0,4000,3,1976,0,0,0,0,0,00:00:13.586
+97416  INFO [main]    com.oaklandsw.http.TestPerf - 
+97416  INFO [main]    com.oaklandsw.http.TestPerf - Start Time: 00:00:13.586
+97416  INFO [main]    com.oaklandsw.http.TestPerf - Using: Sun implementation
+97416  INFO [main]    com.oaklandsw.http.TestPerf - URL: http://berlioz/oaklandsw-http/512k
+97416  INFO [main]    com.oaklandsw.http.TestPerf - Times/thread: 200
+97416  INFO [main]    com.oaklandsw.http.TestPerf - Threads: 20
+97416  INFO [main]    com.oaklandsw.http.TestPerf - Using max: 20 connections.
+99405  INFO [main]    com.oaklandsw.http.TestPerf - Total Time (ms): 1969 Time/trans (ms): 0.49225
+99405  INFO [main]    com.oaklandsw.http.TestPerf - Total run bytes: 2048000
+99406  INFO [main]    com.oaklandsw.http.TestPerf - Total run conns: 40
+99406  INFO [main]    com.oaklandsw.http.TestPerf - Machine,Sun,512,0.49225,20,20,0,0,4000,3,1969,0,0,0,0,0,00:00:13.586
+99406  INFO [main]    com.oaklandsw.http.TestPerf - 
+99406  INFO [main]    com.oaklandsw.http.TestPerf - Start Time: 00:00:13.586
+99406  INFO [main]    com.oaklandsw.http.TestPerf - Using: Sun implementation
+99406  INFO [main]    com.oaklandsw.http.TestPerf - URL: http://berlioz/oaklandsw-http/512k
+99406  INFO [main]    com.oaklandsw.http.TestPerf - Times/thread: 200
+99406  INFO [main]    com.oaklandsw.http.TestPerf - Threads: 20
+99406  INFO [main]    com.oaklandsw.http.TestPerf - Using max: 20 connections.
+101203  INFO [main]    com.oaklandsw.http.TestPerf - Total Time (ms): 1779 Time/trans (ms): 0.44475
+101204  INFO [main]    com.oaklandsw.http.TestPerf - Total run bytes: 2048000
+101204  INFO [main]    com.oaklandsw.http.TestPerf - Total run conns: 40
+101204  INFO [main]    com.oaklandsw.http.TestPerf - Machine,Sun,512,0.44475,20,20,0,0,4000,3,1779,0,0,0,0,0,00:00:13.586
+101204  INFO [main]    com.oaklandsw.http.TestPerf - Machine,Sun,512,0.477,20,20,,0,4000,3,0.44475,0.494,5724,0,0,0,0,0,00:00:13.586
+101220  INFO [main]    com.oaklandsw.http.TestPerf - Start Time: 00:00:28.740
+101221  INFO [main]    com.oaklandsw.http.TestPerf - Using: Jakarta implementation
+101221  INFO [main]    com.oaklandsw.http.TestPerf - URL: http://berlioz/oaklandsw-http/512k
+101221  INFO [main]    com.oaklandsw.http.TestPerf - Times/thread: 4000
+101221  INFO [main]    com.oaklandsw.http.TestPerf - Threads: 1
+101221  INFO [main]    com.oaklandsw.http.TestPerf - Using max: 1 connections.
+103818  INFO [main]    com.oaklandsw.http.TestPerf - Total Time (ms): 2576 Time/trans (ms): 0.644
+103820  INFO [main]    com.oaklandsw.http.TestPerf - Start Time: 00:00:28.740
+103820  INFO [main]    com.oaklandsw.http.TestPerf - Using: Jakarta implementation
+103820  INFO [main]    com.oaklandsw.http.TestPerf - URL: http://berlioz/oaklandsw-http/512k
+103820  INFO [main]    com.oaklandsw.http.TestPerf - Times/thread: 4000
+103820  INFO [main]    com.oaklandsw.http.TestPerf - Threads: 1
+103820  INFO [main]    com.oaklandsw.http.TestPerf - Using max: 1 connections.
+105989  INFO [main]    com.oaklandsw.http.TestPerf - Total Time (ms): 2149 Time/trans (ms): 0.53725
+105989  INFO [main]    com.oaklandsw.http.TestPerf - Start Time: 00:00:28.740
+105989  INFO [main]    com.oaklandsw.http.TestPerf - Using: Jakarta implementation
+105989  INFO [main]    com.oaklandsw.http.TestPerf - URL: http://berlioz/oaklandsw-http/512k
+105989  INFO [main]    com.oaklandsw.http.TestPerf - Times/thread: 4000
+105989  INFO [main]    com.oaklandsw.http.TestPerf - Threads: 1
+105989  INFO [main]    com.oaklandsw.http.TestPerf - Using max: 1 connections.
+108501  INFO [main]    com.oaklandsw.http.TestPerf - Total Time (ms): 2492 Time/trans (ms): 0.623
+108501  INFO [main]    com.oaklandsw.http.TestPerf - Start Time: 00:00:28.740
+108502  INFO [main]    com.oaklandsw.http.TestPerf - Using: Jakarta implementation
+108502  INFO [main]    com.oaklandsw.http.TestPerf - URL: http://berlioz/oaklandsw-http/512k
+108502  INFO [main]    com.oaklandsw.http.TestPerf - Times/thread: 4000
+108502  INFO [main]    com.oaklandsw.http.TestPerf - Threads: 1
+108502  INFO [main]    com.oaklandsw.http.TestPerf - Using max: 1 connections.
+110634  INFO [main]    com.oaklandsw.http.TestPerf - Total Time (ms): 2111 Time/trans (ms): 0.52775
+110634  INFO [main]    com.oaklandsw.http.TestPerf - Start Time: 00:00:28.740
+110634  INFO [main]    com.oaklandsw.http.TestPerf - Using: Jakarta implementation
+110634  INFO [main]    com.oaklandsw.http.TestPerf - URL: http://berlioz/oaklandsw-http/512k
+110634  INFO [main]    com.oaklandsw.http.TestPerf - Times/thread: 4000
+110634  INFO [main]    com.oaklandsw.http.TestPerf - Threads: 1
+110634  INFO [main]    com.oaklandsw.http.TestPerf - Using max: 1 connections.
+112626  INFO [main]    com.oaklandsw.http.TestPerf - Total Time (ms): 1971 Time/trans (ms): 0.49275
+112626  INFO [main]    com.oaklandsw.http.TestPerf - 
+112626  INFO [main]    com.oaklandsw.http.TestPerf - Start Time: 00:00:28.740
+112626  INFO [main]    com.oaklandsw.http.TestPerf - Using: Jakarta implementation
+112626  INFO [main]    com.oaklandsw.http.TestPerf - URL: http://berlioz/oaklandsw-http/512k
+112626  INFO [main]    com.oaklandsw.http.TestPerf - Times/thread: 4000
+112626  INFO [main]    com.oaklandsw.http.TestPerf - Threads: 1
+112626  INFO [main]    com.oaklandsw.http.TestPerf - Using max: 1 connections.

@@ -1,0 +1,4 @@
+Where,Product,Size (K),Avg ms/Trans,Connections,Threads,Pipe Depth,Count,Repeats,Min ms/Trans,Max ms/Trans,Total ms
+Internet,Oakland,0,999999.0,1,1,,500,3,999999.0,999999.0,627
+Internet,Oakland,0,999999.0,1,2,,500,3,999999.0,999999.0,864
+Internet,Oakland,0,999999.0,1,5,,500,3,999999.0,999999.0,1731
