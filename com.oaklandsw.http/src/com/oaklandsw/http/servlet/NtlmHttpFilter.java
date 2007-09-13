@@ -23,7 +23,6 @@
 // This is substantially identical to it's corresponding
 // class is JCIFS (version 1.2.13), with some warnings cleaned up and
 // some additional tracing added.
-
 package com.oaklandsw.http.servlet;
 
 import java.io.*;
@@ -102,7 +101,7 @@ public class NtlmHttpFilter implements Filter
         if ((level = Config.getInt("jcifs.util.loglevel", -1)) != -1)
         {
             LogStream.setLevel(level);
-            //LogUtils.logAll();
+            // LogUtils.logAll();
         }
         if (LogStream.level > 2)
         {
@@ -139,8 +138,9 @@ public class NtlmHttpFilter implements Filter
         {
             if (LogStream.level > 1)
             {
-                log.println("oaklandsw - Authentication failed or not complete "
-                    + "- not calling downstream filters");
+                log
+                        .println("oaklandsw - Authentication failed or not complete "
+                            + "- not calling downstream filters");
             }
             return;
         }
@@ -288,10 +288,9 @@ public class NtlmHttpFilter implements Filter
             if (!skipAuthentication)
             {
                 HttpSession ssn = req.getSession(false);
-                // REMOVEME
-                if (true|| (ssn == null
+                if (ssn == null
                     || (ntlm = (NtlmPasswordAuthentication)ssn
-                            .getAttribute("NtlmHttpAuth")) == null))
+                            .getAttribute("NtlmHttpAuth")) == null)
                 {
                     resp.setHeader("WWW-Authenticate", "NTLM");
                     if (offerBasic)
