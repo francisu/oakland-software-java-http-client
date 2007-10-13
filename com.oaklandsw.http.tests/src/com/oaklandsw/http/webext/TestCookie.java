@@ -35,7 +35,7 @@ public class TestCookie extends HttpTestBase
 
     public void testSetCookie() throws Exception
     {
-        URL url = new URL("http://my.yahoo.com");
+        URL url = new URL("http://google.com");
         int response = 0;
 
         CookieContainer cc = new CookieContainer();

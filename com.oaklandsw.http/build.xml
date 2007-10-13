@@ -103,6 +103,9 @@
 				<section name="org/apache/regexp/">
 					<attribute name="Sealed" value="true" />
 				</section>
+				<section name="org/apache/commons/logging/">
+					<attribute name="Sealed" value="true" />
+				</section>
 			</manifest>
 		</jar>
 	</target>
