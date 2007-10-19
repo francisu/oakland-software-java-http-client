@@ -1,0 +1,11 @@
+1) This uses a customized version of commons-logging-1.1.jar which is build from
+the source in berlioz:/usr/src/commons-logging-1.1-src.  The only change is in LogFactoryImpl
+classesToDiscover has only LOG4j and the NoOp logger.  If commons-logging is upgraded
+then this change needs to be reapplied to the new version.
+
+2) This uses the source from the nightly 2007-05-07 commons logging with the above
+change applied to it.  It uses that snapshot source in order to get a bug fix
+that prevents an unsigned JWS use of the http client.
+
+
+FRU 1 Aug 2007

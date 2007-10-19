@@ -96,7 +96,7 @@
 			<fileset dir="../com.oaklandsw.util/bin" />
 			<zipfileset src="../com.oaklandsw.http.jars/jakarta-regexp-1.3.jar" excludes="**/*.txt" />
 			<zipfileset src="../com.oaklandsw.http.jars/backport-util-concurrent-2.2.jar" includes="**/AtomicInteger.class,**/locks/*.class,**/helpers/*.class,**/AbstractQueue*.class,**/**BlockingQueue*.class,**/AbstractCollection*.class,**/Queue*.class,**/TimeUnit*.class" excludes="**/*.txt" />
-			<zipfileset src="../com.oaklandsw.util.jars/${commons.logging.jar}" excludes="**/*.txt" />
+			<zipfileset src="../com.oaklandsw.http.jars/commons-logging-1.1.1-SNAPSHOT.jar" excludes="**/*.txt" />
 			<manifest>
 				<attribute name="Product-Version" value="${oaklandswVersion}" />
 				<attribute name="Created-By" value="Oakland Software Incorporated" />
@@ -255,9 +255,6 @@
 			</fileset>
 			<fileset dir="../com.oaklandsw.http.jars">
 				<include name="*.jar" />
-			</fileset>
-			<fileset dir="../com.oaklandsw.util.jars">
-				<include name="commons-logging*.jar" />
 			</fileset>
 			<zipfileset dir="../com.oaklandsw.http.tests/examplessrc/" prefix="examples">
 				<include name="**" />
