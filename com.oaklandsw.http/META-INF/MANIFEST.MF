@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Http Plug-in
 Bundle-SymbolicName: com.oaklandsw.http
-Bundle-Version: 2.6.6
+Bundle-Version: 2.6.7
 Bundle-Vendor: OAKLANDSW
 Require-Bundle: com.oaklandsw.util.jars,
  com.oaklandsw.util,
