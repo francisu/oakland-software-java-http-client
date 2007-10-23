@@ -10,17 +10,18 @@ NOTICE.txt
 
 Oakland Software Incorporated Java HTTP Client Binary or Source Code License
  
- 1. General Description. This binary or source code license ("License") contains
-    rights and restrictions associated with use of the accompanying
-    software and documentation ("Software"). Read the License
-    carefully before purchasing and using the Software. By purchasing and
-    using the Software, you agree to the terms and conditions of this
-    License.
+ 1. General Description. This binary or source code license
+    ("License") contains rights and restrictions associated with use
+    of the software named Oakland Software Java HTTP client and the
+    documentation regarding this software ("Software").  Read the
+    License carefully before purchasing and using the Software.  By
+    purchasing and using the Software, you agree to the terms and
+    conditions of this License.
  
  2. Limited License Grant. Oakland Software Incorporated ("Licensor" or
-    "oakland") grants to you ("Licensee") a non-exclusive,
+    "Oakland") grants to you ("Licensee") a non-exclusive,
     non-assignable, non-transferable limited license to use the
-    Software exlusively according to the terms of the License that
+    Software exclusively according to the terms of the License that
     was purchased:
     
  2a. Runtime License.  This is a per-developer License, meaning
@@ -29,14 +30,14 @@ Oakland Software Incorporated Java HTTP Client Binary or Source Code License
     use any number of runtime instances of the software within
     the Licensee company.  Each additional developer requires an 
     additional purchase of a Runtime License.  The Runtime License 
-    forbids distribution or use of the software outside of the 
+    forbids distribution or use of the Software outside of the 
     Licensee company, unless a Redistributable License is purchased.
     
  2b. Redistributable License.  The rights and restrictions of the 
     Runtime License with the additional right that the binary code may 
     be redistributed to others only as an embedded part of a 
     larger product whose functionality is significantly greater 
-    than that of the Java HTTP Client.
+    than that of the Software.
  	
  2c. Source License.  All of the rights of the Runtime License
     and Redistributable License are included in the Source License.  
@@ -46,20 +47,23 @@ Oakland Software Incorporated Java HTTP Client Binary or Source Code License
     outside the Licensee company in any form.  
  
  3. Other Restrictions. Software is confidential copyrighted
-    information of oakland and title to all copies is retained by
-    oakland and/or its licensors, if applicable. Licensee shall not
+    information of Oakland and title to all copies is retained by
+    Oakland and/or its licensors, if applicable. Licensee shall not
     modify, decompile, disassemble, decrypt, extract, or otherwise
-    reverse engineer Software. Software may not be leased, assigned,
-    or sublicensed, in whole or in part. Licensee accepts full
-    responsibility for use of the Software including, but not limited
-    to, acceptance of full responsibility pursuant to third party
-    software and licensing agreements regarding the use of the
+    reverse engineer Software. Except for the binary code of the
+    Software which may be assigned and redistributed to others as an
+    embedded part of a larger product if a Redistributable License or
+    a Source License is purchased, the Software may not be leased,
+    assigned, or sublicensed, in whole or in part. Licensee accepts
+    full responsibility for use of the Software including, but not
+    limited to, acceptance of full responsibility pursuant to third
+    party software and licensing agreements regarding the use of the
     Software to modify, examine, or otherwise process such third party
     software.
  
  4. Trademarks and Logos. This License does not authorize Licensee to
     use any name, trademark or logo of Licensor. Licensee acknowledges
-    that Licensor owns the "oakland software" logo. 
+    that Licensor owns the "Oakland software" logo. 
     Licensee shall neither take nor permit any action that will
     delete or obscure Licensor's copyright legend on any Software and
     any related documentation and materials.
@@ -67,14 +71,15 @@ Oakland Software Incorporated Java HTTP Client Binary or Source Code License
  5. Warranty of Software Title. Licensor warrants that it has the
     right to license the Software it purports to license to Licensee
     and that such Software does not infringe on any patent, copyright
-    or other proprietary right of any person. If any person makes 
-    any claim against Licensee asserting such infringement, then 
-    the Licensor shall, at its sole option, either: (a) defend 
-    Licensee all such claims; or (b) obtain for Licensee the right 
-    to continue using such Software.  Licensor shall fully indemnify, 
-    defend and hold harmless Licensee from and against all such claims, 
-    demands, causes of action, judgments, liabilities, damages, costs 
-    and expenses including but not limited to reasonable attorney fees.
+    or other proprietary right of any person. If any person makes any
+    claim against Licensee asserting such infringement, then the
+    Licensor shall, at its sole option, either: (a) defend Licensee
+    against all such claims; or (b) obtain for Licensee the right to
+    continue using such Software.  Licensor shall fully indemnify,
+    defend and hold harmless Licensee from and against all such
+    claims, demands, causes of action, judgements, liabilities,
+    damages, costs and expenses including but not limited to
+    reasonable attorney fees.
  
  6. Disclaimer of Warranty. Except as expressly provided in Paragraph
     5 above with respect to title, the Software is provided "AS IS,"
@@ -97,7 +102,7 @@ Oakland Software Incorporated Java HTTP Client Binary or Source Code License
  
  8. Termination. Licensee may terminate this License at any time by
     destroying all copies of Software. This License will terminate
-    immediately without notice from oakland if Licensee fails to comply
+    immediately without notice from Oakland if Licensee fails to comply
     with any provision of this License and does not cure such failure 
     within thirty (30) days after receiving written notice of such 
     failure from Licensor.  Upon such termination, Licensee must 
