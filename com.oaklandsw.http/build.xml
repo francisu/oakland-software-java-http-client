@@ -214,6 +214,7 @@
 			<fileset dir="${basedir}">
 				<include name="README" />
 				<include name="*LICENSE" />
+				<include name="*NOTICE*" />
 				<include name="*.sample" />
 				<include name="${package.name}.jar" />
 			</fileset>
