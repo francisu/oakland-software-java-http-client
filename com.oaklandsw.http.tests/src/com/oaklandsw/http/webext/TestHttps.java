@@ -60,6 +60,7 @@ import org.apache.commons.logging.Log;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
+import com.oaklandsw.http.Credential;
 import com.oaklandsw.http.HttpTestBase;
 import com.oaklandsw.http.HttpTestEnv;
 import com.oaklandsw.http.HttpURLConnection;
@@ -121,6 +122,35 @@ public class TestHttps extends HttpTestBase
     public void testHttpsGetNoPort() throws Exception
     {
         testHttpsGet(new URL(HttpTestEnv.TEST_WEBEXT_SSL_URL));
+    }
+
+    // Bug 2109 authentiation through proxy does not work with SSL
+    // when proxy credentials set for the connection
+    public void testHttpsGetAuthProxy() throws IOException
+    {
+        int response = 0;
+        
+        URL url = new URL(HttpTestEnv.TEST_WEBEXT_SSL_URL_PORT);
+        
+        HttpURLConnection.setDefaultUserAgent(null);
+
+        // System.out.println(System.currentTimeMillis() + " do get");
+        HttpURLConnection urlCon = HttpURLConnection.openConnection(url);
+        urlCon.setRequestMethod("GET");
+
+        urlCon.setConnectionProxyHost(HttpTestEnv.TEST_AUTH_PROXY_HOST);
+        urlCon.setConnectionProxyPort(HttpTestEnv.TEST_AUTH_PROXY_PORT);
+        urlCon.setConnectionProxyUser(HttpTestEnv.TEST_AUTH_PROXY_USER);
+        urlCon.setConnectionProxyPassword(HttpTestEnv.TEST_AUTH_PROXY_PASSWORD);
+        urlCon.setProxyAuthenticationType(Credential.AUTH_BASIC);
+
+        urlCon.connect();
+        response = urlCon.getResponseCode();
+        assertEquals(200, response);
+
+        String data = HttpTestBase.getReply(urlCon);
+        assertTrue("No data returned.", (data.length() > 0));
+        checkNoActiveConns(url);
     }
 
     public void allTestMethods() throws Exception

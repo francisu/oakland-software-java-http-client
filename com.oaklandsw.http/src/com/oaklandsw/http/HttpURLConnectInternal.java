@@ -162,6 +162,24 @@ public class HttpURLConnectInternal
     {
     }
 
+    // Used for tunneling to make sure we have the same authentication
+    // setup as the user connection
+    void copyAuthParamsFrom(HttpURLConnection urlCon)
+    {
+        // Use the values in the connection if they exist, otherwise
+        // whatever default values setup are used
+        if (urlCon.getConnectionProxyHost() != null)
+            setConnectionProxyHost(urlCon.getConnectionProxyHost());
+        if (urlCon.getConnectionProxyPort() != -1)
+            setConnectionProxyPort(urlCon.getConnectionProxyPort());
+        if (urlCon.getConnectionProxyUser() != null)
+            setConnectionProxyUser(urlCon.getConnectionProxyUser());
+        if (urlCon.getConnectionProxyPassword() != null)
+            setConnectionProxyPassword(urlCon.getConnectionProxyPassword());
+        if (urlCon.getUserAgent() != null)
+            setUserAgent(urlCon.getUserAgent());
+    }
+
     static String authStateToString(int authState)
     {
         switch (authState)
@@ -768,7 +786,8 @@ public class HttpURLConnectInternal
                     _hdrContentType = value;
                     _hdrContentTypeLen = valueLen;
                 }
-                else if (Util.bytesEqual(HDR_CONTENT_ENCODING_LC, name, nameLen))
+                else if (Util
+                        .bytesEqual(HDR_CONTENT_ENCODING_LC, name, nameLen))
                 {
                     _hdrContentEncoding = value;
                     _hdrContentEncodingLen = valueLen;
@@ -1156,7 +1175,7 @@ public class HttpURLConnectInternal
         {
             return false;
         }
-        
+
         // Nothing to write
         if (_contentLength == 0)
         {
@@ -2073,7 +2092,8 @@ public class HttpURLConnectInternal
                 {
                     connection.startPreventClose();
                     _callback.writeRequest(this, os);
-                    _connManager.recordCount(HttpConnectionManager.COUNT_PIPELINE_WRITE_REQ);
+                    _connManager
+                            .recordCount(HttpConnectionManager.COUNT_PIPELINE_WRITE_REQ);
                 }
                 finally
                 {
@@ -2306,7 +2326,8 @@ public class HttpURLConnectInternal
                     else
                     {
                         _callback.readResponse(this, is);
-                        _connManager.recordCount(HttpConnectionManager.COUNT_PIPELINE_READ_RESP);
+                        _connManager
+                                .recordCount(HttpConnectionManager.COUNT_PIPELINE_READ_RESP);
                     }
 
                     // Inside of the call to the user a stream got closed and
@@ -2508,10 +2529,10 @@ public class HttpURLConnectInternal
         if (ok)
         {
             _log.debug("streaming write finished");
-            
+
             if (doOutput)
                 _connection.conditionalFlush(this);
-            
+
             _streamingWritingFinished = true;
             if ((_pipeliningOptions & PIPE_PIPELINE) != 0)
             {

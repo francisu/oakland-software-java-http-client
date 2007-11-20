@@ -1631,7 +1631,7 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
                 _connection.setConnectTimeout(_connectionTimeout);
                 _connection.setSSLSocketFactory(_sslSocketFactory);
                 _connection.setHostnameVerifier(_hostnameVerifier);
-                _connection.open();
+                _connection.open(this);
             }
 
             setStreams();

@@ -121,7 +121,7 @@ public class SimpleHttpConnection extends HttpConnection
         _connectionInfo = new ConnectionInfo(_connManager, host);
     }
 
-    public void open() throws IOException
+    public void open(HttpURLConnection urlCon) throws IOException
     {
         _state = CS_OPEN;
         _log.trace("open");

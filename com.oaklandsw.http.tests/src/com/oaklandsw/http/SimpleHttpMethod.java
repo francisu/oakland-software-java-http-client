@@ -109,7 +109,7 @@ public class SimpleHttpMethod extends HttpURLConnectInternal
             return;
 
         _connection = _saveConnection;
-        _connection.open();
+        _connection.open(null);
         _conInStream = _connection.getInputStream();
         _conOutStream = _connection.getOutputStream();
         connected = true;

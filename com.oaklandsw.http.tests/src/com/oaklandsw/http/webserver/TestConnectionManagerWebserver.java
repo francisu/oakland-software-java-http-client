@@ -105,7 +105,7 @@ public class TestConnectionManagerWebserver extends HttpTestBase
 
         // Create a new connection
         HttpConnection conn1 = _connManager.getConnection(urlCon);
-        conn1.open();
+        conn1.open(urlCon);
         // Release the connection
         _connManager.releaseConnection(conn1);
 

@@ -747,7 +747,7 @@ public class HttpConnection
      * @throws IOException
      *             when there are errors opening the connection
      */
-    public void open() throws IOException
+    public void open(HttpURLConnection urlCon) throws IOException
     {
         // Lock to synchronize with close
         // WARNING - the connMgr lock cannot be locked while this lock is held
@@ -762,7 +762,7 @@ public class HttpConnection
 
         _connLog.trace("open");
         if (null == _socket)
-            normalOpen();
+            normalOpen(urlCon);
     }
 
     void openSocket() throws IOException
@@ -807,7 +807,7 @@ public class HttpConnection
         createStreams();
     }
 
-    private final void normalOpen() throws IOException
+    private final void normalOpen(HttpURLConnection urlCon) throws IOException
     {
         try
         {
@@ -835,7 +835,12 @@ public class HttpConnection
             {
                 _connLog.debug("creating tunnel");
 
-                _tunnelCon = new HttpURLConnectInternal();
+                _tunnelCon = new HttpURLConnectInternal(urlCon != null ? urlCon
+                        .getURL() : null);
+                
+                // Could be null in tests
+                if (urlCon != null)
+                    _tunnelCon.copyAuthParamsFrom(urlCon);
 
                 // Set this connection to open so that the
                 // URL connection does not try to open it
@@ -942,8 +947,7 @@ public class HttpConnection
     {
         return _socket;
     }
-    
-    
+
     private final void checkCertificate(X509Certificate cert, String hostName)
         throws IOException
     {
@@ -1073,7 +1077,7 @@ public class HttpConnection
 
         if (_connLog.isDebugEnabled())
             _connLog.debug("sendbuf size: " + buffSize);
-        //System.out.println("sendbuf size: " + buffSize);
+        // System.out.println("sendbuf size: " + buffSize);
         _output = new ExposedBufferOutputStream(os, buffSize)
         {
             protected void countFlush()
@@ -1086,7 +1090,7 @@ public class HttpConnection
         if (gs._readBufferSize != -1)
             _socket.setReceiveBufferSize(gs._readBufferSize);
         buffSize = _socket.getReceiveBufferSize();
-        //System.out.println("recvbuf size: " + buffSize);
+        // System.out.println("recvbuf size: " + buffSize);
         if (_connLog.isDebugEnabled())
             _connLog.debug("recvbuf size: " + buffSize);
         _input = new ExposedBufferInputStream(is, buffSize);
