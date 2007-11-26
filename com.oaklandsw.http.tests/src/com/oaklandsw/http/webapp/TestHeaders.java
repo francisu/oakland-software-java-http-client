@@ -131,6 +131,22 @@ public class TestHeaders extends TestWebappBase
         checkNoActiveConns(url);
     }
 
+    public void testGetResponseHeader0() throws Exception
+    {
+        URL url = new URL(_urlBase + HeaderServlet.NAME);
+        int response = 0;
+
+        HttpURLConnection urlCon = HttpURLConnection.openConnection(url);
+        urlCon.setRequestMethod("GET");
+        urlCon.connect();
+        response = urlCon.getResponseCode();
+        assertEquals(200, response);
+        assertEquals("HTTP/1.1 200 OK", urlCon.getHeaderField(0));
+
+        urlCon.getInputStream().close();
+        checkNoActiveConns(url);
+    }
+
     public void testHostRequestHeaderIp() throws Exception
     {
         // This only works if we are proxying through something on this

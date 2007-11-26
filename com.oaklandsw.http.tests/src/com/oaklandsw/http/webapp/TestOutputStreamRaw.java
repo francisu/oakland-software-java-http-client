@@ -73,6 +73,7 @@ public class TestOutputStreamRaw extends TestOutputStream
 
         // This line below was missing in the customer's example
         connection.getResponseCode();
+        
         assertTrue(connection.getHeaderFields().size() > 0);
         assertTrue(connection.getHeadersLength() > 0);
     }
