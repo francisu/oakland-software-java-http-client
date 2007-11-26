@@ -1808,6 +1808,10 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
 
     /**
      * @see java.net.HttpURLConnection#getHeaderField(String)
+     * 
+     * Before calling this, you must call either getResponseCode() or
+     * getInputStream() to read the response.
+     * 
      */
     public String getHeaderField(String name)
     {
@@ -1820,6 +1824,9 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
 
     /**
      * @see java.net.URLConnection#getHeaderFields()
+
+     * Before calling this, you must call either getResponseCode() or
+     * getInputStream() to read the response.
      */
     public Map getHeaderFields()
     {
@@ -1830,6 +1837,9 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
 
     /**
      * @see java.net.HttpURLConnection#getHeaderFieldKey(int)
+
+     * Before calling this, you must call either getResponseCode() or
+     * getInputStream() to read the response.
      */
     public String getHeaderFieldKey(int keyPosition)
     {
@@ -1849,6 +1859,9 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
 
     /**
      * @see java.net.HttpURLConnection#getHeaderField(int)
+
+     * Before calling this, you must call either getResponseCode() or
+     * getInputStream() to read the response.
      */
     public String getHeaderField(int position)
     {
@@ -1876,6 +1889,9 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
 
     /**
      * Returns the number of response headers.
+
+     * Before calling this, you must call either getResponseCode() or
+     * getInputStream() to read the response.
      */
     public int getHeadersLength()
     {
