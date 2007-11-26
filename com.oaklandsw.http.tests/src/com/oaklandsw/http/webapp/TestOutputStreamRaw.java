@@ -52,7 +52,29 @@ public class TestOutputStreamRaw extends TestOutputStream
         os.write(str.getBytes());
         os.close();
         assertEquals(200, urlCon.getResponseCode());
+        assertTrue(urlCon.getHeaderFields().size() > 0);
         urlCon.getInputStream().close();
+    }
+
+    // Submitted from a customer
+    public void testGetGoogle() throws Exception
+    {
+        String request = "GET / HTTP/1.1\r\n"
+            + "Host: www.google.com\r\n"
+            + "\r\n";
+
+        URL url = new URL("http", "www.google.com", 80, "/");
+        HttpURLConnection connection = HttpURLConnection.openConnection(url);
+        connection.setDoOutput(true);
+        connection.setRawStreamingMode(true);
+
+        connection.getOutputStream().write(request.getBytes("UTF-8"));
+        connection.getOutputStream().close();
+
+        // This line below was missing in the customer's example
+        connection.getResponseCode();
+        assertTrue(connection.getHeaderFields().size() > 0);
+        assertTrue(connection.getHeadersLength() > 0);
     }
 
     public void testGetBad() throws Exception
@@ -82,6 +104,5 @@ public class TestOutputStreamRaw extends TestOutputStream
     {
         // Don't bother with these since we are writing raw output
     }
-
 
 }
