@@ -44,11 +44,6 @@ public class TestUserAgent implements HttpUserAgent
             + " scheme: "
             + scheme);
 
-        if (!url.startsWith("http"))
-        {
-            throw new RuntimeException("Invalid URL String: " + url);
-        }
-
         if (_type == NULL)
         {
             _log.debug("TestUserAgent - Returning null cred");
@@ -215,11 +210,6 @@ public class TestUserAgent implements HttpUserAgent
             + " scheme: "
             + scheme);
 
-        if (!url.startsWith("http"))
-        {
-            throw new RuntimeException("Invalid URL String: " + url);
-        }
-
         if (_proxyType == NULL)
         {
             _log.debug("TestUserAgent - Returning null proxy cred");
@@ -253,6 +243,9 @@ public class TestUserAgent implements HttpUserAgent
                         break;
                 }
                 cred = basicCred;
+                break;
+            case Credential.AUTH_NTLM:
+                cred = getCredential(realm, url, scheme);
                 break;
         }
 

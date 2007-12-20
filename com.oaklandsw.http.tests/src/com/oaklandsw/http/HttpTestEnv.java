@@ -18,9 +18,13 @@ public class HttpTestEnv
                                                              .getProperty("oaklandsw.windowshost",
                                                                           "repoman");
 
+    public static final String WIN2K3_HOST             = System
+                                                             .getProperty("oaklandsw.win2k3host",
+                                                                          "win2k3");
+
     public static final String LINUX_HOST            = System
                                                              .getProperty("oaklandsw.linuxhost",
-                                                                          "berlioz");
+                                                                          "192.168.1.25");
 
     public static String       TEST_WEBEXT_SSL_HOST  = "www.verisign.com";
 
@@ -52,9 +56,17 @@ public class HttpTestEnv
                                                              .getProperty("oaklandsw.tomcathost",
                                                                           LINUX_HOST);
 
+    public static final String FTP_HOST              = System
+                                                             .getProperty("oaklandsw.ftphost",
+                                                                          LINUX_HOST);
+
     public static final String IIS_HOST              = System
                                                              .getProperty("oaklandsw.iishost",
                                                                           WINDOWS_HOST);
+
+    public static final String ISA_HOST              = System
+                                                             .getProperty("oaklandsw.iishost",
+                                                                          WIN2K3_HOST);
 
     public static final String NETPROXY_HOST         = System
                                                              .getProperty("oaklandsw.netproxyhost",
@@ -78,6 +90,9 @@ public class HttpTestEnv
 
     // IIS (windows)
     public static int          TEST_IIS_PORT                     = 80;
+
+    // ISA (win2k3 vm)
+    public static int          TEST_ISA_PORT                     = 8080;
 
     // All of these are served through the same apache server
     public static int          TEST_WEBDAV_PORT                  = 8091;
@@ -114,6 +129,12 @@ public class HttpTestEnv
     public static String       TEST_URL_APP_IIS_FORM             = "Form_JScript.asp";
     public static String       TEST_URL_APP_IIS_QUERY_STRING     = "QueryString_JScript.asp";
 
+
+    // For ISA on win2k3
+    public static String       TEST_ISA_USER                     = "httptest";
+    public static String       TEST_ISA_PASSWORD                 = "httptestpw";
+
+    
     // Officeshare iceweb
     public static String       TEST_ICEWEB_URL                   = "http://sharepoint.iceweb.com/sites/demo/_vti_bin/Lists.asmx";
     public static String       TEST_ICEWEB_USER                  = "demo";

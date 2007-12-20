@@ -40,6 +40,8 @@ public class AllWebappTests extends TestCaseBase
         suite.addTest(TestNoData.suite());
         suite.addTest(TestDisconnect.suite());
         suite.addTest(TestWebStart.suite());
+        suite.addTest(TestTunneling.suite());
+        suite.addTest(TestFtpProxy.suite());
         return suite;
     }
 

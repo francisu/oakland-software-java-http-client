@@ -41,6 +41,8 @@ public class HttpURLConnectInternal
     private static final Log _connLog             = LogFactory
                                                           .getLog(HttpConnection.CONN_LOG);
 
+    private String           _scheme;
+
     private String           _pathQuery;
 
     /**
@@ -320,6 +322,7 @@ public class HttpURLConnectInternal
 
     protected final void setUrl(String urlParam) throws MalformedURLException
     {
+        _scheme = URIUtil.getProtocol(urlParam);
         _pathQuery = URIUtil.getPathQuery(urlParam);
         if (_log.isDebugEnabled())
         {
@@ -923,6 +926,13 @@ public class HttpURLConnectInternal
 
     protected final void isResponseEmpty() throws IOException
     {
+        // We will use the response at some point, for tunneling
+        if ((_actualMethodPropsSent & METHOD_PROP_SUPPORTS_TUNNELED) != 0)
+        {
+            _responseIsEmpty = false;
+            return;
+        }
+
         // Does not have a response body, even though the headers suggest
         // that it does
         if ((_actualMethodPropsSent & METHOD_PROP_IGNORE_RESPONSE_BODY) != 0)
@@ -1058,6 +1068,8 @@ public class HttpURLConnectInternal
         {
             _log.debug("writeRequest - streaming request header sent");
             _requestSent = true;
+            if (_streamingMode > STREAM_DEFER_RESPONSE_END)
+                _conOutStream.flush();
             return;
         }
 
@@ -1110,10 +1122,12 @@ public class HttpURLConnectInternal
         {
             if (_connection.isProxied() && !_connection.isTransparent())
             {
-                if (_connection.isSecure())
-                    str = "https://";
-                else
-                    str = "http://";
+                str = _scheme;
+                len = str.length();
+                str.getBytes(0, len, bytes, index);
+                index += len;
+
+                str = "://";
                 len = str.length();
                 str.getBytes(0, len, bytes, index);
                 index += len;
@@ -1865,7 +1879,7 @@ public class HttpURLConnectInternal
                     // the request so the normal pipelining mechanism can be
                     // used
                     if (_forwardAuthCount == 1
-                        && (_streamingMode > STREAM_NONE || (_pipeliningOptions & PIPE_PIPELINE) != 0))
+                        && (streamingDeferResponse() || (_pipeliningOptions & PIPE_PIPELINE) != 0))
                     {
                         _connLog.warn("setAuthenticationType() specified with "
                             + "pipelining/streaming, but no authorization "
@@ -1999,6 +2013,13 @@ public class HttpURLConnectInternal
             return;
         }
 
+        if (_streamingMode == STREAM_TUNNELED
+            && (_actualMethodPropsSent & METHOD_PROP_SUPPORTS_TUNNELED) == 0)
+        {
+            throw new IllegalStateException("Can only using tunneled streaming "
+                + "mode with the an HTTP method that supports is (e.g. CONNECT)");
+        }
+
         // Reset to the real method we want, this might have been changed
         // earlier during authentication
         _actualMethodPropsSent = _methodProperties;
@@ -2020,7 +2041,7 @@ public class HttpURLConnectInternal
         {
             if (!_streamingWritingFinished)
             {
-                if (streaming)
+                if (streamingDeferResponse())
                 {
                     streamWriteFinished(!OK);
                     String msg = "Cannot execute the HTTP request "
@@ -2053,7 +2074,8 @@ public class HttpURLConnectInternal
             // For a bad response, we buffer the output so we can
             // release the connection, this way the user is not
             // required to read it
-            if (_responseIsEmpty || _responseCode >= 400)
+            if ((_streamingMode <= STREAM_DEFER_RESPONSE_END)
+                && (_responseIsEmpty || _responseCode >= 400))
                 releaseConnection(READING);
         }
 
@@ -2576,9 +2598,17 @@ public class HttpURLConnectInternal
     // to pipelining or streaming
     protected boolean readSeparateFromWrite()
     {
-        return (_streamingMode > STREAM_NONE || (_pipeliningOptions & PIPE_PIPELINE) != 0)
+        return (streamingDeferResponse() || (_pipeliningOptions & PIPE_PIPELINE) != 0)
             && (_currentAuthType == -1
                 || _authState[_currentAuthType] == AS_NONE || _authState[_currentAuthType] >= AS_FINAL_AUTH_SENT);
+    }
+
+    // Streaming mode, but we don't get the response until the streaming is done
+    // by the user. TUNNELED streaming mode is not like this.
+    protected boolean streamingDeferResponse()
+    {
+        return _streamingMode > STREAM_NONE
+            && _streamingMode <= STREAM_DEFER_RESPONSE_END;
     }
 
     void setConnection(HttpConnection conn, boolean release) throws IOException

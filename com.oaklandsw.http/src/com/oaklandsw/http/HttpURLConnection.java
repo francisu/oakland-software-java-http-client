@@ -259,6 +259,11 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
     public static final int            METHOD_PROP_LEAVE_OPEN               = 0x0400;
 
     /**
+     * This method supports the tunneling streaming mode (CONNECT)
+     */
+    public static final int            METHOD_PROP_SUPPORTS_TUNNELED        = 0x0800;
+
+    /**
      * This is what the method properties are set to initially, this value
      * indicates no method was specified. If this is the case, then the GET
      * method is assumed.
@@ -520,9 +525,16 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
     protected static final int         DEFAULT_CHUNK_LEN                    = 4096;
 
     static final int                   STREAM_NONE                          = 0;
+
+    // These first stream modes defer getting the response until the streaming
+    // IO is done
     static final int                   STREAM_CHUNKED                       = 1;
     static final int                   STREAM_FIXED                         = 2;
     static final int                   STREAM_RAW                           = 3;
+    static final int                   STREAM_DEFER_RESPONSE_END            = STREAM_RAW;
+
+    // These stream modes send and receive the response and then can stream
+    static final int                   STREAM_TUNNELED                      = 4;
 
     protected int                      _streamingMode;
 
@@ -719,6 +731,7 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
             setMethodProperties(HTTP_METHOD_CONNECT,
                                 METHOD_PROP_IGNORE_RESPONSE_BODY
                                     | METHOD_PROP_REQ_LINE_HOST_PORT
+                                    | METHOD_PROP_SUPPORTS_TUNNELED
                                     | METHOD_PROP_LEAVE_OPEN);
 
             // WebDAV methods
@@ -1319,7 +1332,7 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
                 + "- call setDoOutput(true)");
         }
 
-        if (_executed)
+        if (_executed && _streamingMode > STREAM_DEFER_RESPONSE_END)
         {
             throw new IllegalStateException("The reply to this URLConnection has already been received");
         }
@@ -1357,6 +1370,7 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
                                                                       this,
                                                                       throwAutoRetry);
                         return _outStream;
+
                     case STREAM_FIXED:
                         _contentLength = _streamingFixedLen;
                         executeStart();
@@ -1369,10 +1383,22 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
                                                                     throwAutoRetry,
                                                                     _streamingFixedLen);
                         return _outStream;
+
                     case STREAM_RAW:
                         executeStart();
 
                         _log.debug("getOutputStream - "
+                            + "returning StreamingRawOutputStream");
+                        _outStream = new StreamingRawOutputStream(_connection
+                                .getOutputStream(), this, throwAutoRetry);
+                        return _outStream;
+
+                    case STREAM_TUNNELED:
+                        // We want to execute the whole thing, since we start
+                        // our I/O only after the connection is executed
+                        execute();
+
+                        _log.debug("getOutputStream - (tunneled) "
                             + "returning StreamingRawOutputStream");
                         _outStream = new StreamingRawOutputStream(_connection
                                 .getOutputStream(), this, throwAutoRetry);
@@ -1807,6 +1833,40 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
     }
 
     /**
+     * Used to allow direct access to a tunneled connection.
+     * <p>
+     * When using this option, you get the OutputStream using
+     * {@link #getOutputStream()} and then can write to the tunneled connection
+     * as desired. You can also use {@link #getInputStream()} to read from the
+     * tunneled connection.
+     * <p>
+     * When you are doing using the connection, simply close both the input and
+     * output streams.
+     * 
+     * @param useTunneled
+     *            True if enabling tunneled streaming, false if not
+     * @throws IllegalStateException -
+     *             If the connection is already connected or a different
+     *             streaming mode has been set.
+     */
+    public void setTunneledStreamingMode(boolean useTunneled)
+    {
+        if (connected)
+            throw new IllegalStateException();
+        if (true)
+        {
+            if (_streamingMode != STREAM_NONE
+                && _streamingMode != STREAM_TUNNELED)
+                throw new IllegalStateException();
+            _streamingMode = STREAM_TUNNELED;
+        }
+        else
+        {
+            _streamingMode = STREAM_NONE;
+        }
+    }
+
+    /**
      * @see java.net.HttpURLConnection#getHeaderField(String)
      * 
      * Before calling this, you must call either getResponseCode() or
@@ -1824,7 +1884,7 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
 
     /**
      * @see java.net.URLConnection#getHeaderFields()
-
+     * 
      * Before calling this, you must call either getResponseCode() or
      * getInputStream() to read the response.
      */
@@ -1837,7 +1897,7 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
 
     /**
      * @see java.net.HttpURLConnection#getHeaderFieldKey(int)
-
+     * 
      * Before calling this, you must call either getResponseCode() or
      * getInputStream() to read the response.
      */
@@ -1859,7 +1919,7 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
 
     /**
      * @see java.net.HttpURLConnection#getHeaderField(int)
-
+     * 
      * Before calling this, you must call either getResponseCode() or
      * getInputStream() to read the response.
      */
@@ -1889,7 +1949,7 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
 
     /**
      * Returns the number of response headers.
-
+     * 
      * Before calling this, you must call either getResponseCode() or
      * getInputStream() to read the response.
      */

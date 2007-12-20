@@ -590,13 +590,8 @@ public class HttpConnectionManager
         }
 
         // Get the protocol and port (use default port if not specified)
+        // FIXME - this is called also in HttpURLConnectInternal
         final String protocol = URIUtil.getProtocol(url);
-        if (!protocol.toLowerCase().startsWith("http"))
-        {
-            throw new IllegalArgumentException("The protocol must be http or https; found: "
-                + protocol);
-        }
-
         String hostAndPort = URIUtil.getProtocolHostPort(url);
         String connectionKey = getConnectionKey(hostAndPort,
                                                 proxyHost,

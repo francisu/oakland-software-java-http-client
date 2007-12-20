@@ -61,6 +61,11 @@ public class HttpTestBase extends com.oaklandsw.TestCaseBase
     protected boolean          _do10ProxyTest;
     protected boolean          _in10ProxyTest;
 
+    // Enables the ISA proxy test for all of the test methods
+    // defined in allTestMethods()
+    protected boolean          _doIsaProxyTest;
+    protected boolean          _inIsaProxyTest;
+
     // Enables the authentication proxy test for all of the test methods
     // defined in allTestMethods()
     protected boolean          _doAuthProxyTest;
@@ -123,6 +128,7 @@ public class HttpTestBase extends com.oaklandsw.TestCaseBase
                 urlCon.setRequestMethod("GET");
                 urlCon.setRequestProperty("timeout", "4000");
                 urlCon.getResponseCode();
+                urlCon.getInputStream().close();
             }
             catch (Exception ex)
             {
@@ -534,6 +540,32 @@ public class HttpTestBase extends com.oaklandsw.TestCaseBase
         }
     }
 
+    // Test everything through a the ISA proxy
+    public void testIsaProxy() throws Exception
+    {
+        if (!_doIsaProxyTest)
+            return;
+
+        LogUtils.logAll();
+        
+        _testAllName = "testIsaProxy";
+        _inIsaProxyTest = true;
+        _inTestGroup = true;
+        HttpURLConnection.setProxyHost(HttpTestEnv.ISA_HOST);
+        HttpURLConnection.setProxyPort(HttpTestEnv.TEST_ISA_PORT);
+
+        try
+        {
+            // LogUtils.logFile("/home/francis/log4j10proxy.txt");
+            allTestMethods();
+        }
+        finally
+        {
+            resetProxyParams();
+            _inIsaProxyTest = false;
+        }
+    }
+
     protected boolean isInAuthProxyTest()
     {
         return _inAuthProxyTest || _inAuthCloseProxyTest;
@@ -549,7 +581,7 @@ public class HttpTestBase extends com.oaklandsw.TestCaseBase
     // response.
     protected boolean isAllowNtlmProxy()
     {
-        return !isInAuthProxyTest() && !_inProxyTest;
+        return (!isInAuthProxyTest() && !_inProxyTest) || _inIsaProxyTest;
     }
 
     // Test everything through an authenticating proxy server (uses only basic)
