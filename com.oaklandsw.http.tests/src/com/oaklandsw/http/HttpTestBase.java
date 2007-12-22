@@ -546,8 +546,6 @@ public class HttpTestBase extends com.oaklandsw.TestCaseBase
         if (!_doIsaProxyTest)
             return;
 
-        LogUtils.logAll();
-        
         _testAllName = "testIsaProxy";
         _inIsaProxyTest = true;
         _inTestGroup = true;

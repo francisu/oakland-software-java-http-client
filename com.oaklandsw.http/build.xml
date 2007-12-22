@@ -203,7 +203,7 @@
 	<!-- =================================================================== -->
 	<target name="dist" depends="javadoc, obf-java">
 		<!-- create eval JAR which is just the real version missing the lic file -->
-		<jar jarfile="${eval.jar.name}">
+		<jar jarfile="${eval.jar.name}" filesetmanifest="merge">
 			<zipfileset src="${package.name}.jar">
 				<exclude name="com/oaklandsw/http/${licfile}" />
 			</zipfileset>

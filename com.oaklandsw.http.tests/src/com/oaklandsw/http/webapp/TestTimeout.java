@@ -101,8 +101,6 @@ public class TestTimeout extends TestWebappBase
     // Tests timeout waiting for a connection to be available
     public void testConnectWaitForThread() throws Exception
     {
-        LogUtils.logAll();
-        
         // Use up up lots of connections available by default
         for (int i = 0; i < CONN_COUNT; i++)
             (new OpenThread()).start();
