@@ -39,10 +39,10 @@ import com.oaklandsw.http.Cookie;
 import com.oaklandsw.http.CookieContainer;
 import com.oaklandsw.http.CookiePolicy;
 import com.oaklandsw.http.Credential;
+import com.oaklandsw.http.HttpURLConnectInternal;
 import com.oaklandsw.http.HttpURLConnection;
 import com.oaklandsw.http.HttpUserAgent;
 import com.oaklandsw.http.UserCredential;
-import com.oaklandsw.http.axis2.OaklandHTTPTransportSender2;
 import com.oaklandsw.util.LogUtils;
 import com.oaklandsw.util.Util;
 
@@ -158,7 +158,7 @@ public class OaklandHTTPSender extends BasicHandler implements HttpUserAgent
             }
 
             // Setup web services for dummy authentication startup for NTLM
-            OaklandHTTPTransportSender2.setupAuthDummy(urlCon, msgContext
+            HttpURLConnectInternal.setupAuthDummy(urlCon, msgContext
                     .getSOAPConstants() == SOAPConstants.SOAP11_CONSTANTS);
 
             if (posting)

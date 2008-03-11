@@ -33,7 +33,6 @@ import com.oaklandsw.http.cookie.CookieSpec;
 import com.oaklandsw.util.ExposedBufferInputStream;
 import com.oaklandsw.util.LogUtils;
 import com.oaklandsw.util.Util;
-import com.oaklandsw.util.Util14Controller;
 
 /**
  * A URLConnection with support for HTTP-specific features.
@@ -155,18 +154,12 @@ import com.oaklandsw.util.Util14Controller;
  */
 public abstract class HttpURLConnection extends java.net.HttpURLConnection
 {
-    static
-    {
-        // Turn off the logging if there is no log4j configuration
-        LogUtils.checkInitialLogging();
 
-        // Avoid attempting to load the 1.4 support since this must run
-        // on 1.2 systems
-        Util14Controller._dontLoad14 = true;
-    }
+    // Number of times in a static initializer or init() method
+    private static int                 _inStaticInit                        = 0;
 
-    private static final Log           _log                                 = LogUtils
-                                                                                    .makeLogger();
+    // Initialize this after the call to checkInitialLogging();
+    private static Log                 _log;
 
     public static final String         HTTP_METHOD_GET                      = "GET";
     public static final String         HTTP_METHOD_POST                     = "POST";
@@ -544,9 +537,6 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
     // If the "Expect" request header is present
     protected boolean                  _expectContinue;
 
-    // From RFC 2616 section 8.1.4
-    public static int                  DEFAULT_MAX_CONNECTIONS              = GlobalState.DEFAULT_MAX_CONNECTIONS;
-
     protected Callback                 _callback;
 
     protected int                      _connectionTimeout;
@@ -601,12 +591,14 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
 
     protected int                      _connectionRequestLimit;
 
-    public static int                  MAX_TRIES                            = GlobalState.MAX_TRIES;
     protected int                      _maxTries;
 
     protected int[]                    _authenticationType                  = new int[AUTH_PROXY + 1];
 
     protected SSLSocketFactory         _sslSocketFactory;
+    protected AbstractSocketFactory    _socketFactory;
+
+    protected boolean                  _forceSsl;
 
     protected HostnameVerifier         _hostnameVerifier;
 
@@ -658,8 +650,6 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
 
     private static boolean             _inLicenseCheck;
 
-    private static boolean             _inInit;
-
     // Used only for testing purposes
     private static URL                 _testURL;
 
@@ -689,14 +679,52 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
     static byte[]                      DEFAULT_USER_AGENT_BYTES             = DEFAULT_USER_AGENT
                                                                                     .getBytes();
 
-    private static void init()
-    {
-        // Turn off the logging if there is no log4j configuration
-        LogUtils.checkInitialLogging();
+    // Run the static initializer after all of the constants above have been
+    // setup. Nothing above can depend on GlobalState because we want
+    // GlobalState to be initialized here.
 
+    static
+    {
         try
         {
-            _inInit = true;
+            if (_inStaticInit == 0)
+            {
+                _inStaticInit++;
+
+                // Turn off the logging if there is no log4j configuration
+                LogUtils.checkInitialLogging();
+
+                _log = LogUtils.makeLogger();
+
+                // Causes init() to run
+                resetGlobalState();
+
+                checkConnectionManager();
+
+                initLicense();
+            }
+        }
+        finally
+        {
+            _inStaticInit--;
+        }
+    }
+
+    // Now that GlobalState has been loaded, we can refer to it
+
+    // From RFC 2616 section 8.1.4
+    public static int                  DEFAULT_MAX_CONNECTIONS              = GlobalState.DEFAULT_MAX_CONNECTIONS;
+    public static int                  MAX_TRIES                            = GlobalState.MAX_TRIES;
+
+    private static void init()
+    {
+        try
+        {
+            // Make sure we don't reset the connection manager during this
+            // initialization
+            _inStaticInit++;
+
+            // This will be null after a resetConnectionManager()
             if (_globalState._connManager == null)
                 _globalState._connManager = new HttpConnectionManager(_globalState);
 
@@ -1017,6 +1045,12 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
         if (USER_AGENT == null)
             USER_AGENT = DEFAULT_USER_AGENT_BYTES;
 
+        _inStaticInit--;
+
+    }
+
+    private static void initLicense()
+    {
         // Do the license check last to make sure we are fully up, because
         // the license check can cause a use of the HTTP client (in the
         // case where it needs to get a resource) which we must
@@ -1057,16 +1091,7 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
         finally
         {
             _inLicenseCheck = false;
-            _inInit = false;
         }
-    }
-
-    static
-    {
-        resetGlobalState();
-
-        // Causes init() to run
-        checkConnectionManager();
     }
 
     public HttpURLConnection()
@@ -1079,6 +1104,11 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
     {
         synchronized (HttpURLConnection.class)
         {
+            // This could be null if being reentered when
+            // during the static initialization
+            if (_globalState == null)
+                resetGlobalState();
+
             if (_globalState._connManager == null)
             {
                 // init() creates a new cm
@@ -1093,7 +1123,7 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
         synchronized (HttpURLConnection.class)
         {
             // Use the same CM through the init() method
-            if (!_inInit)
+            if (_inStaticInit == 0)
                 _globalState._connManager = null;
         }
     }
@@ -1168,8 +1198,8 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
         _proxyUser = gs._proxyUser;
         _proxyPassword = gs._proxyPassword;
 
-        _sslSocketFactory = gs._defaultSSLSocketFactory;
         _hostnameVerifier = gs._defaultHostnameVerifier;
+        _socketFactory = gs._defaultSocketFactory;
 
         _connManager.recordCount(HttpConnectionManager.COUNT_ATTEMPTED);
     }
@@ -1655,7 +1685,7 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
             {
                 _log.debug("Opening the connection.");
                 _connection.setConnectTimeout(_connectionTimeout);
-                _connection.setSSLSocketFactory(_sslSocketFactory);
+                _connection.setSSLSocketFactory(getSSLSocketFactory());
                 _connection.setHostnameVerifier(_hostnameVerifier);
                 _connection.open(this);
             }
@@ -3896,7 +3926,8 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
      */
     public static SSLSocketFactory getDefaultSSLSocketFactory()
     {
-        return checkConnectionManager()._globalState._defaultSSLSocketFactory;
+        return checkConnectionManager()._globalState
+                .getDefaultSSLSocketFactory();
     }
 
     /**
@@ -3904,7 +3935,8 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
      */
     public static void setDefaultSSLSocketFactory(SSLSocketFactory factory)
     {
-        checkConnectionManager()._globalState._defaultSSLSocketFactory = factory;
+        checkConnectionManager()._globalState
+                .setDefaultSSLSocketFactory(factory);
     }
 
     /**
@@ -3912,6 +3944,9 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
      */
     public SSLSocketFactory getSSLSocketFactory()
     {
+        // Do this only when requested
+        if (_sslSocketFactory == null)
+            _sslSocketFactory = getDefaultSSLSocketFactory();
         return _sslSocketFactory;
     }
 
@@ -3921,6 +3956,56 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
     public void setSSLSocketFactory(SSLSocketFactory factory)
     {
         _sslSocketFactory = factory;
+    }
+
+    /**
+     * Gets the value indicating if SSL is forced for this URL connection.
+     */
+    public boolean getForceSSL()
+    {
+        return _forceSsl;
+    }
+
+    /**
+     * Forces the URL connection to use SSL regardless of the protocol
+     * specified. If this is not set, the SSL is used only if the HTTPS protocol
+     * is specified. This is used to work with the FTP protocol using a proxy.
+     */
+    public void setForceSSL(boolean forceSSL)
+    {
+        _forceSsl = forceSSL;
+    }
+
+    /**
+     * Returns the default socket factory used for HTTP socket connections.
+     */
+    public static AbstractSocketFactory getDefaultSocketFactory()
+    {
+        return checkConnectionManager()._globalState._defaultSocketFactory;
+    }
+
+    /**
+     * Sets the default socket factory used for HTTP socket connections.
+     */
+    public static void setDefaultSocketFactory(AbstractSocketFactory factory)
+    {
+        checkConnectionManager()._globalState._defaultSocketFactory = factory;
+    }
+
+    /**
+     * Returns the socket factory used for this HTTP socket connection.
+     */
+    public AbstractSocketFactory getSocketFactory()
+    {
+        return _socketFactory;
+    }
+
+    /**
+     * Sets the default socket factory used for this HTTP socket connection.
+     */
+    public void setSocketFactory(AbstractSocketFactory factory)
+    {
+        _socketFactory = factory;
     }
 
     /**

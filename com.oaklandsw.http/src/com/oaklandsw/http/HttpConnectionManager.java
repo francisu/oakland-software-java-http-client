@@ -449,7 +449,7 @@ public class HttpConnectionManager
                 _log.debug("urlConWasRead - count (after) " + count);
 
             // count < 0 can happen during an immediateShutdown
-            
+
             if (count <= 0)
             {
                 _pipelineLock.notifyAll();
@@ -684,9 +684,6 @@ public class HttpConnectionManager
             {
                 _connLog.debug("Creating new connection");
 
-                // Create a new connection
-                boolean isSecure = protocol.equalsIgnoreCase("HTTPS");
-
                 String host;
                 int port;
                 // Start after the protocol
@@ -710,10 +707,15 @@ public class HttpConnectionManager
                     port = getPort(protocol, -1);
                 }
 
+                // Create a new connection
+                boolean isSecure = protocol.equalsIgnoreCase("HTTPS")
+                    || urlCon.getForceSSL();
+
                 // Make a new connection, note that this does not open
                 // the connection, it only creates it, so this takes
                 // little time
-                conn = new HttpConnection(proxyHost,
+                conn = new HttpConnection(urlCon,
+                                          proxyHost,
                                           proxyPort,
                                           host,
                                           port,
@@ -1215,6 +1217,11 @@ public class HttpConnectionManager
     public int getCount(int count)
     {
         return _requestCounts[count];
+    }
+
+    public GlobalState getGlobalState()
+    {
+        return _globalState;
     }
 
     String getStatistics()

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<jnlp codebase="http://localhost:8080/oaklandsw-http">
+	<information>
+		<vendor>FileMaker, Inc.</vendor>
+		<title>Http Test Case</title>
+		<description>Http Test Case</description>
+		<description kind="short">Http Test Case</description>
+	</information>
+	<resources>
+		<j2se version="1.4+" initial-heap-size="32m" max-heap-size="128m"/>
+		<jar href="httptests-signed.jar"/>
+		<jar href="http-signed.jar"/>
+		<jar href="deployment-signed.jar"/>
+	</resources>
+	<security>
+		<all-permissions/>
+	</security>	
+	<application-desc main-class="com.oaklandsw.http.webstart.HttpTest">
+     	<argument>server-language=en</argument>
+	</application-desc>
+</jnlp>

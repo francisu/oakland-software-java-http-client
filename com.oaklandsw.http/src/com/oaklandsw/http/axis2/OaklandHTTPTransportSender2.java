@@ -52,6 +52,7 @@ import com.oaklandsw.http.Credential;
 import com.oaklandsw.http.HeaderElement;
 import com.oaklandsw.http.HttpException;
 import com.oaklandsw.http.HttpStatus;
+import com.oaklandsw.http.HttpURLConnectInternal;
 import com.oaklandsw.http.HttpURLConnection;
 import com.oaklandsw.http.HttpUserAgent;
 import com.oaklandsw.http.NameValuePair;
@@ -400,24 +401,6 @@ public class OaklandHTTPTransportSender2 extends AbstractHandler
 
     }
 
-    public static void setupAuthDummy(HttpURLConnection urlCon, boolean soap11)
-    {
-        // Setup web services for dummy authentication startup for NTLM
-        String ns;
-        if (soap11)
-            ns = "http://schemas.xmlsoap.org/soap/envelope/";
-        else
-            ns = "http://www.w3.org/2003/05/soap-envelope";
-
-        urlCon
-                .setAuthenticationDummyContent("<?xml version='1.0' encoding='UTF-8'?>"
-                    + "<soapenv:Envelope xmlns:soapenv=\""
-                    + ns
-                    + "\">"
-                    + "<soapenv:Body></soapenv:Body></soapenv:Envelope>");
-        urlCon.setAuthenticationDummyMethod(urlCon.getRequestMethod());
-    }
-
     private void writeMessageWithCommons(MessageContext msgContext,
                                          EndpointReference toEPR,
                                          OMOutputFormat format)
@@ -483,7 +466,7 @@ public class OaklandHTTPTransportSender2 extends AbstractHandler
             }
 
             // Setup web services for dummy authentication startup for NTLM
-            setupAuthDummy(urlCon, msgContext.isSOAP11());
+            HttpURLConnectInternal.setupAuthDummy(urlCon, msgContext.isSOAP11());
 
             // Content type
             String contentType = messageFormatter

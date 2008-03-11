@@ -865,7 +865,10 @@ public class AuthenticateMessage extends Message
         sb.append("  domain: ");
         sb.append(_domain);
         sb.append("  password: ");
-        sb.append(_password);
+        if (LogUtils._logShowPasswords)
+            sb.append(_password);
+        else
+            sb.append("<suppressed>");
         sb.append("\n");
         if (_lmResponse != null)
         {

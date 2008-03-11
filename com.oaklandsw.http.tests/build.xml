@@ -62,6 +62,7 @@
 	<target name="http-war" depends="init, compile-java" description="Build all the files and package them into a WAR file">
 		<signjar jar="${basedir}/../com.oaklandsw.http/http.jar" signedjar="${basedir}/../com.oaklandsw.http/http-signed.jar" alias="oaklandsw" keystore="keystore" storepass="oaklandsw" />
 		<signjar jar="${basedir}/../com.oaklandsw.http.tests/httptests.jar" signedjar="${basedir}/../com.oaklandsw.http.tests/httptests-signed.jar" alias="oaklandsw" keystore="keystore" storepass="oaklandsw" />
+		<signjar jar="${basedir}/../com.oaklandsw.http.tests/deployment.jar" signedjar="${basedir}/../com.oaklandsw.http.tests/deployment-signed.jar" alias="oaklandsw" keystore="keystore" storepass="oaklandsw" />
 		<war destfile="oaklandsw-http.war" webxml="webapp/http/conf/web.xml">
 			<webinf dir="webapp/http/conf">
 				<include name="**" />
@@ -80,6 +81,7 @@
 			<fileset dir="${basedir}/../com.oaklandsw.http.tests">
 				<include name="httptests.jar" />
 				<include name="httptests-signed.jar" />
+				<include name="deployment-signed.jar" />
 			</fileset>
 			<fileset dir="webapp/http">
 				<include name="**" />

@@ -219,13 +219,13 @@ public class WebStartProgram implements com.oaklandsw.http.HttpUserAgent
 
                 // This way should be used to force the Oakland Software
                 // implementation
-                urlCon = com.oaklandsw.http.HttpURLConnection
-                        .openConnection(url);
+                //urlCon = com.oaklandsw.http.HttpURLConnection
+                //        .openConnection(url);
 
                 // This way can also be used, but if an HTTP request
                 // happened before you set the java.protocol.handler.pkgs
                 // property (see above), you will get the Sun implementation
-                // urlCon = (HttpURLConnection)url.openConnection();
+                urlCon = (HttpURLConnection)url.openConnection();
 
                 if (_proxyHost != null && _useConnectionProxy)
                 {

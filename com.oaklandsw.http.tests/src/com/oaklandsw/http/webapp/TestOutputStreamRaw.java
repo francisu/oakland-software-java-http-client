@@ -8,10 +8,10 @@ import org.apache.commons.logging.Log;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
-import com.oaklandsw.http.HttpRetryException;
 import com.oaklandsw.http.HttpURLConnection;
 import com.oaklandsw.http.servlet.RequestBodyServlet;
 import com.oaklandsw.util.LogUtils;
+import com.oaklandsw.util.Util;
 
 /**
  * Tests for raw output stream
@@ -73,12 +73,13 @@ public class TestOutputStreamRaw extends TestOutputStream
 
         // This line below was missing in the customer's example
         connection.getResponseCode();
-        
+
         assertTrue(connection.getHeaderFields().size() > 0);
         assertTrue(connection.getHeadersLength() > 0);
     }
 
-    public void testGetBad() throws Exception
+    // See bug 2141 for issues about bad response code handling
+    public void testGetBad501() throws Exception
     {
         URL url = new URL(_urlBase + RequestBodyServlet.NAME);
 
@@ -87,18 +88,38 @@ public class TestOutputStreamRaw extends TestOutputStream
         urlCon.setRequestMethod("GET");
         setupStreaming(urlCon, 100);
         OutputStream os = urlCon.getOutputStream();
+
+        // This will get a 501
         String str = "GETx " + url.toString() + " HTTP/1.1\r\n\r\n";
         os.write(str.getBytes());
         os.close();
-        try
-        {
-            urlCon.getResponseCode();
-            fail("Did not get expected exception");
-        }
-        catch (HttpRetryException ex)
-        {
-            // Expected
-        }
+        assertEquals(501, urlCon.getResponseCode());
+
+        String response = Util
+                .getStringFromInputStream(urlCon.getInputStream());
+        assertTrue(response.indexOf("Error report") > 0);
+    }
+
+    // See bug 2141 for issues about bad response code handling
+    public void testGetBad400() throws Exception
+    {
+        URL url = new URL(_urlBase + RequestBodyServlet.NAME);
+
+        HttpURLConnection urlCon = HttpURLConnection.openConnection(url);
+        urlCon.setDoOutput(true);
+        urlCon.setRequestMethod("GET");
+        setupStreaming(urlCon, 100);
+        OutputStream os = urlCon.getOutputStream();
+
+        // This will get a 404
+        String str = "GET " + url.toString() + "xx" + " HTTP/1.1\r\n\r\n";
+        os.write(str.getBytes());
+        os.close();
+        assertEquals(404, urlCon.getResponseCode());
+
+        String response = Util
+                .getStringFromInputStream(urlCon.getInputStream());
+        assertTrue(response.indexOf("Error report") > 0);
     }
 
     public void allTestMethods() throws Exception

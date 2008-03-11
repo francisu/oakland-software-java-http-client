@@ -172,7 +172,6 @@ public class TestJCIFS extends TestWebappBase
 
     public void test2NormalForce2() throws Exception
     {
-        // logAll();
         Ntlm.forceV2();
         testGetMethodParameters(TestUserAgent.GOOD, ParamServlet.NAME_NTLM2);
     }

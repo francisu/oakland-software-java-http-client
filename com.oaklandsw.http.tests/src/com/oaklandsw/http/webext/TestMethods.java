@@ -64,14 +64,6 @@ import com.oaklandsw.http.HttpURLConnection;
 
 /**
  * Simple tests for the HTTP client hitting an external webserver.
- * 
- * This test suite assumes you have an internet connection that can communicate
- * with http://java.sun.com/.
- * 
- * @author Remy Maucherat
- * @author Rodney Waldhoff
- * @author Ortwin Gl�ck
- * @version $Id: TestMethods.java,v 1.5 2002/09/23 13:48:49 jericho Exp $
  */
 public class TestMethods extends HttpTestBase
 {
@@ -79,6 +71,8 @@ public class TestMethods extends HttpTestBase
     public TestMethods(String testName)
     {
         super(testName);
+
+        _doSocksProxyTest = true;
     }
 
     public static Test suite()
@@ -131,7 +125,6 @@ public class TestMethods extends HttpTestBase
 
     public void testIOException()
     {
-
         try
         {
             URL url = new URL("http://ggttll.wwwsss.ddeeddss");
@@ -152,4 +145,8 @@ public class TestMethods extends HttpTestBase
 
     }
 
+    public void allTestMethods() throws Exception
+    {
+        testMethodsGetExternal();
+    }
 }

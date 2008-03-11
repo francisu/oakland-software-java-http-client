@@ -17,13 +17,17 @@ import com.oaklandsw.http.webapp.TestAuthType;
 import com.oaklandsw.http.webapp.TestAxis1;
 import com.oaklandsw.http.webapp.TestAxis2;
 import com.oaklandsw.http.webapp.TestBasicAuth;
+import com.oaklandsw.http.webapp.TestCookie;
+import com.oaklandsw.http.webapp.TestFtpProxy;
 import com.oaklandsw.http.webapp.TestIIS;
 import com.oaklandsw.http.webapp.TestJCIFS;
 import com.oaklandsw.http.webapp.TestMultiThread;
 import com.oaklandsw.http.webapp.TestNoData;
 import com.oaklandsw.http.webapp.TestOutputStreamChunked;
+import com.oaklandsw.http.webapp.TestOutputStreamRaw;
 import com.oaklandsw.http.webapp.TestPipelining;
 import com.oaklandsw.http.webapp.TestRedirect;
+import com.oaklandsw.http.webapp.TestTunneling;
 import com.oaklandsw.http.webext.TestBugs;
 import com.oaklandsw.http.webext.TestHttps;
 import com.oaklandsw.http.webext.TestMethods;
@@ -54,9 +58,19 @@ public class HttpTestSubset extends HttpTestBase
 
         // This test must run first
         // suite.addTest(TestProperties.suite());
+        suite.addTest(TestTunneling.suite());
+        suite.addTest(TestFtpProxy.suite());
 
         if (false)
         {
+            suite.addTest(TestOutputStreamRaw.suite());
+            suite.addTest(TestAxis1.suite());
+            suite.addTest(TestAxis2.suite());
+            suite.addTest(TestRedirect.suite());
+            suite.addTest(TestIIS.suite());
+            suite.addTest(TestCookie.suite());
+            suite.addTest(TestHttps.suite());
+
             suite.addTest(TestBasicAndDigestAuth.suite());
             suite.addTest(TestSSL.suite());
             suite.addTest(TestMethods.suite());
@@ -92,10 +106,10 @@ public class HttpTestSubset extends HttpTestBase
             suite.addTest(TestHttps.suite());
             suite.addTest(TestMethods.suite());
             suite.addTest(TestTimeout.suite());
+            suite.addTest(AllErrorsvrTests.suite());
+            suite.addTest(TestNoData.suite());
         }
 
-        suite.addTest(AllErrorsvrTests.suite());
-        suite.addTest(TestNoData.suite());
 
         return suite;
     }

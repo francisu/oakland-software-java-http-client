@@ -12,30 +12,38 @@ import com.oaklandsw.util.LogUtils;
 
 public class TestUserAgent implements HttpUserAgent
 {
-    private static final Log _log               = LogUtils.makeLogger();
+    private static final Log _log                 = LogUtils.makeLogger();
 
     public static int        _type;
 
     public static int        _proxyType;
 
-    public static final int  GOOD               = 1;
-    public static final int  NO_DOMAIN          = 2;
-    public static final int  NO_USER            = 3;
-    public static final int  NO_PASSWORD        = 4;
-    public static final int  NO_HOST            = 5;
-    public static final int  NO_HOST_OR_DOMAIN  = 6;
-    public static final int  BAD                = 10;
-    public static final int  NULL               = 11;
-    public static final int  LOCAL              = 12;
-    public static final int  PROXY              = 13;
-    public static final int  NETPROXY           = 14;
-    public static final int  OFFICESHARE_XSO    = 20;
-    public static final int  OFFICESHARE_ICEWEB = 21;
-    public static final int  WEBSERVER_BASIC    = 22;
-    public static final int  WEBSERVER_DIGEST   = 23;
-    public static final int  OAKLANDSWTEST_DOMAIN  = 24;
+    public static final int  GOOD                 = 1;
+    public static final int  NO_DOMAIN            = 2;
+    public static final int  NO_USER              = 3;
+    public static final int  NO_PASSWORD          = 4;
+    public static final int  NO_HOST              = 5;
+    public static final int  NO_HOST_OR_DOMAIN    = 6;
+    public static final int  BAD                  = 10;
+    public static final int  NULL                 = 11;
+    public static final int  LOCAL                = 12;
+    public static final int  PROXY                = 13;
+    public static final int  NETPROXY             = 14;
+    public static final int  OFFICESHARE_XSO      = 20;
+    public static final int  OFFICESHARE_ICEWEB   = 21;
+    public static final int  WEBSERVER_BASIC      = 22;
+    public static final int  WEBSERVER_DIGEST     = 23;
+    public static final int  OAKLANDSWTEST_DOMAIN = 24;
 
     public Credential getCredential(String realm, String url, int scheme)
+    {
+        return getCredential(_type, realm, url, scheme);
+    }
+
+    protected Credential getCredential(int type,
+                                       String realm,
+                                       String url,
+                                       int scheme)
     {
         _log.debug("getGred: realm: "
             + realm
@@ -44,7 +52,7 @@ public class TestUserAgent implements HttpUserAgent
             + " scheme: "
             + scheme);
 
-        if (_type == NULL)
+        if (type == NULL)
         {
             _log.debug("TestUserAgent - Returning null cred");
             return null;
@@ -57,7 +65,7 @@ public class TestUserAgent implements HttpUserAgent
             case Credential.AUTH_NTLM:
                 NtlmCredential ntlmCred = new NtlmCredential();
 
-                switch (_type)
+                switch (type)
                 {
                     case GOOD:
                         ntlmCred.setUser(HttpTestEnv.TEST_IIS_USER);
@@ -140,7 +148,7 @@ public class TestUserAgent implements HttpUserAgent
             case Credential.AUTH_BASIC:
             case Credential.AUTH_DIGEST:
                 UserCredential basicCred = new UserCredential();
-                switch (_type)
+                switch (type)
                 {
                     case GOOD:
                         basicCred.setUser("jakarta");
@@ -170,7 +178,8 @@ public class TestUserAgent implements HttpUserAgent
                 break;
         }
 
-        _log.debug("TestUserAgent - Returning cred: " + ((UserCredential)cred).getUser());
+        _log.debug("TestUserAgent - Returning cred: "
+            + ((UserCredential)cred).getUser());
 
         return cred;
     }
@@ -245,11 +254,12 @@ public class TestUserAgent implements HttpUserAgent
                 cred = basicCred;
                 break;
             case Credential.AUTH_NTLM:
-                cred = getCredential(realm, url, scheme);
+                cred = getCredential(_proxyType, realm, url, scheme);
                 break;
         }
 
-        _log.debug("TestUserAgent - Returning cred: " + ((UserCredential)cred).getUser());
+        _log.debug("TestUserAgent - Returning cred: "
+            + ((UserCredential)cred).getUser());
 
         return cred;
     }

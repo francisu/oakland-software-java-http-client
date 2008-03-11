@@ -74,7 +74,7 @@ public class TestTunneling extends TestWebappBase
         byte[] bytes = Util.getBytesFromInputStream(is);
         String res = new String(bytes);
         // System.out.println(res);
-        assertTrue(res.contains("221 Goodbye."));
+        assertContains(res, "221 Goodbye.");
     }
 
     // Test using the connect method and tunneled streaming mode

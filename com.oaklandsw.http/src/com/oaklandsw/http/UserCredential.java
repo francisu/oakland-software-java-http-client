@@ -7,6 +7,7 @@
 
 package com.oaklandsw.http;
 
+import com.oaklandsw.util.LogUtils;
 import com.oaklandsw.util.Util;
 
 /**
@@ -129,7 +130,12 @@ public class UserCredential implements Credential
 
     public String toString()
     {
-        return "User: " + _user + " Password: " + _password;
+        return "User: "
+            + _user
+            + " Password: "
+            + (LogUtils._logShowPasswords
+                ? _password
+                : "<suppressed>");
     }
 
 }

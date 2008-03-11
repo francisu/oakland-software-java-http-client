@@ -22,8 +22,8 @@ import com.oaklandsw.util.LogUtils;
 import com.oaklandsw.util.StringUtils;
 
 /**
- * Maintains the global persistant state for the HTTP client. This is the state
- * that is set by the user that only changes when the user wants it to: thinks
+ * Maintains the global persistent state for the HTTP client. This is the state
+ * that is set by the user that only changes when the user wants it to: things
  * like the proxy host/port, non proxy hosts, etc.
  */
 public class GlobalState
@@ -96,7 +96,9 @@ public class GlobalState
     int                            _defaultAuthenticationType;
     int                            _defaultProxyAuthenticationType;
 
-    SSLSocketFactory               _defaultSSLSocketFactory;
+    // Don't access this directory because it is lazily set to avoid the high
+    // cost of SSL startup when that is not needed
+    private SSLSocketFactory       _defaultSSLSocketFactory;
 
     HostnameVerifier               _defaultHostnameVerifier;
 
@@ -105,6 +107,8 @@ public class GlobalState
     CookieSpec                     _defaultCookieSpec;
 
     HttpUserAgent                  _defaultUserAgent;
+
+    AbstractSocketFactory          _defaultSocketFactory;
 
     int                            _writeBufferSize                 = HttpURLConnection.DEFAULT_SEND_BUFFER_SIZE;
     int                            _readBufferSize                  = HttpURLConnection.DEFAULT_RECEIVE_BUFFER_SIZE;
@@ -119,11 +123,14 @@ public class GlobalState
 
     public GlobalState()
     {
-        _log.info("Oakland Software Java HTTP Client " + Version.VERSION);
+        // Might be null in cases were initialization is being reentered
+        if (_log != null)
+            _log.info("Oakland Software Java HTTP Client " + Version.VERSION);
 
         _defaultHostnameVerifier = new DefaultHostnameVerifier();
-        _defaultSSLSocketFactory = ((SSLSocketFactory)SSLSocketFactory
-                .getDefault());
+        // This one is created only if needed because it can take a long time
+        _defaultSSLSocketFactory = null;
+        _defaultSocketFactory = new AbstractSocketFactory();
     }
 
     void setConnManager(HttpConnectionManager connManager)
@@ -268,6 +275,21 @@ public class GlobalState
             }
         }
         return false;
+    }
+
+    SSLSocketFactory getDefaultSSLSocketFactory()
+    {
+        // Do this only when requested
+        if (_defaultSSLSocketFactory != null)
+            return _defaultSSLSocketFactory;
+        _defaultSSLSocketFactory = ((SSLSocketFactory)SSLSocketFactory
+                .getDefault());
+        return _defaultSSLSocketFactory;
+    }
+
+    void setDefaultSSLSocketFactory(SSLSocketFactory factory)
+    {
+        _defaultSSLSocketFactory = factory;
     }
 
 }

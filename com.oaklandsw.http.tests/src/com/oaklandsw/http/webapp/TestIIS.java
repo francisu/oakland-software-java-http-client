@@ -42,6 +42,8 @@ public class TestIIS extends HttpTestBase
         // Squid works fine as a proxy for NTLM
         _do10ProxyTest = true;
 
+        _doIsaProxyTest = true;
+
         _doExplicitTest = true;
         _doAppletTest = true;
 
@@ -58,6 +60,7 @@ public class TestIIS extends HttpTestBase
     {
         super.setUp();
         TestUserAgent._type = TestUserAgent.GOOD;
+        TestUserAgent._proxyType = TestUserAgent.GOOD;
         _getForm = "TestForm2.asp";
         _showStats = true;
     }
@@ -231,7 +234,7 @@ public class TestIIS extends HttpTestBase
         // the connection will have been authenticated, except when
         // we are running HTTP 1.0 which closes the connection
         // each time
-        return !_inTestGroup || _in10ProxyTest;
+        return !_inTestGroup || _in10ProxyTest || _inIsaProxyTest;
     }
 
     public void test230GetStream() throws MalformedURLException, IOException
@@ -269,7 +272,7 @@ public class TestIIS extends HttpTestBase
 
     public void test240GetPipeline(int num) throws Exception
     {
-         //LogUtils.logFile("/home/francis/log4jout.txt");
+        // LogUtils.logFile("/home/francis/log4jout.txt");
         // Pipelining does not work with netproxy
         if (_inAuthCloseProxyTest)
             return;
@@ -379,28 +382,32 @@ public class TestIIS extends HttpTestBase
         test205MultiGet();
         test205MultiGet();
         test230GetStream();
-        test240GetPipeline1();
-        test240GetPipeline2();
 
-        if (false && _in10ProxyTest)
-            LogUtils.logConnOnly();
-        test240GetPipeline10();
-        int count = 1;
-        if (_in10ProxyTest)
-            count = 5;
-        for (int i = 0; i < count; i++)
+        // Pipelining does not appear to work through the ISA PROXY
+        if (!_inIsaProxyTest)
         {
-            test240GetPipeline100();
+            test240GetPipeline1();
+            test240GetPipeline2();
+
             if (false && _in10ProxyTest)
-                HttpURLConnection.dumpAll();
-        }
+                LogUtils.logConnOnly();
+            test240GetPipeline10();
+            int count = 1;
+            if (_in10ProxyTest)
+                count = 5;
+            for (int i = 0; i < count; i++)
+            {
+                test240GetPipeline100();
+                if (false && _in10ProxyTest)
+                    HttpURLConnection.dumpAll();
+            }
 
-        if (false && _in10ProxyTest)
-        {
-            System.out.println("****sleeping for profile");
-            Thread.sleep(10000000);
+            if (false && _in10ProxyTest)
+            {
+                System.out.println("****sleeping for profile");
+                Thread.sleep(10000000);
+            }
         }
-
         test300GetBadCred();
         test305GetNullCred();
         test400MultiGetPost();

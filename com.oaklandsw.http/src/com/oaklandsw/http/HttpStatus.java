@@ -187,6 +187,8 @@ public class HttpStatus
 
     // --- 4xx Client Error ---
 
+    public static final int SC_400                             = 400;
+
     /** <tt>400 Bad Request</tt> (HTTP/1.1 - RFC 2616) */
     public static final int SC_BAD_REQUEST                     = 400;
 
@@ -272,6 +274,7 @@ public class HttpStatus
     public static final int SC_FAILED_DEPENDENCY               = 424;
 
     // --- 5xx Server Error ---
+    public static final int SC_500                             = 500;
 
     /** <tt>500 Server Error</tt> (HTTP/1.0 - RFC 1945) */
     public static final int SC_INTERNAL_SERVER_ERROR           = 500;

@@ -158,8 +158,14 @@ public class HttpConnection
     int                        _soTimeout;
     int                        _connectTimeout;
 
-    /** An alternative factory for SSL sockets to use */
+    // An alternative factory for SSL sockets to use
     SSLSocketFactory           _sslSocketFactory;
+
+    AbstractSocketFactory      _socketFactory;
+
+    // This is used to give the socket factory information about who is creating
+    // the connection. It only stays around until the socket is created.
+    HttpURLConnection          _creatingUrlCon;
 
     HostnameVerifier           _hostnameVerifier;
 
@@ -304,7 +310,8 @@ public class HttpConnection
      * @param secure
      *            when <tt>true</tt>, connect via HTTPS (SSL)
      */
-    public HttpConnection(String proxyHost,
+    public HttpConnection(HttpURLConnection creatingUrlConn,
+            String proxyHost,
             int proxyPort,
             String host,
             int port,
@@ -329,6 +336,10 @@ public class HttpConnection
         {
             throw new NullPointerException("host parameter is null");
         }
+
+        _creatingUrlCon = creatingUrlConn;
+        if (_creatingUrlCon != null)
+            _socketFactory = _creatingUrlCon._socketFactory;
         _proxyHost = proxyHost;
         _proxyPort = proxyPort;
         _host = host;
@@ -772,36 +783,27 @@ public class HttpConnection
 
         host = InetAddress.getByName(host).getHostAddress();
 
-        // Use the connect method with the timeout if its available
-        if (_soTimeout > 0)
+        _socket = _socketFactory.createSocket(_creatingUrlCon, host, port);
+        _creatingUrlCon = null;
+
+        try
         {
-            _socket = new Socket();
-            try
-            {
-                _socket.connect(new InetSocketAddress(host, port),
-                                _connectTimeout);
-            }
-            catch (SocketTimeoutException tex)
-            {
-                _connLog.debug("Connection timeout after (ms): "
-                    + _connectTimeout);
-                throw new HttpTimeoutException();
-            }
-
-            catch (Exception ex)
-            {
-                if (ex instanceof IOException)
-                    throw (IOException)ex;
-                if (ex instanceof RuntimeException)
-                    throw (RuntimeException)ex;
-                _connLog.error(ex);
-                throw new IOException("Unexpected exception: " + ex);
-            }
-
+            _socket.connect(new InetSocketAddress(host, port), _connectTimeout);
         }
-        else
+        catch (SocketTimeoutException tex)
         {
-            _socket = new Socket(host, port);
+            _connLog.debug("Connection timeout after (ms): " + _connectTimeout);
+            throw new HttpTimeoutException();
+        }
+
+        catch (Exception ex)
+        {
+            if (ex instanceof IOException)
+                throw (IOException)ex;
+            if (ex instanceof RuntimeException)
+                throw (RuntimeException)ex;
+            _connLog.error(ex);
+            throw new IOException("Unexpected exception: " + ex);
         }
 
         createStreams();
@@ -837,7 +839,7 @@ public class HttpConnection
 
                 _tunnelCon = new HttpURLConnectInternal(urlCon != null ? urlCon
                         .getURL() : null);
-                
+
                 // Could be null in tests
                 if (urlCon != null)
                     _tunnelCon.copyAuthParamsFrom(urlCon);
@@ -1008,11 +1010,10 @@ public class HttpConnection
                     + hostName);
             }
             SSLSession sess = ((SSLSocket)_socket).getSession();
-            // if (_hostnameVerifier instanceof HostnameVerifier)
-            // {
             try
             {
-                _connLog.debug("Calling oaklandsw verifier");
+                if (_connLog.isDebugEnabled())
+                    _connLog.debug("Calling verifier: " + _hostnameVerifier);
                 result = _hostnameVerifier.verify(hostName, sess);
             }
             catch (Exception ex)
@@ -1021,19 +1022,6 @@ public class HttpConnection
                 throw new IOException("Unexpected exception from verifier: "
                     + ex);
             }
-            /*
-             * Don't need this for now } else { _connLog.debug("Calling 1.4
-             * verifier"); Boolean r; try {
-             * 
-             * r = (Boolean)HttpURLConnection._hostnameVerifierMethod.
-             * invoke(_hostnameVerifier, new Object[] { hostName, sess } ); }
-             * catch (IllegalAccessException ex) { _connLog.error("Unexpected
-             * exception: " + ex); throw new IOException("Unexpected exception
-             * during cert verify: " + ex); } catch (InvocationTargetException
-             * itex) { _connLog.error("Unexpected exception: " + itex); throw
-             * new IOException("Unexpected exception during cert verify: " +
-             * itex); } result = r.booleanValue(); }
-             */
 
             if (!result)
             {

@@ -16,9 +16,9 @@ public class HttpTestEnv
 
     public static final String WINDOWS_HOST          = System
                                                              .getProperty("oaklandsw.windowshost",
-                                                                          "repoman");
+                                                                          "192.168.1.20");           // repoman
 
-    public static final String WIN2K3_HOST             = System
+    public static final String WIN2K3_HOST           = System
                                                              .getProperty("oaklandsw.win2k3host",
                                                                           "win2k3");
 
@@ -78,6 +78,12 @@ public class HttpTestEnv
                                                              .getProperty("oaklandsw.externaloptionshost",
                                                                           "sun.com");
 
+    public static final String SOCKS_HOST            = System
+                                                             .getProperty("oaklandsw.socksproxyhost",
+                                                                          ISA_HOST);
+
+    public static final int    SOCKS_PORT            = 1080;
+
     public static String getHttpTestRoot()
     {
         return com.oaklandsw.TestEnv.getRoot()
@@ -93,11 +99,12 @@ public class HttpTestEnv
 
     // ISA (win2k3 vm)
     public static int          TEST_ISA_PORT                     = 8080;
+    public static int          TEST_ISA_SSL_PORT                 = 8443;
 
     // All of these are served through the same apache server
-    public static int          TEST_WEBDAV_PORT                  = 8091;
-    public static int          TEST_WEBSERVER_PORT               = 8091;
     public static int          TEST_PROXY_PORT                   = 8091;
+    public static int          TEST_WEBDAV_PORT                  = TEST_PROXY_PORT;
+    public static int          TEST_WEBSERVER_PORT               = TEST_PROXY_PORT;
 
     // Tomcat
     public static int          TEST_WEBAPP_PORT                  = 8080;
@@ -110,6 +117,8 @@ public class HttpTestEnv
 
     // Squid
     public static int          TEST_10_PROXY_PORT                = 3128;
+
+    public static int          TEST_SOCKS_PROXY_PORT             = SOCKS_PORT;
 
     // Netproxy (windows)
     public static int          TEST_AUTH_PROXY_CLOSE_PORT        = 8088;
@@ -129,12 +138,10 @@ public class HttpTestEnv
     public static String       TEST_URL_APP_IIS_FORM             = "Form_JScript.asp";
     public static String       TEST_URL_APP_IIS_QUERY_STRING     = "QueryString_JScript.asp";
 
-
     // For ISA on win2k3
     public static String       TEST_ISA_USER                     = "httptest";
     public static String       TEST_ISA_PASSWORD                 = "httptestpw";
 
-    
     // Officeshare iceweb
     public static String       TEST_ICEWEB_URL                   = "http://sharepoint.iceweb.com/sites/demo/_vti_bin/Lists.asmx";
     public static String       TEST_ICEWEB_USER                  = "demo";
@@ -158,6 +165,8 @@ public class HttpTestEnv
 
     // This is Squid as it uses HTTP 1.0
     public static String       TEST_10_PROXY_HOST                = SQUID_HOST;
+
+    public static String       TEST_SOCKS_PROXY_HOST             = SOCKS_HOST;
 
     // This is NetProxy
     public static String       TEST_AUTH_PROXY_CLOSE_HOST        = NETPROXY_HOST;

@@ -4,6 +4,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.Socket;
 import java.net.URL;
 
 import org.apache.commons.logging.Log;
@@ -61,10 +62,20 @@ public class HttpTestBase extends com.oaklandsw.TestCaseBase
     protected boolean          _do10ProxyTest;
     protected boolean          _in10ProxyTest;
 
+    // Enables the SOCKS test for all of the test methods
+    // defined in allTestMethods()
+    protected boolean          _doSocksProxyTest;
+    protected boolean          _inSocksProxyTest;
+
     // Enables the ISA proxy test for all of the test methods
     // defined in allTestMethods()
     protected boolean          _doIsaProxyTest;
     protected boolean          _inIsaProxyTest;
+
+    // Enables the ISA SSL proxy test for all of the test methods
+    // defined in allTestMethods()
+    protected boolean          _doIsaSslProxyTest;
+    protected boolean          _inIsaSslProxyTest;
 
     // Enables the authentication proxy test for all of the test methods
     // defined in allTestMethods()
@@ -149,6 +160,7 @@ public class HttpTestBase extends com.oaklandsw.TestCaseBase
 
         HttpURLConnection.getConnectionManager().resetStatistics();
         Util.resetTest();
+        LogUtils.logNone();
     }
 
     public void tearDown() throws Exception
@@ -458,6 +470,7 @@ public class HttpTestBase extends com.oaklandsw.TestCaseBase
         HttpURLConnection.setProxyUser(null);
         HttpURLConnection.setProxyPassword(null);
         HttpURLConnection.setDefaultProxyAuthenticationType(0);
+        HttpURLConnection.setDefaultSocketFactory(new AbstractSocketFactory());
     }
 
     // Test everything as SSL
@@ -525,7 +538,7 @@ public class HttpTestBase extends com.oaklandsw.TestCaseBase
         HttpURLConnection.setProxyPort(HttpTestEnv.TEST_10_PROXY_PORT);
 
         HttpURLConnection.setUse10KeepAlive(true);
-        
+
         // Need more attempt to retry authentication in this environment
         HttpURLConnection.setDefaultMaxForwards(200);
         try
@@ -540,6 +553,57 @@ public class HttpTestBase extends com.oaklandsw.TestCaseBase
         }
     }
 
+    // Test everything through a SOCKS proxy server
+    // Bug 2180/977 - add support for SOCKS proxy
+    public void testSocksProxy() throws Exception
+    {
+        if (!_doSocksProxyTest)
+            return;
+
+        _testAllName = "testSocksProxy";
+        _inSocksProxyTest = true;
+        _inTestGroup = true;
+
+        // Note, this test depends on an external SOCKS proxy server more or
+        // less randomly selected from the list pointed to by the Wikipedia
+        // page. If this stops working for some reason, then we need to pick
+        // another proxy server. The HttpTestEnv is where the proxy server
+        // host/port are setup
+
+        HttpURLConnection.setDefaultSocketFactory(new AbstractSocketFactory()
+        {
+            public Socket createSocket(HttpURLConnection urlCon,
+                                       String host,
+                                       int port)
+            {
+                // For 1.4.2 have to use these properties. Once support for
+                // 1.4.2 is dropped
+                // we can use the new Socket(java.net.Proxy.Type.SOCKS) method
+                System.setProperty("socksProxyHost",
+                                   HttpTestEnv.TEST_SOCKS_PROXY_HOST);
+                System.setProperty("socksProxyPort", Integer
+                        .toString(HttpTestEnv.TEST_SOCKS_PROXY_PORT));
+
+                Socket s = new Socket();
+                System.out.println("created socks: " + s);
+
+                System.getProperties().remove("socksProxyHost");
+                System.getProperties().remove("socksProxyPort");
+                return s;
+            }
+        });
+        try
+        {
+            // LogUtils.logFile("/home/francis/log4jSocksproxy.txt");
+            allTestMethods();
+        }
+        finally
+        {
+            resetProxyParams();
+            _inSocksProxyTest = false;
+        }
+    }
+
     // Test everything through a the ISA proxy
     public void testIsaProxy() throws Exception
     {
@@ -549,6 +613,9 @@ public class HttpTestBase extends com.oaklandsw.TestCaseBase
         _testAllName = "testIsaProxy";
         _inIsaProxyTest = true;
         _inTestGroup = true;
+
+        TestUserAgent._proxyType = TestUserAgent.GOOD;
+
         HttpURLConnection.setProxyHost(HttpTestEnv.ISA_HOST);
         HttpURLConnection.setProxyPort(HttpTestEnv.TEST_ISA_PORT);
 
@@ -561,6 +628,30 @@ public class HttpTestBase extends com.oaklandsw.TestCaseBase
         {
             resetProxyParams();
             _inIsaProxyTest = false;
+        }
+    }
+
+    // Test everything through a the ISA proxy using SSL
+    public void testIsaSslProxy() throws Exception
+    {
+        if (!_doIsaSslProxyTest)
+            return;
+
+        _testAllName = "testIsaSslProxy";
+        _inIsaSslProxyTest = true;
+        _inTestGroup = true;
+        HttpURLConnection.setProxyHost(HttpTestEnv.ISA_HOST);
+        HttpURLConnection.setProxyPort(HttpTestEnv.TEST_ISA_SSL_PORT);
+
+        try
+        {
+            // LogUtils.logFile("/home/francis/log4j10proxy.txt");
+            allTestMethods();
+        }
+        finally
+        {
+            resetProxyParams();
+            _inIsaSslProxyTest = false;
         }
     }
 
@@ -579,7 +670,9 @@ public class HttpTestBase extends com.oaklandsw.TestCaseBase
     // response.
     protected boolean isAllowNtlmProxy()
     {
-        return (!isInAuthProxyTest() && !_inProxyTest) || _inIsaProxyTest;
+        return (!isInAuthProxyTest() && !_inProxyTest)
+            || _inIsaProxyTest
+            || _inIsaSslProxyTest;
     }
 
     // Test everything through an authenticating proxy server (uses only basic)
@@ -706,7 +799,8 @@ public class HttpTestBase extends com.oaklandsw.TestCaseBase
         {
             if (false)
             {
-                System.setSecurityManager(new sun.applet.AppletSecurity());
+                sun.applet.AppletSecurity s = new sun.applet.AppletSecurity();
+                System.setSecurityManager(s);
                 allTestMethods();
                 System.setSecurityManager(null);
             }

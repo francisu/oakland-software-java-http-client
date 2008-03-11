@@ -180,6 +180,10 @@ public class HttpURLConnectInternal
             setConnectionProxyPassword(urlCon.getConnectionProxyPassword());
         if (urlCon.getUserAgent() != null)
             setUserAgent(urlCon.getUserAgent());
+
+        setHostnameVerifier(urlCon.getHostnameVerifier());
+        setConnectionTimeout(urlCon.getConnectionTimeout());
+        setSSLSocketFactory(urlCon.getSSLSocketFactory());
     }
 
     static String authStateToString(int authState)
@@ -362,8 +366,9 @@ public class HttpURLConnectInternal
         if (!_reqHeaders.find(HDR_HOST_BYTES))
         {
             _log.debug("Adding Host request header");
-            _reqHeaders
-                    .add(HDR_HOST_BYTES, _connection._hostPortURL.getBytes());
+
+            String h = _connection._hostPortURL;
+            _reqHeaders.add(HDR_HOST_BYTES, h.getBytes());
 
         }
 
@@ -565,7 +570,7 @@ public class HttpURLConnectInternal
             // For a bad response, the user might not read the InputStream.
             // We thus buffer it and release the connection immediately
             // when it is executed. This way the user can read it or not.
-            if (_responseCode >= 400)
+            if (_responseCode >= HttpStatus.SC_400)
             {
                 ByteArrayOutputStream baStream = new ByteArrayOutputStream();
                 try
@@ -1120,7 +1125,11 @@ public class HttpURLConnectInternal
 
         if ((_actualMethodPropsSent & METHOD_PROP_REQ_LINE_URL) != 0)
         {
-            if (_connection.isProxied() && !_connection.isTransparent())
+            // Even for SSL (transparent), if the protocol is not HTTP
+            // need to send the full request line
+            if (_connection.isProxied()
+                && (!_connection.isTransparent() || !_scheme.toLowerCase()
+                        .startsWith("http")))
             {
                 str = _scheme;
                 len = str.length();
@@ -1293,7 +1302,7 @@ public class HttpURLConnectInternal
                 // We got an unexpected good response from a dummy
                 // authentication attempt, indicate we are authenticated and go
                 // around again to do the user's request
-                if (_responseCode <= 299 && _dummyAuthRequestSent)
+                if (_responseCode < HttpStatus.SC_REDIRECTION && _dummyAuthRequestSent)
                 {
                     String str = "Retrying request because of positive reponse to dummy auth request";
                     _connLog.debug(str);
@@ -1304,12 +1313,13 @@ public class HttpURLConnectInternal
                     throw new IOException(str);
                 }
 
-                if (_responseCode >= 300 && readSeparateFromWrite())
+                if (_responseCode >= HttpStatus.SC_REDIRECTION
+                    && readSeparateFromWrite())
                 {
                     // Doing a pipelined read, we don't own the connection and
                     // got a retryable response
                     if (_pipelinedReading
-                        && (_responseCode <= 399
+                        && (_responseCode < HttpStatus.SC_400
                             || _responseCode == HttpStatus.SC_UNAUTHORIZED || _responseCode == HttpStatus.SC_PROXY_AUTHENTICATION_REQUIRED))
                     {
                         String str = "Unexpected "
@@ -1359,7 +1369,7 @@ public class HttpURLConnectInternal
         if (_responseCode >= HttpStatus.SC_OK)
         {
             // Completely good response, record the statistics
-            if (_responseCode < 300)
+            if (_responseCode < HttpStatus.SC_REDIRECTION)
             {
                 _connManager.recordCount(HttpConnectionManager.COUNT_SUCCESS);
                 if (_connection != null)
@@ -1367,7 +1377,7 @@ public class HttpURLConnectInternal
             }
 
             // Good and redirect, the authentication process is complete
-            if (_responseCode < 400 && _currentAuthType >= 0)
+            if (_responseCode < HttpStatus.SC_400 && _currentAuthType >= 0)
                 setAuthState(AS_AUTHENTICATED, _currentAuthType);
         }
 
@@ -1791,7 +1801,8 @@ public class HttpURLConnectInternal
     private void processAfterRequestStreamPipe() throws IOException
     {
         // Either a redirection or error, we can't continue
-        if (_responseCode > 300)
+        // For Raw, always pass the response code through
+        if (_responseCode > HttpStatus.SC_REDIRECTION && _streamingMode != STREAM_RAW)
         {
             HttpRetryException rte = new HttpRetryException(Util
                                                                     .bytesToString(_responseTextBytes,
@@ -1832,7 +1843,7 @@ public class HttpURLConnectInternal
             if (!_responseHeadersRead)
                 return;
 
-            if (_responseCode >= 400)
+            if (_responseCode >= HttpStatus.SC_400)
             {
                 _connManager
                         .recordCount(HttpConnectionManager.COUNT_FAIL_GE_400);
@@ -2075,7 +2086,7 @@ public class HttpURLConnectInternal
             // release the connection, this way the user is not
             // required to read it
             if ((_streamingMode <= STREAM_DEFER_RESPONSE_END)
-                && (_responseIsEmpty || _responseCode >= 400))
+                && (_responseIsEmpty || _responseCode >= HttpStatus.SC_400))
                 releaseConnection(READING);
         }
 
@@ -2340,8 +2351,7 @@ public class HttpURLConnectInternal
                     _executed = true;
 
                     // Call the user
-                    if (ex != null
-                        || _responseCode >= HttpStatus.SC_REDIRECTION)
+                    if (ex != null || _responseCode >= HttpStatus.SC_REDIRECTION)
                     {
                         callPipelineError(is, ex);
                     }
@@ -2766,4 +2776,24 @@ public class HttpURLConnectInternal
         _connLog.debug("Discarding response body - flushed " + len + " bytes ");
     }
 
+    public static void setupAuthDummy(HttpURLConnection urlCon, boolean soap11)
+    {
+        // Setup web services for dummy authentication startup for NTLM
+        String ns;
+        if (soap11)
+            ns = "http://schemas.xmlsoap.org/soap/envelope/";
+        else
+            ns = "http://www.w3.org/2003/05/soap-envelope";
+
+        urlCon
+                .setAuthenticationDummyContent("<?xml version='1.0' encoding='UTF-8'?>"
+                    + "<soapenv:Envelope xmlns:soapenv=\""
+                    + ns
+                    + "\">"
+                    + "<soapenv:Body></soapenv:Body></soapenv:Envelope>");
+        urlCon.setAuthenticationDummyMethod(urlCon.getRequestMethod());
+    }
+
+    
+    
 }

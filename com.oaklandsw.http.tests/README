@@ -128,6 +128,8 @@ before you restart the cat.
 
 The oaklandsw-http.war file is checked in to make things easier.
 
+TOMCAT - webstart, the file deployment.jar is part of the TestWebStart tests
+
 
 Axis
 
