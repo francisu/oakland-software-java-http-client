@@ -57,6 +57,7 @@
  */
 package com.oaklandsw.http;
 
+import java.io.InterruptedIOException;
 import java.security.MessageDigest;
 import java.util.Hashtable;
 import java.util.Map;
@@ -116,7 +117,8 @@ public class Authenticator
                                              String reqType,
                                              Map challengeMap,
                                              int normalOrProxy)
-        throws HttpException
+        throws HttpException,
+            InterruptedIOException
     {
         String respHeader = RESP_HEADERS[normalOrProxy];
 
@@ -193,6 +195,12 @@ public class Authenticator
         if (urlCon._authState[normalOrProxy] == HttpURLConnectInternal.AS_FINAL_AUTH_SENT)
         {
             Credential sentCred = urlCon.getCredentialSent(normalOrProxy);
+            if (challengeMap.containsKey(NTLM))
+            {
+                _log.debug("NTLM Authentication failure - "
+                    + "closing connection");
+                urlCon.releaseConnection(HttpURLConnection.CLOSE);
+            }
             throw new HttpException("Authentication failed; "
                 + "with credential "
                 + sentCred);
@@ -203,10 +211,29 @@ public class Authenticator
         if (challengeMap.containsKey(NTLM))
         {
             String challenge = (String)challengeMap.get(NTLM);
-            requestHeader = Authenticator.ntlm(challenge,
-                                               urlCon,
-                                               reqType,
-                                               normalOrProxy);
+            try
+            {
+                requestHeader = Authenticator.ntlm(challenge,
+                                                   urlCon,
+                                                   reqType,
+                                                   normalOrProxy);
+                // Since NTLM is session based a failure means we have to
+                // discard the connection
+                if (requestHeader == null)
+                {
+                    _log.debug("NTLM Authentication failure - "
+                        + "closing connection");
+                    urlCon.releaseConnection(HttpURLConnection.CLOSE);
+                }
+            }
+            catch (HttpException ex)
+            {
+                _log.debug("NTLM Authentication failure - closing connection",
+                           ex);
+                urlCon.releaseConnection(HttpURLConnection.CLOSE);
+                throw ex;
+            }
+
         }
         else if (challengeMap.containsKey(DIGEST))
         {
@@ -722,11 +749,13 @@ public class Authenticator
         Credential cred = getCredentialInternal(realm, proxy, scheme, urlCon);
         if (cred == null)
         {
-            throw new HttpException("No HttpUserAgent set - "
+            throw new HttpException("No HttpUserAgent set or null Credential returned - "
                 + "can't get credential for "
                 + scheme
                 + ": "
-                + realm);
+                + realm
+                + " userAgent: "
+                + urlCon.getUserAgent());
         }
         return cred;
     }
@@ -770,16 +799,43 @@ public class Authenticator
             return null;
 
         int iScheme = schemeToInt(scheme);
-        if (proxy)
+        Credential cred;
+
+        if (_log.isDebugEnabled())
         {
-            return userAgent.getProxyCredential(realm, urlCon.getURL()
-                    .toString(), iScheme);
+            _log.debug("getCredentialInternal: calling "
+                + userAgent
+                + (proxy ? " PROXY " : "")
+                + " realm: "
+                + realm
+                + " url: "
+                + urlCon.getURL().toString()
+                + " scheme: "
+                + scheme
+                + " ("
+                + iScheme
+                + ")");
         }
 
-        return userAgent.getCredential(realm,
-                                       urlCon.getURL().toString(),
-                                       iScheme);
+        if (proxy)
+        {
+            cred = userAgent.getProxyCredential(realm, urlCon.getURL()
+                    .toString(), iScheme);
+        }
+        else
+        {
+
+            cred = userAgent.getCredential(realm,
+                                           urlCon.getURL().toString(),
+                                           iScheme);
+        }
+
+        if (_log.isDebugEnabled())
+        {
+            _log.debug("getCredentialInternal: result " + cred);
+        }
+
+        return cred;
 
     }
-
 }

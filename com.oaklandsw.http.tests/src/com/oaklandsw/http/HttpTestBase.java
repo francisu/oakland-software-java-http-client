@@ -675,6 +675,15 @@ public class HttpTestBase extends com.oaklandsw.TestCaseBase
             || _inIsaSslProxyTest;
     }
 
+    protected boolean isInAnyProxy()
+    {
+        return _inProxyTest
+            || _inAuthProxyTest
+            || _in10ProxyTest
+            || _inIsaProxyTest
+            || _inIsaSslProxyTest;
+    }
+
     // Test everything through an authenticating proxy server (uses only basic)
     public void testAuthProxy() throws Exception
     {

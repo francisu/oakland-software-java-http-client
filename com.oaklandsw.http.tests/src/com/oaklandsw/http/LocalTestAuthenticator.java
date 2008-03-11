@@ -56,6 +56,7 @@
 
 package com.oaklandsw.http;
 
+import java.io.InterruptedIOException;
 import java.util.Hashtable;
 import java.util.Map;
 import java.util.StringTokenizer;
@@ -88,7 +89,8 @@ public class LocalTestAuthenticator extends HttpTestBase
     public static final boolean authenticateForTests(HttpURLConnectInternal method,
                                                      String authReq,
                                                      int normalOrProxy)
-        throws HttpException
+        throws HttpException,
+            InterruptedIOException
     {
         Headers h = new Headers();
         if (authReq != null)
@@ -185,7 +187,7 @@ public class LocalTestAuthenticator extends HttpTestBase
 
     // ---------------------------------- Test Methods for Basic Authentication
 
-    public void testBasicAuthenticationWithNoCreds()
+    public void testBasicAuthenticationWithNoCreds() throws Exception
     {
         SimpleHttpMethod method = new SimpleHttpMethod();
         try
@@ -202,7 +204,7 @@ public class LocalTestAuthenticator extends HttpTestBase
         }
     }
 
-    public void testBasicAuthenticationWithNoRealm()
+    public void testBasicAuthenticationWithNoRealm() throws Exception
     {
         SimpleHttpMethod method = new SimpleHttpMethod();
         try
@@ -216,7 +218,7 @@ public class LocalTestAuthenticator extends HttpTestBase
         }
     }
 
-    public void testBasicAuthenticationWithNoRealm2()
+    public void testBasicAuthenticationWithNoRealm2() throws Exception
     {
         SimpleHttpMethod method = new SimpleHttpMethod();
         try
@@ -332,7 +334,7 @@ public class LocalTestAuthenticator extends HttpTestBase
 
     // --------------------------------- Test Methods for Digest Authentication
 
-    public void testDigestAuthenticationWithNoCreds()
+    public void testDigestAuthenticationWithNoCreds() throws Exception
     {
         SimpleHttpMethod method = new SimpleHttpMethod();
         try
@@ -349,7 +351,7 @@ public class LocalTestAuthenticator extends HttpTestBase
         }
     }
 
-    public void testDigestAuthenticationWithNoRealm()
+    public void testDigestAuthenticationWithNoRealm() throws Exception
     {
         SimpleHttpMethod method = new SimpleHttpMethod();
         try
@@ -365,7 +367,7 @@ public class LocalTestAuthenticator extends HttpTestBase
         }
     }
 
-    public void testDigestAuthenticationWithNoRealm2()
+    public void testDigestAuthenticationWithNoRealm2() throws Exception
     {
         SimpleHttpMethod method = new SimpleHttpMethod();
         try
@@ -436,7 +438,7 @@ public class LocalTestAuthenticator extends HttpTestBase
 
     // --------------------------------- Test Methods for NTLM Authentication
 
-    public void testNTLMAuthenticationWithNoCreds()
+    public void testNTLMAuthenticationWithNoCreds() throws Exception
     {
         SimpleHttpMethod method = new SimpleHttpMethod();
         try

@@ -7,6 +7,7 @@ import com.oaklandsw.http.errorsvr.TestTimeout;
 import com.oaklandsw.http.local.TestConnectionManagerLocal;
 import com.oaklandsw.http.local.TestDefaults;
 import com.oaklandsw.http.webapp.TestHeaders;
+import com.oaklandsw.http.local.AllLocalTests;
 import com.oaklandsw.http.local.TestHttpStatus;
 import com.oaklandsw.http.local.TestNtlmMessages;
 import com.oaklandsw.http.local.TestRequestHeaders;
@@ -18,16 +19,24 @@ import com.oaklandsw.http.webapp.TestAxis1;
 import com.oaklandsw.http.webapp.TestAxis2;
 import com.oaklandsw.http.webapp.TestBasicAuth;
 import com.oaklandsw.http.webapp.TestCookie;
+import com.oaklandsw.http.webapp.TestDisconnect;
+import com.oaklandsw.http.webapp.TestExplicitConnection;
+import com.oaklandsw.http.webapp.TestFailover;
 import com.oaklandsw.http.webapp.TestFtpProxy;
 import com.oaklandsw.http.webapp.TestIIS;
 import com.oaklandsw.http.webapp.TestJCIFS;
 import com.oaklandsw.http.webapp.TestMultiThread;
 import com.oaklandsw.http.webapp.TestNoData;
+import com.oaklandsw.http.webapp.TestOutputStream;
 import com.oaklandsw.http.webapp.TestOutputStreamChunked;
+import com.oaklandsw.http.webapp.TestOutputStreamFixed;
 import com.oaklandsw.http.webapp.TestOutputStreamRaw;
+import com.oaklandsw.http.webapp.TestParameters;
 import com.oaklandsw.http.webapp.TestPipelining;
+import com.oaklandsw.http.webapp.TestPipeliningRough;
 import com.oaklandsw.http.webapp.TestRedirect;
 import com.oaklandsw.http.webapp.TestTunneling;
+import com.oaklandsw.http.webapp.TestWebStart;
 import com.oaklandsw.http.webext.TestBugs;
 import com.oaklandsw.http.webext.TestHttps;
 import com.oaklandsw.http.webext.TestMethods;
@@ -58,7 +67,42 @@ public class HttpTestSubset extends HttpTestBase
 
         // This test must run first
         // suite.addTest(TestProperties.suite());
-        suite.addTest(TestTunneling.suite());
+
+        if (false)
+        {
+            suite.addTest(TestFailover.suite());
+            suite.addTest(TestAxis1.suite());
+            suite.addTest(TestAxis2.suite());
+            suite.addTest(TestIIS.suite());
+            suite.addTest(TestJCIFS.suite());
+            suite.addTest(TestExplicitConnection.suite());
+            suite.addTest(TestMethods.suite());
+            suite.addTest(TestAuthType.suite());
+            suite.addTest(TestPipelining.suite());
+            suite.addTest(TestPipeliningRough.suite());
+            suite.addTest(TestOutputStream.suite());
+            suite.addTest(TestOutputStreamChunked.suite());
+            suite.addTest(TestOutputStreamFixed.suite());
+            suite.addTest(TestOutputStreamRaw.suite());
+            suite.addTest(TestMultiThread.suite());
+            suite.addTest(TestParameters.suite());
+            suite.addTest(TestHeaders.suite());
+            suite.addTest(TestRedirect.suite());
+            suite.addTest(TestBasicAuth.suite());
+            suite.addTest(TestCookie.suite());
+            suite.addTest(TestNoData.suite());
+            suite.addTest(TestDisconnect.suite());
+            suite.addTest(TestWebStart.suite());
+            suite.addTest(TestTunneling.suite());
+        }
+
+        suite.addTest(AllLocalTests.suite());
+
+        suite.addTest(TestLicense.suite());
+
+        suite.addTest(AllCookieTests.suite());
+        suite.addTest(AllErrorsvrTests.suite());
+
         suite.addTest(TestFtpProxy.suite());
 
         if (false)
@@ -109,7 +153,6 @@ public class HttpTestSubset extends HttpTestBase
             suite.addTest(AllErrorsvrTests.suite());
             suite.addTest(TestNoData.suite());
         }
-
 
         return suite;
     }

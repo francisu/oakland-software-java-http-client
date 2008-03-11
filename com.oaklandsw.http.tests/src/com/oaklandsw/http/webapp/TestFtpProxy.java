@@ -106,8 +106,6 @@ public class TestFtpProxy extends TestWebappBase
             if (!_inIsaSslProxyTest)
                 return;
 
-            LogUtils.logAll();
-
             String res = testFtpUrl(HttpTestEnv.FTP_HOST
                 + "/HttpRequestSample.java", SSL);
 
@@ -174,8 +172,6 @@ public class TestFtpProxy extends TestWebappBase
         {
             if (!_inIsaSslProxyTest)
                 return;
-
-            LogUtils.logAll();
 
             String res = testFtpUrl("ftp.itrc.hp.com:21/mpe-ix_patches/c.75.00/.INTHD64A.txt",
                                     SSL);

@@ -1414,7 +1414,7 @@ public class HttpURLConnectInternal
     }
 
     protected void processPreemptiveAuth(int normalOrProxy)
-        throws HttpException
+        throws HttpException, InterruptedIOException
     {
         if ((_forwardAuthCount == 1 || _authState[normalOrProxy] == AS_FINAL_AUTH_SENT)
             && _authState[normalOrProxy] != AS_AUTHENTICATED)
@@ -1733,7 +1733,7 @@ public class HttpURLConnectInternal
     }
 
     // Returns true if retry needed
-    private boolean processAuthenticationResponse() throws HttpException
+    private boolean processAuthenticationResponse() throws HttpException, InterruptedIOException
     {
         _log.debug("processAuthenticationResponse");
 

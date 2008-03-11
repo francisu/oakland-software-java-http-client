@@ -306,9 +306,13 @@ public class TestIIS extends HttpTestBase
     }
 
     // Make sure we get a proper failure upon a bad credential
-    public void test300GetBadCred() throws MalformedURLException, IOException
+    // Bug 2181
+    public void test300GetBadCred() throws Exception
     {
         TestUserAgent._type = TestUserAgent.BAD;
+
+        // Clean out connections
+        HttpURLConnection.closeAllPooledConnections();
 
         URL url = new URL(HttpTestEnv.TEST_URL_IIS
             + HttpTestEnv.TEST_URL_APP_IIS_FORM);
@@ -320,6 +324,8 @@ public class TestIIS extends HttpTestBase
         urlCon.connect();
         response = urlCon.getResponseCode();
         assertEquals(401, response);
+
+        checkNoTotalConns(url);
 
         // Make sure it works correctly with a good URL, after
         // a bad one, that is, it re-requests the credential
@@ -335,9 +341,43 @@ public class TestIIS extends HttpTestBase
         checkNoActiveConns(url);
     }
 
-    public void test305GetNullCred() throws MalformedURLException, IOException
+    // Make sure we get a proper failure upon a bad proxy credential
+    // Bug 2181
+    public void test301GetBadCredProxy() throws Exception
+    {
+        if (!_inIsaProxyTest)
+            return;
+
+        TestUserAgent._type = TestUserAgent.GOOD;
+        int saveProxyType = TestUserAgent._proxyType;
+        TestUserAgent._proxyType = TestUserAgent.NULL;
+
+        // Clean out connections
+        HttpURLConnection.closeAllPooledConnections();
+
+        URL url = new URL(HttpTestEnv.TEST_URL_IIS
+            + HttpTestEnv.TEST_URL_APP_IIS_FORM);
+        int response = 0;
+
+        HttpURLConnection urlCon;
+        urlCon = HttpURLConnection.openConnection(url);
+        urlCon.disconnect();
+        urlCon.connect();
+        response = urlCon.getResponseCode();
+        assertEquals(407, response);
+
+        TestUserAgent._proxyType = saveProxyType;
+
+        checkNoTotalConns(url);
+    }
+
+    // Bug 2181
+    public void test305GetNullCred() throws Exception
     {
         TestUserAgent._type = TestUserAgent.NULL;
+
+        // Clean out connections
+        HttpURLConnection.closeAllPooledConnections();
 
         URL url = new URL(HttpTestEnv.TEST_URL_IIS
             + HttpTestEnv.TEST_URL_APP_IIS_FORM);
@@ -351,7 +391,39 @@ public class TestIIS extends HttpTestBase
         assertEquals(401, response);
 
         TestUserAgent._type = TestUserAgent.GOOD;
-        checkNoActiveConns(url);
+
+        // Make sure unauthenticated connection is not left around
+        checkNoTotalConns(url);
+    }
+
+    // Bug 2181
+    public void test310GetNullCredProxy() throws Exception
+    {
+        if (!_inIsaProxyTest)
+            return;
+        
+        // Clean out connections
+        HttpURLConnection.closeAllPooledConnections();
+
+        TestUserAgent._type = TestUserAgent.GOOD;
+        int saveProxyType = TestUserAgent._proxyType;
+        TestUserAgent._proxyType = TestUserAgent.NULL;
+
+        URL url = new URL(HttpTestEnv.TEST_URL_IIS
+            + HttpTestEnv.TEST_URL_APP_IIS_FORM);
+        int response = 0;
+
+        HttpURLConnection urlCon;
+        urlCon = HttpURLConnection.openConnection(url);
+        urlCon.disconnect();
+        urlCon.connect();
+        response = urlCon.getResponseCode();
+        assertEquals(407, response);
+
+        TestUserAgent._proxyType = saveProxyType;
+
+        // Make sure we don't leave unauthenticated connection around
+        checkNoTotalConns(url);
     }
 
     public void test400MultiGetPost() throws MalformedURLException, IOException
@@ -409,7 +481,9 @@ public class TestIIS extends HttpTestBase
             }
         }
         test300GetBadCred();
+        test301GetBadCredProxy();
         test305GetNullCred();
+        test310GetNullCredProxy();
         test400MultiGetPost();
 
     }

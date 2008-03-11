@@ -47,6 +47,7 @@ running:
 
 Window machine - default is repoman
 Linux machine - default is berlioz
+win2k3 (vm windows 2003 server running ISA)
 
 All of these ports and hosts are controlled by properties, see the HttpTestEnv file.
 
@@ -62,6 +63,8 @@ Port  Server
 8089  	Apache (as proxy server) (linux)
 
 3128  	Squid (linux)
+
+1080    SOCKS (win2k3 vm - ISA server)
 
 
 Instructions for each type of server:
@@ -128,7 +131,16 @@ before you restart the cat.
 
 The oaklandsw-http.war file is checked in to make things easier.
 
-TOMCAT - webstart, the file deployment.jar is part of the TestWebStart tests
+TOMCAT - webstart:
+
+httptests.jnlp in the outer test directory is the only one currently used for
+the webstart tests; the file deployment[-signed].jar is also part of these tests.
+This file has the TOMCAT host (currently berlioz 192.168.1.25) wired into it
+so that it works properly on all machines.
+
+There is another httptests.jnlp which is includes in the webapps directory;
+This is used if you want to test with JWS from the jnlp itself downloaded from TomCat.
+It's currently not used.
 
 
 Axis
