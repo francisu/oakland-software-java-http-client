@@ -18,6 +18,10 @@ public class TestUserAgent implements HttpUserAgent
 
     public static int        _proxyType;
 
+    // The number of times getCredential was called
+    public static int        _callCount;
+    public static int        _callCountProxy;
+
     public static final int  GOOD                 = 1;
     public static final int  NO_DOMAIN            = 2;
     public static final int  NO_USER              = 3;
@@ -37,6 +41,7 @@ public class TestUserAgent implements HttpUserAgent
 
     public Credential getCredential(String realm, String url, int scheme)
     {
+        _callCount++;
         return getCredential(_type, realm, url, scheme);
     }
 
@@ -218,6 +223,8 @@ public class TestUserAgent implements HttpUserAgent
             + url
             + " scheme: "
             + scheme);
+
+        _callCountProxy++;
 
         if (_proxyType == NULL)
         {

@@ -52,6 +52,9 @@ public class GlobalState
 
     private ArrayList              _nonProxyHosts;
 
+    boolean                        _multiCredentialsPerAddress;
+    boolean                        _proxyMultiCredentialsPerAddress;
+
     int                            _defaultConnectionTimeout;
     int                            _defaultRequestTimeout;
 

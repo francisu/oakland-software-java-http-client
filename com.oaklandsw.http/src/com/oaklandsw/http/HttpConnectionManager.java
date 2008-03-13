@@ -60,6 +60,10 @@ public class HttpConnectionManager
     // K(current Thread) V(AtomicInteger) - count of urlcons to read
     Map                           _threadUrlConCountMap;
 
+    // Cache of credentials associated with a particular connection
+    // K(connectionKey> V(Credential)
+    protected Map[]               _credentialCache;
+
     // The total number of urlCons that need to be written,
     // Synchronized by the connection manager; this is used to help
     // track flushing connections
@@ -144,6 +148,7 @@ public class HttpConnectionManager
         _threadUrlConCountMap = new HashMap();
         _pipelineLock = new String();
 
+        resetCachedCredentials();
         initAsyncQueue();
         resetStatistics();
     }
@@ -1061,6 +1066,54 @@ public class HttpConnectionManager
             _log.debug("Time to wake timeout thread: " + wakeTime);
         }
         return wakeTime;
+    }
+
+    Credential getCachedCredential(String connectionKey, int authType)
+    {
+        synchronized (this)
+        {
+            Credential cred = (Credential)_credentialCache[authType]
+                    .get(connectionKey);
+            if (_log.isDebugEnabled())
+                _log.debug("getCachedCredential: "
+                    + connectionKey
+                    + " cred: "
+                    + cred);
+            return cred;
+        }
+    }
+
+    void setCachedCredential(String connectionKey, int authType, Credential cred)
+    {
+        synchronized (this)
+        {
+            if (_log.isDebugEnabled())
+                _log.debug("setCachedCredential: "
+                    + connectionKey
+                    + " cred: "
+                    + cred);
+            _credentialCache[authType].put(connectionKey, cred);
+        }
+    }
+
+    void resetCachedCredential(String connectionKey, int authType)
+    {
+        synchronized (this)
+        {
+            if (_log.isDebugEnabled())
+                _log.debug("resetCachedCredential: " + connectionKey);
+            _credentialCache[authType].remove(connectionKey);
+        }
+    }
+
+    void resetCachedCredentials()
+    {
+        synchronized (this)
+        {
+            _credentialCache = new Map[HttpURLConnection.AUTH_PROXY + 1];
+            for (int i = 0; i <= HttpURLConnection.AUTH_PROXY; i++)
+                _credentialCache[i] = new HashMap();
+        }
     }
 
     static final boolean IMMEDIATE = true;

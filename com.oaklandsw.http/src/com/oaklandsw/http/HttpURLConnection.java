@@ -3104,21 +3104,33 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
         _authenticationType[AUTH_PROXY] = authenticationType;
     }
 
+    /**
+     * For internal use only (public for testing)
+     */
     public String getAuthenticationDummyContent()
     {
         return _authenticationDummyContent;
     }
 
+    /**
+     * For internal use only (public for testing)
+     */
     public void setAuthenticationDummyContent(String authenticationDummyContent)
     {
         _authenticationDummyContent = authenticationDummyContent;
     }
 
+    /**
+     * For internal use only (public for testing)
+     */
     public String getAuthenticationDummyMethod()
     {
         return _authenticationDummyMethod;
     }
 
+    /**
+     * For internal use only (public for testing)
+     */
     public void setAuthenticationDummyMethod(String authenticationDummyMethod)
     {
         _authenticationDummyMethod = authenticationDummyMethod;
@@ -3735,6 +3747,75 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
     public static boolean isNonProxyHost(String hostName)
     {
         return checkConnectionManager()._globalState.isNonProxyHost(hostName);
+    }
+
+    /**
+     * Allow multiple sets of authentication credentials per destination
+     * Internet address (host/port).
+     * 
+     * By default this is false, each Internet address uses a single set of
+     * credentials (user/password), and the HttpUserAgent is called only when
+     * necessary to obtain these credentials. This is the typical case for most
+     * applications and allows the HttpUserAgent to be directly hooked to a UI
+     * that asks the user only when necessary.
+     * 
+     * Set this to true if multiple sets of credentials are required for a
+     * single internet address. In this case, the HttpUserAgent will be called
+     * more often to obtain these credentials and it will not be suitable to
+     * connect this directly to a UI (e.g. it will bug the user too much).
+     * 
+     * This applies both to proxy connections and non-proxy connections.
+     * 
+     * @return a boolean, if multiple sets of credentials are allowed.
+     */
+    public static boolean getMultiCredentialsPerAddress()
+    {
+        return checkConnectionManager()._globalState._multiCredentialsPerAddress;
+    }
+
+    /**
+     * Allow multiple sets of authentication credentials per destination
+     * Internet address (host/port).
+     * 
+     * By default this is false, each Internet address uses a single set of
+     * credentials (user/password), and the HttpUserAgent is called only when
+     * necessary to obtain these credentials. This is the typical case for most
+     * applications and allows the HttpUserAgent to be directly hooked to a UI
+     * that asks the user only when necessary.
+     * 
+     * Set this to true if multiple sets of credentials are required for a
+     * single internet address. In this case, the HttpUserAgent will be called
+     * more often to obtain these credentials and it will not be suitable to
+     * connect this directly to a UI (e.g. it will bug the user too much).
+     * 
+     * This applies both to proxy connections and non-proxy connections.
+     * 
+     * @param multi
+     *            true if multiple sets of credentials are allowed
+     */
+    public static void setMultiCredentialsPerAddress(boolean multi)
+    {
+        checkConnectionManager()._globalState._multiCredentialsPerAddress = multi;
+    }
+
+    /**
+     * Flushes all cached credentials.
+     * <p>
+     * Used only when getMulti[Proxy]CredentialsPerAddress is false as this is
+     * the only time the credentials are cached.  Note that when 
+     * getMulti[Proxy]CredentialsPerAddress is specified, there is no matching
+     * of the (proxy) credentials to the credentials on which the underlying
+     * socket connections were created.  So if you reset the cache here and 
+     * then use different credentials, any existing socket connections in the
+     * pool may be used with their original credentials.  To avoide this, 
+     * call closeAllPooledConnections().
+     * 
+     * @see #getMultiCredentialsPerAddress()
+     * @see #setMultiCredentialsPerAddress(boolean)
+     */
+    public static void resetCachedCredentials()
+    {
+        checkConnectionManager().resetCachedCredentials();
     }
 
     /**

@@ -128,6 +128,8 @@ public class TestBasicAuth extends TestWebappBase
         URL url = new URL(_urlBase + BasicAuthServlet.NAME);
         int response = 0;
 
+        HttpURLConnection.setMultiCredentialsPerAddress(true);
+        
         HttpURLConnection urlCon = HttpURLConnection.openConnection(url);
         urlCon.setRequestMethod("GET");
 
@@ -156,14 +158,18 @@ public class TestBasicAuth extends TestWebappBase
         assertTrue(checkReplyNoAssert(reply,
                                       "<p>You have authenticated as \"jakarta:commons\"</p>"));
         checkNoActiveConns(url);
+
+        HttpURLConnection.setMultiCredentialsPerAddress(false);
+        
     }
 
     public void testBadCredFails() throws Exception
     {
-
         TestUserAgent._type = TestUserAgent.NULL;
         URL url = new URL(_urlBase + BasicAuthServlet.NAME);
         int response = 0;
+
+        HttpURLConnection.setMultiCredentialsPerAddress(true);
 
         HttpURLConnection urlCon = HttpURLConnection.openConnection(url);
         urlCon.setRequestMethod("GET");
@@ -193,8 +199,87 @@ public class TestBasicAuth extends TestWebappBase
         assertTrue(checkReplyNoAssert(reply,
                                       "<p>Not authorized. \"Basic YmFkOmNyZWRz\" not recognized.</p>"));
         checkNoActiveConns(url);
+        
+        HttpURLConnection.setMultiCredentialsPerAddress(false);
     }
 
+    public void testSimpleAuthGetCache() throws Exception
+    {
+        TestUserAgent._type = TestUserAgent.GOOD;
+        TestUserAgent._callCount = 0;
+        
+        URL url = new URL(_urlBase + BasicAuthServlet.NAME);
+        HttpURLConnection urlCon = HttpURLConnection.openConnection(url);
+        getReply(urlCon);
+        
+        assertEquals(1, TestUserAgent._callCount);
+        
+        // Now again
+        urlCon = HttpURLConnection.openConnection(url);
+        getReply(urlCon);
+
+        assertEquals(1, TestUserAgent._callCount);
+        
+        HttpURLConnection.resetCachedCredentials();
+
+        // Make sure it asks again
+        urlCon = HttpURLConnection.openConnection(url);
+        getReply(urlCon);
+
+        assertEquals(2, TestUserAgent._callCount);
+    }
+    
+    public void testSimpleAuthGetCacheFail() throws Exception
+    {
+        TestUserAgent._type = TestUserAgent.BAD;
+        TestUserAgent._callCount = 0;
+        
+        URL url = new URL(_urlBase + BasicAuthServlet.NAME);
+        HttpURLConnection urlCon = HttpURLConnection.openConnection(url);
+        assertEquals(401, urlCon.getResponseCode());
+        getReply(urlCon);
+        
+        assertEquals(1, TestUserAgent._callCount);
+        
+        // Now again - but good
+        TestUserAgent._type = TestUserAgent.GOOD;
+        urlCon = HttpURLConnection.openConnection(url);
+        assertEquals(200, urlCon.getResponseCode());
+        getReply(urlCon);
+
+        assertEquals(2, TestUserAgent._callCount);
+        
+        // Make sure does not ask again
+        urlCon = HttpURLConnection.openConnection(url);
+        assertEquals(200, urlCon.getResponseCode());
+        getReply(urlCon);
+
+        assertEquals(2, TestUserAgent._callCount);
+    }
+    
+    public void testSimpleAuthGetNoCache() throws Exception
+    {
+        HttpURLConnection.setMultiCredentialsPerAddress(true);
+
+        TestUserAgent._type = TestUserAgent.GOOD;
+        TestUserAgent._callCount = 0;
+        
+        URL url = new URL(_urlBase + BasicAuthServlet.NAME);
+        HttpURLConnection urlCon = HttpURLConnection.openConnection(url);
+        getReply(urlCon);
+        
+        assertEquals(1, TestUserAgent._callCount);
+        
+        // Now again - must ask a 2nd time
+        urlCon = HttpURLConnection.openConnection(url);
+        getReply(urlCon);
+
+        assertEquals(2, TestUserAgent._callCount);
+
+        HttpURLConnection.setMultiCredentialsPerAddress(false);
+    }
+    
+    
     public void allTestMethods() throws Exception
     {
         testSimpleAuthGet();

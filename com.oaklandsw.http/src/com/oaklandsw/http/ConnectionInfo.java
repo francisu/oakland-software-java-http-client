@@ -349,6 +349,12 @@ class ConnectionInfo
                 }
             }
 
+            if (!HttpURLConnection.getMultiCredentialsPerAddress())
+            {
+                matched = MATCHED;
+                break check;
+            }
+            
             if (conn._credential[HttpURLConnection.AUTH_NORMAL] == null
                 && conn._credential[HttpURLConnection.AUTH_PROXY] == null)
             {

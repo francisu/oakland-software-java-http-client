@@ -5,6 +5,22 @@ Readme file for oakland software HTTP client support.
 See http://www.oaklandsoftware.com/support.html for current known problems.
 
 
+Incompatible Changes since release 2.5.0
+------------------------------------------------
+As of release 2.5.0 the default behavior for managing authentication credentials
+associated with both proxied and normal connections has changed.  Previously
+the credentials were associated with a connection by default and you could have
+multiple connections to the same host/port with different credentials.  Now, with
+2.5.0 by default all connections going to the same host/port (or proxied through
+the same host/port) share the same authentication credentials.  This is the typical
+scenario for most users and the advantage of this is that the
+HttpUserAgent.get[Proxy]Credential() is only invoked when needed such that hooking
+this to some user interface is appropriate.
+
+If you wish to have different sets of credentials to the same host/port, this is possible
+by calling HttpURLConnection.setMultiCredentialsPerAddress(true).
+
+
 Incompatible Changes since release 1.x
 ------------------------------------------------
 1) The HttpURLConnection.setExplicitClose() and HttpURLConnection.isExplicitClose() 

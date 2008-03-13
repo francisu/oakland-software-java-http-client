@@ -112,11 +112,13 @@ public class Authenticator
     private static final char[]  HEXADECIMAL     = { '0', '1', '2', '3', '4',
         '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f' };
 
-    public static final boolean authenticate(HttpURLConnectInternal urlCon,
-                                             Headers reqAuthenticators,
-                                             String reqType,
-                                             Map challengeMap,
-                                             int normalOrProxy)
+    // Returns false if authentication not attempted (because we don't need it)
+    // throws if fails
+    public static boolean authenticate(HttpURLConnectInternal urlCon,
+                                       Headers reqAuthenticators,
+                                       String reqType,
+                                       Map challengeMap,
+                                       int normalOrProxy)
         throws HttpException,
             InterruptedIOException
     {
@@ -139,16 +141,11 @@ public class Authenticator
                         + "supported only for BASIC authentication.  "
                         + "See HttpURLConnection.setAuthenticationType()");
                 }
-
-                _log.debug("Preemptively sending basic credentials");
-
                 try
                 {
-                    String requestHeader = Authenticator.basic(null,
-                                                               urlCon,
-                                                               normalOrProxy);
-                    urlCon.addRequestProperty(respHeader, requestHeader);
-
+                    _log.debug("Preemptively sending basic credentials");
+                    Authenticator
+                            .basic(null, urlCon, respHeader, normalOrProxy);
                     return true;
                 }
                 catch (HttpException httpe)
@@ -158,7 +155,6 @@ public class Authenticator
                         _log.debug("No default credentials to preemptively"
                             + " send");
                     }
-
                     return false;
                 }
             }
@@ -195,60 +191,36 @@ public class Authenticator
         if (urlCon._authState[normalOrProxy] == HttpURLConnectInternal.AS_FINAL_AUTH_SENT)
         {
             Credential sentCred = urlCon.getCredentialSent(normalOrProxy);
-            if (challengeMap.containsKey(NTLM))
-            {
-                _log.debug("NTLM Authentication failure - "
-                    + "closing connection");
-                urlCon.releaseConnection(HttpURLConnection.CLOSE);
-            }
             throw new HttpException("Authentication failed; "
                 + "with credential "
                 + sentCred);
         }
 
         // determine the most secure request header to add
-        String requestHeader = null;
         if (challengeMap.containsKey(NTLM))
         {
             String challenge = (String)challengeMap.get(NTLM);
-            try
-            {
-                requestHeader = Authenticator.ntlm(challenge,
-                                                   urlCon,
-                                                   reqType,
-                                                   normalOrProxy);
-                // Since NTLM is session based a failure means we have to
-                // discard the connection
-                if (requestHeader == null)
-                {
-                    _log.debug("NTLM Authentication failure - "
-                        + "closing connection");
-                    urlCon.releaseConnection(HttpURLConnection.CLOSE);
-                }
-            }
-            catch (HttpException ex)
-            {
-                _log.debug("NTLM Authentication failure - closing connection",
-                           ex);
-                urlCon.releaseConnection(HttpURLConnection.CLOSE);
-                throw ex;
-            }
-
+            Authenticator.ntlm(challenge,
+                               urlCon,
+                               respHeader,
+                               reqType,
+                               normalOrProxy);
         }
         else if (challengeMap.containsKey(DIGEST))
         {
             String challenge = (String)challengeMap.get(DIGEST);
             String realm = parseRealmFromChallenge(challenge, urlCon);
-            requestHeader = Authenticator.digest(realm,
-                                                 challenge,
-                                                 urlCon,
-                                                 normalOrProxy);
+            Authenticator.digest(realm,
+                                 challenge,
+                                 urlCon,
+                                 respHeader,
+                                 normalOrProxy);
         }
         else if (challengeMap.containsKey(BASIC))
         {
             String challenge = (String)challengeMap.get(BASIC);
             String realm = parseRealmFromChallenge(challenge, urlCon);
-            requestHeader = Authenticator.basic(realm, urlCon, normalOrProxy);
+            Authenticator.basic(realm, urlCon, respHeader, normalOrProxy);
         }
         else if (challengeMap.size() == 0)
         {
@@ -264,13 +236,14 @@ public class Authenticator
                 + " is unsupported");
         }
 
-        // Add the header if it has been created and return true
-        if (requestHeader != null)
-        {
-            urlCon.addRequestProperty(respHeader, requestHeader);
-            return true;
-        }
-        return false;
+        return true;
+    }
+
+    static boolean isNtlm(Map challengeMap)
+    {
+        if (challengeMap == null)
+            return false;
+        return challengeMap.containsKey(NTLM);
     }
 
     /**
@@ -367,18 +340,24 @@ public class Authenticator
         }
     }
 
-    private static final String basic(String realm,
-                                      HttpURLConnectInternal urlCon,
-                                      int normalOrProxy) throws HttpException
+    private static final void basic(String realm,
+                                    HttpURLConnectInternal urlCon,
+                                    String property,
+                                    int normalOrProxy) throws HttpException
     {
         UserCredential cred = null;
 
         try
         {
-            cred = (UserCredential)getCredentials(realm,
-                                                  normalOrProxy == HttpURLConnection.AUTH_PROXY,
-                                                  BASIC,
-                                                  urlCon);
+            cred = (UserCredential)urlCon.getCredentialSent(normalOrProxy);
+            ;
+            if (cred == null)
+            {
+                cred = (UserCredential)getCredentials(realm,
+                                                      normalOrProxy == HttpURLConnection.AUTH_PROXY,
+                                                      BASIC,
+                                                      urlCon);
+            }
         }
         catch (ClassCastException e)
         {
@@ -393,13 +372,16 @@ public class Authenticator
                                  normalOrProxy,
                                  cred,
                                  HttpURLConnectInternal.AS_FINAL_AUTH_SENT);
-        return "Basic " + new String(Base64.encode(authString.getBytes()));
+        String requestHeader = "Basic "
+            + new String(Base64.encode(authString.getBytes()));
+        urlCon.addRequestProperty(property, requestHeader);
     }
 
-    private static final String ntlm(String challenge,
-                                     HttpURLConnectInternal urlCon,
-                                     String reqType,
-                                     int normalOrProxy) throws HttpException
+    private static final void ntlm(String challenge,
+                                   HttpURLConnectInternal urlCon,
+                                   String property,
+                                   String reqType,
+                                   int normalOrProxy) throws HttpException
     {
         NtlmCredential cred = null;
 
@@ -416,10 +398,14 @@ public class Authenticator
 
         try
         {
-            cred = (NtlmCredential)getCredentials(null,
-                                                  normalOrProxy == HttpURLConnection.AUTH_PROXY,
-                                                  NTLM,
-                                                  urlCon);
+            cred = (NtlmCredential)urlCon.getCredentialSent(normalOrProxy);
+            if (cred == null)
+            {
+                cred = (NtlmCredential)getCredentials(null,
+                                                      normalOrProxy == HttpURLConnection.AUTH_PROXY,
+                                                      NTLM,
+                                                      urlCon);
+            }
         }
         catch (ClassCastException e)
         {
@@ -438,7 +424,7 @@ public class Authenticator
         else
             newAuthState = HttpURLConnectInternal.AS_FINAL_AUTH_SENT;
 
-        String resp = "NTLM "
+        String header = "NTLM "
             + Ntlm.getResponseFor(challenge,
                                   cred.getUser(),
                                   cred.getPassword(),
@@ -446,30 +432,36 @@ public class Authenticator
                                   cred.getDomain());
         if (_log.isDebugEnabled())
         {
-            _log.debug("Replying to challenge with: " + resp);
+            _log.debug("Replying to challenge with: " + header);
         }
 
         urlCon.setCredentialSent(Credential.AUTH_NTLM,
                                  normalOrProxy,
                                  cred,
                                  newAuthState);
-        return resp;
 
+        urlCon.addRequestProperty(property, header);
     }
 
-    private static final String digest(String realm,
-                                       String challenge,
-                                       HttpURLConnectInternal urlCon,
-                                       int normalOrProxy) throws HttpException
+    private static final void digest(String realm,
+                                     String challenge,
+                                     HttpURLConnectInternal urlCon,
+                                     String property,
+                                     int normalOrProxy) throws HttpException
     {
         UserCredential cred = null;
 
         try
         {
-            cred = (UserCredential)getCredentials(realm,
-                                                  normalOrProxy == HttpURLConnection.AUTH_PROXY,
-                                                  DIGEST,
-                                                  urlCon);
+            cred = (UserCredential)urlCon.getCredentialSent(normalOrProxy);
+            ;
+            if (cred == null)
+            {
+                cred = (UserCredential)getCredentials(realm,
+                                                      normalOrProxy == HttpURLConnection.AUTH_PROXY,
+                                                      DIGEST,
+                                                      urlCon);
+            }
         }
         catch (ClassCastException e)
         {
@@ -493,7 +485,9 @@ public class Authenticator
                                  normalOrProxy,
                                  cred,
                                  HttpURLConnectInternal.AS_FINAL_AUTH_SENT);
-        return "Digest " + createDigestHeader(cred.getUser(), headers, digest);
+        String header = "Digest "
+            + createDigestHeader(cred.getUser(), headers, digest);
+        urlCon.addRequestProperty(property, header);
     }
 
     private static final Map getHTTPDigestCredentials(String challenge)
@@ -732,12 +726,6 @@ public class Authenticator
         else if (scheme.equalsIgnoreCase(NTLM))
             return Credential.AUTH_NTLM;
         return -1;
-    }
-
-    public static Credential getCredentialForConnectionKey(boolean proxy,
-                                                           final HttpURLConnectInternal urlCon)
-    {
-        return getCredentialInternal(null, proxy, null, urlCon);
     }
 
     private static Credential getCredentials(String realm,

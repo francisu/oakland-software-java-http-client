@@ -52,11 +52,6 @@ public class HttpURLConnectInternal
     private boolean          _bodySent;
 
     /**
-     * The host/port to be sent on this if this is a connect request.
-     */
-    private String           _connectHostPort;
-
-    /**
      * The input stream from which to read the request body. This is set before
      * the request is issued, if the source of the data is a stream.
      */
@@ -68,12 +63,6 @@ public class HttpURLConnectInternal
      * request is saved here in case it needs to be resent for authentication.
      */
     private byte[]           _requestBytes;
-
-    /**
-     * Indicates that we are sending an NTLM negotiate message on this URL
-     * request and the underlying connection (when obtained) should be marked
-     * with the setNtlmLeaveOpen() flag.
-     */
 
     // We have read the first character of the next line after
     // the status line, and it is here. This only applies if
@@ -279,7 +268,9 @@ public class HttpURLConnectInternal
         _credential[normalOrProxy] = cred;
         _authProtocol[normalOrProxy] = authType;
 
-        if (_connection != null)
+        // authType < 0 means we don't want to set it on the connection because
+        // we don't know the authType
+        if (_connection != null && authType > 0)
         {
             _connection.setCredentialSent(authType, normalOrProxy, cred);
         }
@@ -1302,7 +1293,8 @@ public class HttpURLConnectInternal
                 // We got an unexpected good response from a dummy
                 // authentication attempt, indicate we are authenticated and go
                 // around again to do the user's request
-                if (_responseCode < HttpStatus.SC_REDIRECTION && _dummyAuthRequestSent)
+                if (_responseCode < HttpStatus.SC_REDIRECTION
+                    && _dummyAuthRequestSent)
                 {
                     String str = "Retrying request because of positive reponse to dummy auth request";
                     _connLog.debug(str);
@@ -1414,7 +1406,8 @@ public class HttpURLConnectInternal
     }
 
     protected void processPreemptiveAuth(int normalOrProxy)
-        throws HttpException, InterruptedIOException
+        throws HttpException,
+            InterruptedIOException
     {
         if ((_forwardAuthCount == 1 || _authState[normalOrProxy] == AS_FINAL_AUTH_SENT)
             && _authState[normalOrProxy] != AS_AUTHENTICATED)
@@ -1426,11 +1419,7 @@ public class HttpURLConnectInternal
                     + " checking for preemptive authentication");
             }
 
-            boolean sent = Authenticator.authenticate(this,
-                                                      null,
-                                                      null,
-                                                      null,
-                                                      normalOrProxy);
+            boolean sent = callAuthenticate(null, null, normalOrProxy);
 
             // The first time, initiate authentication processing
             // if required, this bypasses pipelining/streaming until
@@ -1732,8 +1721,91 @@ public class HttpURLConnectInternal
         return true;
     }
 
+    private boolean callAuthenticate(String reqType,
+                                     Map challengeMap,
+                                     int normalOrProxy)
+        throws HttpException,
+            InterruptedIOException
+    {
+
+        // See if it's in the cache
+        if (!HttpURLConnection.getMultiCredentialsPerAddress())
+        {
+            if (getConnection() != null
+                && getCredentialSent(normalOrProxy) == null)
+            {
+                UserCredential cred = null;
+
+                cred = (UserCredential)HttpURLConnection
+                        .getConnectionManager()
+                        .getCachedCredential(getConnection()._connectionInfo._connectionKey,
+                                             normalOrProxy);
+
+                setCredentialSent(-1,
+                                  normalOrProxy,
+                                  cred,
+                                  _authState[normalOrProxy]);
+
+            }
+        }
+
+        boolean close = Authenticator.isNtlm(challengeMap);
+
+        boolean sent = false;
+
+        try
+        {
+            sent = Authenticator.authenticate(this, (challengeMap != null
+                ? _respHeaders
+                : null), reqType, challengeMap, normalOrProxy);
+
+            if (!sent)
+                return sent;
+
+            // Successful authentication
+            if (!HttpURLConnection.getMultiCredentialsPerAddress())
+            {
+                HttpURLConnection
+                        .getConnectionManager()
+                        .setCachedCredential(getConnection()._connectionInfo._connectionKey,
+                                             normalOrProxy,
+                                             getCredentialSent(normalOrProxy));
+            }
+        }
+        catch (HttpException ex)
+        {
+            authenticationFailed(close, normalOrProxy);
+            throw ex;
+        }
+        return sent;
+    }
+
+    static final boolean AUTH_FAILED_CLOSE = true;
+
+    void authenticationFailed(boolean close, int normalOrProxy)
+        throws InterruptedIOException
+    {
+        _log.debug("Authentication failed");
+
+        if (close)
+        {
+            _log.debug("Authentication failed - closing connection");
+            releaseConnection(CLOSE);
+        }
+        if (!HttpURLConnection.getMultiCredentialsPerAddress())
+        {
+            HttpURLConnection
+                    .getConnectionManager()
+                    .resetCachedCredential(getConnection()._connectionInfo._connectionKey,
+                                           normalOrProxy);
+        }
+
+    }
+
     // Returns true if retry needed
-    private boolean processAuthenticationResponse() throws HttpException, InterruptedIOException
+    private boolean processAuthenticationResponse()
+        throws HttpException,
+            InterruptedIOException
     {
         _log.debug("processAuthenticationResponse");
 
@@ -1758,17 +1830,16 @@ public class HttpURLConnectInternal
         _reqHeaders.remove(Authenticator.RESP_HEADERS_LC[_currentAuthType]);
         try
         {
+
             String reqType = Authenticator.REQ_HEADERS[_currentAuthType];
 
             // parse the authenticate header
             Map challengeMap = Authenticator
                     .parseAuthenticateHeader(_respHeaders, reqType, this);
 
-            authenticated = Authenticator.authenticate(this,
-                                                       _respHeaders,
-                                                       reqType,
-                                                       challengeMap,
-                                                       _currentAuthType);
+            authenticated = callAuthenticate(reqType,
+                                             challengeMap,
+                                             _currentAuthType);
         }
         catch (HttpException ex)
         {
@@ -1802,7 +1873,8 @@ public class HttpURLConnectInternal
     {
         // Either a redirection or error, we can't continue
         // For Raw, always pass the response code through
-        if (_responseCode > HttpStatus.SC_REDIRECTION && _streamingMode != STREAM_RAW)
+        if (_responseCode > HttpStatus.SC_REDIRECTION
+            && _streamingMode != STREAM_RAW)
         {
             HttpRetryException rte = new HttpRetryException(Util
                                                                     .bytesToString(_responseTextBytes,
@@ -2351,7 +2423,8 @@ public class HttpURLConnectInternal
                     _executed = true;
 
                     // Call the user
-                    if (ex != null || _responseCode >= HttpStatus.SC_REDIRECTION)
+                    if (ex != null
+                        || _responseCode >= HttpStatus.SC_REDIRECTION)
                     {
                         callPipelineError(is, ex);
                     }
@@ -2794,6 +2867,4 @@ public class HttpURLConnectInternal
         urlCon.setAuthenticationDummyMethod(urlCon.getRequestMethod());
     }
 
-    
-    
 }

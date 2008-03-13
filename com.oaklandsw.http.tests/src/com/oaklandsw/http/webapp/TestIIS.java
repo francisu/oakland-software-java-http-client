@@ -176,6 +176,8 @@ public class TestIIS extends HttpTestBase
             + HttpTestEnv.TEST_URL_APP_IIS_FORM);
         int response = 0;
 
+        HttpURLConnection.setMultiCredentialsPerAddress(true);
+
         HttpURLConnection urlCon;
         urlCon = HttpURLConnection.openConnection(url);
         response = urlCon.getResponseCode();
@@ -201,6 +203,7 @@ public class TestIIS extends HttpTestBase
 
         int waitTime = 2000;
 
+        HttpURLConnection.setMultiCredentialsPerAddress(true);
         HttpURLConnection.setDefaultIdleConnectionTimeout(waitTime);
 
         long startTime = System.currentTimeMillis();
@@ -401,7 +404,7 @@ public class TestIIS extends HttpTestBase
     {
         if (!_inIsaProxyTest)
             return;
-        
+
         // Clean out connections
         HttpURLConnection.closeAllPooledConnections();
 
@@ -424,6 +427,209 @@ public class TestIIS extends HttpTestBase
 
         // Make sure we don't leave unauthenticated connection around
         checkNoTotalConns(url);
+    }
+
+    public void test320SimpleAuthGetCache() throws Exception
+    {
+        // Clean out connections
+        HttpURLConnection.closeAllPooledConnections();
+
+        TestUserAgent._type = TestUserAgent.GOOD;
+        TestUserAgent._callCount = 0;
+
+        URL url = new URL(HttpTestEnv.TEST_URL_IIS
+            + HttpTestEnv.TEST_URL_APP_IIS_FORM);
+        HttpURLConnection urlCon = HttpURLConnection.openConnection(url);
+        getReply(urlCon);
+
+        assertEquals(1, TestUserAgent._callCount);
+
+        // Now again
+        urlCon = HttpURLConnection.openConnection(url);
+        getReply(urlCon);
+
+        assertEquals(1, TestUserAgent._callCount);
+
+        HttpURLConnection.resetCachedCredentials();
+        // For NTLM have to close the pooled connections because
+        // it will just assume the credential matches
+        HttpURLConnection.closeAllPooledConnections();
+
+        // Make sure it asks again
+        urlCon = HttpURLConnection.openConnection(url);
+        getReply(urlCon);
+
+        assertEquals(2, TestUserAgent._callCount);
+    }
+
+    public void test321SimpleAuthGetCacheProxy() throws Exception
+    {
+        if (!_inIsaProxyTest)
+            return;
+
+        // Clean out connections
+        HttpURLConnection.closeAllPooledConnections();
+
+        TestUserAgent._type = TestUserAgent.GOOD;
+        TestUserAgent._proxyType = TestUserAgent.GOOD;
+        TestUserAgent._callCount = 0;
+        TestUserAgent._callCountProxy = 0;
+
+        URL url = new URL(HttpTestEnv.TEST_URL_IIS
+            + HttpTestEnv.TEST_URL_APP_IIS_FORM);
+        HttpURLConnection urlCon = HttpURLConnection.openConnection(url);
+        getReply(urlCon);
+
+        assertEquals(1, TestUserAgent._callCount);
+        assertEquals(1, TestUserAgent._callCountProxy);
+
+        // Now again
+        urlCon = HttpURLConnection.openConnection(url);
+        getReply(urlCon);
+
+        assertEquals(1, TestUserAgent._callCount);
+        assertEquals(1, TestUserAgent._callCountProxy);
+
+        HttpURLConnection.resetCachedCredentials();
+        // For NTLM have to close the pooled connections because
+        // it will just assume the credential matches
+        HttpURLConnection.closeAllPooledConnections();
+
+        // Make sure it asks again
+        urlCon = HttpURLConnection.openConnection(url);
+        getReply(urlCon);
+
+        assertEquals(2, TestUserAgent._callCount);
+        assertEquals(2, TestUserAgent._callCountProxy);
+    }
+
+    public void test325SimpleAuthGetCacheFail() throws Exception
+    {
+        // Clean out connections
+        HttpURLConnection.closeAllPooledConnections();
+
+        TestUserAgent._type = TestUserAgent.BAD;
+        TestUserAgent._callCount = 0;
+
+        URL url = new URL(HttpTestEnv.TEST_URL_IIS
+            + HttpTestEnv.TEST_URL_APP_IIS_FORM);
+        HttpURLConnection urlCon = HttpURLConnection.openConnection(url);
+        assertEquals(401, urlCon.getResponseCode());
+        getReply(urlCon);
+
+        assertEquals(1, TestUserAgent._callCount);
+
+        // Now again - but good
+        TestUserAgent._type = TestUserAgent.GOOD;
+        urlCon = HttpURLConnection.openConnection(url);
+        assertEquals(200, urlCon.getResponseCode());
+        getReply(urlCon);
+
+        assertEquals(2, TestUserAgent._callCount);
+
+        // Make sure does not ask again
+        urlCon = HttpURLConnection.openConnection(url);
+        assertEquals(200, urlCon.getResponseCode());
+        getReply(urlCon);
+
+        assertEquals(2, TestUserAgent._callCount);
+    }
+
+    public void test326SimpleAuthGetCacheFailProxy() throws Exception
+    {
+        if (!_inIsaProxyTest)
+            return;
+
+        // Clean out connections
+        HttpURLConnection.closeAllPooledConnections();
+
+        TestUserAgent._type = TestUserAgent.GOOD;
+        int saveProxyType = TestUserAgent._proxyType;
+        TestUserAgent._proxyType = TestUserAgent.BAD;
+        TestUserAgent._callCount = 0;
+        TestUserAgent._callCountProxy = 0;
+
+        URL url = new URL(HttpTestEnv.TEST_URL_IIS
+            + HttpTestEnv.TEST_URL_APP_IIS_FORM);
+        HttpURLConnection urlCon = HttpURLConnection.openConnection(url);
+        assertEquals(407, urlCon.getResponseCode());
+        getReply(urlCon);
+
+        assertEquals(0, TestUserAgent._callCount);
+        assertEquals(1, TestUserAgent._callCountProxy);
+
+        // Now again - but good
+        TestUserAgent._proxyType = TestUserAgent.GOOD;
+        urlCon = HttpURLConnection.openConnection(url);
+        assertEquals(200, urlCon.getResponseCode());
+        getReply(urlCon);
+
+        assertEquals(1, TestUserAgent._callCount);
+        assertEquals(2, TestUserAgent._callCountProxy);
+
+        // Make sure does not ask again
+        urlCon = HttpURLConnection.openConnection(url);
+        assertEquals(200, urlCon.getResponseCode());
+        getReply(urlCon);
+
+        assertEquals(1, TestUserAgent._callCount);
+        assertEquals(2, TestUserAgent._callCountProxy);
+        TestUserAgent._proxyType = saveProxyType;
+    }
+
+    public void test330SimpleAuthGetNoCache() throws Exception
+    {
+        HttpURLConnection.setMultiCredentialsPerAddress(true);
+
+        TestUserAgent._type = TestUserAgent.GOOD;
+        TestUserAgent._callCount = 0;
+
+        URL url = new URL(HttpTestEnv.TEST_URL_IIS
+            + HttpTestEnv.TEST_URL_APP_IIS_FORM);
+        HttpURLConnection urlCon = HttpURLConnection.openConnection(url);
+        getReply(urlCon);
+
+        int callCount = TestUserAgent._callCount;
+
+        // Now again - must ask a 2nd time
+        urlCon = HttpURLConnection.openConnection(url);
+        getReply(urlCon);
+
+        assertTrue(TestUserAgent._callCount > callCount);
+
+        HttpURLConnection.setMultiCredentialsPerAddress(false);
+    }
+
+    public void test331SimpleAuthGetNoCacheProxy() throws Exception
+    {
+        if (!_inIsaProxyTest)
+            return;
+
+        HttpURLConnection.setMultiCredentialsPerAddress(true);
+
+        TestUserAgent._type = TestUserAgent.GOOD;
+        TestUserAgent._proxyType = TestUserAgent.GOOD;
+        TestUserAgent._callCount = 0;
+        TestUserAgent._callCountProxy = 0;
+
+        URL url = new URL(HttpTestEnv.TEST_URL_IIS
+            + HttpTestEnv.TEST_URL_APP_IIS_FORM);
+        HttpURLConnection urlCon = HttpURLConnection.openConnection(url);
+        getReply(urlCon);
+
+        int callCount = TestUserAgent._callCount;
+        int callCountProxy = TestUserAgent._callCount;
+
+        // Now again - must ask a 2nd time
+        urlCon = HttpURLConnection.openConnection(url);
+        getReply(urlCon);
+
+        assertTrue(TestUserAgent._callCount > callCount);
+        // FIXME
+        if (false)
+        assertTrue(TestUserAgent._callCountProxy > callCountProxy);
+
+        HttpURLConnection.setMultiCredentialsPerAddress(false);
     }
 
     public void test400MultiGetPost() throws MalformedURLException, IOException
@@ -484,6 +690,14 @@ public class TestIIS extends HttpTestBase
         test301GetBadCredProxy();
         test305GetNullCred();
         test310GetNullCredProxy();
+
+        test320SimpleAuthGetCache();
+        test321SimpleAuthGetCacheProxy();
+        test325SimpleAuthGetCacheFail();
+        test326SimpleAuthGetCacheFailProxy();
+        test330SimpleAuthGetNoCache();
+        test331SimpleAuthGetNoCacheProxy();
+
         test400MultiGetPost();
 
     }
