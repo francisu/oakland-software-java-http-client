@@ -169,14 +169,6 @@
       <param-value>oaklandswtest.com</param-value>
     </init-param>
     <init-param>
-      <param-name>jcifs.smb.client.username</param-name>
-      <param-value>httptest</param-value>
-    </init-param>
-    <init-param>
-      <param-name>jcifs.smb.client.password</param-name>
-      <param-value>httptestpw</param-value>
-    </init-param>
-    <init-param>
       <param-name>jcifs.smb.lmCompatibility</param-name>
       <param-value>5</param-value>
     </init-param>
@@ -207,14 +199,6 @@
     <init-param>
       <param-name>jcifs.smb.client.domain</param-name>
       <param-value>oaklandswtest.com</param-value>
-    </init-param>
-    <init-param>
-      <param-name>jcifs.smb.client.username</param-name>
-      <param-value>httptest</param-value>
-    </init-param>
-    <init-param>
-      <param-name>jcifs.smb.client.password</param-name>
-      <param-value>httptestpw</param-value>
     </init-param>
     <!-- 
 <init-param>
