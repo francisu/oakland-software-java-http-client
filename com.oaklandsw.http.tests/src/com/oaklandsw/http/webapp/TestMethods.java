@@ -1,5 +1,6 @@
 package com.oaklandsw.http.webapp;
 
+import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.net.Socket;
 import java.net.URL;
@@ -196,6 +197,31 @@ public class TestMethods extends TestWebappBase
         getReply(urlCon);
     }
 
+    // Bug 2189 allow FileNotFoundException on 404 response
+    public void testGetNotFound() throws Exception
+    {
+        URL url = new URL(_urlBase + "notfound");
+
+        HttpURLConnection urlCon = HttpURLConnection.openConnection(url);
+        assertEquals(404, urlCon.getResponseCode());
+        getReply(urlCon);
+
+        HttpURLConnection.setDefaultThrowFileNotFoundOn404(true);
+
+        urlCon = HttpURLConnection.openConnection(url);
+        try
+        {
+            urlCon.getResponseCode();
+            fail("Expected FileNotFoundException");
+        }
+        catch (FileNotFoundException ex)
+        {
+            // expected
+        }
+
+        HttpURLConnection.setDefaultThrowFileNotFoundOn404(false);
+    }
+
     public void allTestMethods() throws Exception
     {
         testGetMethod();
@@ -203,6 +229,7 @@ public class TestMethods extends TestWebappBase
         testHeadMethod();
         testDeleteMethod();
         testPutMethod();
+        testGetNotFound();
         // testOptionsMethod();
     }
 

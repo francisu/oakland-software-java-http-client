@@ -3802,13 +3802,13 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
      * Flushes all cached credentials.
      * <p>
      * Used only when getMulti[Proxy]CredentialsPerAddress is false as this is
-     * the only time the credentials are cached.  Note that when 
+     * the only time the credentials are cached. Note that when
      * getMulti[Proxy]CredentialsPerAddress is specified, there is no matching
      * of the (proxy) credentials to the credentials on which the underlying
-     * socket connections were created.  So if you reset the cache here and 
-     * then use different credentials, any existing socket connections in the
-     * pool may be used with their original credentials.  To avoide this, 
-     * call closeAllPooledConnections().
+     * socket connections were created. So if you reset the cache here and then
+     * use different credentials, any existing socket connections in the pool
+     * may be used with their original credentials. To avoide this, call
+     * closeAllPooledConnections().
      * 
      * @see #getMultiCredentialsPerAddress()
      * @see #setMultiCredentialsPerAddress(boolean)
@@ -4193,6 +4193,35 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
         if (propVal == null)
             return METHOD_PROP_UNKNOWN_METHOD;
         return propVal.intValue();
+    }
+
+    /**
+     * For JRE compatiblity throw a FileNotFoundException when a 404 response is
+     * detected.
+     * 
+     * By default this is off, that is the 404 response is passed through, which
+     * is not compatible with the JRE.
+     * 
+     * @param doThrow
+     *            true if a FileNotFoundException is to be thrown.
+     */
+    public static void setDefaultThrowFileNotFoundOn404(boolean doThrow)
+    {
+        checkConnectionManager()._globalState._fileNotFoundOn404 = doThrow;
+    }
+
+    /**
+     * For JRE compatiblity throw a FileNotFoundException when a 404 response is
+     * detected.
+     * 
+     * By default this is off, that is the 404 response is passed through, which
+     * is not compatible with the JRE.
+     * 
+     * @return true if a FileNotFoundException is to be thrown.
+     */
+    public static boolean getDefaultThrowFileNotFoundOn404()
+    {
+        return checkConnectionManager()._globalState._fileNotFoundOn404;
     }
 
     public String getUrlString()

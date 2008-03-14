@@ -57,6 +57,7 @@
 				<include name="com/oaklandsw/http/HttpTimeoutException.java" />
 				<include name="com/oaklandsw/http/HttpUserAgent.java" />
 				<include name="com/oaklandsw/http/AbstractCallback.java" />
+				<include name="com/oaklandsw/http/AbstractSocketFactory.java" />
 				<include name="com/oaklandsw/http/ConnectionIOListener.java" />
 				<include name="com/oaklandsw/http/Callback.java" />
 				<include name="com/oaklandsw/http/Credential.java" />
@@ -190,7 +191,7 @@
 		<delete dir="${obf.out.dir}" />
 
 		<!-- save the obfuscation information in the releases for future use -->
-		<copy toDir="${release.dir}/http-obf-${oaklandswVersion}">
+		<copy toDir="${release.dir}/http_${oaklandswVersion}_obf">
 			<fileset dir="${obf.log.dir}/" />
 		</copy>
 
@@ -252,6 +253,7 @@
 			</zipfileset>
 			<zipfileset dir="${basedir}" includes="build.http.xml" fullpath="build.xml" />
 			<fileset dir="${basedir}">
+				<include name="README" />
 				<include name="README_SOURCE" />
 			</fileset>
 			<fileset dir="../com.oaklandsw.http.jars">

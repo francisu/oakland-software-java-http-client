@@ -9,6 +9,7 @@ package com.oaklandsw.http;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InterruptedIOException;
@@ -2030,6 +2031,12 @@ public class HttpURLConnectInternal
         {
             _executing = true;
             processRequestLoop();
+
+            if (_responseCode == HttpStatus.SC_NOT_FOUND
+                && getDefaultThrowFileNotFoundOn404())
+            {
+                throw new FileNotFoundException(_urlString);
+            }
         }
         catch (SocketTimeoutException httpe)
         {

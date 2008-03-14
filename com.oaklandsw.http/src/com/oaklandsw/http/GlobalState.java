@@ -116,6 +116,8 @@ public class GlobalState
     int                            _writeBufferSize                 = HttpURLConnection.DEFAULT_SEND_BUFFER_SIZE;
     int                            _readBufferSize                  = HttpURLConnection.DEFAULT_RECEIVE_BUFFER_SIZE;
 
+    boolean                        _fileNotFoundOn404;
+
     private class DefaultHostnameVerifier implements HostnameVerifier
     {
         public boolean verify(String hostName, SSLSession session)

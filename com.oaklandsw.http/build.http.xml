@@ -87,6 +87,7 @@
 		<include name="com/oaklandsw/http/HttpTimeoutException.java" />
 		<include name="com/oaklandsw/http/HttpUserAgent.java" />
 		<include name="com/oaklandsw/http/AbstractCallback.java" />
+		<include name="com/oaklandsw/http/AbstractSocketFactory.java" />
 		<include name="com/oaklandsw/http/ConnectionIOListener.java" />
 		<include name="com/oaklandsw/http/Callback.java" />
 		<include name="com/oaklandsw/http/Credential.java" />
