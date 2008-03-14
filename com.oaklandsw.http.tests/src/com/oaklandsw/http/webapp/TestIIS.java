@@ -20,6 +20,7 @@ import com.oaklandsw.http.HttpURLConnection;
 import com.oaklandsw.http.PipelineTester;
 import com.oaklandsw.http.TestUserAgent;
 import com.oaklandsw.http.ntlm.NegotiateMessage;
+import com.oaklandsw.http.servlet.RequestBodyServlet;
 import com.oaklandsw.util.LogUtils;
 
 public class TestIIS extends HttpTestBase
@@ -496,6 +497,15 @@ public class TestIIS extends HttpTestBase
         HttpURLConnection.closeAllPooledConnections();
 
         // Make sure it asks again
+        urlCon = HttpURLConnection.openConnection(url);
+        getReply(urlCon);
+
+        assertEquals(2, TestUserAgent._callCount);
+        assertEquals(2, TestUserAgent._callCountProxy);
+
+        // Go to a different server with the same proxy, it should not
+        // ask anything
+        url = new URL(_urlBase + RequestBodyServlet.NAME);
         urlCon = HttpURLConnection.openConnection(url);
         getReply(urlCon);
 

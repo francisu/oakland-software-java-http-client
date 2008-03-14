@@ -34,6 +34,11 @@ class ConnectionInfo
     // is used to deal with that.
     String                          _connectionKey;
 
+    // This is the proxy portion of the connection key which is used
+    // for authentication caching because we must be sensitive only to the
+    // proxy
+    String                          _proxyKey;
+
     // The number of urlcons allowed on this connection before the
     // server closes it. This starts off being zero (unlimited), then
     // if a connection is closed by the server (using a Connection: close header
@@ -66,9 +71,11 @@ class ConnectionInfo
     protected HttpConnectionManager _connManager;
 
     ConnectionInfo(HttpConnectionManager connManager,
-            String connectionKey)
+            String connectionKey,
+            String proxyKey)
     {
         _connectionKey = connectionKey;
+        _proxyKey = proxyKey;
         _availableConnections = new ArrayBlockingQueue(START_SIZE);
         _assignedConnections = new ArrayList();
         _connManager = connManager;
@@ -354,7 +361,7 @@ class ConnectionInfo
                 matched = MATCHED;
                 break check;
             }
-            
+
             if (conn._credential[HttpURLConnection.AUTH_NORMAL] == null
                 && conn._credential[HttpURLConnection.AUTH_PROXY] == null)
             {

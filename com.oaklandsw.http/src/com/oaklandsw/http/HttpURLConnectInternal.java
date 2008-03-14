@@ -1736,9 +1736,8 @@ public class HttpURLConnectInternal
             {
                 UserCredential cred = null;
 
-                cred = (UserCredential)HttpURLConnection
-                        .getConnectionManager()
-                        .getCachedCredential(getConnection()._connectionInfo._connectionKey,
+                cred = (UserCredential)HttpURLConnection.getConnectionManager()
+                        .getCachedCredential(getConnection()._connectionInfo,
                                              normalOrProxy);
 
                 setCredentialSent(-1,
@@ -1765,9 +1764,8 @@ public class HttpURLConnectInternal
             // Successful authentication
             if (!HttpURLConnection.getMultiCredentialsPerAddress())
             {
-                HttpURLConnection
-                        .getConnectionManager()
-                        .setCachedCredential(getConnection()._connectionInfo._connectionKey,
+                HttpURLConnection.getConnectionManager()
+                        .setCachedCredential(getConnection()._connectionInfo,
                                              normalOrProxy,
                                              getCredentialSent(normalOrProxy));
             }
@@ -1794,9 +1792,8 @@ public class HttpURLConnectInternal
         }
         if (!HttpURLConnection.getMultiCredentialsPerAddress())
         {
-            HttpURLConnection
-                    .getConnectionManager()
-                    .resetCachedCredential(getConnection()._connectionInfo._connectionKey,
+            HttpURLConnection.getConnectionManager()
+                    .resetCachedCredential(getConnection()._connectionInfo,
                                            normalOrProxy);
         }
 

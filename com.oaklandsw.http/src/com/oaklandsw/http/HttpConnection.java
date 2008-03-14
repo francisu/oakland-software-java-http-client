@@ -117,7 +117,9 @@ public class HttpConnection
 
     // The way this connection is identified by the connection
     // manager.
-    String                     _handle;
+    String                     _connectionKey;
+
+    String                     _proxyKey;
 
     // Information about the host/port etc that controls this connection
     ConnectionInfo             _connectionInfo;
@@ -345,7 +347,7 @@ public class HttpConnection
         _host = host;
         _port = port;
         _ssl = secure;
-        _handle = handle;
+        _connectionKey = handle;
         setHostPort();
         // _queue = new ArrayBlockingQueue(6000);
         _queue = new LinkedBlockingQueue();

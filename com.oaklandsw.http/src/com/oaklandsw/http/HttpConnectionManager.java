@@ -598,20 +598,21 @@ public class HttpConnectionManager
         // FIXME - this is called also in HttpURLConnectInternal
         final String protocol = URIUtil.getProtocol(url);
         String hostAndPort = URIUtil.getProtocolHostPort(url);
-        String connectionKey = getConnectionKey(hostAndPort,
-                                                proxyHost,
-                                                proxyPort);
-        if (_log.isDebugEnabled())
-        {
-            _log.debug("Requested connection: " + connectionKey);
-        }
-
         HttpConnection conn = null;
 
         synchronized (this)
         {
             // Look for a list of connections for the given host:port
-            ConnectionInfo ci = getConnectionInfo(connectionKey);
+            ConnectionInfo ci = getConnectionInfo(hostAndPort,
+                                                  proxyHost,
+                                                  proxyPort);
+            String connectionKey = ci._connectionKey;
+            String proxyKey = ci._proxyKey;
+
+            if (_log.isDebugEnabled())
+            {
+                _log.debug("Requested connection: " + connectionKey);
+            }
 
             while (true)
             {
@@ -642,7 +643,7 @@ public class HttpConnectionManager
 
                 // Need to refetch this as it might have changed since
                 // the wait unlocked
-                ci = getConnectionInfo(connectionKey);
+                ci = getConnectionInfo(connectionKey, proxyKey);
 
                 // Add the 32ms because wait seems to wake a little early
                 // sometimes
@@ -740,25 +741,19 @@ public class HttpConnectionManager
         return conn;
     }
 
-    private String getConnectionKey(String hostAndPort,
-                                    String proxyHost,
-                                    int proxyPort)
+    private StringBuffer createProxyKey(String proxyHost, int proxyPort)
     {
         // No proxy information
         if (proxyHost == null && proxyPort > 0)
-            return hostAndPort;
+            return null;
 
         // Have to build the key
         StringBuffer buf = new StringBuffer(200);
-        buf.append(hostAndPort);
-
-        // If the proxy is per-connection, add that to the connection
-        // key so we get the connection going to the right place
         if (proxyHost != null)
             buf.append(proxyHost);
         if (proxyPort > 0)
             buf.append(Integer.toString(proxyPort));
-        return buf.toString();
+        return buf;
     }
 
     /**
@@ -769,7 +764,8 @@ public class HttpConnectionManager
      *            the key for the connection pool
      * @return the information for the connections of this host and port.
      */
-    private ConnectionInfo getConnectionInfo(String connectionKey)
+    private ConnectionInfo getConnectionInfo(String connectionKey,
+                                             String proxyKey)
     {
         ConnectionInfo ci;
 
@@ -785,7 +781,7 @@ public class HttpConnectionManager
                         + "info for: "
                         + connectionKey);
                 }
-                ci = new ConnectionInfo(this, connectionKey);
+                ci = new ConnectionInfo(this, connectionKey, proxyKey);
                 _hostMap.put(connectionKey, ci);
             }
             return ci;
@@ -826,7 +822,8 @@ public class HttpConnectionManager
             if (conn._released && conn.isOpen())
                 Util.impossible("Connection released twice: " + conn);
 
-            ConnectionInfo ci = getConnectionInfo(conn._handle);
+            ConnectionInfo ci = getConnectionInfo(conn._connectionKey,
+                                                  conn._proxyKey);
 
             // Don't put a closed connection back
             if (!conn.isOpen())
@@ -902,12 +899,29 @@ public class HttpConnectionManager
         synchronized (this)
         {
             String hostAndPort = URIUtil.getProtocolHostPort(url);
-            String proxyHost = HttpURLConnection.getProxyHost();
-            int proxyPort = HttpURLConnection.getProxyPort();
-            String connectionKey = getConnectionKey(hostAndPort,
-                                                    proxyHost,
-                                                    proxyPort);
-            return getConnectionInfo(connectionKey);
+            return getConnectionInfo(hostAndPort, HttpURLConnection
+                    .getProxyHost(), HttpURLConnection.getProxyPort());
+        }
+    }
+
+    private ConnectionInfo getConnectionInfo(String hostAndPort,
+                                             String proxyHost,
+                                             int proxyPort)
+    {
+        synchronized (this)
+        {
+            StringBuffer sb = createProxyKey(proxyHost, proxyPort);
+            String proxyKey = null;
+            String connectionKey;
+            if (sb == null)
+                connectionKey = hostAndPort;
+            else
+            {
+                proxyKey = sb.toString();
+                sb.append(hostAndPort);
+                connectionKey = sb.toString();
+            }
+            return getConnectionInfo(connectionKey, proxyKey);
         }
     }
 
@@ -1068,41 +1082,44 @@ public class HttpConnectionManager
         return wakeTime;
     }
 
-    Credential getCachedCredential(String connectionKey, int authType)
+    private String getCacheKey(ConnectionInfo ci, int authType)
+    {
+        if (authType == HttpURLConnection.AUTH_NORMAL)
+            return ci._connectionKey;
+        return ci._proxyKey;
+    }
+
+    Credential getCachedCredential(ConnectionInfo ci, int authType)
     {
         synchronized (this)
         {
-            Credential cred = (Credential)_credentialCache[authType]
-                    .get(connectionKey);
+            String key = getCacheKey(ci, authType);
+            Credential cred = (Credential)_credentialCache[authType].get(key);
             if (_log.isDebugEnabled())
-                _log.debug("getCachedCredential: "
-                    + connectionKey
-                    + " cred: "
-                    + cred);
+                _log.debug("getCachedCredential: " + key + " cred: " + cred);
             return cred;
         }
     }
 
-    void setCachedCredential(String connectionKey, int authType, Credential cred)
+    void setCachedCredential(ConnectionInfo ci, int authType, Credential cred)
     {
         synchronized (this)
         {
+            String key = getCacheKey(ci, authType);
             if (_log.isDebugEnabled())
-                _log.debug("setCachedCredential: "
-                    + connectionKey
-                    + " cred: "
-                    + cred);
-            _credentialCache[authType].put(connectionKey, cred);
+                _log.debug("setCachedCredential: " + key + " cred: " + cred);
+            _credentialCache[authType].put(key, cred);
         }
     }
 
-    void resetCachedCredential(String connectionKey, int authType)
+    void resetCachedCredential(ConnectionInfo ci, int authType)
     {
         synchronized (this)
         {
+            String key = getCacheKey(ci, authType);
             if (_log.isDebugEnabled())
-                _log.debug("resetCachedCredential: " + connectionKey);
-            _credentialCache[authType].remove(connectionKey);
+                _log.debug("resetCachedCredential: " + key);
+            _credentialCache[authType].remove(key);
         }
     }
 

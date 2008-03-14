@@ -110,15 +110,16 @@ public class SimpleHttpConnection extends HttpConnection
     {
         super(null, null, -1, "localhost", 80, false, "none");
         setup();
-        _connectionInfo = new ConnectionInfo(_connManager, "localhost");
-        _output = new ExposedBufferOutputStream(new ByteArrayOutputStream(), 8192);
+        _connectionInfo = new ConnectionInfo(_connManager, "localhost", null);
+        _output = new ExposedBufferOutputStream(new ByteArrayOutputStream(),
+                                                8192);
     }
 
     public SimpleHttpConnection(String host, int port, boolean isSecure)
     {
         super(null, null, -1, host, port, isSecure, "none");
         setup();
-        _connectionInfo = new ConnectionInfo(_connManager, host);
+        _connectionInfo = new ConnectionInfo(_connManager, host, null);
     }
 
     public void open(HttpURLConnection urlCon) throws IOException
