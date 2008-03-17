@@ -30,6 +30,9 @@ import java.util.Enumeration;
 import javax.servlet.*;
 import javax.servlet.http.*;
 
+import com.oaklandsw.util.LogUtils;
+import com.oaklandsw.util.Util;
+
 import jcifs.*;
 import jcifs.smb.NtStatus;
 import jcifs.smb.SmbSession;
@@ -101,10 +104,17 @@ public class NtlmHttpFilter implements Filter
         if ((level = Config.getInt("jcifs.util.loglevel", -1)) != -1)
         {
             LogStream.setLevel(level);
-            // LogUtils.logAll();
         }
+
         if (LogStream.level > 2)
         {
+            // This not not work unles log4j is setup in the app server
+            LogUtils.logAll();
+
+            log.println("oaklandsw - NtlmHttpFilter init: defaultDomain: "
+                + defaultDomain
+                + " domainController: "
+                + domainController);
             try
             {
                 Config.store(log, "JCIFS PROPERTIES");
@@ -133,6 +143,11 @@ public class NtlmHttpFilter implements Filter
         HttpServletRequest req = (HttpServletRequest)request;
         HttpServletResponse resp = (HttpServletResponse)response;
         NtlmPasswordAuthentication ntlm;
+
+        if (LogStream.level > 3)
+        {
+            log.println("oaklandsw - Start Authentication " + req);
+        }
 
         if ((ntlm = negotiate(req, resp, false)) == null)
         {
@@ -207,10 +222,25 @@ public class NtlmHttpFilter implements Filter
                     challenge = SmbSession.getChallenge(dc);
                 }
 
+                if (LogStream.level > 3)
+                {
+                    log.println("oaklandsw - NtlmHttpFilter: "
+                        + msg
+                        + " Got Challenge: "
+                        + Util.bytesToString(challenge));
+                }
+
                 if ((ntlm = NtlmSsp.authenticate(req, resp, challenge)) == null)
                 {
+                    if (LogStream.level > 1)
+                    {
+                        log.println("oaklandsw - NtlmHttpFilter: "
+                            + msg
+                            + " Failed authenticate step");
+                    }
                     return null;
                 }
+
                 /* negotiation complete, remove the challenge object */
                 ssn.removeAttribute("NtlmHttpChal");
             }
@@ -236,9 +266,17 @@ public class NtlmHttpFilter implements Filter
             try
             {
 
+                if (LogStream.level > 3)
+                {
+                    log.println("oaklandsw - NtlmHttpFilter: "
+                        + ntlm
+                        + " before logon "
+                        + dc);
+                }
+
                 SmbSession.logon(dc, ntlm);
 
-                if (LogStream.level > 2)
+                if (LogStream.level > 3)
                 {
                     log.println("oaklandsw - NtlmHttpFilter: "
                         + ntlm
@@ -292,6 +330,13 @@ public class NtlmHttpFilter implements Filter
                     || (ntlm = (NtlmPasswordAuthentication)ssn
                             .getAttribute("NtlmHttpAuth")) == null)
                 {
+                    if (LogStream.level > 1)
+                    {
+                        log.println("oaklandsw - NtlmHttpFilter: "
+                            + msg
+                            + " Failed could not get session");
+                    }
+
                     resp.setHeader("WWW-Authenticate", "NTLM");
                     if (offerBasic)
                     {

@@ -70,33 +70,19 @@
 			</webinf>
 			<lib dir="webapp/http/lib">
 				<include name="**" />
-				<include name="${basedir}/../com.oaklandsw.util.jars/log4j*" />
 			</lib>
+			<lib file="${basedir}/../com.oaklandsw.http/http.jar" />
+			<lib file="${basedir}/../com.oaklandsw.http/http-signed.jar" />
 			<lib file="${basedir}/../com.oaklandsw.util.jars/log4j*.jar" />
 			<lib file="${basedir}/../com.oaklandsw.util.jars/commons-log*.jar" />
-			<fileset dir="${basedir}/../com.oaklandsw.http">
-				<include name="http.jar" />
-				<include name="http-signed.jar" />
-			</fileset>
-			<fileset dir="${basedir}/../com.oaklandsw.http.tests">
-				<include name="httptests.jar" />
-				<include name="httptests-signed.jar" />
-				<include name="deployment-signed.jar" />
-			</fileset>
+			<lib file="httptests.jar" />
+			<lib file="httptests-signed.jar" />
+			<lib file="deployment-signed.jar" />
 			<fileset dir="webapp/http">
 				<include name="**" />
 				<exclude name="conf/**" />
 				<exclude name="lib/**" />
 			</fileset>
-			<classes dir="bin">
-				<include name="**" />
-			</classes>
-			<classes dir="../com.oaklandsw.http/bin">
-				<include name="**" />
-			</classes>
-			<classes dir="../com.oaklandsw.util/bin">
-				<include name="**" />
-			</classes>
 			<classes dir="webapp/http">
 				<include name="log4j.properties" />
 			</classes>

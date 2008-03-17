@@ -164,6 +164,7 @@
       <param-name>jcifs.http.domainController</param-name>
       <param-value>192.168.1.26</param-value>
     </init-param>
+    <!-- this seems to be required for JCIFS with the original JCIFS filter -->
     <init-param>
       <param-name>jcifs.smb.client.domain</param-name>
       <param-value>oaklandswtest.com</param-value>
@@ -196,16 +197,12 @@
       <param-value>win2k3</param-value>
     </init-param>
      -->
-    <init-param>
-      <param-name>jcifs.smb.client.domain</param-name>
-      <param-value>oaklandswtest.com</param-value>
-    </init-param>
     <!-- 
-<init-param>
-            <param-name>jcifs.smb.client.soTimeout</param-name>
-            <param-value>5000</param-value>
-  </init-param>
-   -->    
+    <init-param>
+      <param-name>jcifs.smb.client.soTimeout</param-name>
+      <param-value>5000</param-value>
+    </init-param>
+    -->    
     <init-param>
       <param-name>jcifs.smb.lmCompatibility</param-name>
       <param-value>5</param-value>
