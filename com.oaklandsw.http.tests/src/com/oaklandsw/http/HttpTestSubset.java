@@ -14,6 +14,7 @@ import com.oaklandsw.http.local.TestRequestHeaders;
 import com.oaklandsw.http.local.TestResponseHeaders;
 import com.oaklandsw.http.local.TestStreams;
 import com.oaklandsw.http.local.TestURIUtil;
+import com.oaklandsw.http.webapp.AllWebappTests;
 import com.oaklandsw.http.webapp.TestAuthType;
 import com.oaklandsw.http.webapp.TestAxis1;
 import com.oaklandsw.http.webapp.TestAxis2;
@@ -35,12 +36,12 @@ import com.oaklandsw.http.webapp.TestParameters;
 import com.oaklandsw.http.webapp.TestPipelining;
 import com.oaklandsw.http.webapp.TestPipeliningRough;
 import com.oaklandsw.http.webapp.TestRedirect;
+import com.oaklandsw.http.webapp.TestSSL;
 import com.oaklandsw.http.webapp.TestTunneling;
 import com.oaklandsw.http.webapp.TestWebStart;
 import com.oaklandsw.http.webext.TestBugs;
 import com.oaklandsw.http.webext.TestHttps;
 import com.oaklandsw.http.webext.TestMethods;
-import com.oaklandsw.http.webext.TestSSL;
 import com.oaklandsw.http.webserver.TestBasicAndDigestAuth;
 import com.oaklandsw.http.webserver.TestWebDavMethods;
 
@@ -94,16 +95,58 @@ public class HttpTestSubset extends HttpTestBase
             suite.addTest(TestDisconnect.suite());
             suite.addTest(TestWebStart.suite());
             suite.addTest(TestTunneling.suite());
+            suite.addTest(AllLocalTests.suite());
+
+            suite.addTest(TestLicense.suite());
+
+            suite.addTest(AllCookieTests.suite());
+            suite.addTest(AllErrorsvrTests.suite());
+            suite.addTest(TestFtpProxy.suite());
+            suite.addTest(AllWebappTests.suite());
         }
 
-        suite.addTest(AllLocalTests.suite());
 
-        suite.addTest(TestLicense.suite());
+        // Most Webapp tests
+        if (false)
+        {
+            suite.addTest(TestFailover.suite());
+            suite.addTest(TestAxis1.suite());
+            suite.addTest(TestAxis2.suite());
+            suite.addTest(TestIIS.suite());
+            suite.addTest(TestJCIFS.suite());
+            suite.addTest(TestExplicitConnection.suite());
+            suite.addTest(TestMethods.suite());
+            suite.addTest(TestAuthType.suite());
+            suite.addTest(TestPipelining.suite());
+            suite.addTest(TestPipeliningRough.suite());
+            suite.addTest(TestOutputStream.suite());
+            suite.addTest(TestOutputStreamChunked.suite());
+            suite.addTest(TestOutputStreamFixed.suite());
+            suite.addTest(TestOutputStreamRaw.suite());
+            suite.addTest(TestMultiThread.suite());
+            suite.addTest(TestParameters.suite());
+            suite.addTest(TestHeaders.suite());
+            suite.addTest(TestRedirect.suite());
+            suite.addTest(TestBasicAuth.suite());
+            suite.addTest(TestCookie.suite());
+            suite.addTest(TestNoData.suite());
+            suite.addTest(TestDisconnect.suite());
+            suite.addTest(TestWebStart.suite());
+            suite.addTest(TestTunneling.suite());
+            suite.addTest(TestFtpProxy.suite());
+            suite.addTest(TestSSL.suite());
+        }
 
-        suite.addTest(AllCookieTests.suite());
-        suite.addTest(AllErrorsvrTests.suite());
-
+        suite.addTest(TestHeaders.suite());
+        suite.addTest(TestRedirect.suite());
+        suite.addTest(TestBasicAuth.suite());
+        suite.addTest(TestCookie.suite());
+        suite.addTest(TestNoData.suite());
+        suite.addTest(TestDisconnect.suite());
+        suite.addTest(TestWebStart.suite());
+        suite.addTest(TestTunneling.suite());
         suite.addTest(TestFtpProxy.suite());
+        suite.addTest(TestSSL.suite());
 
         if (false)
         {

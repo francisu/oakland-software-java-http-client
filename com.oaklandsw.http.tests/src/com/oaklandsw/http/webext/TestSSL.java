@@ -20,6 +20,13 @@ public class TestSSL extends HttpTestBase
     public TestSSL(String testName)
     {
         super(testName);
+
+        _doAuthProxyTest = true;
+        _doAuthCloseProxyTest = true;
+        _doProxyTest = true;
+        _do10ProxyTest = true;
+        _doExplicitTest = true;
+        _doAppletTest = true;
     }
 
     public static void main(String args[])
@@ -30,6 +37,7 @@ public class TestSSL extends HttpTestBase
     public static Test suite()
     {
         return new TestSuite(TestSSL.class);
+
     }
 
     public void tearDown() throws Exception
@@ -40,7 +48,7 @@ public class TestSSL extends HttpTestBase
                         .getDefault());
         // Need to leave it as it is to check that the default hostname
         // verifier is properly setup
-        //com.oaklandsw.http.HttpURLConnection.setDefaultHostnameVerifier(null);
+        // com.oaklandsw.http.HttpURLConnection.setDefaultHostnameVerifier(null);
         com.oaklandsw.http.HttpConnection._testNonMatchHost = false;
     }
 
@@ -256,8 +264,7 @@ public class TestSSL extends HttpTestBase
 
         try
         {
-            (urlCon)
-                    .setHostnameVerifier(ver);
+            (urlCon).setHostnameVerifier(ver);
             fail("Did not get expected IllegalStateException");
         }
         catch (IllegalStateException ex)
@@ -278,8 +285,7 @@ public class TestSSL extends HttpTestBase
 
         urlCon.setRequestMethod("GET");
         urlCon.connect();
-        Certificate[] certs = (urlCon)
-                .getLocalCertificates();
+        Certificate[] certs = (urlCon).getLocalCertificates();
         if (certs != null)
             fail("Unexpected local certificates");
         assertEquals(200, urlCon.getResponseCode());
@@ -297,8 +303,7 @@ public class TestSSL extends HttpTestBase
 
         urlCon.setRequestMethod("GET");
         urlCon.connect();
-        Certificate[] certs = (urlCon)
-                .getServerCertificates();
+        Certificate[] certs = (urlCon).getServerCertificates();
         if (!(certs[0] instanceof X509Certificate))
             fail("Invalid certificate");
         assertEquals(200, urlCon.getResponseCode());
@@ -313,8 +318,7 @@ public class TestSSL extends HttpTestBase
 
         urlCon.setRequestMethod("GET");
         urlCon.connect();
-        String cipherSuite = (urlCon)
-                .getCipherSuite();
+        String cipherSuite = (urlCon).getCipherSuite();
         if (cipherSuite.indexOf("SSL") != 0)
             fail("Invalid cipher suite");
         assertEquals(200, urlCon.getResponseCode());
@@ -324,5 +328,38 @@ public class TestSSL extends HttpTestBase
 
     public void allTestMethods() throws Exception
     {
+        testHttpsGetNothing();
+        tearDown();
+        testHttpsGetSetDefault();
+        tearDown();
+        testHttpsNullSocketFromFactory();
+        tearDown();
+        testHttpsGetSetDefaultCheck();
+        tearDown();
+        testHttpsGetSetConnection();
+        tearDown();
+        testHttpsGetSetHasDefaultVerifier();
+        tearDown();
+        testHttpsGetSetNoVerifierUsedFail();
+        tearDown();
+        testHttpsGetSetDefaultVerifierUsedPass();
+        tearDown();
+        testHttpsGetSetDefaultVerifierUsedFail();
+        tearDown();
+        testHttpsGetSetDefaultVerifierUsedException();
+        tearDown();
+        testHttpsGetSetDefaultVerifierNotUsed();
+        tearDown();
+        testHttpsGetSetDefaultVerifierNotUsedSetCon();
+        tearDown();
+        testHttpsGetSetDefaultVerifierNotUsedSetAfterCon();
+        tearDown();
+        testHttpsGetSetDefaultVerifierNotUsed();
+        tearDown();
+        testHttpsGetLocalCert();
+        tearDown();
+        testHttpsGetServerCert();
+        tearDown();
+        testHttpsGetCipherSuite();
     }
 }

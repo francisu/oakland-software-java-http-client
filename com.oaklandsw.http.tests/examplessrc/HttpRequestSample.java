@@ -1,9 +1,17 @@
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URL;
+import java.security.SecureRandom;
+import java.security.cert.X509Certificate;
+
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSession;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
 
 import com.oaklandsw.http.Cookie;
 import com.oaklandsw.http.CookieContainer;
+import com.oaklandsw.http.HostnameVerifier;
 import com.oaklandsw.http.HttpURLConnection;
 import com.oaklandsw.http.NtlmCredential;
 import com.oaklandsw.util.LogUtils;
@@ -24,9 +32,31 @@ public class HttpRequestSample
     String                _proxyHost;
     int                   _proxyPort;
 
+    boolean               _proxyIsSsl;
+
+    boolean               _noSslCheck;
 
     public NtlmCredential _normalCredential;
     public NtlmCredential _proxyCredential;
+
+    TrustManager[]        _allCertsTrustManager = new TrustManager[] { new X509TrustManager()
+                                                {
+
+                                                    public X509Certificate[] getAcceptedIssuers()
+                                                    {
+                                                        return null;
+                                                    }
+
+                                                    public void checkClientTrusted(X509Certificate[] certs,
+                                                                                   String authType)
+                                                    {
+                                                    }
+
+                                                    public void checkServerTrusted(X509Certificate[] certs,
+                                                                                   String authType)
+                                                    {
+                                                    }
+                                                } };
 
     public HttpRequestSample()
     {
@@ -52,6 +82,25 @@ public class HttpRequestSample
             _proxyHost = hostAndPort;
             _proxyPort = 80;
         }
+        System.out.println("Using proxy: " + _proxyHost + ":" + _proxyPort);
+    }
+
+    public void permissiveSsl() throws Exception
+    {
+        SSLContext sc = SSLContext.getInstance("SSL");
+        sc.getClientSessionContext();
+        sc.init(null, _allCertsTrustManager, new SecureRandom());
+
+        // Register the SocketFactory / Hostname Verifier for Oakland HttpClient
+        HttpURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
+        HttpURLConnection.setDefaultHostnameVerifier(new HostnameVerifier()
+        {
+            public boolean verify(String string, SSLSession sSLSession)
+            {
+                return true;
+            }
+        });
+        System.out.println("SSL host/cert checking disabled");
     }
 
     public void usage()
@@ -74,7 +123,9 @@ public class HttpRequestSample
                 .println(" -pxdom <domainName> - the domain name to send to proxy server");
         System.out.println(" -loop <count> - the number of times to iterate");
         System.out.println(" -proxy <host:port> - the proxy host/port to use ");
+        System.out.println(" -proxyisssl - the proxy uses SSL");
         System.out.println(" -log - turn on logging");
+        System.out.println(" -nosslcheck - disable SSL certificate checking");
         System.out.println(" -post - emit a POST request instead of a GET");
     }
 
@@ -128,12 +179,16 @@ public class HttpRequestSample
                 _loopCount = Integer.parseInt(args[++index]);
             else if (args[index].equalsIgnoreCase("-proxy"))
                 extractProxy(args[++index]);
+            else if (args[index].equalsIgnoreCase("-proxyssl"))
+                _proxyIsSsl = true;
             else if (args[index].equalsIgnoreCase("-conproxy"))
                 _useConnectionProxy = true;
             else if (args[index].equalsIgnoreCase("-log"))
                 _doLogging = true;
             else if (args[index].equalsIgnoreCase("-post"))
                 _doPost = true;
+            else if (args[index].equalsIgnoreCase("-nosslcheck"))
+                _noSslCheck = true;
             else if (args[index].equalsIgnoreCase("-help")
                 || args[index].equalsIgnoreCase("-h"))
             {
@@ -154,13 +209,23 @@ public class HttpRequestSample
         // Tell Java to use the oaklandsw implementation
         System.setProperty("java.protocol.handler.pkgs", "com.oaklandsw");
 
+        String proxyProtocol = "http";
+        if (_proxyIsSsl)
+            proxyProtocol += "s";
+
         if (_proxyHost != null && !_useConnectionProxy)
         {
-            System.setProperty("http.proxyPort", Integer.toString(_proxyPort));
-            System.setProperty("http.proxyHost", _proxyHost);
-            System.setProperty("https.proxyPort", Integer.toString(_proxyPort));
-            System.setProperty("https.proxyHost", _proxyHost);
+            System.setProperty(proxyProtocol + ".proxyPort", Integer
+                    .toString(_proxyPort));
+            System.setProperty(proxyProtocol + ".proxyHost", _proxyHost);
         }
+
+        // Don't touch HTTP client methods before this point
+        // as that will cause static initialization which will
+        // read the System property values.
+
+        if (_noSslCheck)
+            permissiveSsl();
 
         // Tells the oaklandsw implementation the object that will
         // resolve the credentials when requested by IIS/NTLM

@@ -24,6 +24,7 @@ public class Ntlm
     public static int           _authMessageLmResponse;
 
     public static long          _authMessageFlags;
+    public static long          _challengeMessageFlags;
 
     public static boolean       _checkChallengeV2Flags;
 
@@ -41,6 +42,11 @@ public class Ntlm
         _authMessageFlags = Message.NEGOTIATE_NTLM
             | Message.NEGOTIATE_ALWAYS_SIGN;
 
+        _challengeMessageFlags = Message.NEGOTIATE_NTLM;
+        // This seems to be required in some cases to levels higher than 3
+        // but breaks levels 0-3
+        /* | Message.NEGOTIATE_NTLM2; */
+        
         _checkChallengeV2Flags = false;
     }
 

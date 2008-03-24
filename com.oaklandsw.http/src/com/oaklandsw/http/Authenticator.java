@@ -762,6 +762,8 @@ public class Authenticator
             && proxy
             && urlCon.getConnectionProxyUser() != null)
         {
+            _log.debug("getCredentialInternal - "
+                + "fabricating user agent for proxy credential");
             userAgent = new HttpUserAgent()
             {
 
@@ -784,7 +786,10 @@ public class Authenticator
         }
 
         if (userAgent == null)
+        {
+            _log.debug("getCredentialInternal - no user agent");
             return null;
+        }
 
         int iScheme = schemeToInt(scheme);
         Credential cred;

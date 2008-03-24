@@ -26,10 +26,6 @@ public class TestProperties extends HttpTestBase
         junit.textui.TestRunner.main(testCaseName);
     }
 
-    //
-    // This test must run before any other since the properties
-    // are inspected only in the static initializer of HttpURLConnection
-    // 
     public static Test suite()
     {
         return new TestSuite(TestProperties.class);
@@ -46,22 +42,17 @@ public class TestProperties extends HttpTestBase
         System.setProperty("http.nonProxyHosts", nonProxyHosts);
 
         System.setProperty("com.oaklandsw.http.pipelining", "true");
-
-        // Note the only way we can test the functionality of 1767 is to
-        // enable this statement below and run the tests, since the static
-        // initializer is called only once.
-
-        // 1767 skipEnvironmentInit
-        // System.setProperty("com.oaklandsw.http.skipEnvironmentInit", "true");
-
     }
 
     public static void resetProperties()
     {
         System.getProperties().remove("http.proxyHost");
         System.getProperties().remove("http.proxyPort");
+        System.getProperties().remove("https.proxyHost");
+        System.getProperties().remove("https.proxyPort");
         System.getProperties().remove("http.nonProxyHosts");
         System.getProperties().remove("com.oaklandsw.http.pipelining");
+        System.getProperties().remove("com.oaklandsw.http.skipEnvironmentInit");
     }
 
     public void setUp() throws Exception
@@ -75,32 +66,42 @@ public class TestProperties extends HttpTestBase
         resetProperties();
     }
 
+    public void testPropsSkip() throws Exception
+    {
+        System.setProperty("com.oaklandsw.http.skipEnvironmentInit", "true");
+        setProperties();
+        HttpURLConnection.resetGlobalState();
+        assertEquals(null, com.oaklandsw.http.HttpURLConnection.getProxyHost());
+        assertEquals(-1, com.oaklandsw.http.HttpURLConnection.getProxyPort());
+        assertEquals(null, com.oaklandsw.http.HttpURLConnection
+                .getNonProxyHosts());
+
+    }
+
     public void testProps() throws Exception
     {
         setProperties();
         HttpURLConnection.resetGlobalState();
-        if (System.getProperty("com.oaklandsw.http.skipEnvironmentInit") == null)
-        {
-            assertEquals(proxyHost, com.oaklandsw.http.HttpURLConnection
-                    .getProxyHost());
-            assertEquals(proxyPort, com.oaklandsw.http.HttpURLConnection
-                    .getProxyPort());
-            assertEquals(nonProxyHosts, com.oaklandsw.http.HttpURLConnection
-                    .getNonProxyHosts());
-            assertEquals(true, com.oaklandsw.http.HttpURLConnection
-                    .isDefaultPipelining());
-        }
-        else
-        {
-            assertEquals(null, com.oaklandsw.http.HttpURLConnection
-                    .getProxyHost());
-            assertEquals(-1, com.oaklandsw.http.HttpURLConnection
-                    .getProxyPort());
-            assertEquals(null, com.oaklandsw.http.HttpURLConnection
-                    .getNonProxyHosts());
+        assertEquals(proxyHost, com.oaklandsw.http.HttpURLConnection
+                .getProxyHost());
+        assertEquals(proxyPort, com.oaklandsw.http.HttpURLConnection
+                .getProxyPort());
+        assertEquals(nonProxyHosts, com.oaklandsw.http.HttpURLConnection
+                .getNonProxyHosts());
+        assertEquals(true, com.oaklandsw.http.HttpURLConnection
+                .isDefaultPipelining());
+    }
 
-        }
-
+    public void testPropsSslProxy() throws Exception
+    {
+        System.setProperty("https.proxyHost", proxyHost);
+        System.setProperty("https.proxyPort", Integer.toString(proxyPort));
+        HttpURLConnection.resetGlobalState();
+        assertEquals(proxyHost, com.oaklandsw.http.HttpURLConnection
+                .getProxyHost());
+        assertEquals(proxyPort, com.oaklandsw.http.HttpURLConnection
+                .getProxyPort());
+        assertEquals(true, com.oaklandsw.http.HttpURLConnection.isProxySsl());
     }
 
     // 961 and 966

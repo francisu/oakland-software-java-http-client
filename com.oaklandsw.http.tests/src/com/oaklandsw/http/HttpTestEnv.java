@@ -105,6 +105,7 @@ public class HttpTestEnv
     public static int          TEST_PROXY_PORT                   = 8091;
     public static int          TEST_WEBDAV_PORT                  = TEST_PROXY_PORT;
     public static int          TEST_WEBSERVER_PORT               = TEST_PROXY_PORT;
+    public static int          TEST_SSL_PORT                     = 8443;
 
     // Tomcat
     public static int          TEST_WEBAPP_PORT                  = 8080;
@@ -214,6 +215,13 @@ public class HttpTestEnv
                                                                      + "//"
                                                                      + TEST_WEBEXT_SSL_HOST
                                                                      + ":443/";
+
+    public static String       TEST_LOCAL_SSL_URL                = HTTPS_PROTOCOL
+                                                                     + "//"
+                                                                     + APACHE_HOST
+                                                                     + ":"
+                                                                     + TEST_SSL_PORT
+                                                                     + "/";
 
     // Tomcat 4.1
     public static String       TEST_WEBAPP_HOST                  = TOMCAT_HOST;

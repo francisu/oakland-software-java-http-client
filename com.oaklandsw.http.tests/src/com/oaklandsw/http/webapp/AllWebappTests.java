@@ -42,6 +42,7 @@ public class AllWebappTests extends TestCaseBase
         suite.addTest(TestWebStart.suite());
         suite.addTest(TestTunneling.suite());
         suite.addTest(TestFtpProxy.suite());
+        suite.addTest(TestSSL.suite());
         return suite;
     }
 

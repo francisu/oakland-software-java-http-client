@@ -1773,7 +1773,7 @@ public class HttpURLConnectInternal
         }
         catch (HttpException ex)
         {
-            authenticationFailed(close, normalOrProxy);
+            authenticationFailed(close, normalOrProxy, ex);
             throw ex;
         }
         return sent;
@@ -1781,10 +1781,10 @@ public class HttpURLConnectInternal
 
     static final boolean AUTH_FAILED_CLOSE = true;
 
-    void authenticationFailed(boolean close, int normalOrProxy)
+    void authenticationFailed(boolean close, int normalOrProxy, Exception ex)
         throws InterruptedIOException
     {
-        _log.debug("Authentication failed");
+        _log.debug("Authentication failed", ex);
 
         if (close)
         {

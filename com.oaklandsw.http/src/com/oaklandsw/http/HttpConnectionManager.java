@@ -715,7 +715,8 @@ public class HttpConnectionManager
 
                 // Create a new connection
                 boolean isSecure = protocol.equalsIgnoreCase("HTTPS")
-                    || urlCon.getForceSSL();
+                    || urlCon.getForceSSL()
+                    || urlCon.isConnectionProxySsl();
 
                 // Make a new connection, note that this does not open
                 // the connection, it only creates it, so this takes

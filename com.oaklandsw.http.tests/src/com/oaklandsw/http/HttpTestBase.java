@@ -621,7 +621,7 @@ public class HttpTestBase extends com.oaklandsw.TestCaseBase
 
         try
         {
-            // LogUtils.logFile("/home/francis/log4j10proxy.txt");
+            // LogUtils.logFile("/home/francis/log4jIsaproxy.txt");
             allTestMethods();
         }
         finally
@@ -631,6 +631,7 @@ public class HttpTestBase extends com.oaklandsw.TestCaseBase
         }
     }
 
+    // Bug 2199 support SSL proxy
     // Test everything through a the ISA proxy using SSL
     public void testIsaSslProxy() throws Exception
     {
@@ -640,12 +641,16 @@ public class HttpTestBase extends com.oaklandsw.TestCaseBase
         _testAllName = "testIsaSslProxy";
         _inIsaSslProxyTest = true;
         _inTestGroup = true;
+
+        TestUserAgent._proxyType = TestUserAgent.GOOD;
+
+        HttpURLConnection.setProxySsl(true);
         HttpURLConnection.setProxyHost(HttpTestEnv.ISA_HOST);
         HttpURLConnection.setProxyPort(HttpTestEnv.TEST_ISA_SSL_PORT);
 
         try
         {
-            // LogUtils.logFile("/home/francis/log4j10proxy.txt");
+            // LogUtils.logFile("/home/francis/log4jIsaSslproxy.txt");
             allTestMethods();
         }
         finally
@@ -770,7 +775,7 @@ public class HttpTestBase extends com.oaklandsw.TestCaseBase
 
     }
 
-    public void testUseDnsJava() throws Exception
+    public void XXtestUseDnsJava() throws Exception
     {
         if (!_doUseDnsJava)
             return;
@@ -797,7 +802,7 @@ public class HttpTestBase extends com.oaklandsw.TestCaseBase
 
     // TODO - right now this does not work, try it when testing on
     // a local machine
-    public void testApplet() throws Exception
+    public void XXtestApplet() throws Exception
     {
         if (!_doAppletTest)
             return;

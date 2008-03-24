@@ -55,7 +55,7 @@ public class ChallengeMessage extends Message
             _log.debug("targetName (defaultDomain): \n" + targetName);
         }
 
-        setFlags(Message.NEGOTIATE_NTLM);
+        setFlags(Ntlm._challengeMessageFlags);
 
         // target is server or domain
         setNonce(nonce);

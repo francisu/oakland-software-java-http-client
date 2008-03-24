@@ -240,6 +240,9 @@ public class HttpConnection
     // Use a count to allow the bug check calls to be nested
     int                        _bugCatchCount;
 
+    // For testing
+    public static boolean _pingDone;
+    
     static String stateToString(int state)
     {
         switch (state)
@@ -563,16 +566,24 @@ public class HttpConnection
     {
         // Don't try to ping a connection as the first
         // thing, only ping if it has been used
+        if (false)
+        {
+            System.out.println("_lastTimeUsed: " + _lastTimeUsed);
+            System.out.println("current: " + System.currentTimeMillis());
+            System.out.println("delta: "
+                + (System.currentTimeMillis() - _lastTimeUsed));
+        }
+        
         if (_output == null
             || _lastTimeUsed == 0
             || _idlePing == 0
             || (System.currentTimeMillis() - _lastTimeUsed) <= _idlePing)
         {
-            _log.trace("checkConnection - skipped");
+            _log.debug("checkConnection - skipped");
             return;
         }
 
-        _connLog.trace("checkConnection - doing ping");
+        _connLog.debug("checkConnection - doing ping");
 
         _output.write(PING_MSG);
         _output.write(_hostPortURL.getBytes());
@@ -580,6 +591,8 @@ public class HttpConnection
         _output.write(Util.CRLF_BYTES);
         _output.flush();
 
+        _pingDone = true;
+        
         // Read until there are 2 crlfs, we assume there
         // is no message body
         int crlfInd = 0;
@@ -773,7 +786,7 @@ public class HttpConnection
             }
         }
 
-        _connLog.trace("open");
+        _connLog.debug("open");
         if (null == _socket)
             normalOpen(urlCon);
     }
@@ -856,9 +869,19 @@ public class HttpConnection
                 _state = CS_OPEN;
                 // This handles any authentication that's required
                 _tunnelCon.execute();
+
+                if (HttpStatus.SC_OK != _tunnelCon.getResponseCode())
+                {
+                    throw new IOException("HTTP CONNECT failed with response: "
+                        + _tunnelCon.getResponseCode());
+                }
+
                 // Will set open for real later
                 _state = CS_VIRGIN;
                 _tunnelEstablished = true;
+                
+                // Make sure the CONNECT does not cause a ping
+                _lastTimeUsed = 0;
             }
 
             // Switch socket to SSL
@@ -1103,7 +1126,7 @@ public class HttpConnection
 
     public OutputStream getOutputStream() throws IOException
     {
-        _log.trace("getOutputStream");
+        _log.debug("getOutputStream");
         if (_output == null)
             throw new IOException("Connection is not open");
         return _output;
@@ -1111,7 +1134,7 @@ public class HttpConnection
 
     public ExposedBufferInputStream getInputStream() throws IOException
     {
-        _log.trace("getInputStream");
+        _log.debug("getInputStream");
         if (_input == null)
             throw new IOException("Connection is not open");
         return _input;

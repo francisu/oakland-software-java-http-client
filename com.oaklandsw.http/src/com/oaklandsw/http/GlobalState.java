@@ -47,7 +47,8 @@ public class GlobalState
     public int                     _proxyPort                       = -1;
     String                         _proxyUser;
     String                         _proxyPassword;
-
+    boolean _proxySsl;
+    
     String                         _nonProxyHostsString;
 
     private ArrayList              _nonProxyHosts;
@@ -175,7 +176,26 @@ public class GlobalState
         {
             // Not much we can do about this, as the calling
             // API cannot tolerate being interrupted
-            _log.warn("setProxyHost - interrupted", e);
+            _log.warn("setProxyPort - interrupted", e);
+            // Continue
+        }
+    }
+
+    // public for tests
+    public void setProxySsl(boolean isSsl)
+    {
+        _proxySsl = isSsl;
+        // Get rid of all current connections as they are not
+        // going to the right place.
+        try
+        {
+            _connManager.resetConnectionPool(!HttpConnectionManager.IMMEDIATE);
+        }
+        catch (InterruptedException e)
+        {
+            // Not much we can do about this, as the calling
+            // API cannot tolerate being interrupted
+            _log.warn("setProxySsl - interrupted", e);
             // Continue
         }
     }
@@ -250,6 +270,11 @@ public class GlobalState
         if (isNonProxyHost(host))
             return null;
         return _proxyHost;
+    }
+
+    boolean isProxySsl()
+    {
+        return _proxySsl;
     }
 
     boolean isNonProxyHost(String host)

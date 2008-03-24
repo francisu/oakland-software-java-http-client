@@ -45,7 +45,19 @@ import com.oaklandsw.util.Util;
  * <p>
  * <code>http.proxyPort</code>- specifies the port of the proxy server. Note
  * this is identical to the method to specify the proxy port for the
- * java.net.HttpURLConnection. See setProxyPort().
+ * java.net.HttpURLConnection. See setProxyPort(). Used in conjunction with
+ * <code>http.proxyHost</code>.
+ * <p>
+ * <code>https.proxyHost</code>- specifies the host of the proxy server. Note
+ * this is identical to the method to specify the proxy host for the
+ * java.net.HttpURLConnection. See setProxyHost(). Indicates the proxy server
+ * uses SSL. If both this and <code>http.proxyHost</code> as specified, this
+ * will take precedence.
+ * <p>
+ * <code>https.proxyPort</code>- specifies the port of the proxy server. Note
+ * this is identical to the method to specify the proxy port for the
+ * java.net.HttpURLConnection. See setProxyPort(). Indicates the proxy server
+ * uses SSL. Used in conjunction with https.proxyPort.
  * <p>
  * <code>http.proxyUser</code>- specifies the user name used for
  * authentication with a proxy server if required. Note this is identical to the
@@ -142,7 +154,7 @@ import com.oaklandsw.util.Util;
  * property settings are to be ignored. The property settings are normally read
  * in the static initializer of this class. If this property is set none of the
  * properties will be read. This is used in environments where the settings of
- * some system properties might be for other HTTP client implemementations.
+ * some system properties might be for other HTTP client implementations.
  * <p>
  * 
  */
@@ -270,6 +282,8 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
 
     static final String                PROP_PROXY_HOST                      = "http.proxyHost";
     static final String                PROP_PROXY_PORT                      = "http.proxyPort";
+    static final String                PROP_PROXY_HOST_SSL                  = "https.proxyHost";
+    static final String                PROP_PROXY_PORT_SSL                  = "https.proxyPort";
     static final String                PROP_PROXY_USER                      = "http.proxyUser";
     static final String                PROP_PROXY_PASSWORD                  = "http.proxyPassword";
     static final String                PROP_SKIP_ENVIRONMENT_INIT           = "com.oaklandsw.http.skipEnvironmentInit";
@@ -584,6 +598,7 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
     protected int                      _proxyPort;
     protected String                   _proxyUser;
     protected String                   _proxyPassword;
+    protected boolean                  _proxySsl;
 
     protected int                      _idleTimeout;
 
@@ -967,6 +982,12 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
                     hostProperty = "proxyHost";
                     portProperty = "proxyPort";
                 }
+                else if (System.getProperty(PROP_PROXY_HOST_SSL) != null)
+                {
+                    hostProperty = PROP_PROXY_HOST_SSL;
+                    portProperty = PROP_PROXY_PORT_SSL;
+
+                }
 
                 String proxyHost = System.getProperty(hostProperty);
                 int proxyPort = -1;
@@ -989,6 +1010,8 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
                         proxyPort = 80;
                     setProxyHost(proxyHost);
                     setProxyPort(proxyPort);
+                    if (hostProperty.equals(PROP_PROXY_HOST_SSL))
+                        setProxySsl(true);
                 }
 
                 if (getProxyHost() != null)
@@ -1197,6 +1220,7 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
         _proxyPort = gs._proxyPort;
         _proxyUser = gs._proxyUser;
         _proxyPassword = gs._proxyPassword;
+        _proxySsl = gs.isProxySsl();
 
         _hostnameVerifier = gs._defaultHostnameVerifier;
         _socketFactory = gs._defaultSocketFactory;
@@ -3506,6 +3530,32 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
     }
 
     /**
+     * Enables or disables the use of SSL for the proxy for all connections.
+     * <p>
+     * Note that when this is called, all existing connections are closed, since
+     * the existing connections are no longer going to the desired destination.
+     * 
+     * @param ssl
+     *            true if the proxy is to use SSL.
+     */
+    public static void setProxySsl(boolean ssl)
+    {
+        if (_log.isDebugEnabled())
+            _log.debug("setProxySsl: " + ssl);
+        checkConnectionManager()._globalState.setProxySsl(ssl);
+    }
+
+    /**
+     * Returns true if the proxy is to use SSL for all connections.
+     * 
+     * @return true if the proxy is to use SSL.
+     */
+    public static boolean isProxySsl()
+    {
+        return checkConnectionManager()._globalState.isProxySsl();
+    }
+
+    /**
      * Sets the host to be used as a proxy server for this connection.
      * <p>
      * This must be called before the connection is connected.
@@ -3530,6 +3580,33 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
     public String getConnectionProxyHost()
     {
         return _proxyHost;
+    }
+
+    /**
+     * Enables or disables the use of SSL for the proxy.
+     * <p>
+     * This must be called before the connection is connected.
+     * 
+     * @param ssl
+     *            true if the proxy is to use SSL.
+     */
+    public void setConnectionProxySsl(boolean ssl)
+    {
+        if (_log.isDebugEnabled())
+            _log.debug("setConnectionProxySsl: " + ssl);
+        if (connected)
+            throw new IllegalStateException("Connection has been established");
+        _proxySsl = ssl;
+    }
+
+    /**
+     * Returns true if the proxy is to use SSL for this connection.
+     * 
+     * @return true if the proxy is to use SSL.
+     */
+    public boolean isConnectionProxySsl()
+    {
+        return _proxySsl;
     }
 
     /**
@@ -3807,7 +3884,7 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
      * of the (proxy) credentials to the credentials on which the underlying
      * socket connections were created. So if you reset the cache here and then
      * use different credentials, any existing socket connections in the pool
-     * may be used with their original credentials. To avoide this, call
+     * may be used with their original credentials. To avoid this, call
      * closeAllPooledConnections().
      * 
      * @see #getMultiCredentialsPerAddress()
@@ -4196,7 +4273,7 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
     }
 
     /**
-     * For JRE compatiblity throw a FileNotFoundException when a 404 response is
+     * For JRE compatibility throw a FileNotFoundException when a 404 response is
      * detected.
      * 
      * By default this is off, that is the 404 response is passed through, which
@@ -4211,7 +4288,7 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
     }
 
     /**
-     * For JRE compatiblity throw a FileNotFoundException when a 404 response is
+     * For JRE compatibility throw a FileNotFoundException when a 404 response is
      * detected.
      * 
      * By default this is off, that is the 404 response is passed through, which
