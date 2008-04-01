@@ -53,7 +53,7 @@ public class TestRedirect extends TestWebappBase
             + URLEncoder.encode("http://"
                 + HttpTestEnv.TOMCAT_HOST
                 + ":"
-                + HttpTestEnv.TEST_WEBAPP_PORT
+                + HttpTestEnv.TOMCAT_PORT_1
                 + "/"
                 + context
                 + ParamServlet.NAME, Util.DEFAULT_ENCODING);
@@ -195,7 +195,7 @@ public class TestRedirect extends TestWebappBase
 
     public void testRedirectHost() throws Exception
     {
-        testRedirectHostPort("badhostxxx", HttpTestEnv.TEST_WEBAPP_PORT, FAIL);
+        testRedirectHostPort("badhostxxx", HttpTestEnv.TOMCAT_PORT_1, FAIL);
     }
 
     public void testRedirectPort() throws Exception
@@ -206,7 +206,7 @@ public class TestRedirect extends TestWebappBase
     public void testRedirectHostPort() throws Exception
     {
         testRedirectHostPort(getServletIpAddress(),
-                             HttpTestEnv.TEST_WEBAPP_PORT,
+                             HttpTestEnv.TOMCAT_PORT_1,
                              !FAIL);
     }
 
@@ -220,7 +220,7 @@ public class TestRedirect extends TestWebappBase
             + URLEncoder.encode("http://"
                 + HttpTestEnv.TOMCAT_HOST
                 + ":"
-                + HttpTestEnv.TEST_WEBAPP_PORT
+                + HttpTestEnv.TOMCAT_PORT_1
                 + "/"
                 + context
                 + ParamServlet.NAME, Util.DEFAULT_ENCODING));
@@ -283,7 +283,8 @@ public class TestRedirect extends TestWebappBase
         catch (HttpRetryException ex)
         {
             assertEquals("Unexpected response code", 302, ex.responseCode());
-            assertEquals("/oaklandsw-http/params", ex.getLocation());
+            assertEquals("/" + HttpTestEnv.TEST_URL_APP_TOMCAT_1 + "/params",
+                         ex.getLocation());
         }
     }
 
@@ -292,7 +293,7 @@ public class TestRedirect extends TestWebappBase
         String qs = URLEncoder.encode("http://"
             + HttpTestEnv.TOMCAT_HOST
             + ":"
-            + HttpTestEnv.TEST_WEBAPP_PORT
+            + HttpTestEnv.TOMCAT_PORT_1
             + "/"
             + context
             + "/params?foo=bar&bar=foo", Util.DEFAULT_ENCODING);
@@ -320,7 +321,7 @@ public class TestRedirect extends TestWebappBase
             + URLEncoder.encode("http://"
                 + HttpTestEnv.TOMCAT_HOST
                 + ":"
-                + HttpTestEnv.TEST_WEBAPP_PORT
+                + HttpTestEnv.TOMCAT_PORT_1
                 + "/"
                 + context
                 + "/params?foo=bar", Util.DEFAULT_ENCODING);
@@ -330,7 +331,7 @@ public class TestRedirect extends TestWebappBase
                 + URLEncoder.encode("http://"
                     + HttpTestEnv.TOMCAT_HOST
                     + ":"
-                    + HttpTestEnv.TEST_WEBAPP_PORT
+                    + HttpTestEnv.TOMCAT_PORT_1
                     + "/"
                     + context
                     + "/redirect?"
@@ -362,7 +363,7 @@ public class TestRedirect extends TestWebappBase
             + URLEncoder.encode("http://"
                 + HttpTestEnv.TOMCAT_HOST
                 + ":"
-                + HttpTestEnv.TEST_WEBAPP_PORT
+                + HttpTestEnv.TOMCAT_PORT_1
                 + "/"
                 + context
                 + "/params?foo=bar&bar=foo", Util.DEFAULT_ENCODING);

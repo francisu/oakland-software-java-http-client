@@ -1,5 +1,5 @@
 //
-// Copyright 2002-2007, oakland software, all rights reserved.
+// Copyright 2002-2008, oakland software, all rights reserved.
 //
 // May not be used or redistributed without specific written
 // permission from oakland software.
@@ -41,11 +41,6 @@ public class Ntlm
 
         _authMessageFlags = Message.NEGOTIATE_NTLM
             | Message.NEGOTIATE_ALWAYS_SIGN;
-
-        _challengeMessageFlags = Message.NEGOTIATE_NTLM;
-        // This seems to be required in some cases to levels higher than 3
-        // but breaks levels 0-3
-        /* | Message.NEGOTIATE_NTLM2; */
         
         _checkChallengeV2Flags = false;
     }
@@ -135,8 +130,8 @@ public class Ntlm
                 authMsg.setEncodingOem(true);
 
             // Prefer NTLM v2 if requested
-            // if ((challengeMsg.getFlags() & Message.NEGOTIATE_NTLM2) != 0)
-            // authMsg.setUseNtlm2(true);
+            //if ((challengeMsg.getFlags() & Message.NEGOTIATE_NTLM2) != 0)
+            //authMsg.setUseNtlm2(true);
 
             authMsg.setNonce(challengeMsg.getNonce());
             authMsg.setHost(host);

@@ -277,9 +277,6 @@ public class TestSSL extends HttpTestBase
 
     public void testHttpsGetLocalCert() throws Exception
     {
-        if (!HttpTestEnv.GETSERVERCERT_ENABLED)
-            return;
-
         URL url = new URL(HttpTestEnv.TEST_WEBEXT_SSL_URL);
         HttpURLConnection urlCon = HttpURLConnection.openConnection(url);
 
@@ -295,9 +292,6 @@ public class TestSSL extends HttpTestBase
 
     public void testHttpsGetServerCert() throws Exception
     {
-        if (!HttpTestEnv.GETSERVERCERT_ENABLED)
-            return;
-
         URL url = new URL(HttpTestEnv.TEST_WEBEXT_SSL_URL);
         HttpURLConnection urlCon = HttpURLConnection.openConnection(url);
 

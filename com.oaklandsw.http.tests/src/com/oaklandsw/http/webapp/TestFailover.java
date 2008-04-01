@@ -105,12 +105,12 @@ public class TestFailover extends TestWebappBase
         assertEquals(-1, ngUrlCon.getConnectionProxyPort());
 
         ngUrlCon.setConnectionProxyHost(HttpTestEnv.TEST_PROXY_HOST);
-        ngUrlCon.setConnectionProxyPort(HttpTestEnv.TEST_PROXY_PORT);
+        ngUrlCon.setConnectionProxyPort(HttpTestEnv.NORMAL_PROXY_PORT);
 
         assertEquals(ngUrlCon.getConnectionProxyHost(),
                      HttpTestEnv.TEST_PROXY_HOST);
         assertEquals(ngUrlCon.getConnectionProxyPort(),
-                     HttpTestEnv.TEST_PROXY_PORT);
+                     HttpTestEnv.NORMAL_PROXY_PORT);
 
         urlCon.setRequestMethod("GET");
         urlCon.connect();

@@ -10,7 +10,6 @@ import junit.framework.TestSuite;
 import com.oaklandsw.http.HttpConnection;
 import com.oaklandsw.http.HttpTimeoutException;
 import com.oaklandsw.http.HttpTestBase;
-import com.oaklandsw.http.HttpTestEnv;
 import com.oaklandsw.http.HttpURLConnection;
 import com.oaklandsw.util.LogUtils;
 
@@ -39,13 +38,11 @@ public class TestTimeout extends HttpTestBase
     {
         super.tearDown();
         com.oaklandsw.http.HttpURLConnection.setDefaultTimeout(0);
-        HttpConnection._testTimeout = 0;
+        HttpConnection._testTimeout = false;
     }
 
     // Default can be anything, since it won't connect
     private String _timeoutURL  = "http://localhost:80";
-
-    private int    _testWaitVal = 2000;
 
     private int    _timeoutVal  = 100;
 
@@ -55,17 +52,12 @@ public class TestTimeout extends HttpTestBase
     {
         setupDefaultTimeout(type, _timeoutVal);
 
-        // Waits this long when establishing a connection
-        HttpConnection._testTimeout = _testWaitVal;
+        HttpConnection._testTimeout = true;
 
         // Does not really matter
         URL url = new URL(_timeoutURL);
 
         HttpURLConnection urlCon = HttpURLConnection.openConnection(url);
-
-        // Simulated timeout stuff does not work on 1.4 or higher
-        if (!HttpTestEnv.SIMULATED_TIMEOUT_ENABLED)
-            return;
 
         setupConnTimeout(urlCon, type, _timeoutVal);
 
@@ -164,12 +156,8 @@ public class TestTimeout extends HttpTestBase
 
         URL url = new URL(_timeoutURL);
 
-        // Simulated timeout stuff does not work on 1.4 or higher
-        if (!HttpTestEnv.SIMULATED_TIMEOUT_ENABLED)
-            return;
-
-        // Waits this long when establishing a connection
-        HttpConnection._testTimeout = _testWaitVal;
+        // Force timeout in conenct
+        HttpConnection._testTimeout = true;
 
         int numTimeouts = 0;
         for (int i = 0; i < 50; i++)

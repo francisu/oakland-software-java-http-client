@@ -81,6 +81,10 @@ public class ParamServlet extends MultiMethodServlet
     // Oakland Software NTLMv2 filter
     public static final String NAME_NTLM2      = "/ntlm2params";
 
+    // Various levels
+    public static final String NAME_NTLM2_0      = NAME_NTLM2 +"0";
+    public static final String NAME_NTLM2_5      = NAME_NTLM2 +"5";
+
     protected void genericService(HttpServletRequest request,
                                   HttpServletResponse response)
         throws IOException,

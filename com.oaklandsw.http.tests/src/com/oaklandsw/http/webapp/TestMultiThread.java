@@ -218,7 +218,7 @@ public class TestMultiThread extends TestWebappBase
                                                      .encode("http://"
                                                                  + HttpTestEnv.TOMCAT_HOST
                                                                  + ":"
-                                                                 + HttpTestEnv.TEST_WEBAPP_PORT
+                                                                 + HttpTestEnv.TOMCAT_PORT_1
                                                                  + "/"
                                                                  + context
                                                                  + ParamServlet.NAME,

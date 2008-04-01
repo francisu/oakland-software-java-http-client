@@ -85,7 +85,7 @@ public class TestTraceMethod extends HttpTestBase
 
     private static String _host = HttpTestEnv.TEST_WEBSERVER_HOST;
 
-    private static int    _port = HttpTestEnv.TEST_WEBSERVER_PORT;
+    private static int    _port = HttpTestEnv.WEBSERVER_PORT;
 
     public TestTraceMethod(String testName)
     {

@@ -321,7 +321,7 @@ public class HttpTestBase extends com.oaklandsw.TestCaseBase
 
     protected static final String context = System
                                                   .getProperty("httpclient.test.webappContext",
-                                                               HttpTestEnv.TEST_URL_APP_TOMCAT);
+                                                               HttpTestEnv.TEST_URL_APP_TOMCAT_1);
 
     // protected static String host = TestEnv.HOST;
     // protected static int port = TestEnv.PORT;
@@ -504,14 +504,14 @@ public class HttpTestBase extends com.oaklandsw.TestCaseBase
         _inProxyTest = true;
         _inTestGroup = true;
         HttpURLConnection.setProxyHost(HttpTestEnv.TEST_PROXY_HOST);
-        HttpURLConnection.setProxyPort(HttpTestEnv.TEST_PROXY_PORT);
+        HttpURLConnection.setProxyPort(HttpTestEnv.NORMAL_PROXY_PORT);
 
         // Bug 954 setProxyHost/setProxyPort had no effect
         URL url = new URL(_urlBase);
         HttpURLConnection urlCon = HttpURLConnection.openConnection(url);
         assertEquals(HttpTestEnv.TEST_PROXY_HOST, urlCon
                 .getConnectionProxyHost());
-        assertEquals(HttpTestEnv.TEST_PROXY_PORT, urlCon
+        assertEquals(HttpTestEnv.NORMAL_PROXY_PORT, urlCon
                 .getConnectionProxyPort());
 
         try
@@ -582,7 +582,7 @@ public class HttpTestBase extends com.oaklandsw.TestCaseBase
                 System.setProperty("socksProxyHost",
                                    HttpTestEnv.TEST_SOCKS_PROXY_HOST);
                 System.setProperty("socksProxyPort", Integer
-                        .toString(HttpTestEnv.TEST_SOCKS_PROXY_PORT));
+                        .toString(HttpTestEnv.SOCKS_PROXY_PORT));
 
                 Socket s = new Socket();
                 System.out.println("created socks: " + s);
@@ -617,7 +617,7 @@ public class HttpTestBase extends com.oaklandsw.TestCaseBase
         TestUserAgent._proxyType = TestUserAgent.GOOD;
 
         HttpURLConnection.setProxyHost(HttpTestEnv.ISA_HOST);
-        HttpURLConnection.setProxyPort(HttpTestEnv.TEST_ISA_PORT);
+        HttpURLConnection.setProxyPort(HttpTestEnv.ISA_PORT);
 
         try
         {
@@ -646,7 +646,7 @@ public class HttpTestBase extends com.oaklandsw.TestCaseBase
 
         HttpURLConnection.setProxySsl(true);
         HttpURLConnection.setProxyHost(HttpTestEnv.ISA_HOST);
-        HttpURLConnection.setProxyPort(HttpTestEnv.TEST_ISA_SSL_PORT);
+        HttpURLConnection.setProxyPort(HttpTestEnv.ISA_SSL_PORT);
 
         try
         {
@@ -699,7 +699,7 @@ public class HttpTestBase extends com.oaklandsw.TestCaseBase
         _inAuthProxyTest = true;
         _inTestGroup = true;
         HttpURLConnection.setProxyHost(HttpTestEnv.TEST_AUTH_PROXY_HOST);
-        HttpURLConnection.setProxyPort(HttpTestEnv.TEST_AUTH_PROXY_PORT);
+        HttpURLConnection.setProxyPort(HttpTestEnv.AUTH_PROXY_PORT);
         HttpURLConnection.setProxyUser(HttpTestEnv.TEST_AUTH_PROXY_USER);
         HttpURLConnection
                 .setProxyPassword(HttpTestEnv.TEST_AUTH_PROXY_PASSWORD);
@@ -730,7 +730,7 @@ public class HttpTestBase extends com.oaklandsw.TestCaseBase
         _inAuthCloseProxyTest = true;
         _inTestGroup = true;
         HttpURLConnection.setProxyHost(HttpTestEnv.TEST_AUTH_PROXY_CLOSE_HOST);
-        HttpURLConnection.setProxyPort(HttpTestEnv.TEST_AUTH_PROXY_CLOSE_PORT);
+        HttpURLConnection.setProxyPort(HttpTestEnv.AUTH_PROXY_CLOSE_PORT);
         HttpURLConnection.setProxyUser(HttpTestEnv.TEST_AUTH_PROXY_CLOSE_USER);
         HttpURLConnection
                 .setProxyPassword(HttpTestEnv.TEST_AUTH_PROXY_CLOSE_PASSWORD);

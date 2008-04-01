@@ -30,7 +30,7 @@ public class TestProxyHost extends HttpTestBase
     {
         super.setUp();
         com.oaklandsw.http.HttpURLConnection.setProxyHost(HttpTestEnv.TEST_PROXY_HOST);
-        com.oaklandsw.http.HttpURLConnection.setProxyPort(HttpTestEnv.TEST_PROXY_PORT);
+        com.oaklandsw.http.HttpURLConnection.setProxyPort(HttpTestEnv.NORMAL_PROXY_PORT);
     }
 
     public void tearDown() throws Exception

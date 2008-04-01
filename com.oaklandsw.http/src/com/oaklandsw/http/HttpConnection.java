@@ -179,10 +179,6 @@ public class HttpConnection
     long                       _idleTimeout;
     long                       _idlePing;
 
-    // Used only for testing to simulate a connection that fails to
-    // connect
-    public static long         _testTimeout;
-
     // For SSL hostname matching testing
     public static boolean      _testNonMatchHost;
 
@@ -241,8 +237,9 @@ public class HttpConnection
     int                        _bugCatchCount;
 
     // For testing
-    public static boolean _pingDone;
-    
+    public static boolean      _pingDone;
+    public static boolean _testTimeout;
+
     static String stateToString(int state)
     {
         switch (state)
@@ -573,7 +570,7 @@ public class HttpConnection
             System.out.println("delta: "
                 + (System.currentTimeMillis() - _lastTimeUsed));
         }
-        
+
         if (_output == null
             || _lastTimeUsed == 0
             || _idlePing == 0
@@ -592,7 +589,7 @@ public class HttpConnection
         _output.flush();
 
         _pingDone = true;
-        
+
         // Read until there are 2 crlfs, we assume there
         // is no message body
         int crlfInd = 0;
@@ -803,6 +800,11 @@ public class HttpConnection
 
         try
         {
+            if (_testTimeout)
+            {
+                Thread.sleep(_connectTimeout);
+                throw new SocketTimeoutException("Simulated timeout");
+            }
             _socket.connect(new InetSocketAddress(host, port), _connectTimeout);
         }
         catch (SocketTimeoutException tex)
@@ -826,23 +828,6 @@ public class HttpConnection
 
     private final void normalOpen(HttpURLConnection urlCon) throws IOException
     {
-        try
-        {
-            // To simulate a connection timeout
-            if (_testTimeout > 0)
-            {
-                _connLog.info("Simulating test timeout: " + _testTimeout);
-                Thread.sleep(_testTimeout);
-                return;
-            }
-        }
-        catch (InterruptedException ex)
-        {
-            // Will happen when the timeout occurs
-            _connLog.info("test timeout interrupted: " + hashCode());
-            return;
-        }
-
         openSocket();
 
         // Make a tunnel
@@ -879,7 +864,7 @@ public class HttpConnection
                 // Will set open for real later
                 _state = CS_VIRGIN;
                 _tunnelEstablished = true;
-                
+
                 // Make sure the CONNECT does not cause a ping
                 _lastTimeUsed = 0;
             }

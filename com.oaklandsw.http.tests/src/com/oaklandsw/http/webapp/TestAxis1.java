@@ -49,6 +49,7 @@ import javax.xml.rpc.encoding.DeserializerFactory;
 import javax.xml.soap.MimeHeaders;
 
 import java.io.File;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -163,7 +164,7 @@ public class TestAxis1 extends TestWebappBase
 
         return mh.getHeader("Set-Cookie");
     }
-    
+
     public HashMap invokeMethod(EngineConfiguration eConfig,
                                 String operationName,
                                 String portName,
@@ -286,9 +287,11 @@ public class TestAxis1 extends TestWebappBase
         }
 
         if (inNames.size() != args.length)
+        {
             throw new RuntimeException("Need "
                 + inNames.size()
                 + " arguments!!!");
+        }
 
         for (int pos = 0; pos < inNames.size(); ++pos)
         {
@@ -462,6 +465,15 @@ public class TestAxis1 extends TestWebappBase
         assertEquals(1, map.size());
     }
 
+    public void testWsWebappVerison3x() throws Exception
+    {
+        HttpURLConnection.setMaxConnectionsPerHost(1);
+        URL url = new URL(HttpTestEnv.TEST_URL_HOST_WEBAPP);
+        testWsWebappVersion();
+        testWsWebappVersion();
+        checkNoActiveConns(url);
+    }
+
     public void testWsWebappList() throws Exception
     {
         Map map = invokeService(HttpTestEnv.TEST_URL_HOST_WEBAPP
@@ -505,7 +517,7 @@ public class TestAxis1 extends TestWebappBase
         // Use Axis authentication
         _user = HttpTestEnv.TEST_IIS_DOMAIN_USER;
         _password = HttpTestEnv.TEST_IIS_PASSWORD;
-        //logAll();
+        // logAll();
         Map map = invokeWindowsService();
         assertEquals(1, map.size());
     }

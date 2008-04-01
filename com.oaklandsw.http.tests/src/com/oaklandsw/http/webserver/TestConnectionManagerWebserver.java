@@ -148,7 +148,7 @@ public class TestConnectionManagerWebserver extends HttpTestBase
         url = new URL(urlStr);
         urlCon = HttpURLConnection.openConnection(url);
         urlCon.setConnectionProxyHost(HttpTestEnv.APACHE_HOST);
-        urlCon.setConnectionProxyPort(HttpTestEnv.TEST_PROXY_PORT);
+        urlCon.setConnectionProxyPort(HttpTestEnv.NORMAL_PROXY_PORT);
         urlCon.connect();
         HttpConnection conn2 = urlCon.getConnection();
         assertFalse("proxy same as non-proxy", conn1 == conn2);
@@ -158,7 +158,7 @@ public class TestConnectionManagerWebserver extends HttpTestBase
         url = new URL(urlStr);
         urlCon = HttpURLConnection.openConnection(url);
         urlCon.setConnectionProxyHost(HttpTestEnv.AUTH_PROXY_HOST);
-        urlCon.setConnectionProxyPort(HttpTestEnv.TEST_AUTH_PROXY_PORT);
+        urlCon.setConnectionProxyPort(HttpTestEnv.AUTH_PROXY_PORT);
         urlCon.connect();
         HttpConnection conn3 = urlCon.getConnection();
         assertFalse("proxy same as non-proxy", conn3 == conn1);
@@ -169,7 +169,7 @@ public class TestConnectionManagerWebserver extends HttpTestBase
         url = new URL(urlStr);
         urlCon = HttpURLConnection.openConnection(url);
         urlCon.setConnectionProxyHost(HttpTestEnv.AUTH_PROXY_HOST);
-        urlCon.setConnectionProxyPort(HttpTestEnv.TEST_AUTH_PROXY_PORT);
+        urlCon.setConnectionProxyPort(HttpTestEnv.AUTH_PROXY_PORT);
         urlCon.setConnectionProxyUser("xxx");
         urlCon.connect();
         HttpConnection conn4 = urlCon.getConnection();

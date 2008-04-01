@@ -31,6 +31,8 @@ public class TestIIS extends HttpTestBase
 
     HttpURLConnection        _urlCon;
 
+    boolean                  _useIisNtlm_5;
+
     public TestIIS(String name)
     {
         super(name);
@@ -49,6 +51,8 @@ public class TestIIS extends HttpTestBase
         _doAppletTest = true;
 
         _doHttps = true;
+
+        _useIisNtlm_5 = true;
     }
 
     public static void main(String[] args)
@@ -77,6 +81,13 @@ public class TestIIS extends HttpTestBase
         return new TestSuite(TestIIS.class);
     }
 
+    protected String makeIisUrl(String path)
+    {
+        if (_useIisNtlm_5)
+            return HttpTestEnv.TEST_URL_IIS_5 + path;
+        return HttpTestEnv.TEST_URL_IIS_0 + path;
+    }
+
     public void iisCheckReply(String reply)
     {
         assertTrue("Incorrect reply",
@@ -87,8 +98,7 @@ public class TestIIS extends HttpTestBase
 
     public void test100PostNormal() throws MalformedURLException, IOException
     {
-        URL url = new URL(HttpTestEnv.TEST_URL_IIS
-            + HttpTestEnv.TEST_URL_APP_IIS_FORM);
+        URL url = new URL(makeIisUrl(HttpTestEnv.TEST_URL_APP_IIS_FORM));
         int response = 0;
 
         String str = "lname=lastName123&fname=firstName123";
@@ -147,8 +157,7 @@ public class TestIIS extends HttpTestBase
 
     public void test200Get() throws MalformedURLException, IOException
     {
-        URL url = new URL(HttpTestEnv.TEST_URL_IIS
-            + HttpTestEnv.TEST_URL_APP_IIS_QUERY_STRING);
+        URL url = new URL(makeIisUrl(HttpTestEnv.TEST_URL_APP_IIS_QUERY_STRING));
         int response = 0;
 
         HttpURLConnection urlCon;
@@ -173,8 +182,7 @@ public class TestIIS extends HttpTestBase
         throws MalformedURLException,
             IOException
     {
-        URL url = new URL(HttpTestEnv.TEST_URL_IIS
-            + HttpTestEnv.TEST_URL_APP_IIS_FORM);
+        URL url = new URL(makeIisUrl(HttpTestEnv.TEST_URL_APP_IIS_FORM));
         int response = 0;
 
         HttpURLConnection.setMultiCredentialsPerAddress(true);
@@ -199,8 +207,7 @@ public class TestIIS extends HttpTestBase
     // Bug 1949 - Test that an idle connection timeout frees up a connection
     public void test210ConnectWaitForIdle() throws Exception
     {
-        URL url = new URL(HttpTestEnv.TEST_URL_IIS
-            + HttpTestEnv.TEST_URL_APP_IIS_FORM);
+        URL url = new URL(makeIisUrl(HttpTestEnv.TEST_URL_APP_IIS_FORM));
 
         int waitTime = 2000;
 
@@ -243,8 +250,7 @@ public class TestIIS extends HttpTestBase
 
     public void test230GetStream() throws MalformedURLException, IOException
     {
-        URL url = new URL(HttpTestEnv.TEST_URL_IIS
-            + HttpTestEnv.TEST_URL_APP_IIS_FORM);
+        URL url = new URL(makeIisUrl(HttpTestEnv.TEST_URL_APP_IIS_FORM));
 
         HttpURLConnection urlCon;
         urlCon = HttpURLConnection.openConnection(url);
@@ -281,8 +287,7 @@ public class TestIIS extends HttpTestBase
         if (_inAuthCloseProxyTest)
             return;
         HttpURLConnection.setDefaultAuthenticationType(Credential.AUTH_NTLM);
-        PipelineTester pt = new PipelineTester(HttpTestEnv.TEST_URL_IIS
-                                                   + HttpTestEnv.TEST_URL_APP_IIS_QUERY_STRING,
+        PipelineTester pt = new PipelineTester(makeIisUrl(HttpTestEnv.TEST_URL_APP_IIS_QUERY_STRING),
                                                num,
                                                _pipelineOptions,
                                                _pipelineMaxDepth);
@@ -318,8 +323,7 @@ public class TestIIS extends HttpTestBase
         // Clean out connections
         HttpURLConnection.closeAllPooledConnections();
 
-        URL url = new URL(HttpTestEnv.TEST_URL_IIS
-            + HttpTestEnv.TEST_URL_APP_IIS_FORM);
+        URL url = new URL(makeIisUrl(HttpTestEnv.TEST_URL_APP_IIS_FORM));
         int response = 0;
 
         HttpURLConnection urlCon;
@@ -359,8 +363,7 @@ public class TestIIS extends HttpTestBase
         // Clean out connections
         HttpURLConnection.closeAllPooledConnections();
 
-        URL url = new URL(HttpTestEnv.TEST_URL_IIS
-            + HttpTestEnv.TEST_URL_APP_IIS_FORM);
+        URL url = new URL(makeIisUrl(HttpTestEnv.TEST_URL_APP_IIS_FORM));
         int response = 0;
 
         HttpURLConnection urlCon;
@@ -383,8 +386,7 @@ public class TestIIS extends HttpTestBase
         // Clean out connections
         HttpURLConnection.closeAllPooledConnections();
 
-        URL url = new URL(HttpTestEnv.TEST_URL_IIS
-            + HttpTestEnv.TEST_URL_APP_IIS_FORM);
+        URL url = new URL(makeIisUrl(HttpTestEnv.TEST_URL_APP_IIS_FORM));
         int response = 0;
 
         HttpURLConnection urlCon;
@@ -413,8 +415,7 @@ public class TestIIS extends HttpTestBase
         int saveProxyType = TestUserAgent._proxyType;
         TestUserAgent._proxyType = TestUserAgent.NULL;
 
-        URL url = new URL(HttpTestEnv.TEST_URL_IIS
-            + HttpTestEnv.TEST_URL_APP_IIS_FORM);
+        URL url = new URL(makeIisUrl(HttpTestEnv.TEST_URL_APP_IIS_FORM));
         int response = 0;
 
         HttpURLConnection urlCon;
@@ -438,8 +439,7 @@ public class TestIIS extends HttpTestBase
         TestUserAgent._type = TestUserAgent.GOOD;
         TestUserAgent._callCount = 0;
 
-        URL url = new URL(HttpTestEnv.TEST_URL_IIS
-            + HttpTestEnv.TEST_URL_APP_IIS_FORM);
+        URL url = new URL(makeIisUrl(HttpTestEnv.TEST_URL_APP_IIS_FORM));
         HttpURLConnection urlCon = HttpURLConnection.openConnection(url);
         getReply(urlCon);
 
@@ -476,8 +476,7 @@ public class TestIIS extends HttpTestBase
         TestUserAgent._callCount = 0;
         TestUserAgent._callCountProxy = 0;
 
-        URL url = new URL(HttpTestEnv.TEST_URL_IIS
-            + HttpTestEnv.TEST_URL_APP_IIS_FORM);
+        URL url = new URL(makeIisUrl(HttpTestEnv.TEST_URL_APP_IIS_FORM));
         HttpURLConnection urlCon = HttpURLConnection.openConnection(url);
         getReply(urlCon);
 
@@ -521,8 +520,7 @@ public class TestIIS extends HttpTestBase
         TestUserAgent._type = TestUserAgent.BAD;
         TestUserAgent._callCount = 0;
 
-        URL url = new URL(HttpTestEnv.TEST_URL_IIS
-            + HttpTestEnv.TEST_URL_APP_IIS_FORM);
+        URL url = new URL(makeIisUrl(HttpTestEnv.TEST_URL_APP_IIS_FORM));
         HttpURLConnection urlCon = HttpURLConnection.openConnection(url);
         assertEquals(401, urlCon.getResponseCode());
         getReply(urlCon);
@@ -559,8 +557,7 @@ public class TestIIS extends HttpTestBase
         TestUserAgent._callCount = 0;
         TestUserAgent._callCountProxy = 0;
 
-        URL url = new URL(HttpTestEnv.TEST_URL_IIS
-            + HttpTestEnv.TEST_URL_APP_IIS_FORM);
+        URL url = new URL(makeIisUrl(HttpTestEnv.TEST_URL_APP_IIS_FORM));
         HttpURLConnection urlCon = HttpURLConnection.openConnection(url);
         assertEquals(407, urlCon.getResponseCode());
         getReply(urlCon);
@@ -594,8 +591,7 @@ public class TestIIS extends HttpTestBase
         TestUserAgent._type = TestUserAgent.GOOD;
         TestUserAgent._callCount = 0;
 
-        URL url = new URL(HttpTestEnv.TEST_URL_IIS
-            + HttpTestEnv.TEST_URL_APP_IIS_FORM);
+        URL url = new URL(makeIisUrl(HttpTestEnv.TEST_URL_APP_IIS_FORM));
         HttpURLConnection urlCon = HttpURLConnection.openConnection(url);
         getReply(urlCon);
 
@@ -622,8 +618,7 @@ public class TestIIS extends HttpTestBase
         TestUserAgent._callCount = 0;
         TestUserAgent._callCountProxy = 0;
 
-        URL url = new URL(HttpTestEnv.TEST_URL_IIS
-            + HttpTestEnv.TEST_URL_APP_IIS_FORM);
+        URL url = new URL(makeIisUrl(HttpTestEnv.TEST_URL_APP_IIS_FORM));
         HttpURLConnection urlCon = HttpURLConnection.openConnection(url);
         getReply(urlCon);
 
@@ -637,7 +632,7 @@ public class TestIIS extends HttpTestBase
         assertTrue(TestUserAgent._callCount > callCount);
         // FIXME
         if (false)
-        assertTrue(TestUserAgent._callCountProxy > callCountProxy);
+            assertTrue(TestUserAgent._callCountProxy > callCountProxy);
 
         HttpURLConnection.setMultiCredentialsPerAddress(false);
     }
@@ -737,16 +732,22 @@ public class TestIIS extends HttpTestBase
                 .setNtlmPreferredEncoding(com.oaklandsw.http.HttpURLConnection.NTLM_ENCODING_UNICODE);
     }
 
-    // Test test force NTLM V1 - this test will not pass if the NTLMv2 is set
+    // Test test force NTLM V1
     public void testForceNtlmV1() throws Exception
     {
-        // Don't do this if only NTLM v2 is available
-        if (HttpTestEnv.REQUIRE_NTLMV2 == null)
+        _useIisNtlm_5 = false;
+        _inTestGroup = true;
+        try
         {
             NegotiateMessage._testForceV1 = true;
             allTestMethods();
+        }
+        finally
+        {
+            _useIisNtlm_5 = true;
             NegotiateMessage._testForceV1 = false;
         }
+
     }
 
 }

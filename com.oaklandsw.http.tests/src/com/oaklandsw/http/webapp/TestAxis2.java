@@ -39,6 +39,7 @@ import javax.xml.stream.XMLOutputFactory;
 
 import java.io.File;
 import java.io.StringWriter;
+import java.net.URL;
 
 public class TestAxis2 extends TestWebappBase
 {
@@ -147,6 +148,7 @@ public class TestAxis2 extends TestWebappBase
 
         _options.setTo(epr);
         _options.setAction(operationName);
+        _options.setCallTransportCleanup(true);
         _serviceClient.setOptions(_options);
 
         OMFactory fac = OMAbstractFactory.getOMFactory();
@@ -169,6 +171,7 @@ public class TestAxis2 extends TestWebappBase
         result.serialize(XMLOutputFactory.newInstance()
                 .createXMLStreamWriter(writer));
         writer.flush();
+        
         return writer.toString();
     }
 
@@ -198,6 +201,15 @@ public class TestAxis2 extends TestWebappBase
                                       "getVersion",
                                       new String[] {});
         assertContains(output, "Apache Axis version");
+    }
+
+    public void testWsWebappVerison3x() throws Exception
+    {
+        HttpURLConnection.setMaxConnectionsPerHost(1);
+        URL url = new URL(HttpTestEnv.TEST_URL_HOST_WEBAPP);
+        testWsWebappVersion();
+        testWsWebappVersion();
+        checkNoActiveConns(url);
     }
 
     public void testWsWebappList() throws Exception
@@ -241,7 +253,7 @@ public class TestAxis2 extends TestWebappBase
     {
         return invokeService(HttpTestEnv.HTTP_PROTOCOL
             + "//"
-            + HttpTestEnv.IIS_HOST
+            + HttpTestEnv.IIS_HOST_5
             + "/HelloWorld.asmx", "urn:Example1", "sayHello", new String[] {
             "name", "Francis" });
     }
@@ -337,6 +349,15 @@ public class TestAxis2 extends TestWebappBase
         // System.out.println(HexString.dump(output.getBytes()));
         assertContains(resp.getGetListCollectionResult().getExtraElement()
                 .toString(), "DefaultViewUrl");
+    }
+
+    public void testSharepointIcewebGoodStub2x() throws Exception
+    {
+        HttpURLConnection.setMaxConnectionsPerHost(1);
+        URL url = new URL(HttpTestEnv.TEST_URL_HOST_WEBAPP);
+        testSharepointIcewebGoodStub();
+        testSharepointIcewebGoodStub();
+        checkNoActiveConns(url);
     }
 
     public void testSharepointGoodStubChunked(String url,

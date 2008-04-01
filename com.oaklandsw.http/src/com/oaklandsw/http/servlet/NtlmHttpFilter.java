@@ -30,6 +30,8 @@ import java.util.Enumeration;
 import javax.servlet.*;
 import javax.servlet.http.*;
 
+import com.oaklandsw.http.ntlm.Message;
+import com.oaklandsw.http.ntlm.Ntlm;
 import com.oaklandsw.util.LogUtils;
 import com.oaklandsw.util.Util;
 
@@ -65,6 +67,8 @@ public class NtlmHttpFilter implements Filter
     private boolean          insecureBasic;
     private String           realm;
 
+    private int              lmCompatibility;
+
     public void init(FilterConfig filterConfig) throws ServletException
     {
         String name;
@@ -86,20 +90,6 @@ public class NtlmHttpFilter implements Filter
                 Config.setProperty(name, filterConfig.getInitParameter(name));
             }
         }
-        defaultDomain = Config.getProperty("jcifs.smb.client.domain");
-        domainController = Config.getProperty("jcifs.http.domainController");
-        if (domainController == null)
-        {
-            domainController = defaultDomain;
-            loadBalance = Config.getBoolean("jcifs.http.loadBalance", true);
-        }
-        enableBasic = Boolean.valueOf(Config
-                .getProperty("jcifs.http.enableBasic")).booleanValue();
-        insecureBasic = Boolean.valueOf(Config
-                .getProperty("jcifs.http.insecureBasic")).booleanValue();
-        realm = Config.getProperty("jcifs.http.basicRealm");
-        if (realm == null)
-            realm = "jCIFS";
 
         if ((level = Config.getInt("jcifs.util.loglevel", -1)) != -1)
         {
@@ -108,7 +98,7 @@ public class NtlmHttpFilter implements Filter
 
         if (LogStream.level > 2)
         {
-            // This not not work unles log4j is setup in the app server
+            // This will not work unless log4j is setup in the app server
             LogUtils.logAll();
 
             log.println("oaklandsw - NtlmHttpFilter init: defaultDomain: "
@@ -123,6 +113,30 @@ public class NtlmHttpFilter implements Filter
             {
             }
         }
+
+        defaultDomain = Config.getProperty("jcifs.smb.client.domain");
+        domainController = Config.getProperty("jcifs.http.domainController");
+        if (domainController == null)
+        {
+            domainController = defaultDomain;
+            loadBalance = Config.getBoolean("jcifs.http.loadBalance", true);
+        }
+
+        enableBasic = Boolean.valueOf(Config
+                .getProperty("jcifs.http.enableBasic")).booleanValue();
+        insecureBasic = Boolean.valueOf(Config
+                .getProperty("jcifs.http.insecureBasic")).booleanValue();
+        realm = Config.getProperty("jcifs.http.basicRealm");
+        if (realm == null)
+            realm = "jCIFS";
+
+        lmCompatibility = Config.getInt("jcifs.smb.lmCompatibility", 0);
+        log.println("oaklandsw - NtlmHttpFilter init: lmCompatibility:  "
+            + lmCompatibility);
+
+        // Per SMB/NTLM documentation
+        Ntlm._challengeMessageFlags = Message.NEGOTIATE_NTLM;
+
     }
 
     public void destroy()
@@ -226,7 +240,7 @@ public class NtlmHttpFilter implements Filter
                 {
                     log.println("oaklandsw - NtlmHttpFilter: "
                         + msg
-                        + " Got Challenge: "
+                        + " Using Challenge: "
                         + Util.bytesToString(challenge));
                 }
 

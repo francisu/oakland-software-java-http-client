@@ -139,7 +139,7 @@ public class TestHttps extends HttpTestBase
         urlCon.setRequestMethod("GET");
 
         urlCon.setConnectionProxyHost(HttpTestEnv.TEST_AUTH_PROXY_HOST);
-        urlCon.setConnectionProxyPort(HttpTestEnv.TEST_AUTH_PROXY_PORT);
+        urlCon.setConnectionProxyPort(HttpTestEnv.AUTH_PROXY_PORT);
         urlCon.setConnectionProxyUser(HttpTestEnv.TEST_AUTH_PROXY_USER);
         urlCon.setConnectionProxyPassword(HttpTestEnv.TEST_AUTH_PROXY_PASSWORD);
         urlCon.setProxyAuthenticationType(Credential.AUTH_BASIC);

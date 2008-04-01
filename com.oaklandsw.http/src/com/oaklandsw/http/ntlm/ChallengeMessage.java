@@ -16,74 +16,94 @@ import com.oaklandsw.util.Util;
 
 public class ChallengeMessage extends Message
 {
-    private static final Log      _log                 = LogUtils.makeLogger();
+    private static final Log      _log                = LogUtils.makeLogger();
 
-    protected static final int    CHALLENGE_HEADER_LEN = 24;
+    protected static final int    CHALLENGE_FIXED_LEN = 56;
 
     // Provided if NEG_LOCAL_CALL is set (this is actually just skipped)
-    protected static final int    CONTEXT_LENGTH       = 8;
+    protected static final int    CONTEXT_LENGTH      = 8;
     protected byte[]              _context;
 
-    protected static final byte[] EMPTY_CONTEXT        = new byte[CONTEXT_LENGTH];
+    protected static final byte[] EMPTY_CONTEXT       = new byte[CONTEXT_LENGTH];
 
+    // The server authentication realm
     protected String              _targetName;
 
     // Provided if NEG_TARGET_INFO is set
-    protected byte[]              _targetBlock;
-
-    protected boolean             _encodingOem;
+    protected byte[]              _targetInfo;
 
     // Default constructor
     public ChallengeMessage()
     {
     }
 
-    public byte[] getTargetBlock()
+    public byte[] getTargetInfo()
     {
-        return _targetBlock;
+        return _targetInfo;
     }
 
+    // This is used for the JCIFS integration
     public void setupOutgoing(byte[] nonce,
                               NegotiateMessage nmsg,
                               byte[] targetInfo,
                               String targetName)
     {
+        if (targetName == null)
+        {
+            throw new IllegalArgumentException("Must specify targetName - "
+                + "make sure the jcifs.smb.client.domain parameter is set");
+        }
+
         if (_log.isDebugEnabled())
         {
             _log.debug("setupOutgoing: nonce: " + HexFormatter.dump(nonce));
-            _log.debug("targetInfo (defaultTargetInfo): \n" + HexFormatter.dump(targetInfo));
+            _log.debug("targetInfo (defaultTargetInfo): \n"
+                + HexFormatter.dump(targetInfo));
             _log.debug("targetName (defaultDomain): \n" + targetName);
         }
 
         setFlags(Ntlm._challengeMessageFlags);
 
-        // target is server or domain
         setNonce(nonce);
 
-        if ((nmsg._flags & Message.REQUEST_TARGET) != 0)
+        // Per SMB Spec target info is not used
+        // However the spec does not seem to match what is done
+        if ((nmsg._flags & Message.NEGOTIATE_TARGET_INFO) != 0)
         {
-            // FIXME Indicate what type of target, server or domain
-            //_targetName = targetName;
-            //_flags |= Message.TARGET_TYPE_SERVER;
-            if ((nmsg._flags & Message.NEGOTIATE_UNICODE) != 0)
-            {
-                _flags |= Message.NEGOTIATE_UNICODE;
-                _encodingOem = false;
-            }
-            else
-            {
-                // Assume OEM if nothing specified
-                _flags |= Message.NEGOTIATE_OEM;
-                _encodingOem = true;
-            }
+            if (targetInfo == null)
+                throw new IllegalStateException("Negotiate message specifies NEG_TARGET_INFO, but no targetInfo supplied");
+
         }
 
-        if ((nmsg._flags & Message.REQUEST_TARGET) != 0)
+        // Per SMB Spec (3.2.4.2.3) target info is not used
+        // However the spec does not seem to match what is done
+        if (targetInfo != null)
         {
             _flags |= Message.NEGOTIATE_TARGET_INFO;
-            _targetBlock = targetInfo;
+            _targetInfo = targetInfo;
         }
 
+        // Per SMB spec target name is host
+        // However the spec does not seem to match what is done
+        if (targetName != null)
+        {
+            _targetName = targetName;
+            // Per SMB spec this flag is not set
+            _flags |= Message.TARGET_TYPE_DOMAIN;
+        }
+
+        // Per SMB spec encoding is OEM
+        // However we will follow the negotiate message
+
+        if ((nmsg._flags & Message.NEGOTIATE_UNICODE) != 0)
+        {
+            _flags |= Message.NEGOTIATE_UNICODE;
+        }
+        else
+        {
+            // Assume OEM if nothing specified
+            _flags |= Message.NEGOTIATE_OEM;
+        }
     }
 
     public int decode() throws HttpException
@@ -98,45 +118,66 @@ public class ChallengeMessage extends Message
                 + _type);
         }
 
-        // target name - skip
-        index += 8;
+        // Target name
+        int targetNameLen = (int)Util.fromByteLittle(2, _msgBytes, index);
+        index += 2;
+        // Skip max len
+        index += 2;
+        int targetNameOffset = (int)Util.fromByteLittle(4, _msgBytes, index);
+        index += 4;
 
         _flags = Util.fromByteLittle(4, _msgBytes, index);
         index += 4;
 
         _nonce = new byte[NONCE_LENGTH];
-        System.arraycopy(_msgBytes,
-                         CHALLENGE_HEADER_LEN,
-                         _nonce,
-                         0,
-                         _nonce.length);
+        System.arraycopy(_msgBytes, index, _nonce, 0, _nonce.length);
         index += NONCE_LENGTH;
 
-        if (index < _msgBytes.length)
+        // Message may end here?
+        if (index >= _msgBytes.length)
         {
-            _context = new byte[CONTEXT_LENGTH];
-            System.arraycopy(_msgBytes, index, _context, 0, _context.length);
-            index += CONTEXT_LENGTH;
+            _targetInfo = new byte[] {};
+            return 0;
         }
 
-        if ((_flags & NEGOTIATE_TARGET_INFO) != 0)
+        // This is not used for anything
+        index += CONTEXT_LENGTH;
+
+        // Target Info
+        int targetInfoLen = (int)Util.fromByteLittle(2, _msgBytes, index);
+        index += 2;
+        // Skip max len
+        index += 2;
+        // Offset of target block from start of message
+        int targetInfoOffset = (int)Util.fromByteLittle(4, _msgBytes, index);
+        index += 4;
+
+        // This is where the version is (used only for debugging)
+        index += 8;
+
+        //
+        // Payload portion of message
+        //
+
+        if ((_flags & NEGOTIATE_OEM) != 0)
         {
-            // Skip over used length
-            index += 2;
-            int targetLen = (int)Util.fromByteLittle(2, _msgBytes, index);
-            index += 2;
-
-            // Offset of target block from start of message
-            int targetOffset = (int)Util.fromByteLittle(4, _msgBytes, index);
-
-            _targetBlock = new byte[targetLen];
-            System.arraycopy(_msgBytes,
-                             targetOffset,
-                             _targetBlock,
-                             0,
-                             targetLen);
+            _targetName = Util.fromByteAscii(targetNameLen,
+                                             _msgBytes,
+                                             targetNameOffset);
+        }
+        else
+        {
+            _targetName = Util.fromByteUnicodeLittle(targetNameLen,
+                                                     _msgBytes,
+                                                     targetNameOffset);
         }
 
+        _targetInfo = new byte[targetInfoLen];
+        System.arraycopy(_msgBytes,
+                         targetInfoOffset,
+                         _targetInfo,
+                         0,
+                         targetInfoLen);
         log();
 
         return 0;
@@ -146,24 +187,22 @@ public class ChallengeMessage extends Message
     // nonce is assume to be 8 bytes
     public int encode() throws IllegalArgumentException
     {
-        boolean writeTarget = (_flags & NEGOTIATE_TARGET_INFO) != 0
-            && _targetBlock != null;
+        if (_targetInfo == null)
+            _targetInfo = new byte[] {};
 
         int targetNameLen = 0;
         if (_targetName != null)
         {
-            if (_encodingOem)
+            if ((_flags & Message.NEGOTIATE_OEM) != 0)
                 targetNameLen = _targetName.length();
             else
                 targetNameLen = _targetName.length() * 2;
         }
 
-        _msgLength = CHALLENGE_HEADER_LEN
-            + _nonce.length
-            + (writeTarget ? EMPTY_CONTEXT.length
-                + _targetBlock.length
-                + SECURITY_BUFFER_LEN : 0)
-            + targetNameLen;
+        _msgLength = CHALLENGE_FIXED_LEN + _targetInfo.length + targetNameLen;
+
+        int targetNameOffset = CHALLENGE_FIXED_LEN;
+        int targetInfoOffset = CHALLENGE_FIXED_LEN + targetNameLen;
 
         _type = MSG_CHALLENGE;
 
@@ -176,10 +215,7 @@ public class ChallengeMessage extends Message
             index = Util.toByteLittle(targetNameLen, 2, _msgBytes, index);
             index = Util.toByteLittle(targetNameLen, 2, _msgBytes, index);
             // This is written in the last part of the message
-            index = Util.toByteLittle(_msgLength - targetNameLen,
-                                      4,
-                                      _msgBytes,
-                                      index);
+            index = Util.toByteLittle(targetNameOffset, 4, _msgBytes, index);
         }
         else
         {
@@ -188,54 +224,42 @@ public class ChallengeMessage extends Message
 
         index = Util.toByteLittle(_flags, 4, _msgBytes, index);
 
-        // End of challenge header
-
-        System.arraycopy(_nonce,
-                         0,
-                         _msgBytes,
-                         CHALLENGE_HEADER_LEN,
-                         _nonce.length);
+        System.arraycopy(_nonce, 0, _msgBytes, index, _nonce.length);
         index += _nonce.length;
 
-        if (writeTarget)
-        {
-            // We never write anything for the context, but must include it
-            // as padding if we write the target info
-            System.arraycopy(EMPTY_CONTEXT,
-                             0,
-                             _msgBytes,
-                             index,
-                             EMPTY_CONTEXT.length);
-            index += EMPTY_CONTEXT.length;
+        // Context is always empty
+        index += EMPTY_CONTEXT.length;
 
-            index = Util.toByteLittle(_targetBlock.length, 2, _msgBytes, index);
-            index = Util.toByteLittle(_targetBlock.length, 2, _msgBytes, index);
-            // This is the next thing
-            index = Util.toByteLittle(index + 4, 4, _msgBytes, index);
+        // Target info security block
+        index = Util.toByteLittle(_targetInfo.length, 2, _msgBytes, index);
+        index = Util.toByteLittle(_targetInfo.length, 2, _msgBytes, index);
+        index = Util.toByteLittle(targetInfoOffset, 4, _msgBytes, index);
 
-            System.arraycopy(_targetBlock,
-                             0,
-                             _msgBytes,
-                             index,
-                             _targetBlock.length);
-            index += _targetBlock.length;
-        }
+        //
+        // Payload portion of the message
+        //
 
         if (_targetName != null)
         {
-            if (_encodingOem)
+            if ((_flags & Message.NEGOTIATE_OEM) != 0)
             {
                 index = Util.toByteAscii(_targetName.toUpperCase(),
                                          _msgBytes,
-                                         index);
+                                         targetNameOffset);
             }
             else
             {
                 index = Util.toByteUnicodeLittle(_targetName.toUpperCase(),
                                                  _msgBytes,
-                                                 index);
+                                                 targetNameOffset);
             }
         }
+
+        System.arraycopy(_targetInfo,
+                         0,
+                         _msgBytes,
+                         targetInfoOffset,
+                         _targetInfo.length);
 
         log();
 
@@ -244,15 +268,16 @@ public class ChallengeMessage extends Message
 
     public void getMessageInfo(StringBuffer sb)
     {
-        if (_context != null)
+        if (_targetName != null)
         {
-            sb.append("  context: \n");
-            sb.append(HexFormatter.dump(_context));
+            sb.append("  targetName: \n");
+            sb.append(_targetName);
         }
-        if (_targetBlock != null)
+
+        if (_targetInfo != null)
         {
-            sb.append("  targetBlock: \n");
-            sb.append(HexFormatter.dump(_targetBlock));
+            sb.append("  targetInfo: \n");
+            sb.append(HexFormatter.dump(_targetInfo));
         }
     }
 

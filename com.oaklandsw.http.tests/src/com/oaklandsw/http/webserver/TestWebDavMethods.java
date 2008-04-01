@@ -19,7 +19,7 @@ public class TestWebDavMethods extends HttpTestBase
 
     private static String _host = HttpTestEnv.TEST_WEBDAV_HOST;
 
-    private static int    _port = HttpTestEnv.TEST_WEBDAV_PORT;
+    private static int    _port = HttpTestEnv.WEBDAV_PORT;
 
     public TestWebDavMethods(String testName)
     {

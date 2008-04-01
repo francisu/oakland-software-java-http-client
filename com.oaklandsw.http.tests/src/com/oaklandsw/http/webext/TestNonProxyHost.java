@@ -38,7 +38,7 @@ public class TestNonProxyHost extends HttpTestBase
             com.oaklandsw.http.HttpURLConnection
                     .setProxyHost(HttpTestEnv.TEST_PROXY_HOST);
             com.oaklandsw.http.HttpURLConnection
-                    .setProxyPort(HttpTestEnv.TEST_PROXY_PORT);
+                    .setProxyPort(HttpTestEnv.NORMAL_PROXY_PORT);
         }
     }
 
@@ -60,7 +60,7 @@ public class TestNonProxyHost extends HttpTestBase
         if (_perConnection)
         {
             urlCon.setConnectionProxyHost(HttpTestEnv.TEST_PROXY_HOST);
-            urlCon.setConnectionProxyPort(HttpTestEnv.TEST_PROXY_PORT);
+            urlCon.setConnectionProxyPort(HttpTestEnv.NORMAL_PROXY_PORT);
         }
 
         urlCon.setRequestMethod("GET");

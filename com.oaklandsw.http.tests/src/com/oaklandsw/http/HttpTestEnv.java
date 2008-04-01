@@ -14,13 +14,20 @@ public class HttpTestEnv
     public static final String REQUIRE_NTLMV2        = System
                                                              .getProperty("oaklandsw.requirentlmv2");
 
+    // Configured for NTLM level 5
     public static final String WINDOWS_HOST          = System
                                                              .getProperty("oaklandsw.windowshost",
                                                                           "192.168.1.20");           // repoman
 
+    // Configured for NTLM level 5
     public static final String WIN2K3_HOST           = System
                                                              .getProperty("oaklandsw.win2k3host",
                                                                           "win2k3");
+
+    // Configured for NTLM level 0
+    public static final String WIN2K3_2_HOST         = System
+                                                             .getProperty("oaklandsw.win2k3_2host",
+                                                                          "192.168.1.27");
 
     public static final String LINUX_HOST            = System
                                                              .getProperty("oaklandsw.linuxhost",
@@ -60,9 +67,13 @@ public class HttpTestEnv
                                                              .getProperty("oaklandsw.ftphost",
                                                                           LINUX_HOST);
 
-    public static final String IIS_HOST              = System
-                                                             .getProperty("oaklandsw.iishost",
+    public static final String IIS_HOST_5            = System
+                                                             .getProperty("oaklandsw.iishost_5",
                                                                           WINDOWS_HOST);
+
+    public static final String IIS_HOST_0            = System
+                                                             .getProperty("oaklandsw.iishost_0",
+                                                                          WIN2K3_2_HOST);
 
     public static final String ISA_HOST              = System
                                                              .getProperty("oaklandsw.iishost",
@@ -82,7 +93,55 @@ public class HttpTestEnv
                                                              .getProperty("oaklandsw.socksproxyhost",
                                                                           ISA_HOST);
 
-    public static final int    SOCKS_PORT            = 1080;
+    //
+    // Windows ports
+    // 
+
+    // IIS (windows)
+    public static int          IIS_PORT              = 80;
+
+    // Netproxy (windows)
+    public static int          AUTH_PROXY_CLOSE_PORT = 8088;
+
+    //
+    // win2k3[_x] ports
+    // 
+
+    // ISA (win2k3 vm)
+    public static int          ISA_PORT              = 8080;
+    public static int          ISA_SSL_PORT          = 8443;
+
+    //
+    // Linux host ports
+    //
+
+    // All of these are served through the same apache server
+    public static int          NORMAL_PROXY_PORT     = 8091;
+    public static int          WEBDAV_PORT           = NORMAL_PROXY_PORT;
+    public static int          WEBSERVER_PORT        = NORMAL_PROXY_PORT;
+    public static int          SSL_PORT              = 8443;
+
+    // Tomcat
+
+    // Tomcat 1 has the webapps and the normal JCIFS config
+    public static int          TOMCAT_PORT_1         = 8181;
+    // Tomcat 2 has Oaklandsw JCIFS NTLMv2 level 0 (win2k3-2)
+    public static int          TOMCAT_PORT_2         = 8182;
+    // Tomcat 3 has Oaklandsw JCIFS NTLMv2 level 5 (win2k3)
+    public static int          TOMCAT_PORT_3         = 8183;
+    // Tomcat 4 has Oaklandsw JCIFS NTLMv2 level 5 (repoman)
+    public static int          TOMCAT_PORT_4         = 8184;
+
+    // Java error server program
+    public static int          ERRORSVR_PORT         = 8086;
+
+    // Apache authenticated proxy - virtual host
+    public static int          AUTH_PROXY_PORT       = 8089;
+
+    // Squid
+    public static int          TEST_10_PROXY_PORT    = 3128;
+
+    public static int          SOCKS_PROXY_PORT      = 1080;
 
     public static String getHttpTestRoot()
     {
@@ -94,44 +153,17 @@ public class HttpTestEnv
     public static String       HTTP_PROTOCOL                     = "http:";
     public static String       HTTPS_PROTOCOL                    = "https:";
 
-    // IIS (windows)
-    public static int          TEST_IIS_PORT                     = 80;
-
-    // ISA (win2k3 vm)
-    public static int          TEST_ISA_PORT                     = 8080;
-    public static int          TEST_ISA_SSL_PORT                 = 8443;
-
-    // All of these are served through the same apache server
-    public static int          TEST_PROXY_PORT                   = 8091;
-    public static int          TEST_WEBDAV_PORT                  = TEST_PROXY_PORT;
-    public static int          TEST_WEBSERVER_PORT               = TEST_PROXY_PORT;
-    public static int          TEST_SSL_PORT                     = 8443;
-
-    // Tomcat
-    public static int          TEST_WEBAPP_PORT                  = 8080;
-
-    // Java error server program
-    public static int          TEST_ERRORSVR_PORT                = 8086;
-
-    // Apache authenticated proxy - virtual host
-    public static int          TEST_AUTH_PROXY_PORT              = 8089;
-
-    // Squid
-    public static int          TEST_10_PROXY_PORT                = 3128;
-
-    public static int          TEST_SOCKS_PROXY_PORT             = SOCKS_PORT;
-
-    // Netproxy (windows)
-    public static int          TEST_AUTH_PROXY_CLOSE_PORT        = 8088;
-
-    public static String       TEST_URL_APP                      = "/oaklandsw-http";
-    public static String       TEST_URL_APP_TOMCAT               = "oaklandsw-http";
+    public static String       TEST_URL_APP_TOMCAT_1             = "oaklandsw-http1";
+    public static String       TEST_URL_APP_TOMCAT_2             = "oaklandsw-http2";
+    public static String       TEST_URL_APP_TOMCAT_3             = "oaklandsw-http3";
+    public static String       TEST_URL_APP_TOMCAT_4             = "oaklandsw-http4";
 
     // For anything on the IIS machine, including NTLM
     public static String       TEST_IIS_USER                     = "httptest";
     public static String       TEST_IIS_PASSWORD                 = "httptestpw";
     public static String       TEST_IIS_DOMAIN                   = "oaklandsw";
-    public static String       TEST_IIS_HOST                     = IIS_HOST;
+    public static String       TEST_IIS_HOST_0                   = IIS_HOST_0;
+    public static String       TEST_IIS_HOST_5                   = IIS_HOST_5;
     public static String       TEST_IIS_DOMAIN_USER              = TEST_IIS_DOMAIN
                                                                      + "\\"
                                                                      + TEST_IIS_USER;
@@ -193,7 +225,7 @@ public class HttpTestEnv
                                                                      + "//"
                                                                      + TEST_WEBSERVER_HOST
                                                                      + ":"
-                                                                     + TEST_WEBSERVER_PORT;
+                                                                     + WEBSERVER_PORT;
 
     // Various webserver data files
     public static String       TEST_URL_WEBSERVER_DATA           = TEST_URL_WEBSERVER
@@ -220,35 +252,66 @@ public class HttpTestEnv
                                                                      + "//"
                                                                      + APACHE_HOST
                                                                      + ":"
-                                                                     + TEST_SSL_PORT
+                                                                     + SSL_PORT
                                                                      + "/";
 
     // Tomcat 4.1
     public static String       TEST_WEBAPP_HOST                  = TOMCAT_HOST;
 
-    public static String       TEST_URL_HOST_IIS                 = HTTP_PROTOCOL
+    public static String       TEST_URL_HOST_IIS_0               = HTTP_PROTOCOL
                                                                      + "//"
-                                                                     + TEST_IIS_HOST
+                                                                     + TEST_IIS_HOST_0
                                                                      + ":"
-                                                                     + TEST_IIS_PORT
+                                                                     + IIS_PORT
                                                                      + "/";
 
-    public static String       TEST_URL_IIS                      = TEST_URL_HOST_IIS
+    public static String       TEST_URL_HOST_IIS_5               = HTTP_PROTOCOL
+                                                                     + "//"
+                                                                     + TEST_IIS_HOST_5
+                                                                     + ":"
+                                                                     + IIS_PORT
+                                                                     + "/";
+
+    public static String       TEST_URL_IIS_0                    = TEST_URL_HOST_IIS_0
+                                                                     + TEST_URL_APP_IIS;
+
+    public static String       TEST_URL_IIS_5                    = TEST_URL_HOST_IIS_5
                                                                      + TEST_URL_APP_IIS;
 
     public static String       TEST_URL_HOST_WEBAPP              = HTTP_PROTOCOL
                                                                      + "//"
                                                                      + TEST_WEBAPP_HOST
                                                                      + ":"
-                                                                     + TEST_WEBAPP_PORT
+                                                                     + TOMCAT_PORT_1
+                                                                     + "/";
+
+    public static String       TEST_URL_HOST_WEBAPP_2            = HTTP_PROTOCOL
+                                                                     + "//"
+                                                                     + TEST_WEBAPP_HOST
+                                                                     + ":"
+                                                                     + TOMCAT_PORT_2
+                                                                     + "/";
+
+    public static String       TEST_URL_HOST_WEBAPP_3            = HTTP_PROTOCOL
+                                                                     + "//"
+                                                                     + TEST_WEBAPP_HOST
+                                                                     + ":"
+                                                                     + TOMCAT_PORT_3
+                                                                     + "/";
+
+    public static String       TEST_URL_HOST_WEBAPP_4            = HTTP_PROTOCOL
+                                                                     + "//"
+                                                                     + TEST_WEBAPP_HOST
+                                                                     + ":"
+                                                                     + TOMCAT_PORT_4
                                                                      + "/";
 
     public static String       TEST_URL_WEBAPP                   = TEST_URL_HOST_WEBAPP
-                                                                     + TEST_URL_APP_TOMCAT;
+                                                                     + TEST_URL_APP_TOMCAT_1;
 
     public static String       ERRORSVR_HOST_PORT                = ERROR_HOST
                                                                      + ":"
-                                                                     + TEST_ERRORSVR_PORT;
+                                                                     + ERRORSVR_PORT;
 
     public static String       TEST_URL_HOST_ERRORSVR            = HTTP_PROTOCOL
                                                                      + "//"
@@ -260,17 +323,5 @@ public class HttpTestEnv
                                                                      + "//"
                                                                      + TOMCAT_HOST
                                                                      + ":8087/";
-
-    public static boolean      SIMULATED_TIMEOUT_ENABLED         = System
-                                                                         .getProperty("java.version")
-                                                                         .compareTo("1.4.0") < 0;
-
-    public static boolean      GETLOCALCERT_ENABLED              = System
-                                                                         .getProperty("java.version")
-                                                                         .compareTo("1.4.0") >= 0;
-
-    public static boolean      GETSERVERCERT_ENABLED             = System
-                                                                         .getProperty("java.version")
-                                                                         .compareTo("1.4.0") >= 0;
 
 }

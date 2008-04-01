@@ -568,7 +568,7 @@ public class AuthenticateMessage extends Message
                     _ntResponse = getNTLMv2Response(_domain,
                                                     _user,
                                                     _password,
-                                                    _challenge.getTargetBlock(),
+                                                    _challenge.getTargetInfo(),
                                                     _nonce,
                                                     clientChallenge);
                     _flags |= NEGOTIATE_NTLM2;
@@ -580,7 +580,7 @@ public class AuthenticateMessage extends Message
                                                         _user,
                                                         _password,
                                                         _challenge
-                                                                .getTargetBlock(),
+                                                                .getTargetInfo(),
                                                         _nonce,
                                                         clientChallenge);
                         _flags |= NEGOTIATE_NTLM2;

@@ -76,14 +76,14 @@ public class TestUserAgent implements HttpUserAgent
                         ntlmCred.setUser(HttpTestEnv.TEST_IIS_USER);
                         ntlmCred.setPassword(HttpTestEnv.TEST_IIS_PASSWORD);
                         ntlmCred.setDomain(HttpTestEnv.TEST_IIS_DOMAIN);
-                        ntlmCred.setHost(HttpTestEnv.TEST_IIS_HOST);
+                        ntlmCred.setHost(HttpTestEnv.TEST_IIS_HOST_5);
                         break;
 
                     case NO_DOMAIN:
                         ntlmCred.setUser(HttpTestEnv.TEST_IIS_USER);
                         ntlmCred.setPassword(HttpTestEnv.TEST_IIS_PASSWORD);
                         // ntlmCred.setDomain(HttpTestEnv.TEST_IIS_DOMAIN);
-                        ntlmCred.setHost(HttpTestEnv.TEST_IIS_HOST);
+                        ntlmCred.setHost(HttpTestEnv.TEST_IIS_HOST_5);
                         break;
 
                     case NO_HOST:
@@ -143,7 +143,7 @@ public class TestUserAgent implements HttpUserAgent
                         ntlmCred.setUser(HttpTestEnv.TEST_IIS_USER);
                         ntlmCred.setPassword(HttpTestEnv.TEST_IIS_PASSWORD);
                         ntlmCred.setDomain("oaklandswtest.com");
-                        ntlmCred.setHost(HttpTestEnv.TEST_IIS_HOST);
+                        ntlmCred.setHost(HttpTestEnv.TEST_IIS_HOST_5);
                         break;
 
                 }

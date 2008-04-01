@@ -99,8 +99,8 @@ public class TestMethods extends TestWebappBase
         {
             URL url = new URL("HTTP",
                               HttpTestEnv.TEST_WEBAPP_HOST,
-                              HttpTestEnv.TEST_WEBAPP_PORT,
-                              HttpTestEnv.TEST_URL_APP
+                              HttpTestEnv.TOMCAT_PORT_1,
+                              "/" + HttpTestEnv.TEST_URL_APP_TOMCAT_1
                                   + RequestBodyServlet.NAME);
             int response = 0;
 

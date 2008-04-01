@@ -23,9 +23,24 @@ import com.oaklandsw.util.LogUtils;
  */
 public class TestJCIFS extends TestWebappBase
 {
-    private static final Log _log = LogUtils.makeLogger();
+    private static final Log _log                   = LogUtils.makeLogger();
 
     protected boolean        _threadFailed;
+
+    static final String      NTLM_URL_JCIFS         = _urlBase
+                                                        + ParamServlet.NAME_NTLM;
+    static final String      NTLM_URL_JCIFS_OAK_0   = HttpTestEnv.TEST_URL_HOST_WEBAPP_2
+                                                        + HttpTestEnv.TEST_URL_APP_TOMCAT_2
+                                                        + ParamServlet.NAME_NTLM2_0;
+    static final String      NTLM_URL_JCIFS_OAK_5   = HttpTestEnv.TEST_URL_HOST_WEBAPP_3
+                                                        + HttpTestEnv.TEST_URL_APP_TOMCAT_3
+                                                        + ParamServlet.NAME_NTLM2_5;
+
+    // Alternate implementation (repoman) - this is not a win server 2003 machine
+    // so it has connection limitation issues
+    static final String      NTLM_URL_JCIFS_OAK_5_2 = HttpTestEnv.TEST_URL_HOST_WEBAPP_4
+                                                        + HttpTestEnv.TEST_URL_APP_TOMCAT_4
+                                                        + ParamServlet.NAME_NTLM2_5;
 
     public TestJCIFS(String testName)
     {
@@ -48,6 +63,8 @@ public class TestJCIFS extends TestWebappBase
         super.setUp();
         TestUserAgent._type = TestUserAgent.GOOD;
         _showStats = true;
+        // Resets NTLM state to normal
+        Ntlm.init();
     }
 
     public void tearDown() throws Exception
@@ -56,9 +73,9 @@ public class TestJCIFS extends TestWebappBase
         Ntlm.init();
     }
 
-    public void testPostMethod(int agentType, String servlet) throws Exception
+    public void testPostMethod(int agentType, String urlStr) throws Exception
     {
-        URL url = new URL(_urlBase + servlet);
+        URL url = new URL(urlStr);
 
         HttpURLConnection urlCon = HttpURLConnection.openConnection(url);
         urlCon.setRequestMethod("POST");
@@ -95,16 +112,21 @@ public class TestJCIFS extends TestWebappBase
 
     // Bug 1946 - make sure JCIFS "server" (really the servet filter) is
     // supported
-    public void testGetMethodParameters(int agentType, String servlet)
+    public void testGetMethodParameters(int agentType, String urlStr)
         throws Exception
     {
-        //logAll();
-        URL url = new URL(_urlBase + servlet + "?param-one=param-value");
+        testGetMethodParameters(agentType, urlStr, 200);
+    }
+        
+        // Bug 1946 - make sure JCIFS "server" (really the servet filter) is
+    // supported
+    public void testGetMethodParameters(int agentType, String urlStr, int checkResponse)
+        throws Exception
+    {
+        URL url = new URL(urlStr + "?param-one=param-value");
         int response = 0;
 
         TestUserAgent._type = agentType;
-
-        // logAll();
 
         HttpURLConnection urlCon = HttpURLConnection.openConnection(url);
         response = urlCon.getResponseCode();
@@ -114,8 +136,7 @@ public class TestJCIFS extends TestWebappBase
             if (response == 401 && agentType == TestUserAgent.BAD)
                 break check;
 
-            // 500 is when the max connections have exceeded
-            assertTrue(response == 200 /*|| response == 500*/);
+            assertTrue(response == checkResponse);
 
             String reply = getReply(urlCon);
             if (response == 200)
@@ -134,130 +155,137 @@ public class TestJCIFS extends TestWebappBase
         }
 
         urlCon.disconnect();
-        //checkNoTotalConns(url);
+        // checkNoTotalConns(url);
     }
 
     public void testNormal() throws Exception
     {
-        testGetMethodParameters(TestUserAgent.GOOD, ParamServlet.NAME_NTLM);
+        testGetMethodParameters(TestUserAgent.GOOD, NTLM_URL_JCIFS);
     }
 
     public void testNormalPost() throws Exception
     {
-        testPostMethod(TestUserAgent.GOOD, ParamServlet.NAME_NTLM);
+        testPostMethod(TestUserAgent.GOOD, NTLM_URL_JCIFS);
     }
 
     public void testBad() throws Exception
     {
-        testGetMethodParameters(TestUserAgent.BAD, ParamServlet.NAME_NTLM);
+        testGetMethodParameters(TestUserAgent.BAD, NTLM_URL_JCIFS);
     }
 
     public void testBadPost() throws Exception
     {
-        testPostMethod(TestUserAgent.BAD, ParamServlet.NAME_NTLM);
+        testPostMethod(TestUserAgent.BAD, NTLM_URL_JCIFS);
     }
 
-    public static final boolean FORCE = true;
-
-    protected void noDomain2Normal() throws Exception
+    public void test2Normal_0() throws Exception
     {
-        URL url = new URL(_urlBase + ParamServlet.NAME_NTLM2);
-
-        TestUserAgent._type = TestUserAgent.NO_DOMAIN;
-
-        HttpURLConnection urlCon = HttpURLConnection.openConnection(url);
-        assertEquals(401, urlCon.getResponseCode());
-        assertContains(urlCon.getResponseMessage(), "Domain name");
+        testGetMethodParameters(TestUserAgent.GOOD, NTLM_URL_JCIFS_OAK_0);
     }
 
-    public void test2NormalForce2() throws Exception
+    public void test2Normal_5() throws Exception
+    {
+        testGetMethodParameters(TestUserAgent.GOOD, NTLM_URL_JCIFS_OAK_5);
+    }
+
+    public void test2Normal_5_2() throws Exception
+    {
+        testGetMethodParameters(TestUserAgent.GOOD, NTLM_URL_JCIFS_OAK_5_2);
+    }
+
+    public void test2NormalForce2_0() throws Exception
     {
         Ntlm.forceV2();
-        testGetMethodParameters(TestUserAgent.GOOD, ParamServlet.NAME_NTLM2);
+        testGetMethodParameters(TestUserAgent.GOOD, NTLM_URL_JCIFS_OAK_0);
+    }
+
+    public void test2NormalForce2_5() throws Exception
+    {
+        Ntlm.forceV2();
+        testGetMethodParameters(TestUserAgent.GOOD, NTLM_URL_JCIFS_OAK_5);
+    }
+
+    public void test2NormalForce2_5_2() throws Exception
+    {
+        Ntlm.forceV2();
+        testGetMethodParameters(TestUserAgent.GOOD, NTLM_URL_JCIFS_OAK_5_2);
+    }
+
+    public void test2NormalForce1_0() throws Exception
+    {
+        Ntlm.forceV1();
+        testGetMethodParameters(TestUserAgent.GOOD, NTLM_URL_JCIFS_OAK_0);
+    }
+
+    public void test2NormalForce1_5() throws Exception
+    {
+        Ntlm.forceV1();
+        // Should fail
+        // This fails if the target IIS server is configured to require
+        // only NTLMv2 authentication
+        testGetMethodParameters(TestUserAgent.GOOD, NTLM_URL_JCIFS_OAK_5, 401);
     }
 
     public void test2NormalForce2Oaklandswtest() throws Exception
     {
         // This test does not pass with a win2k3 server set with SMB signing
         // signing is turned off on the win2k3 server
-        //logAll();
         Ntlm.forceV2();
         for (int i = 1; i < 10; i++)
         {
             testGetMethodParameters(TestUserAgent.OAKLANDSWTEST_DOMAIN,
-                                    ParamServlet.NAME_NTLM2);
+                                    NTLM_URL_JCIFS_OAK_5);
         }
     }
 
     public void test2NormalPostForce2() throws Exception
     {
         Ntlm.forceV2();
-        testPostMethod(TestUserAgent.GOOD, ParamServlet.NAME_NTLM2);
+        testPostMethod(TestUserAgent.GOOD, NTLM_URL_JCIFS_OAK_5);
     }
 
     public void test2NormalPostForce2Loop() throws Exception
     {
         Ntlm.forceV2();
-        //logAll();
         for (int i = 1; i < 10; i++)
-            testPostMethod(TestUserAgent.GOOD, ParamServlet.NAME_NTLM2);
-    }
-
-    public void test2NormalForce2NoDomain() throws Exception
-    {
-        Ntlm.forceV2();
-        noDomain2Normal();
+            testPostMethod(TestUserAgent.GOOD, NTLM_URL_JCIFS_OAK_5);
     }
 
     public void test2BadForce2() throws Exception
     {
         Ntlm.forceV2();
-        testGetMethodParameters(TestUserAgent.BAD, ParamServlet.NAME_NTLM2);
-    }
-
-    public void test2NormalForce1() throws Exception
-    {
-        // Don't do this if only NTLM v2 is available
-        if (HttpTestEnv.REQUIRE_NTLMV2 == null)
-        {
-            Ntlm.forceV1();
-            // This fails if the target IIS server is configured to require
-            // only NTLMv2 authentication
-            testGetMethodParameters(TestUserAgent.GOOD, ParamServlet.NAME_NTLM2);
-        }
-    }
-
-    public void test2NormalForce1NoDomain() throws Exception
-    {
-        Ntlm.forceV1();
-        noDomain2Normal();
+        testGetMethodParameters(TestUserAgent.BAD, NTLM_URL_JCIFS_OAK_5);
     }
 
     public void test2BadForce1() throws Exception
     {
         Ntlm.forceV1();
-        testGetMethodParameters(TestUserAgent.BAD, ParamServlet.NAME_NTLM2);
+        testGetMethodParameters(TestUserAgent.BAD, NTLM_URL_JCIFS_OAK_5);
     }
 
-    public void test2Normal() throws Exception
+    public void test2Bad_0() throws Exception
     {
-        testGetMethodParameters(TestUserAgent.GOOD, ParamServlet.NAME_NTLM2);
+        testGetMethodParameters(TestUserAgent.BAD, NTLM_URL_JCIFS_OAK_0);
     }
 
-    public void test2NormalNoDomain() throws Exception
+    public void test2Bad_5() throws Exception
     {
-        noDomain2Normal();
-    }
-
-    public void test2Bad() throws Exception
-    {
-        testGetMethodParameters(TestUserAgent.BAD, ParamServlet.NAME_NTLM2);
+        testGetMethodParameters(TestUserAgent.BAD, NTLM_URL_JCIFS_OAK_5);
     }
 
     public void allTestMethods() throws Exception
     {
         testNormal();
         testNormalPost();
+        
+        test2Normal_0();
+        test2Normal_5();
+        
+        test2NormalForce2_0();
+        Ntlm.init();
+        test2NormalForce2_5();
+        Ntlm.init();
+        
         testBad();
         testBadPost();
     }

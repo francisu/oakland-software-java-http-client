@@ -37,9 +37,11 @@ import com.oaklandsw.http.ntlm.AuthenticateMessage;
 import com.oaklandsw.http.ntlm.ChallengeMessage;
 import com.oaklandsw.http.ntlm.NegotiateMessage;
 
+import jcifs.Config;
 import jcifs.smb.NtlmPasswordAuthentication;
 
 import jcifs.util.Base64;
+import jcifs.util.LogStream;
 
 import jcifs.ntlmssp.NtlmFlags;
 import jcifs.ntlmssp.Type2Message;
@@ -60,6 +62,11 @@ import jcifs.ntlmssp.Type2Message;
 
 public class NtlmSsp implements NtlmFlags
 {
+    private static LogStream log            = LogStream.getInstance();
+
+    static String            DEFAULT_DOMAIN = Config
+                                                    .getProperty("jcifs.smb.client.domain",
+                                                                 "?");
 
     /**
      * Calls the static {@link #authenticate(HttpServletRequest,
@@ -136,11 +143,17 @@ public class NtlmSsp implements NtlmFlags
                 {
                     throw new IllegalArgumentException("Username must not be null");
                 }
+
                 if (amsg._domain == null)
                 {
-                    resp.sendError(HttpServletResponse.SC_UNAUTHORIZED,
-                                   "Domain name not specified");
-                    return null;
+                    if (LogStream.level > 2)
+                    {
+                        log.println("oaklandsw - NtlmSSP - "
+                            + "using default domain: "
+                            + DEFAULT_DOMAIN);
+                    }
+
+                    amsg._domain = DEFAULT_DOMAIN;
                 }
 
                 byte[] lmResponse = amsg._lmResponse;

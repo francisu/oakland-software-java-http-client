@@ -217,8 +217,8 @@ public class TestHeaders extends TestWebappBase
         URL url = new URL("http://"
             + connectAddr
             + ":"
-            + HttpTestEnv.TEST_WEBAPP_PORT
-            + HttpTestEnv.TEST_URL_APP
+            + HttpTestEnv.TOMCAT_PORT_1 + "/"
+            + HttpTestEnv.TEST_URL_APP_TOMCAT_1
             + HeaderServlet.NAME);
         int response = 0;
 
@@ -230,7 +230,7 @@ public class TestHeaders extends TestWebappBase
 
         _log.debug(NetUtils.dumpHeaders(urlCon));
 
-        if (HttpTestEnv.TEST_WEBAPP_PORT == 80)
+        if (HttpTestEnv.TOMCAT_PORT_1 == 80)
         {
             checkReply(urlCon, "name=\"host\";value=\""
                 + connectAddr
@@ -241,7 +241,7 @@ public class TestHeaders extends TestWebappBase
             checkReply(urlCon, "name=\"host\";value=\""
                 + connectAddr
                 + ":"
-                + HttpTestEnv.TEST_WEBAPP_PORT
+                + HttpTestEnv.TOMCAT_PORT_1
                 + "\"<br>");
         }
 

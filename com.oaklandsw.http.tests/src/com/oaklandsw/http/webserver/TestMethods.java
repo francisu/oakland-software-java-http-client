@@ -83,7 +83,7 @@ public class TestMethods extends HttpTestBase
 
     private static String _host = HttpTestEnv.TEST_WEBSERVER_HOST;
 
-    private static int    _port = HttpTestEnv.TEST_WEBSERVER_PORT;
+    private static int    _port = HttpTestEnv.WEBSERVER_PORT;
 
     public TestMethods(String testName)
     {

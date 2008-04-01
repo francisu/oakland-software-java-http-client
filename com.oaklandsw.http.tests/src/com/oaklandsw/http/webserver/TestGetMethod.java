@@ -85,7 +85,7 @@ public class TestGetMethod extends HttpTestBase
 
     String _host = HttpTestEnv.TEST_WEBSERVER_HOST;
 
-    int    _port = HttpTestEnv.TEST_WEBSERVER_PORT;
+    int    _port = HttpTestEnv.WEBSERVER_PORT;
 
     public TestGetMethod(String testName)
     {

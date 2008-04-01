@@ -114,6 +114,8 @@ public class OaklandHTTPSender extends BasicHandler implements HttpUserAgent
         if (_log.isDebugEnabled())
             _log.debug("OaklandHTTPSender::invoke");
 
+        InputStream inStr = null;
+
         try
         {
             String targetURLString = msgContext
@@ -222,6 +224,10 @@ public class OaklandHTTPSender extends BasicHandler implements HttpUserAgent
 
             int returnCode = urlCon.getResponseCode();
 
+            // wrap the response body stream so that close() also releases
+            // the connection back to the pool.
+            inStr = urlCon.getInputStream();
+
             String contentType = urlCon
                     .getHeaderField(HTTPConstants.HEADER_CONTENT_TYPE);
             String contentLocation = urlCon
@@ -262,10 +268,6 @@ public class OaklandHTTPSender extends BasicHandler implements HttpUserAgent
                 throw fault;
             }
 
-            // wrap the response body stream so that close() also releases
-            // the connection back to the pool.
-            InputStream inStr = urlCon.getInputStream();
-
             String contentEncoding = urlCon
                     .getHeaderField(HTTPConstants.HEADER_CONTENT_ENCODING);
             if (contentEncoding != null)
@@ -292,6 +294,12 @@ public class OaklandHTTPSender extends BasicHandler implements HttpUserAgent
                                          false,
                                          contentType,
                                          contentLocation);
+            // Force the stream to be read
+            outMsg.getSOAPPartAsString();
+
+            // The inStr will get closed in the finally block of this
+            // Unfortunately the Axis code does not close the InputStream
+            // unless it's their own class.
 
             int len = urlCon.getHeadersLength();
             MimeHeaders responseMimeHeaders = outMsg.getMimeHeaders();
@@ -342,6 +350,20 @@ public class OaklandHTTPSender extends BasicHandler implements HttpUserAgent
         {
             _log.debug(e);
             throw AxisFault.makeFault(e);
+        }
+        finally
+        {
+            if (inStr != null)
+            {
+                try
+                {
+                    inStr.close();
+                }
+                catch (IOException e)
+                {
+                    _log.warn("Failure on input stream close", e);
+                }
+            }
         }
     }
 

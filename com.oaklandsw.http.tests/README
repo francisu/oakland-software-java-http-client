@@ -11,43 +11,18 @@ Building and Running the tests
 7) see the release checklist for finishing the release (website, swreg, pad, etc)
 
 
-Manual IIS Tests
-----------------------------------------------------------
-
-There are two configurations that have to be tested with the NTLM authentication settings:
-
-These have differences in the Local Security Settings which can be accessed from
-Local Security Policy in Administrative Tools (Control Panel).  Within that, 
-specify Local Policies -> Security Options.
-
-In all cases, the Network Access: Sharing and security for local accounts needs to be
-set to "classic".
-
-1) NTLM V2 required  (set the oaklandsw.requirentlmv2) property
-- First set "Network security: Minimum session security for NTLM SSP 
-based (including secure RPC) servers" to require NTLM V2.
-- Then set (and the order is important) the LAN Manager Authentication level to something
-different, apply it, and then set it to the highest level.
-
-2) NTLM V2 not required (don't set the oaklandsw.requirentlmv2 property)
-- First set "Network security: Minimum session security for NTLM SSP 
-based (including secure RPC) servers" to *not* require NTLM V2.
-- Then set (and the order is important) the LAN Manager Authentication level to something
-different, apply it, and then set it level 1 (use NTLMv2 if negociated).
-
-
-Run all of the HTTP tests with both configurations; they should all pass.
-
-
 Running the tests, and setting up software for the tests.
 ----------------------------------------------------------
+
+(see also the HttpTestEnv file)
 
 First, you will need to make sure you have the following servers
 running:
 
 Window machine - default is repoman
 Linux machine - default is berlioz
-win2k3 (vm windows 2003 server running ISA)
+win2k3 (vm windows 2003 server running ISA - NTLM level 5)
+win2k3-2 (vm windows 2003 running IIS, NTLM level 0)
 
 All of these ports and hosts are controlled by properties, see the HttpTestEnv file.
 
@@ -55,8 +30,7 @@ Port  Server
 
 80    	Apache (this must be configured as a proxy server on port 80)
 80		IIS (windows)
-8080  	Tomcat 5.x (linux)
-8085  	Tomcat 3.2 (not presently used)
+8181-4  Tomcat 6.x (linux) - 4 servers
 8086  	Error Server (linux)
 
 8088 	NetProxy (windows)
