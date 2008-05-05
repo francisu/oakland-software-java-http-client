@@ -1,0 +1,14 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Tests
+Bundle-SymbolicName: com.oaklandsw.http.sso.tests
+Bundle-Version: 1.0.0
+Export-Package: com.oaklandsw.http.sso
+Require-Bundle: com.oaklandsw.http.sso;bundle-version="1.0.0",
+ com.oaklandsw.build;bundle-version="2.6.8",
+ com.oaklandsw.http;bundle-version="2.6.7",
+ com.oaklandsw.http.jars;bundle-version="2.6.7",
+ com.oaklandsw.util;bundle-version="2.7.0",
+ com.oaklandsw.util.jars;bundle-version="2.6.8",
+ org.junit;bundle-version="3.8.2",
+ com.oaklandsw.http.tests;bundle-version="2.6.7"
