@@ -1,0 +1,500 @@
+/*
+  netlogon interface
+  much of this was derived from the ethereal sources - thanks to everyone 
+  who contributed!
+*/
+
+#include "idl_types.h"
+
+	//import "lsa.idl";
+	//import "security.idl";
+	//import "samr.idl";
+	//import "nbt.idl";
+
+[
+  uuid("12345678-1234-abcd-ef00-01234567cffb"),
+  version(1.0),
+  endpoint("ncacn_np:[\\pipe\\netlogon]","ncacn_ip_tcp:","ncalrpc:"),
+  pointer_default(unique)
+]
+
+interface netlogon
+{
+
+	// Copied from lsa.idl
+	typedef [public,noejs] struct {
+		[value(2*strlen_m(string))] uint16 length;
+		[value(2*strlen_m(string))] uint16 size;
+		[charset(UTF16),size_is(size/2),length_is(length/2)] uint16 *string;
+	} lsa_String;
+
+	typedef [public] struct {
+		[value(2*strlen_m(string))] uint16 length;
+		[value(2*strlen_m_term(string))] uint16 size;
+		[charset(UTF16),size_is(size/2),length_is(length/2)] uint16 *string;
+	} lsa_StringLarge;
+
+	typedef [public] struct {
+		uint32 count;
+		[size_is(count)] lsa_String *names;
+	} lsa_Strings;
+
+	typedef [public] struct {
+		[value(strlen_m(string))] uint16 length;
+		[value(strlen_m(string))] uint16 size;
+		[charset(DOS),size_is(size),length_is(length)] uint8 *string;
+	} lsa_AsciiString;
+
+	typedef [public] struct {
+		[value(strlen_m(string))] uint16 length;
+		[value(strlen_m_term(string))] uint16 size;
+		[charset(DOS),size_is(size),length_is(length)] uint8 *string;
+	} lsa_AsciiStringLarge;
+
+
+
+	// Copied from security.idl
+
+	/* a domain SID. Note that unlike Samba3 this contains a pointer,
+	   so you can't copy them using assignment */
+	typedef [public,gensize,noprint,noejs,nosize] struct {
+		uint8  sid_rev_num;             /**< SID revision number */
+		[range(0,15)] int8  num_auths;  /**< Number of sub-authorities */
+		uint8  id_auth[6];              /**< Identifier Authority */
+		uint32 sub_auths[num_auths];
+	} dom_sid;
+	
+
+	typedef [public, flag(NDR_PAHEX)] struct {
+		uint8 data[8];
+	} netr_Credential;
+
+
+/*FRU
+	typedef [public,bitmap32bit] bitmap {
+		MSV1_0_CLEARTEXT_PASSWORD_ALLOWED	= 0x00000002,
+		MSV1_0_UPDATE_LOGON_STATISTICS		= 0x00000004,
+		MSV1_0_RETURN_USER_PARAMETERS		= 0x00000008,
+		MSV1_0_ALLOW_SERVER_TRUST_ACCOUNT	= 0x00000020,
+		MSV1_0_RETURN_PROFILE_PATH		= 0x00000200,
+		MSV1_0_ALLOW_WORKSTATION_TRUST_ACCOUNT	= 0x00000800
+	} netr_LogonParameterControl;
+*/
+
+	typedef struct {
+		lsa_String  domain_name;
+//FRU		netr_LogonParameterControl parameter_control; /* see MSV1_0_* */
+		uint32 parameter_control; /* see MSV1_0_* */
+		uint32      logon_id_low;
+		uint32      logon_id_high;
+		lsa_String  account_name;
+		lsa_String  workstation;
+	} netr_IdentityInfo;
+
+	typedef [flag(NDR_PAHEX)] struct {
+		uint16 length;
+		uint16 size;
+		[size_is(length),length_is(length)] uint8 *data;
+	} netr_ChallengeResponse;
+
+	typedef [flag(NDR_PAHEX)] struct {
+		netr_IdentityInfo identity_info;
+		uint8 challenge[8];
+		netr_ChallengeResponse *nt;
+		netr_ChallengeResponse *lm;
+	} netr_NetworkInfo;
+
+	typedef [public,switch_type(uint16)] union {
+		[case(2)] netr_NetworkInfo  *network;
+		[case(6)] netr_NetworkInfo  *network;
+	} netr_LogonLevel;
+
+	typedef [public,flag(NDR_PAHEX)] struct {
+		uint8 key[16];
+	} netr_UserSessionKey;
+
+	typedef [public,flag(NDR_PAHEX)] struct {
+		uint8 key[8];
+	} netr_LMSessionKey;
+
+	// Copied from samr.idl
+	typedef [public] struct {
+		uint32 rid;
+		uint32 /* FRU samr_GroupAttrs */ attributes;
+	} samr_RidWithAttribute;
+
+	// Copied from samr.idl
+	typedef [public] struct {
+		uint32     count;
+		[size_is(count)] samr_RidWithAttribute *rids;
+	} samr_RidWithAttributeArray;
+
+	/* Flags for user_flags below */
+/* FRU
+	typedef [public,bitmap32bit] bitmap {
+		NETLOGON_GUEST			= 0x0001,
+		NETLOGON_NOENCRYPTION		= 0x0002,
+		NETLOGON_CACHED_ACCOUNT		= 0x0004,
+		NETLOGON_USED_LM_PASSWORD	= 0x0008,
+		NETLOGON_EXTRA_SIDS 		= 0x0020,
+		NETLOGON_SUBAUTH_SESSION_KEY	= 0x0040,
+		NETLOGON_SERVER_TRUST_ACCOUNT	= 0x0080,
+		NETLOGON_NTLMV2_ENABLED		= 0x0100,
+		NETLOGON_RESOURCE_GROUPS	= 0x0200,
+		NETLOGON_PROFILE_PATH_RETURNED	= 0x0400
+	} netr_UserFlags;
+*/
+
+	typedef struct {
+		NTTIME last_logon;
+		NTTIME last_logoff;
+		NTTIME acct_expiry;
+		NTTIME last_password_change;
+		NTTIME allow_password_change;
+		NTTIME force_password_change;
+		lsa_String account_name;
+		lsa_String full_name;
+		lsa_String logon_script;
+		lsa_String profile_path;
+		lsa_String home_directory;
+		lsa_String home_drive;
+		uint16 logon_count;
+		uint16 bad_password_count;
+		uint32 rid;
+		uint32 primary_gid;
+		samr_RidWithAttributeArray groups;
+		// FRU netr_UserFlags user_flags;
+		uint32  user_flags;
+		netr_UserSessionKey key;
+		lsa_StringLarge logon_server;
+		lsa_StringLarge domain;
+		dom_sid *domain_sid;
+		netr_LMSessionKey LMSessKey;
+		uint32 /* FRU samr_AcctFlags */ acct_flags;
+		uint32 unknown[7];
+	} netr_SamBaseInfo;
+
+	typedef struct {
+		netr_SamBaseInfo base;
+	} netr_SamInfo2;
+
+	typedef struct {
+		dom_sid *sid;
+		uint32 /* samr_GroupAttrs  */ attributes;
+	} netr_SidAttr;
+
+	typedef struct {
+		netr_SamBaseInfo base;
+		uint32 sidcount;
+		[size_is(sidcount)] netr_SidAttr *sids;
+		lsa_String forest;
+		lsa_String principle;
+		uint32 unknown4[20];
+	} netr_SamInfo6;  // Called SamInfo4 by microsoft
+
+	typedef [public,switch_type(uint16)] union {
+		[case(2)] netr_SamInfo2 *sam2;
+		[case(6)] netr_SamInfo6 *sam6;
+	} netr_Validation;
+
+
+
+	/*****************/
+	/* Function 0x00 */
+
+	uint32 netr_LogonUasLogon(
+    void
+		);
+
+
+	/*****************/
+	/* Function 0x01 */
+
+	uint32 netr_LogonUasLogoff(
+    void
+		);
+
+
+	/*****************/
+	/* Function 0x02 */
+
+	uint32 netr_LogonSamLogon(
+    void
+		);
+
+
+	/*****************/
+	/* Function 0x03 */
+
+	uint32 netr_LogonSamLogoff(
+    void
+		);
+	
+
+
+	/*****************/
+	/* Function 0x04 */
+
+	[public] uint32 netr_ServerReqChallenge(
+		[in,unique,string,charset(UTF16)] uint16 *server_name,
+		[in,string,charset(UTF16)] uint16 *computer_name,
+		[in,out,ref] netr_Credential *credentials
+		);
+
+
+	/*****************/
+	/* Function 0x05 */
+
+	typedef enum netr_SchannelType netr_SchannelType;
+
+	uint32 netr_ServerAuthenticate(
+		[in,unique,string,charset(UTF16)] uint16 *server_name,
+		[in,string,charset(UTF16)] uint16 *account_name,
+		[in]                       netr_SchannelType secure_channel_type,
+		[in,string,charset(UTF16)] uint16 *computer_name,
+		[in,out,ref] netr_Credential *credentials
+		);
+
+
+	/*****************/
+	/* Function 0x06 */
+
+	uint32 netr_ServerPasswordSet(
+    void
+		);
+
+
+	/*****************/
+	/* Function 0x07 */
+
+
+	uint32 netr_DatabaseDeltas(
+    void
+		);
+
+
+	/*****************/
+	/* Function 0x08 */
+
+	uint32 netr_DatabaseSync(
+    void
+		);
+
+
+	/*****************/
+	/* Function 0x09 */
+
+	uint32 netr_AccountDeltas(
+    void
+		);
+
+
+	/*****************/
+	/* Function 0x0A */
+
+	uint32 netr_AccountSync(
+    void
+		);
+
+
+	/*****************/
+	/* Function 0x0B */
+
+	uint32 netr_GetDcName(
+    void
+		);
+
+	/*****************/
+	/* Function 0x0C */
+
+	uint32 netr_LogonControl(
+    void
+		);
+
+
+	/*****************/
+	/* Function 0x0D */
+
+	uint32 netr_GetAnyDCName(
+    void
+		);
+
+
+	/*****************/
+	/* Function 0x0E */
+
+	uint32 netr_LogonControl2(
+    void
+		);
+
+
+	/*****************/
+	/* Function 0x0F */
+
+	uint32 netr_ServerAuthenticate2(
+		[in,unique]  [string,charset(UTF16)] uint16 *server_name,
+		[in]         [string,charset(UTF16)] uint16 *account_name,
+		[in]         netr_SchannelType secure_channel_type,
+		[in]         [string,charset(UTF16)] uint16 *computer_name,
+		[in,out,ref] netr_Credential *credentials,
+		[in,out,ref] uint32 *negotiate_flags
+		);
+
+	/*****************/
+	/* Function 0x10 */
+
+	uint32 netr_DatabaseSync2(
+    void
+		);
+
+
+	/*****************/
+	/* Function 0x11 */
+
+	uint32 netr_DatabaseRedo(
+    void
+		);
+
+
+	/*****************/
+	/* Function 0x12 */
+
+	uint32 netr_LogonControl2Ex(
+    void
+		);
+
+	/*****************/
+	/* Function 0x13 */
+
+	uint32 netr_NetrEnumerateTrustedDomains(
+    void
+		);
+
+	/*****************/
+	/* Function 0x14 */
+
+	uint32 netr_DsRGetDCName(
+    void
+		);
+
+	/*****************/
+	/* Function 0x15 */
+	uint32 netr_NETRLOGONDUMMYROUTINE1(void);
+
+	/****************/
+	/* Function 0x16 */
+	uint32 netr_NETRLOGONSETSERVICEBITS(void);
+
+	/****************/
+	/* Function 0x17 */
+	uint32 netr_LogonGetTrustRid(
+    void
+	);
+
+	/****************/
+	/* Function 0x18 */
+	uint32 netr_NETRLOGONCOMPUTESERVERDIGEST(void);
+
+	/****************/
+	/* Function 0x19 */
+	uint32 netr_NETRLOGONCOMPUTECLIENTDIGEST(void);
+
+	/****************/
+	/* Function 0x1a */
+	[public] uint32 netr_ServerAuthenticate3(
+		[in,unique]         [string,charset(UTF16)] uint16 *server_name,
+		[in]         [string,charset(UTF16)] uint16 *account_name,
+		[in]         netr_SchannelType secure_channel_type,
+		[in]         [string,charset(UTF16)] uint16 *computer_name,
+		[in,out,ref] netr_Credential *credentials,
+		[in,out,ref] uint32 *negotiate_flags,
+		[out,ref]    uint32 *rid
+		);
+
+	/****************/
+	/* Function 0x1b */
+
+	uint32 netr_DsRGetDCNameEx(
+    void
+		);
+
+	/****************/
+	/* Function 0x1c */
+	uint32 netr_DsRGetSiteName(
+    void
+		);
+
+	/****************/
+	/* Function 0x1d */
+
+	uint32 netr_LogonGetDomainInfo(   void
+		);
+
+	/*****************/
+	/* Function 0x1e */
+	uint32 netr_ServerPasswordSet2(
+    void
+		);
+
+	/****************/
+	/* Function 0x1f */
+	uint32 netr_ServerPasswordGet(
+    void
+		);
+
+	/****************/
+	/* Function 0x20 */
+	uint32 netr_NETRLOGONSENDTOSAM(void);
+
+	/****************/
+	/* Function 0x21 */
+	uint32 netr_DsRAddressToSitenamesW(
+    void
+		);
+
+	/****************/
+	/* Function 0x22 */
+	uint32 netr_DsRGetDCNameEx2(
+    void
+		);
+
+	/****************/
+	/* Function 0x23 */
+	uint32 netr_NETRLOGONGETTIMESERVICEPARENTDOMAIN(void);
+
+	/****************/
+	/* Function 0x24 */
+	uint32 netr_NetrEnumerateTrustedDomainsEx(
+    void
+	);
+
+	/****************/
+	/* Function 0x25 */
+
+	uint32 netr_DsRAddressToSitenamesExW(
+    void
+		);
+
+	/****************/
+	/* Function 0x26 */
+
+	uint32 netr_DsrGetDcSiteCoverageW(
+    void
+		);
+
+	/****************/
+	/* Function 0x27 */
+	long netr_LogonSamLogonEx(
+		[in,unique] [string,charset(UTF16)] uint16 *server_name,
+		[in,unique] [string,charset(UTF16)] uint16 *computer_name,
+		[in]  uint16 logon_level,
+		[in]  [switch_is(logon_level)] netr_LogonLevel logon,
+		[in]  uint16 validation_level,
+		[out] [switch_is(validation_level)] netr_Validation validation,
+		[out] uint8 authoritative,
+		[in,out] uint32 flags
+		);
+
+
+}
+

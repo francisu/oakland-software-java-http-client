@@ -1,0 +1,25 @@
+Build instructions for the netlogon.java file.
+
+You need the fixed version of the midlc compiler.  This is checked into the 3rdparty source tree.
+
+Run the compiler in the idl directory (as the working directory) with these options:
+
+-d -v  -Dpackage=com.oaklandsw.http.ntlmsso -s ${workspace_loc:midlc-0.6.1}/symtabjcifs.txt -o ../src/com/oaklandsw/http/ntlmsso/netlogon.idl netlogon.idl
+
+This will generate the netlogon.java file, which should not require any editing or fixup.
+
+
+The only idl in this directory that's actually used is netlogon.idl, which is had all of the non
+essential portions removed from its original source, netlogin.origsamba.idl (this comes from the samba 4.0 sources
+in the source/librpc/idl directory.
+
+There is also the microsoft idl file (extracted from the microsoft protocol documents), but this is
+for reference purposes only, its structures were definined in a more complex manner
+than the samba idl files.
+
+The midlc compiler is very brittle, so if there are changes to the idl, you might have to
+fix bugs in the compiler.  If you get "(null)" values emitted into the java, check
+the symtabjcifs.txt file to make sure the type trying to be displayed is present
+there if it's a primitive type.  Otherwise, make sure the type is defined in the idl.
+
+FRU 2 May 08

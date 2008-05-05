@@ -1,0 +1,314 @@
+<project default="package-java" basedir=".">
+
+	<import file="../com.oaklandsw.build/build.common.xml" />
+
+	<!-- =================================================================== -->
+	<!-- Initialization target                                               -->
+	<!-- =================================================================== -->
+	<target name="init" depends="common-init">
+
+		<property name="command.file" value="${basedir}/lictool.scr" />
+
+		<!-- this is the 1.2 compiler - only use this for building 1.xxx of product -->
+		<!--
+		<property name="build.compiler" value="jikes" />
+	    -->
+
+		<!-- see License -->
+		<property name="licensetype" value="1" />
+		<property name="licensetypeeval" value="2" />
+		<!-- see ConstantsOaklandsw -->
+		<property name="codebaseid" value="2" />
+		<!-- see http/LicensedCodeImpl -->
+		<property name="productid" value="16" />
+		<!-- see http/HttpURLConnection -->
+		<property name="licfile" value="http.lic" />
+		<property name="licfile30" value="http30.lic" />
+
+		<property name="expdate" value="2008-04-30" />
+
+		<property name="eval.jar.name" value="${package.name}Eval.jar" />
+		<property name="eval30.jar.name" value="${package.name}Eval_Exp30Day.jar" />
+
+		<path id="compile.classpath">
+			<fileset dir="${basedir}/../com.oaklandsw.${package.name}.jars">
+				<include name="*.jar" />
+			</fileset>
+			<fileset dir="${basedir}/../com.oaklandsw.util.jars">
+				<include name="*.jar" />
+			</fileset>
+			<dirset dir="${basedir}/../com.oaklandsw.util/bin" />
+			<path refid="compile.classpath12" />
+		</path>
+
+	</target>
+
+
+	<!-- =================================================================== -->
+	<!-- Creates the API documentation                                       -->
+	<!-- =================================================================== -->
+	<target name="javadoc" depends="prepare">
+		<mkdir dir="${javadocs.dir}" />
+		<javadoc  destdir="${javadocs.dir}" access="public" windowtitle="Oakland Software HTTP Client API" doctitle="Oakland Software HTTP Client" bottom="Copyright &#169; 2002-2007 Oakland Software Incorporated. All Rights Reserved.">
+			<classpath refid="compile.classpath" />
+			<fileset dir="${src.dir}" defaultexcludes="yes">
+				<!-- MAKE SURE TO update the build.http.xml file -->
+				<include name="com/oaklandsw/http/HttpURLConnection.java" />
+				<include name="com/oaklandsw/http/HttpConnectionManager.java" />
+				<include name="com/oaklandsw/http/URIException.java" />
+				<include name="com/oaklandsw/http/HttpException.java" />
+				<include name="com/oaklandsw/http/HttpRetryException.java" />
+				<include name="com/oaklandsw/http/AutomaticHttpRetryException.java" />
+				<include name="com/oaklandsw/http/HttpTimeoutException.java" />
+				<include name="com/oaklandsw/http/HttpUserAgent.java" />
+				<include name="com/oaklandsw/http/AbstractCallback.java" />
+				<include name="com/oaklandsw/http/AbstractSocketFactory.java" />
+				<include name="com/oaklandsw/http/ConnectionIOListener.java" />
+				<include name="com/oaklandsw/http/Callback.java" />
+				<include name="com/oaklandsw/http/Credential.java" />
+				<include name="com/oaklandsw/http/UserCredential.java" />
+				<include name="com/oaklandsw/http/NtlmCredential.java" />
+				<include name="com/oaklandsw/http/HostnameVerifier.java" />
+				<include name="com/oaklandsw/http/Cookie.java" />
+				<include name="com/oaklandsw/http/CookieContainer.java" />
+				<include name="com/oaklandsw/http/CookiePolicy.java" />
+				<include name="com/oaklandsw/http/ntlm/Ntlm.java" />
+			</fileset>
+		</javadoc>
+	</target>
+
+	<target name="create-lic" depends="init">
+		<echo file="${command.file}">
+			-licfile ${licfile} -create -lictype ${licensetype} -productid ${productid} -lictype ${licensetype} -cbid ${codebaseid}
+		</echo>
+
+		<echo file="${command30.file}">
+			-licfile ${licfile30} -create -lictype ${licensetypeeval} -productid ${productid} -lictype ${licensetype} -cbid ${codebaseid} -expdate ${expdate}
+		</echo>
+
+		<java classpath="${lictool.classpath}" classname="${lictool.class}" fork="yes">
+			<arg value="-commandfile" />
+			<arg value="${command.file}" />
+		</java>
+		<java classpath="${lictool.classpath}" classname="${lictool.class}" fork="yes">
+			<arg value="-commandfile" />
+			<arg value="${command30.file}" />
+		</java>
+		<!-- put this where it can be read as a resource, in the eval version this
+		     file is deleted -->
+		<copy file="${licfile}" tofile="${src.dir}/com/oaklandsw/http/${licfile}" overwrite="true" />
+	</target>
+
+
+	<!-- =================================================================== -->
+	<!-- Creates the class package - overrides common                        -->
+	<!-- =================================================================== -->
+	<target name="package-java" depends="compile-java, create-lic">
+		<copy file="${src.dir}/com/oaklandsw/http/${licfile}" tofile="${bin.dir}/com/oaklandsw/http/${licfile}" overwrite="true" />
+		<jar jarfile="${package.name}.jar">
+			<fileset dir="${bin.dir}" />
+			<fileset dir="../com.oaklandsw.util/bin" />
+			<zipfileset src="../com.oaklandsw.http.jars/jakarta-regexp-1.3.jar" excludes="**/*.txt" />
+			<zipfileset src="../com.oaklandsw.http.jars/backport-util-concurrent-2.2.jar" includes="**/AtomicInteger.class,**/locks/*.class,**/helpers/*.class,**/AbstractQueue*.class,**/**BlockingQueue*.class,**/AbstractCollection*.class,**/Queue*.class,**/TimeUnit*.class" excludes="**/*.txt" />
+			<zipfileset src="../com.oaklandsw.http.jars/commons-logging-1.1.1-SNAPSHOT.jar" excludes="**/*.txt" />
+			<manifest>
+				<attribute name="Product-Version" value="${oaklandswVersion}" />
+				<attribute name="Created-By" value="Oakland Software Incorporated" />
+				<section name="org/apache/regexp/">
+					<attribute name="Sealed" value="true" />
+				</section>
+				<section name="org/apache/commons/logging/">
+					<attribute name="Sealed" value="true" />
+				</section>
+			</manifest>
+		</jar>
+	</target>
+
+	<target name="obf-java" depends="package-java">
+		<property name="obf.build.dir" value="${plugin.base.dir}/com.oaklandsw.build" />
+
+		<!-- Obfuscation log will be output to this directory. -->
+		<property name="obf.log.dir" location="obf-log" />
+		<mkdir dir="${obf.log.dir}" />
+
+		<property name="obf.out.dir" location="obf-out" />
+		<mkdir dir="${obf.out.dir}" />
+
+		<!-- Zelix obfuscation script that will manage the obfuscation process -->
+		<property name="zelix.script" location="obfuscate.txt" />
+
+		<!-- Incoming change log for incremental obfuscation -->
+		<property name="change.log.in" location="${obf.log.dir}/obfuscate-in.txt" />
+
+		<!-- Outgoing change log for future incrmental obfuscation -->
+		<property name="change.log.out" location="${obf.log.dir}/obfuscate-out.txt" />
+
+		<taskdef name="obfuscate" classname="ZKMTask">
+			<classpath path="${obf.build.dir}/ZKM.jar" />
+		</taskdef>
+
+		<!--
+    Path identifying jars that are part of the classpath but that should
+    NOT be obfuscated. This would include the Eclipse RCP distribution,
+    third-party jars, and any of your jars that contain derived work and
+    are being distributed under the EPL or similar license.
+    -->
+		<path id="non.obfuscated.jars">
+			<fileset dir="${basedir}/../com.oaklandsw.util.jars">
+				<include name="servlet.jar" />
+			</fileset>
+			<fileset dir="${basedir}/../com.oaklandsw.http.jars">
+				<include name="jcifs*.jar" />
+				<include name="saaj.jar" />
+				<include name="backport-util-concurrent.jar" />
+				<include name="axis*.jar" />
+				<include name="axiom*.jar" />
+				<include name="activation.jar" />
+				<include name="jaxrpc.jar" />
+			</fileset>
+		</path>
+
+		<property name="non.obfuscated.class.path" refid="non.obfuscated.jars" />
+
+		<!--
+    compile path for all jars that should not be obfuscated, but that should
+    be on the classpath.
+		<pathconvert property="non.obfuscated.class.path">
+			<path refid="non.obfuscated.jars" />
+		</pathconvert>
+    -->
+
+		<path id="obfuscated.jars">
+			<fileset dir="${basedir}">
+				<include name="${package.name}.jar" />
+			</fileset>
+		</path>
+
+		<!--
+    Compile path for all jars that should be obfuscated. Zelix requires each jar 
+    to be on a separate line and delimited by quotes. The following code produces 
+    this list.
+    -->
+		<pathconvert pathsep="&quot;${line.separator}&quot;" property="obfuscated.class.path.noqoutes">
+			<path refid="obfuscated.jars" />
+		</pathconvert>
+		<property name="obfuscated.class.path" value="&quot;${obfuscated.class.path.noqoutes}&quot;" />
+
+		<obfuscate scriptFileName="${zelix.script}" logFileName="${obf.log.dir}/obfuscate.log" trimLogFileName="${obf.log.dir}/trimlog.txt" defaultExcludeFileName="defaultExclude.txt" defaultTrimExcludeFileName="defaultTrimExclude.txt" isParseOnly="false" isVerbose="true" />
+
+		<move file="${change.log.in}" tofile="${change.log.in}.bak" overwrite="true" failonerror="false" />
+		<copy file="${change.log.out}" tofile="${change.log.out}_${oaklandswVersion.file}" overwrite="true" />
+		<move file="${change.log.out}" tofile="${change.log.in}" overwrite="true" />
+		<move file="${package.name}.jar" tofile="${package.name}NonObf.jar" overwrite="true" />
+		<move file="${obf.out.dir}/${package.name}.jar" tofile="${package.name}.jar" overwrite="true" />
+		<delete dir="${obf.out.dir}" />
+
+		<!-- save the obfuscation information in the releases for future use -->
+		<copy toDir="${release.dir}/http_${oaklandswVersion}_obf">
+			<fileset dir="${obf.log.dir}/" />
+		</copy>
+
+		<delete dir="${obf.log.dir}" />
+	</target>
+
+
+	<!-- =================================================================== -->
+	<!-- Creates the distribution - HTTP                                     -->
+	<!-- =================================================================== -->
+	<target name="dist" depends="javadoc, obf-java">
+		<!-- create eval JAR which is just the real version missing the lic file -->
+		<jar jarfile="${eval.jar.name}" filesetmanifest="merge">
+			<zipfileset src="${package.name}.jar">
+				<exclude name="com/oaklandsw/http/${licfile}" />
+			</zipfileset>
+		</jar>
+
+		<!-- create eval 30 day JAR which is just the real version missing the lic file -->
+		<jar jarfile="${eval30.jar.name}" filesetmanifest="merge">
+			<zipfileset src="${package.name}.jar">
+				<exclude name="com/oaklandsw/http/${licfile}" />
+			</zipfileset>
+			<zipfileset dir="." includes="${licfile30}" fullpath="com/oaklandsw/http/${licfile}" />
+		</jar>
+
+		<!-- normal -->
+		<zip zipfile="${release.dir}/${dist.zip.name}.zip" includes="**">
+			<fileset dir="${basedir}">
+				<include name="README" />
+				<include name="*LICENSE" />
+				<include name="*NOTICE*" />
+				<include name="*.sample" />
+				<include name="${package.name}.jar" />
+			</fileset>
+			<!-- update the examples inclusion in the source kit below -->
+			<zipfileset dir="../com.oaklandsw.http.tests/examplessrc/" prefix="examples">
+				<include name="**" />
+				<exclude name="Applet**" />
+				<exclude name="PerfCompar**" />
+				<exclude name="TestPerf**" />
+			</zipfileset>
+			<zipfileset dir="../com.oaklandsw.http.tests/src/" prefix="examples_sp">
+				<include name="sharepoint/*.java" />
+			</zipfileset>
+			<zipfileset dir="${javadocs.dir}" prefix="javadocs" />
+		</zip>
+
+		<!-- eval - derived from normal zip file -->
+		<zip zipfile="${release.dir}/${dist.zip.name}Eval.zip" includes="**">
+			<zipfileset src="${release.dir}/${dist.zip.name}.zip">
+				<exclude name="${package.name}.jar" />
+			</zipfileset>
+			<zipfileset dir="." includes="${eval.jar.name}" fullpath="${package.name}.jar" />
+		</zip>
+
+		<!-- eval 30 day expiration - derived from normal zip file -->
+		<zip zipfile="${release.dir}/${dist.zip.name}Eval_Exp${expdate}.zip" includes="**">
+			<zipfileset src="${release.dir}/${dist.zip.name}.zip">
+				<exclude name="${package.name}.jar" />
+			</zipfileset>
+			<zipfileset dir="." includes="${eval30.jar.name}" fullpath="${package.name}.jar" />
+		</zip>
+
+		<!-- source -->
+		<!-- don't include the license stuff -->
+		<zip zipfile="${release.dir}/${dist.zip.name}Src.zip" includes="**">
+			<zipfileset dir="${src.dir}" prefix="src">
+				<exclude name="**/HttpLicense*.java" />
+			</zipfileset>
+			<zipfileset dir="../com.oaklandsw.util/src" prefix="src">
+				<exclude name="**/license/**" />
+				<exclude name="**/jak/**" />
+				<exclude name="**/util/AbstractCommandLine.java" />
+			</zipfileset>
+			<zipfileset dir="${basedir}" includes="build.http.xml" fullpath="build.xml" />
+			<fileset dir="${basedir}">
+				<include name="README" />
+				<include name="README_SOURCE" />
+			</fileset>
+			<fileset dir="../com.oaklandsw.http.jars">
+				<include name="*.jar" />
+			</fileset>
+			<zipfileset dir="../com.oaklandsw.http.tests/examplessrc/" prefix="examples">
+				<include name="**" />
+				<exclude name="Applet**" />
+				<exclude name="PerfCompar**" />
+				<exclude name="TestPerf**" />
+			</zipfileset>
+			<zipfileset dir="../com.oaklandsw.http.tests/src/" prefix="examples_sp">
+				<include name="sharepoint/*.java" />
+			</zipfileset>
+			<zipfileset dir="${javadocs.dir}" prefix="javadocs" />
+		</zip>
+
+		<!-- source for JCIFS LGPL code normal -->
+		<zip zipfile="${release.dir}/${dist.zip.name}JCIFSSrc.zip" includes="**">
+			<zipfileset dir="${src.dir}" prefix="src">
+				<include name="com/oaklandsw/http/servlet/**" />
+			</zipfileset>
+		</zip>
+
+	</target>
+
+
+
+</project>

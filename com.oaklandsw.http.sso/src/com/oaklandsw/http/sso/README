@@ -1,0 +1,18 @@
+This is an initial implementation of the SSO stuff that is based on the
+ideas of the JCIFS SSO implementation.  It was not finished, though
+it's pretty close.  The idea was to use the Netlogon service to
+do the authentication (as recommended by the MS NTLM documentation), but
+the netlogon implementation is stopped because of the trouble
+of getting the shared secret (the machine key from the domain controller).
+
+More research is needed to complete the netlogon implementation.
+
+Also, for some reason NTLMV2 messages from the browser would not work
+in doing an SMB connection, but the same NTLMV2 messages from the Oakland
+HTTP client implementation would work just fine.  This is not understood.
+
+For the moment the SSO work will be abandoned.
+
+
+
+See the idl directory README file for instructions on how to build netlogon.java
