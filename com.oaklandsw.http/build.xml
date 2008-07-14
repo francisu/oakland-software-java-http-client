@@ -94,11 +94,13 @@
 			<arg value="-commandfile" />
 			<arg value="${command30.file}" />
 		</java>
-		<!-- put this where it can be read as a resource, in the eval version this
-		     file is deleted -->
-		<copy file="${licfile}" tofile="${src.dir}/com/oaklandsw/http/${licfile}" overwrite="true" />
 	</target>
 
+	<target name="copy-lic" depends="create-lic, init">
+		<!-- put this where it can be read as a resource, in the eval version this
+	     file is deleted -->
+		<copy file="${licfile}" tofile="${src.dir}/com/oaklandsw/http/${licfile}" overwrite="true" />
+	</target>
 
 	<!-- =================================================================== -->
 	<!-- Creates the class package - overrides common                        -->
