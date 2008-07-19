@@ -81,18 +81,17 @@
 		<echo file="${command.file}">
 			-licfile ${licfile} -create -lictype ${licensetype} -productid ${productid} -lictype ${licensetype} -cbid ${codebaseid}
 		</echo>
-
-		<echo file="${command30.file}">
-			-licfile ${licfile30} -create -lictype ${licensetypeeval} -productid ${productid} -lictype ${licensetype} -cbid ${codebaseid} -expdate ${expdate}
-		</echo>
-
 		<java classpath="${lictool.classpath}" classname="${lictool.class}" fork="yes">
 			<arg value="-commandfile" />
 			<arg value="${command.file}" />
 		</java>
+
+		<echo file="${command.file}">
+			-licfile ${licfile30} -create -lictype ${licensetypeeval} -productid ${productid} -lictype ${licensetype} -cbid ${codebaseid} -expdate ${expdate}
+		</echo>
 		<java classpath="${lictool.classpath}" classname="${lictool.class}" fork="yes">
 			<arg value="-commandfile" />
-			<arg value="${command30.file}" />
+			<arg value="${command.file}" />
 		</java>
 	</target>
 
