@@ -694,7 +694,15 @@ public class HttpConnectionManager
                 int port;
                 // Start after the protocol
                 int start = hostAndPort.indexOf(':') + 3;
-                int ind = hostAndPort.indexOf(":", start);
+                int portLookStart = start;
+                boolean ipV6Literal = false;
+                if (hostAndPort.charAt(start) == '[')
+                {
+                    portLookStart = hostAndPort.indexOf(']', start);
+                    start++;
+                    ipV6Literal = true;
+                }
+                int ind = hostAndPort.indexOf(':', portLookStart);
                 if (ind > 0)
                 {
                     host = hostAndPort.substring(start, ind);
@@ -713,9 +721,12 @@ public class HttpConnectionManager
                     port = getPort(protocol, -1);
                 }
 
+                if (ipV6Literal)
+                    host = host.substring(0, host.length() - 1);
+                
                 // Create a new connection
                 boolean isSecure = protocol.equalsIgnoreCase("HTTPS")
-                    || urlCon.getForceSSL()
+                    || urlCon.isForceSSL()
                     || urlCon.isConnectionProxySsl();
 
                 // Make a new connection, note that this does not open
@@ -727,6 +738,7 @@ public class HttpConnectionManager
                                           host,
                                           port,
                                           isSecure,
+                                          ipV6Literal,
                                           connectionKey);
                 ci.addNewConnection(conn);
             }
@@ -1090,14 +1102,18 @@ public class HttpConnectionManager
         return ci._proxyKey;
     }
 
-    Credential getCachedCredential(ConnectionInfo ci, int authType)
+    // public for tests
+    public Credential getCachedCredential(ConnectionInfo ci, int authType)
     {
         synchronized (this)
         {
             String key = getCacheKey(ci, authType);
             Credential cred = (Credential)_credentialCache[authType].get(key);
             if (_log.isDebugEnabled())
+            {
                 _log.debug("getCachedCredential: " + key + " cred: " + cred);
+                _log.debug("credential cache: " + _credentialCache[authType]);
+            }
             return cred;
         }
     }
@@ -1126,6 +1142,7 @@ public class HttpConnectionManager
 
     void resetCachedCredentials()
     {
+        _log.debug("resetCachedCredentials");
         synchronized (this)
         {
             _credentialCache = new Map[HttpURLConnection.AUTH_PROXY + 1];

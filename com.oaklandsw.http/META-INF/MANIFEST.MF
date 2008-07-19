@@ -12,5 +12,5 @@ Export-Package: com.oaklandsw.http,
  com.oaklandsw.http.axis,
  com.oaklandsw.http.axis2,
  com.oaklandsw.http.cookie,
- com.oaklandsw.http.ntlm;x-friends:="com.oaklandsw.http.tests",
+ com.oaklandsw.http.ntlm,
  com.oaklandsw.https

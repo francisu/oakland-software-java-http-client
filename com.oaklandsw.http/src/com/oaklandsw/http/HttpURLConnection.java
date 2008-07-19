@@ -59,36 +59,34 @@ import com.oaklandsw.util.Util;
  * java.net.HttpURLConnection. See setProxyPort(). Indicates the proxy server
  * uses SSL. Used in conjunction with https.proxyPort.
  * <p>
- * <code>http.proxyUser</code>- specifies the user name used for
- * authentication with a proxy server if required. Note this is identical to the
- * method to specify the proxy user for the java.net.HttpURLConnection. See
- * setProxyUser()
+ * <code>http.proxyUser</code>- specifies the user name used for authentication
+ * with a proxy server if required. Note this is identical to the method to
+ * specify the proxy user for the java.net.HttpURLConnection. See setProxyUser()
  * <p>
  * <code>http.proxyPassword</code>- specifies the password used for
  * authentication with a proxy server if required. Note this is identical to the
  * method to specify the proxy password for the java.net.HttpURLConnection. See
  * setProxyPassword().
  * <p>
- * <code>http.nonProxyHosts</code>- specifies a list of hosts to not direct
- * to the proxy server. Note this is identical to the method to specify such
- * hosts as for the java.net.HttpURLConnection. See setNonProxyHosts().
+ * <code>http.nonProxyHosts</code>- specifies a list of hosts to not direct to
+ * the proxy server. Note this is identical to the method to specify such hosts
+ * as for the java.net.HttpURLConnection. See setNonProxyHosts().
  * <p>
  * <code>proxySet</code>- setting this to any value causes all requests to go
  * through the proxy server specified by <code>proxyHost</code> and
- * <code>proxyPort</code>. Note that this method is obsolete and provided
- * only for compatibility with JDK 1.0.2 implementations. The preferred method
- * is to use <code>http.proxyHost/Port</code>. See
- * setProxyHost()/setProxyPort().
+ * <code>proxyPort</code>. Note that this method is obsolete and provided only
+ * for compatibility with JDK 1.0.2 implementations. The preferred method is to
+ * use <code>http.proxyHost/Port</code>. See setProxyHost()/setProxyPort().
  * <p>
- * <code>proxyHost</code>- specifies the host of the proxy server. Note this
- * is identical to the method to specify the proxy host for the
+ * <code>proxyHost</code>- specifies the host of the proxy server. Note this is
+ * identical to the method to specify the proxy host for the
  * java.net.HttpURLConnection. This only works if <code>proxySet</code> is set
  * to something. Note that this method is obsolete and provided only for
  * compatibility with JDK 1.0.2 implementations. The preferred method is to use
  * <code>http.proxyHost</code>. See setProxyHost().
  * <p>
- * <code>proxyPort</code>- specifies the port of the proxy server. Note this
- * is identical to the method to specify the proxy port for the
+ * <code>proxyPort</code>- specifies the port of the proxy server. Note this is
+ * identical to the method to specify the proxy port for the
  * java.net.HttpURLConnection. This only works if <code>proxySet</code> is set
  * to something. Note that this method is obsolete and provided only for
  * compatibility with JDK 1.0.2 implementations. The preferred method is to use
@@ -102,13 +100,13 @@ import com.oaklandsw.util.Util;
  * connection pool. See setIdleConnectionTimeout() and
  * setDefaultIdleConnectionTimeout().
  * <p>
- * <code>com.oaklandsw.http.idleConnectionPing</code>- this is used to ping
- * the connection before sending a POST request. The ping is issued if the
+ * <code>com.oaklandsw.http.idleConnectionPing</code>- this is used to ping the
+ * connection before sending a POST request. The ping is issued if the
  * connection was idle for at least the number of milliseconds specified. See
  * setIdleConnectionPing() and setDefaultIdleConnectionPing().
  * <p>
- * <code>com.oaklandsw.http.connectionRequestLimit</code>- this is used to
- * limit the number of requests on a connection. Once this limit is reached, the
+ * <code>com.oaklandsw.http.connectionRequestLimit</code>- this is used to limit
+ * the number of requests on a connection. Once this limit is reached, the
  * connection is closed. See setConnectionRequestLimit() and
  * setDefaultConnectionRequestLimit().
  * <p>
@@ -116,13 +114,13 @@ import com.oaklandsw.util.Util;
  * number of connections allowed to a given host:port. If not specified, a
  * default of 2 is assumed. See setMaxConnectionsPerHost().
  * <p>
- * <code>com.oaklandsw.http.tries</code>- the number of times to try a
- * sending an idempotent request if there is a problem with getting the
- * response. Also the number of times to try an idle connection ping on a POST
- * request if this is enabled. The default is 3. See setTries().
+ * <code>com.oaklandsw.http.tries</code>- the number of times to try a sending
+ * an idempotent request if there is a problem with getting the response. Also
+ * the number of times to try an idle connection ping on a POST request if this
+ * is enabled. The default is 3. See setTries().
  * <p>
- * <code>com.oaklandsw.http.retryInterval</code>- the number of milliseconds
- * to wait before retrying an idempotent request. The default is 0ms. See
+ * <code>com.oaklandsw.http.retryInterval</code>- the number of milliseconds to
+ * wait before retrying an idempotent request. The default is 0ms. See
  * setRetryInterval().
  * <p>
  * <code>com.oaklandsw.http.pipelining</code>- set to any value to enable
@@ -133,19 +131,19 @@ import com.oaklandsw.util.Util;
  * "basic", "digest", or "ntlm". The default is not set. See
  * setDefaultAuthenticationType().
  * <p>
- * <code>com.oaklandsw.http.proxyAuthenticationType</code>- used to indicate
- * a preferred authentication mode for pipelining or streaming. Set to one of
+ * <code>com.oaklandsw.http.proxyAuthenticationType</code>- used to indicate a
+ * preferred authentication mode for pipelining or streaming. Set to one of
  * "basic", "digest", or "ntlm". The default is not set. See
  * setDefaultProxyAuthenticationType().
  * <p>
- * <code>com.oaklandsw.http.userAgent</code>- set to specify an alternate
- * value for the User-Agent HTTP header. The default is that the User-Agent
- * header is set to DEFAULT_USER_AGENT.
+ * <code>com.oaklandsw.http.userAgent</code>- set to specify an alternate value
+ * for the User-Agent HTTP header. The default is that the User-Agent header is
+ * set to DEFAULT_USER_AGENT.
  * <p>
- * <code>com.oaklandsw.http.followRedirectsPost</code>- specifies that
- * redirect response codes are followed for a POST request. see
- * setFollowRedirectsPost() for further details. The default is to not follow
- * redirect response codes for post.
+ * <code>com.oaklandsw.http.followRedirectsPost</code>- specifies that redirect
+ * response codes are followed for a POST request. see setFollowRedirectsPost()
+ * for further details. The default is to not follow redirect response codes for
+ * post.
  * <p>
  * <code>com.oaklandsw.http.cookiePolicy</code>- specifies the default cookie
  * policy to be used. See CookiePolicy for the possible values.
@@ -669,8 +667,9 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
     private static URL                 _testURL;
 
     // Indexes into the arrays that distinguish normal or proxy
-    static final int                   AUTH_NORMAL                          = 0;
-    static final int                   AUTH_PROXY                           = 1;
+    // Public for tests
+    public static final int            AUTH_NORMAL                          = 0;
+    public static final int            AUTH_PROXY                           = 1;
 
     protected static byte[]            USER_AGENT;
 
@@ -964,7 +963,8 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
                     {
                         try
                         {
-                            // setUseDnsJava(Boolean.valueOf(useDnsJavaStr).booleanValue());
+                            // setUseDnsJava(Boolean.valueOf(useDnsJavaStr).
+                            // booleanValue());
                             _log.info("useDnsJava: " + useDnsJavaStr);
                         }
                         catch (Exception ex)
@@ -1224,6 +1224,7 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
 
         _hostnameVerifier = gs._defaultHostnameVerifier;
         _socketFactory = gs._defaultSocketFactory;
+        _forceSsl = gs._defaultForceSsl;
 
         _connManager.recordCount(HttpConnectionManager.COUNT_ATTEMPTED);
     }
@@ -1386,7 +1387,8 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
                 + "- call setDoOutput(true)");
         }
 
-        if (_executed && _streamingMode > STREAM_DEFER_RESPONSE_END)
+        if (_executed
+            && (_streamingMode > STREAM_DEFER_RESPONSE_END || _streamingMode == STREAM_NONE))
         {
             throw new IllegalStateException("The reply to this URLConnection has already been received");
         }
@@ -1649,10 +1651,10 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
      * The caller must ensure that the same HttpConnection object is not used by
      * multiple HttpURLConnections.
      * 
-     * @exception IOException -
-     *                if the connection cannot be opened
-     * @exception IllegalStateException -
-     *                if a connection has already been associated with this
+     * @exception IOException
+     *                - if the connection cannot be opened
+     * @exception IllegalStateException
+     *                - if a connection has already been associated with this
      *                object.
      */
     public void setConnection(HttpConnection conn) throws IOException
@@ -1804,12 +1806,12 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
      * or redirection, this will not work as the data will have been sent. In
      * this case, you will get an HttpRetryException
      * 
-     * @param chunkLen -
-     *            This is ignored and exists for compatibility with the Java
+     * @param chunkLen
+     *            - This is ignored and exists for compatibility with the Java
      *            HttpURLConnection API. The size of each chunk is based on the
      *            size of each write to the stream.
-     * @throws IllegalStateException -
-     *             If the connection is already connected or a different
+     * @throws IllegalStateException
+     *             - If the connection is already connected or a different
      *             streaming mode has been set.
      */
     public void setChunkedStreamingMode(int chunkLen)
@@ -1834,10 +1836,10 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
      * or redirection, this will not work as the data will have been sent. In
      * this case, you will get an HttpRetryException
      * 
-     * @param fixedLen -
-     *            The size of the data being sent (the Content-Length)
-     * @throws IllegalStateException -
-     *             If the connection is already connected or a different
+     * @param fixedLen
+     *            - The size of the data being sent (the Content-Length)
+     * @throws IllegalStateException
+     *             - If the connection is already connected or a different
      *             streaming mode has been set.
      */
     public void setFixedLengthStreamingMode(int fixedLen)
@@ -1866,8 +1868,8 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
      * 
      * @param useRaw
      *            True if enabling raw streaming, false if not
-     * @throws IllegalStateException -
-     *             If the connection is already connected or a different
+     * @throws IllegalStateException
+     *             - If the connection is already connected or a different
      *             streaming mode has been set.
      */
     public void setRawStreamingMode(boolean useRaw)
@@ -1899,8 +1901,8 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
      * 
      * @param useTunneled
      *            True if enabling tunneled streaming, false if not
-     * @throws IllegalStateException -
-     *             If the connection is already connected or a different
+     * @throws IllegalStateException
+     *             - If the connection is already connected or a different
      *             streaming mode has been set.
      */
     public void setTunneledStreamingMode(boolean useTunneled)
@@ -1921,10 +1923,9 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
     }
 
     /**
-     * @see java.net.HttpURLConnection#getHeaderField(String)
-     * 
-     * Before calling this, you must call either getResponseCode() or
-     * getInputStream() to read the response.
+     * @see java.net.HttpURLConnection#getHeaderField(String) Before calling
+     *      this, you must call either getResponseCode() or getInputStream() to
+     *      read the response.
      * 
      */
     public String getHeaderField(String name)
@@ -1937,10 +1938,9 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
     }
 
     /**
-     * @see java.net.URLConnection#getHeaderFields()
-     * 
-     * Before calling this, you must call either getResponseCode() or
-     * getInputStream() to read the response.
+     * @see java.net.URLConnection#getHeaderFields() Before calling this, you
+     *      must call either getResponseCode() or getInputStream() to read the
+     *      response.
      */
     public Map getHeaderFields()
     {
@@ -1950,10 +1950,9 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
     }
 
     /**
-     * @see java.net.HttpURLConnection#getHeaderFieldKey(int)
-     * 
-     * Before calling this, you must call either getResponseCode() or
-     * getInputStream() to read the response.
+     * @see java.net.HttpURLConnection#getHeaderFieldKey(int) Before calling
+     *      this, you must call either getResponseCode() or getInputStream() to
+     *      read the response.
      */
     public String getHeaderFieldKey(int keyPosition)
     {
@@ -1972,10 +1971,9 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
     }
 
     /**
-     * @see java.net.HttpURLConnection#getHeaderField(int)
-     * 
-     * Before calling this, you must call either getResponseCode() or
-     * getInputStream() to read the response.
+     * @see java.net.HttpURLConnection#getHeaderField(int) Before calling this,
+     *      you must call either getResponseCode() or getInputStream() to read
+     *      the response.
      */
     public String getHeaderField(int position)
     {
@@ -2091,10 +2089,10 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
      * This is an alternative to using {@link #getInputStream()}, used if you
      * want to read the data as character data instead of as bytes. The
      * characters returned will be decoded according to the
-     * <code>Content-Encoding</code> and <code>Content-Type</code> headers
-     * in the response. If the charset of the response is not specified using a
-     * <code>Content-Type</code> header, then ISO-8859-1 is used, in
-     * accordance with the rules of RFC 2616 (3.7.1).
+     * <code>Content-Encoding</code> and <code>Content-Type</code> headers in
+     * the response. If the charset of the response is not specified using a
+     * <code>Content-Type</code> header, then ISO-8859-1 is used, in accordance
+     * with the rules of RFC 2616 (3.7.1).
      */
     public Reader getReader() throws IOException
     {
@@ -2214,7 +2212,7 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
         _log.trace("getErrorStream");
 
         // This does not force a connection
-        if (!connected)
+        if (!connected && !_executed)
             return null;
 
         // Only do this if there is an error
@@ -2353,8 +2351,7 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
      * Automatic processing of responses where authentication is required
      * (status codes 401 and 407).
      * 
-     * @return <tt>true</tt> if authentications will be processed
-     *         automatically
+     * @return <tt>true</tt> if authentications will be processed automatically
      */
     public boolean getDoAuthentication()
     {
@@ -3196,8 +3193,8 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
      * Set specific pipeline options for all connections. This allows finer
      * control of the pipelining behavior.
      * 
-     * @param pipeliningOptions -
-     *            see the PIPE_ constants.
+     * @param pipeliningOptions
+     *            - see the PIPE_ constants.
      * 
      */
     public static void setDefaultPipeliningOptions(int pipeliningOptions)
@@ -3274,8 +3271,8 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
      * Set specific pipeline options for this connection. This allows finer
      * control of the pipelining behavior.
      * 
-     * @param pipeliningOptions -
-     *            see the PIPE_ constants.
+     * @param pipeliningOptions
+     *            - see the PIPE_ constants.
      * 
      */
     public void setPipeliningOptions(int pipeliningOptions)
@@ -3830,16 +3827,16 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
      * Allow multiple sets of authentication credentials per destination
      * Internet address (host/port).
      * 
-     * By default this is false, each Internet address uses a single set of
-     * credentials (user/password), and the HttpUserAgent is called only when
-     * necessary to obtain these credentials. This is the typical case for most
-     * applications and allows the HttpUserAgent to be directly hooked to a UI
-     * that asks the user only when necessary.
+     * By default this is true; multiple sets of credentials may be used
+     * required for a single internet address. In this case, the HttpUserAgent
+     * will be called more often to obtain these credentials and it will not be
+     * suitable to connect this directly to a UI (e.g. it will bug the user too
+     * much).
      * 
-     * Set this to true if multiple sets of credentials are required for a
-     * single internet address. In this case, the HttpUserAgent will be called
-     * more often to obtain these credentials and it will not be suitable to
-     * connect this directly to a UI (e.g. it will bug the user too much).
+     * Set this to false if you wish that each Internet address use a single set
+     * of credentials (user/password), and the HttpUserAgent is called only when
+     * necessary to obtain these credentials. This allows the HttpUserAgent to
+     * be directly hooked to a UI that asks the user only when necessary.
      * 
      * This applies both to proxy connections and non-proxy connections.
      * 
@@ -3854,16 +3851,16 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
      * Allow multiple sets of authentication credentials per destination
      * Internet address (host/port).
      * 
-     * By default this is false, each Internet address uses a single set of
-     * credentials (user/password), and the HttpUserAgent is called only when
-     * necessary to obtain these credentials. This is the typical case for most
-     * applications and allows the HttpUserAgent to be directly hooked to a UI
-     * that asks the user only when necessary.
+     * By default this is true; multiple sets of credentials may be used
+     * required for a single internet address. In this case, the HttpUserAgent
+     * will be called more often to obtain these credentials and it will not be
+     * suitable to connect this directly to a UI (e.g. it will bug the user too
+     * much).
      * 
-     * Set this to true if multiple sets of credentials are required for a
-     * single internet address. In this case, the HttpUserAgent will be called
-     * more often to obtain these credentials and it will not be suitable to
-     * connect this directly to a UI (e.g. it will bug the user too much).
+     * Set this to false if you wish that each Internet address use a single set
+     * of credentials (user/password), and the HttpUserAgent is called only when
+     * necessary to obtain these credentials. This allows the HttpUserAgent to
+     * be directly hooked to a UI that asks the user only when necessary.
      * 
      * This applies both to proxy connections and non-proxy connections.
      * 
@@ -3872,6 +3869,8 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
      */
     public static void setMultiCredentialsPerAddress(boolean multi)
     {
+        if (_log.isDebugEnabled())
+            _log.debug("setMultiCredentialsPerAddress: " + multi);
         checkConnectionManager()._globalState._multiCredentialsPerAddress = multi;
     }
 
@@ -4119,7 +4118,7 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
     /**
      * Gets the value indicating if SSL is forced for this URL connection.
      */
-    public boolean getForceSSL()
+    public boolean isForceSSL()
     {
         return _forceSsl;
     }
@@ -4132,6 +4131,25 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
     public void setForceSSL(boolean forceSSL)
     {
         _forceSsl = forceSSL;
+    }
+
+    /**
+     * Gets the value indicating if SSL is forced for this all URL connections.
+     */
+    public static boolean isDefaultForceSSL()
+    {
+        return checkConnectionManager()._globalState._defaultForceSsl;
+    }
+
+    /**
+     * Forces the URL connection to use SSL regardless of the protocol specified
+     * for all connections. If this is not set, the SSL is used only if the
+     * HTTPS protocol is specified. This is used to work with the FTP protocol
+     * using a proxy.
+     */
+    public static void setDefaultForceSSL(boolean forceSSL)
+    {
+        checkConnectionManager()._globalState._defaultForceSsl = forceSSL;
     }
 
     /**
@@ -4273,8 +4291,8 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
     }
 
     /**
-     * For JRE compatibility throw a FileNotFoundException when a 404 response is
-     * detected.
+     * For JRE compatibility throw a FileNotFoundException when a 404 response
+     * is detected.
      * 
      * By default this is off, that is the 404 response is passed through, which
      * is not compatible with the JRE.
@@ -4288,8 +4306,8 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
     }
 
     /**
-     * For JRE compatibility throw a FileNotFoundException when a 404 response is
-     * detected.
+     * For JRE compatibility throw a FileNotFoundException when a 404 response
+     * is detected.
      * 
      * By default this is off, that is the 404 response is passed through, which
      * is not compatible with the JRE.

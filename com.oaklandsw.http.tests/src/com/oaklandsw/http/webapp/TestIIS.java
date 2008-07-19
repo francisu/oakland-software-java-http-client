@@ -13,6 +13,7 @@ import junit.framework.Test;
 import junit.framework.TestSuite;
 
 import com.oaklandsw.http.Credential;
+import com.oaklandsw.http.HttpConnection;
 import com.oaklandsw.http.HttpRetryException;
 import com.oaklandsw.http.HttpTestBase;
 import com.oaklandsw.http.HttpTestEnv;
@@ -178,14 +179,16 @@ public class TestIIS extends HttpTestBase
         test200Get();
     }
 
-    public void test210ConnectionReuse()
+    public static final boolean MULTI = true;
+
+    public void testConnectionReuse(boolean multi)
         throws MalformedURLException,
             IOException
     {
         URL url = new URL(makeIisUrl(HttpTestEnv.TEST_URL_APP_IIS_FORM));
         int response = 0;
 
-        HttpURLConnection.setMultiCredentialsPerAddress(true);
+        HttpURLConnection.setMultiCredentialsPerAddress(multi);
 
         HttpURLConnection urlCon;
         urlCon = HttpURLConnection.openConnection(url);
@@ -195,17 +198,87 @@ public class TestIIS extends HttpTestBase
         String reply = getReply(urlCon);
         iisCheckReply(reply);
 
-        // Try again with a different user, should not reuse the
-        // same connection
+        // Try again with a different user
         TestUserAgent._type = TestUserAgent.BAD;
         urlCon = HttpURLConnection.openConnection(url);
         response = urlCon.getResponseCode();
-        assertEquals(401, response);
+        // Multi will get a new connection, otherwise we will reuse the
+        // connection
+        if (multi)
+            assertEquals(401, response);
+        else
+            assertEquals(200, response);
+
+        reply = getReply(urlCon);
+        checkNoActiveConns(url);
+        TestUserAgent._type = TestUserAgent.GOOD;
+    }
+
+    public void test210ConnectionReuseMulti()
+        throws MalformedURLException,
+            IOException
+    {
+        testConnectionReuse(MULTI);
+    }
+
+    public void test211ConnectionReuseNoMulti()
+        throws MalformedURLException,
+            IOException
+    {
+        testConnectionReuse(!MULTI);
+    }
+
+    public void testConnectionReuse2(boolean multi)
+        throws MalformedURLException,
+            IOException
+    {
+        URL url = new URL(makeIisUrl(HttpTestEnv.TEST_URL_APP_IIS_FORM));
+        int response = 0;
+
+        HttpURLConnection.setMultiCredentialsPerAddress(multi);
+
+        HttpURLConnection urlCon;
+        urlCon = HttpURLConnection.openConnection(url);
+        response = urlCon.getResponseCode();
+        HttpConnection conn = urlCon.getConnection();
+        assertEquals(200, response);
+
+        String reply = getReply(urlCon);
+        iisCheckReply(reply);
+
+        // Try again with a different user
+        TestUserAgent._type = TestUserAgent.GOOD2;
+        urlCon = HttpURLConnection.openConnection(url);
+        response = urlCon.getResponseCode();
+        assertEquals(200, response);
+        // Multi will get a new connection, otherwise we will reuse the
+        // connection
+        if (multi)
+            assertTrue(conn != urlCon.getConnection());
+        else
+            assertTrue(conn == urlCon.getConnection());
+        reply = getReply(urlCon);
+        iisCheckReply(reply);
+
         checkNoActiveConns(url);
     }
 
+    public void test212ConnectionReuseMulti2()
+        throws MalformedURLException,
+            IOException
+    {
+        testConnectionReuse2(MULTI);
+    }
+
+    public void test213ConnectionReuseNoMulti2()
+        throws MalformedURLException,
+            IOException
+    {
+        testConnectionReuse2(!MULTI);
+    }
+
     // Bug 1949 - Test that an idle connection timeout frees up a connection
-    public void test210ConnectWaitForIdle() throws Exception
+    public void test220ConnectWaitForIdle() throws Exception
     {
         URL url = new URL(makeIisUrl(HttpTestEnv.TEST_URL_APP_IIS_FORM));
 
@@ -436,6 +509,8 @@ public class TestIIS extends HttpTestBase
         // Clean out connections
         HttpURLConnection.closeAllPooledConnections();
 
+        HttpURLConnection.setMultiCredentialsPerAddress(false);
+        
         TestUserAgent._type = TestUserAgent.GOOD;
         TestUserAgent._callCount = 0;
 
@@ -516,6 +591,8 @@ public class TestIIS extends HttpTestBase
     {
         // Clean out connections
         HttpURLConnection.closeAllPooledConnections();
+
+        HttpURLConnection.setMultiCredentialsPerAddress(false);
 
         TestUserAgent._type = TestUserAgent.BAD;
         TestUserAgent._callCount = 0;
@@ -662,6 +739,8 @@ public class TestIIS extends HttpTestBase
         test110PostClose();
         test120MultiPostClose();
         test200Get();
+        test210ConnectionReuseMulti();
+        test211ConnectionReuseNoMulti();
         test205MultiGet();
         test205MultiGet();
         test230GetStream();

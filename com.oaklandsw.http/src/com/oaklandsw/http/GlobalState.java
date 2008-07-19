@@ -28,75 +28,75 @@ import com.oaklandsw.util.StringUtils;
  */
 public class GlobalState
 {
-    private static final Log       _log                             = LogUtils
-                                                                            .makeLogger();
+    private static final Log       _log                                  = LogUtils
+                                                                                 .makeLogger();
 
-    private static final Log       _connLog                         = LogFactory
-                                                                            .getLog(HttpConnection.CONN_LOG);
+    private static final Log       _connLog                              = LogFactory
+                                                                                 .getLog(HttpConnection.CONN_LOG);
     // From RFC 2616 section 8.1.4
-    public static int              DEFAULT_MAX_CONNECTIONS          = 2;
+    public static int              DEFAULT_MAX_CONNECTIONS               = 2;
 
     // public for tests
-    public int                     _maxConns                        = HttpURLConnection.DEFAULT_MAX_CONNECTIONS;
+    public int                     _maxConns                             = HttpURLConnection.DEFAULT_MAX_CONNECTIONS;
 
     // The current conn manager - public so tests can see this
     public HttpConnectionManager   _connManager;
 
     // public for tests
     public String                  _proxyHost;
-    public int                     _proxyPort                       = -1;
+    public int                     _proxyPort                            = -1;
     String                         _proxyUser;
     String                         _proxyPassword;
-    boolean _proxySsl;
-    
+    boolean                        _proxySsl;
+
     String                         _nonProxyHostsString;
 
     private ArrayList              _nonProxyHosts;
 
-    boolean                        _multiCredentialsPerAddress;
-    boolean                        _proxyMultiCredentialsPerAddress;
+    public static final boolean    DEFAULT_MULTI_CREDENTIALS_PER_ADDRESS = true;
+    boolean                        _multiCredentialsPerAddress           = DEFAULT_MULTI_CREDENTIALS_PER_ADDRESS;
 
     int                            _defaultConnectionTimeout;
     int                            _defaultRequestTimeout;
 
     Callback                       _defaultCallback;
 
-    public static final int        DEFAULT_PIPELINING_OPTIONS       = 0;
-    int                            _defaultPipeliningOptions        = DEFAULT_PIPELINING_OPTIONS;
+    public static final int        DEFAULT_PIPELINING_OPTIONS            = 0;
+    int                            _defaultPipeliningOptions             = DEFAULT_PIPELINING_OPTIONS;
 
-    public static final int        DEFAULT_PIPELINING_MAX_DEPTH     = 0;
-    int                            _defaultPipeliningMaxDepth       = DEFAULT_PIPELINING_MAX_DEPTH;
+    public static final int        DEFAULT_PIPELINING_MAX_DEPTH          = 0;
+    int                            _defaultPipeliningMaxDepth            = DEFAULT_PIPELINING_MAX_DEPTH;
 
     // For tests
-    public static final int        DEFAULT_IDLE_TIMEOUT             = 14000;
-    public static final int        DEFAULT_IDLE_PING                = 0;
-    public static final int        DEFAULT_CONNECTION_REQUEST_LIMIT = 0;
+    public static final int        DEFAULT_IDLE_TIMEOUT                  = 14000;
+    public static final int        DEFAULT_IDLE_PING                     = 0;
+    public static final int        DEFAULT_CONNECTION_REQUEST_LIMIT      = 0;
 
-    int                            _defaultIdleTimeout              = DEFAULT_IDLE_TIMEOUT;
+    int                            _defaultIdleTimeout                   = DEFAULT_IDLE_TIMEOUT;
 
-    int                            _defaultIdlePing                 = DEFAULT_IDLE_PING;
+    int                            _defaultIdlePing                      = DEFAULT_IDLE_PING;
 
-    int                            _defaultConnectionRequestLimit   = DEFAULT_CONNECTION_REQUEST_LIMIT;
+    int                            _defaultConnectionRequestLimit        = DEFAULT_CONNECTION_REQUEST_LIMIT;
 
-    protected static final boolean DEFAULT_USE_10_KEEPALIVE         = false;
-    boolean                        _use10KeepAlive                  = DEFAULT_USE_10_KEEPALIVE;
+    protected static final boolean DEFAULT_USE_10_KEEPALIVE              = false;
+    boolean                        _use10KeepAlive                       = DEFAULT_USE_10_KEEPALIVE;
 
-    int                            _ntlmPreferredEncoding           = HttpURLConnection.NTLM_ENCODING_UNICODE;
+    int                            _ntlmPreferredEncoding                = HttpURLConnection.NTLM_ENCODING_UNICODE;
 
     /**
      * The maximum number of attempts to attempt recovery from a recoverable
      * IOException.
      */
-    public static int              MAX_TRIES                        = 3;
-    int                            _defaultMaxTries                 = MAX_TRIES;
+    public static int              MAX_TRIES                             = 3;
+    int                            _defaultMaxTries                      = MAX_TRIES;
 
-    public static int              MAX_FORWARDS                     = 100;
-    int                            _defaultMaxForwards              = MAX_FORWARDS;
+    public static int              MAX_FORWARDS                          = 100;
+    int                            _defaultMaxForwards                   = MAX_FORWARDS;
 
-    private static int             DEFAULT_RETRY_INTERVAL           = 0;
-    int                            _retryInterval                   = DEFAULT_RETRY_INTERVAL;
+    private static int             DEFAULT_RETRY_INTERVAL                = 0;
+    int                            _retryInterval                        = DEFAULT_RETRY_INTERVAL;
 
-    private static int             DEFAULT_AUTHENTICATION_TYPE      = 0;
+    private static int             DEFAULT_AUTHENTICATION_TYPE           = 0;
     int                            _defaultAuthenticationType;
     int                            _defaultProxyAuthenticationType;
 
@@ -106,6 +106,9 @@ public class GlobalState
 
     HostnameVerifier               _defaultHostnameVerifier;
 
+    boolean                        _defaultVerifySsl;
+    boolean                        _defaultForceSsl;
+
     CookieContainer                _defaultCookieContainer;
 
     CookieSpec                     _defaultCookieSpec;
@@ -114,8 +117,8 @@ public class GlobalState
 
     AbstractSocketFactory          _defaultSocketFactory;
 
-    int                            _writeBufferSize                 = HttpURLConnection.DEFAULT_SEND_BUFFER_SIZE;
-    int                            _readBufferSize                  = HttpURLConnection.DEFAULT_RECEIVE_BUFFER_SIZE;
+    int                            _writeBufferSize                      = HttpURLConnection.DEFAULT_SEND_BUFFER_SIZE;
+    int                            _readBufferSize                       = HttpURLConnection.DEFAULT_RECEIVE_BUFFER_SIZE;
 
     boolean                        _fileNotFoundOn404;
 
@@ -137,6 +140,7 @@ public class GlobalState
         // This one is created only if needed because it can take a long time
         _defaultSSLSocketFactory = null;
         _defaultSocketFactory = new AbstractSocketFactory();
+        _defaultVerifySsl = true;
     }
 
     void setConnManager(HttpConnectionManager connManager)
@@ -203,8 +207,8 @@ public class GlobalState
     /**
      * Set the proxy host to use for all connections.
      * 
-     * @param proxyHost -
-     *            the proxy host name
+     * @param proxyHost
+     *            - the proxy host name
      */
     void setNonProxyHosts(String hosts)
     {

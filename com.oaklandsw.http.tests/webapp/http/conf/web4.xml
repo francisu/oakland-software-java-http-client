@@ -20,7 +20,7 @@
 
 	<!-- NTLMv2 -->
 
-	<!-- NTLMv2 - level 5 -->
+	<!-- NTLMv2 - level 5 - no domain controller -->
   <filter>
     <filter-name>Ntlm2HttpFilter5</filter-name>
     <filter-class>com.oaklandsw.http.servlet.NtlmHttpFilter</filter-class>
@@ -29,20 +29,12 @@
       <param-value>192.168.1.20</param-value>
     </init-param>
     <init-param>
-      <param-name>jcifs.smb.client.domain</param-name>
-      <param-value>oaklandswtest.com</param-value>
-    </init-param>
-    <init-param>
-      <param-name>jcifs.netbios.wins</param-name>
+      <param-name>jcifs.smb.client.server</param-name>
       <param-value>repoman</param-value>
     </init-param>
     <init-param>
       <param-name>jcifs.smb.client.soTimeout</param-name>
       <param-value>5000</param-value>
-    </init-param>
-    <init-param>
-      <param-name>jcifs.smb.lmCompatibility</param-name>
-      <param-value>5</param-value>
     </init-param>
     <init-param>
       <param-name>jcifs.util.loglevel</param-name>

@@ -23,37 +23,6 @@ public final class HttpTest
 
     public HttpTest() throws Exception
     {
-        System.out
-                .println("AdminConsoleJnlpLauncher - using allCertsTrustManager ");
-
-        TrustManager[] allCertsTrustManager = new TrustManager[] { new X509TrustManager()
-        {
-
-            public X509Certificate[] getAcceptedIssuers()
-            {
-                System.out.println("\ngetAcceptedIssuers\n");
-                return null;
-            }
-
-            public void checkClientTrusted(X509Certificate[] certs,
-                                           String authType)
-            {
-                System.out.println("\ncheckClientTrusted\n");
-
-            }
-
-            public void checkServerTrusted(X509Certificate[] certs,
-                                           String authType)
-            {
-                // System.out.println("\ncheckServerTrusted\n");
-
-            }
-        } };
-
-        // Install the all-trusting trust manager
-
-        // URL testURL = new URL(urlString);
-
         // Register Oakland Software HttpClient
         System.out
                 .println("AdminConsoleJnlpLauncher - Register HttpURLConnection");
@@ -74,11 +43,30 @@ public final class HttpTest
         });
 
         System.out
-                .println("AdminConsoleJnlpLauncher - Installing custom trust manager");
+                .println("AdminConsoleJnlpLauncher - using allCertsTrustManager ");
+
+        TrustManager[] allCertsTrustManager = new TrustManager[] { new X509TrustManager()
+        {
+            public X509Certificate[] getAcceptedIssuers()
+            {
+                return null;
+            }
+
+            public void checkClientTrusted(X509Certificate[] certs,
+                                           String authType)
+            {
+            }
+
+            public void checkServerTrusted(X509Certificate[] certs,
+                                           String authType)
+            {
+            }
+        } };
+
         SSLContext sc = SSLContext.getInstance("SSL");
         sc.getClientSessionContext();
         sc.init(null, allCertsTrustManager, new SecureRandom());
-
+        
         // Register the SocketFactory / Hostname Verifier for Oakland HttpClient
         HttpURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
         HttpURLConnection.setDefaultHostnameVerifier(new HostnameVerifier()

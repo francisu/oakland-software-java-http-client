@@ -1,5 +1,5 @@
 //
-// Copyright 2002-3003, oakland software, all rights reserved.
+// Copyright 2002-2008, oakland software, all rights reserved.
 //
 // May not be used or redistributed without specific written
 // permission from oakland software.
@@ -42,74 +42,78 @@ public class ChallengeMessage extends Message
         return _targetInfo;
     }
 
+    protected static final String NO_TARGET_MESSAGE = "The client has requested the authentication "
+                                                        + "target which is either a domain name "
+                                                        + "(if part of a domain) or workstation name (if not).  "
+                                                        + "This must be set using the jcifs.smb.client.domain "
+                                                        + "or jcifs.smb.client.server property";
+
     // This is used for the JCIFS integration
     public void setupOutgoing(byte[] nonce,
                               NegotiateMessage nmsg,
-                              byte[] targetInfo,
-                              String targetName)
+                              String domain,
+                              String host)
     {
-        if (targetName == null)
-        {
-            throw new IllegalArgumentException("Must specify targetName - "
-                + "make sure the jcifs.smb.client.domain parameter is set");
-        }
-
         if (_log.isDebugEnabled())
         {
             _log.debug("setupOutgoing: nonce: " + HexFormatter.dump(nonce));
-            _log.debug("targetInfo (defaultTargetInfo): \n"
-                + HexFormatter.dump(targetInfo));
-            _log.debug("targetName (defaultDomain): \n" + targetName);
         }
 
-        setFlags(Ntlm._challengeMessageFlags);
+        setFlags(Ntlm._challengeMessageFlags | nmsg.getFlags());
 
         setNonce(nonce);
 
-        // Per SMB Spec target info is not used
-        // However the spec does not seem to match what is done
-        if ((nmsg._flags & Message.NEGOTIATE_TARGET_INFO) != 0)
+        if ((nmsg._flags & Message.REQUEST_TARGET) != 0)
         {
-            if (targetInfo == null)
-                throw new IllegalStateException("Negotiate message specifies NEG_TARGET_INFO, but no targetInfo supplied");
-
+            if (domain != null)
+            {
+                _targetName = domain;
+                _flags |= Message.TARGET_TYPE_DOMAIN;
+                if (_log.isDebugEnabled())
+                    _log.debug("targetName (domain): " + _targetName);
+            }
+            else if (host != null)
+            {
+                _targetName = host;
+                _flags |= Message.TARGET_TYPE_SERVER;
+                if (_log.isDebugEnabled())
+                    _log.debug("targetName (host): " + _targetName);
+            }
+            else
+            {
+                throw new IllegalStateException(NO_TARGET_MESSAGE);
+            }
         }
 
-        // Per SMB Spec (3.2.4.2.3) target info is not used
-        // However the spec does not seem to match what is done
-        if (targetInfo != null)
+        if (true || (nmsg._flags & Message.NEGOTIATE_TARGET_INFO) != 0)
         {
+            if (domain == null && host == null)
+            {
+                throw new IllegalStateException(NO_TARGET_MESSAGE);
+            }
+            _targetInfo = Ntlm.createTargetInfo(domain, host);
             _flags |= Message.NEGOTIATE_TARGET_INFO;
-            _targetInfo = targetInfo;
+            if (_log.isDebugEnabled())
+            {
+                _log.debug("targetInfo: \n" + HexFormatter.dump(_targetInfo));
+            }
         }
 
-        // Per SMB spec target name is host
-        // However the spec does not seem to match what is done
-        if (targetName != null)
-        {
-            _targetName = targetName;
-            // Per SMB spec this flag is not set
-            _flags |= Message.TARGET_TYPE_DOMAIN;
-        }
-
-        // Per SMB spec encoding is OEM
-        // However we will follow the negotiate message
-
+        // We prefer unicode, so turn of OEM if that is requested.
+        // Otherwise, OEM was requested
         if ((nmsg._flags & Message.NEGOTIATE_UNICODE) != 0)
-        {
-            _flags |= Message.NEGOTIATE_UNICODE;
-        }
-        else
-        {
-            // Assume OEM if nothing specified
-            _flags |= Message.NEGOTIATE_OEM;
-        }
+            _flags &= ~Message.NEGOTIATE_OEM;
     }
 
     public int decode() throws HttpException
     {
         int index = super.decode();
+        decodeAfterHeader(index);
+        return index;
+    }
 
+    public int decodeAfterHeader(int index) throws HttpException
+    {
         if (_type != MSG_CHALLENGE)
         {
             throw new HttpException("Invalid message type - expected: "
@@ -270,7 +274,7 @@ public class ChallengeMessage extends Message
     {
         if (_targetName != null)
         {
-            sb.append("  targetName: \n");
+            sb.append("  targetName: ");
             sb.append(_targetName);
         }
 

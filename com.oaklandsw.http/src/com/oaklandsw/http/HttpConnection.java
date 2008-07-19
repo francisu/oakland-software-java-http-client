@@ -53,7 +53,6 @@
  * Software Foundation, please see <http://www.apache.org/>.
  * 
  * [Additional notices, if required by prior licensing conditions]
- * 
  */
 
 package com.oaklandsw.http;
@@ -122,7 +121,8 @@ public class HttpConnection
     String                     _proxyKey;
 
     // Information about the host/port etc that controls this connection
-    ConnectionInfo             _connectionInfo;
+    // public for tests
+    public ConnectionInfo      _connectionInfo;
 
     HttpConnectionManager      _connManager;
 
@@ -170,6 +170,9 @@ public class HttpConnection
     HttpURLConnection          _creatingUrlCon;
 
     HostnameVerifier           _hostnameVerifier;
+
+    // Used to indicate a bracket is required around the host
+    boolean                    _literalIpV6;
 
     boolean                    _tunnelEstablished;
 
@@ -238,7 +241,7 @@ public class HttpConnection
 
     // For testing
     public static boolean      _pingDone;
-    public static boolean _testTimeout;
+    public static boolean      _testTimeout;
 
     static String stateToString(int state)
     {
@@ -318,6 +321,7 @@ public class HttpConnection
             String host,
             int port,
             boolean secure,
+            boolean ipV6Literal,
             String handle)
     {
         if (_connLog.isDebugEnabled())
@@ -348,6 +352,7 @@ public class HttpConnection
         _port = port;
         _ssl = secure;
         _connectionKey = handle;
+        _literalIpV6 = ipV6Literal;
         setHostPort();
         // _queue = new ArrayBlockingQueue(6000);
         _queue = new LinkedBlockingQueue();
@@ -373,6 +378,11 @@ public class HttpConnection
     {
         assertNotOpen();
         _hostnameVerifier = hostnameVerifier;
+    }
+
+    void setLiteralIpV6(boolean lit)
+    {
+        _literalIpV6 = lit;
     }
 
     /**
@@ -448,14 +458,18 @@ public class HttpConnection
 
     private void setHostPort()
     {
+        String host = _host;
+        if (_literalIpV6)
+            host = '[' + host + ']';
+
         // Always have the port number
-        _hostPort = _host + ":" + getPort();
+        _hostPort = host + ':' + getPort();
 
         // Don't show the port on the URL if its the default
         if (_port < 0 || (_port == 80 && !_ssl) || (_port == 443 && _ssl))
-            _hostPortURL = _host;
+            _hostPortURL = host;
         else
-            _hostPortURL = _host + ":" + _port;
+            _hostPortURL = host + ":" + _port;
 
     }
 
@@ -724,15 +738,15 @@ public class HttpConnection
     // --------------------------------------------------- Other Public Methods
 
     /**
-     * Set my {@link Socket}'s timeout, via {@link Socket#setSoTimeout}. If
-     * the connection is already open, the SO_TIMEOUT is changed. If no
-     * connection is open, then subsequent connections will use the timeout
-     * value. This timeout controls the time to wait for read operations.
+     * Set my {@link Socket}'s timeout, via {@link Socket#setSoTimeout}. If the
+     * connection is already open, the SO_TIMEOUT is changed. If no connection
+     * is open, then subsequent connections will use the timeout value. This
+     * timeout controls the time to wait for read operations.
      * 
      * @param timeout
      *            the timeout value
-     * @throws SocketException -
-     *             if there is an error in the underlying protocol, such as a
+     * @throws SocketException
+     *             - if there is an error in the underlying protocol, such as a
      *             TCP error.
      * @throws IllegalStateException
      *             if I am not connected
@@ -932,7 +946,6 @@ public class HttpConnection
                     + _host
                     + " port: "
                     + _port);
-
             }
 
             checkCertificate(sslSocket.getSession().getPeerCertificateChain()[0],

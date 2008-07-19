@@ -188,6 +188,11 @@ public class TestJCIFS extends TestWebappBase
         testGetMethodParameters(TestUserAgent.GOOD, NTLM_URL_JCIFS_OAK_5);
     }
 
+    public void test2Normal_5_oaklandswtest() throws Exception
+    {
+        testGetMethodParameters(TestUserAgent.OAKLANDSWTEST_DOMAIN, NTLM_URL_JCIFS_OAK_5);
+    }
+
     public void test2Normal_5_2() throws Exception
     {
         testGetMethodParameters(TestUserAgent.GOOD, NTLM_URL_JCIFS_OAK_5_2);

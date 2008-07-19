@@ -40,15 +40,12 @@ public class TestURLMultiConn extends TestWebappBase
         // place
         for (int i = 0; i < 50; i++)
         {
-            System.out.println("Connect: " + i);
+            //System.out.println("Connect: " + i);
             HttpURLConnection urlCon = HttpURLConnection.openConnection(url);
             urlCon.connect();
             assertEquals(200, urlCon.getResponseCode());
-            // urlCon.getInputStream().close();
+            urlCon.getInputStream().close();
         }
-
-        System.out.println("Sleeping");
-        Thread.sleep(20000);
 
     }
 

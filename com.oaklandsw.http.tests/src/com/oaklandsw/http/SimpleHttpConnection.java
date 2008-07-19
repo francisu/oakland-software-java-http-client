@@ -108,7 +108,7 @@ public class SimpleHttpConnection extends HttpConnection
 
     public SimpleHttpConnection()
     {
-        super(null, null, -1, "localhost", 80, false, "none");
+        super(null, null, -1, "localhost", 80, false, false, "none");
         setup();
         _connectionInfo = new ConnectionInfo(_connManager, "localhost", null);
         _output = new ExposedBufferOutputStream(new ByteArrayOutputStream(),
@@ -117,7 +117,7 @@ public class SimpleHttpConnection extends HttpConnection
 
     public SimpleHttpConnection(String host, int port, boolean isSecure)
     {
-        super(null, null, -1, host, port, isSecure, "none");
+        super(null, null, -1, host, port, isSecure, false, "none");
         setup();
         _connectionInfo = new ConnectionInfo(_connManager, host, null);
     }

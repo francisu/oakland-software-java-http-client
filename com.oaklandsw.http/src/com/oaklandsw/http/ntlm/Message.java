@@ -87,7 +87,7 @@ public class Message implements Dump
 
     public static final long      NEGOTIATE_KEY_EXCH                 = 0x40000000;
 
-    public static final long      NEGOTIATE_80000000                 = 0x80000000;
+    public static final long      NEGOTIATE_56                       = 0x80000000;
 
     protected long                _flags;
 
@@ -261,8 +261,8 @@ public class Message implements Dump
             ret.append("NEG_128 ");
         if ((flags & NEGOTIATE_KEY_EXCH) != 0)
             ret.append("NEG_KEY_EXCH ");
-        if ((flags & NEGOTIATE_80000000) != 0)
-            ret.append("NEG_80000000 ");
+        if ((flags & NEGOTIATE_56) != 0)
+            ret.append("NEG_56 ");
         return ret.toString();
     }
 

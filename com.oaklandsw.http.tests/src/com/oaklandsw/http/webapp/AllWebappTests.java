@@ -21,7 +21,8 @@ public class AllWebappTests extends TestCaseBase
         suite.addTest(TestAxis1.suite());
         suite.addTest(TestAxis2.suite());
         suite.addTest(TestIIS.suite());
-        suite.addTest(TestJCIFS.suite());
+        // SSO no longer supported
+        //suite.addTest(TestJCIFS.suite());
         suite.addTest(TestExplicitConnection.suite());
         suite.addTest(TestMethods.suite());
         suite.addTest(TestAuthType.suite());
@@ -42,6 +43,8 @@ public class AllWebappTests extends TestCaseBase
         suite.addTest(TestWebStart.suite());
         suite.addTest(TestTunneling.suite());
         suite.addTest(TestFtpProxy.suite());
+        suite.addTest(TestURLConn.suite());
+        suite.addTest(TestURLMultiConn.suite());
         suite.addTest(TestSSL.suite());
         return suite;
     }

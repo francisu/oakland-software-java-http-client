@@ -17,7 +17,7 @@ public class HttpTestEnv
     // Configured for NTLM level 5
     public static final String WINDOWS_HOST          = System
                                                              .getProperty("oaklandsw.windowshost",
-                                                                          "192.168.1.20");           // repoman
+                                                                          "repoman");                   // repoman
 
     // Configured for NTLM level 5
     public static final String WIN2K3_HOST           = System
@@ -32,6 +32,10 @@ public class HttpTestEnv
     public static final String LINUX_HOST            = System
                                                              .getProperty("oaklandsw.linuxhost",
                                                                           "192.168.1.25");
+
+    public static final String LINUX_HOST6           = System
+                                                             .getProperty("oaklandsw.linuxhost",
+                                                                          "fe80::218:f3ff:fe5e:6538");
 
     public static String       TEST_WEBEXT_SSL_HOST  = "www.verisign.com";
 
@@ -161,12 +165,19 @@ public class HttpTestEnv
     // For anything on the IIS machine, including NTLM
     public static String       TEST_IIS_USER                     = "httptest";
     public static String       TEST_IIS_PASSWORD                 = "httptestpw";
+    public static String       TEST_IIS_USER2                    = "httptest2";
+    public static String       TEST_IIS_PASSWORD2                = "httptestpw2";
     public static String       TEST_IIS_DOMAIN                   = "oaklandsw";
     public static String       TEST_IIS_HOST_0                   = IIS_HOST_0;
     public static String       TEST_IIS_HOST_5                   = IIS_HOST_5;
     public static String       TEST_IIS_DOMAIN_USER              = TEST_IIS_DOMAIN
                                                                      + "\\"
                                                                      + TEST_IIS_USER;
+
+    public static String       TEST_OAKLANDSW_TEST_DOMAIN        = "oaklandswtest.com";
+    public static String       TEST_OAKLANDSW_TEST_USER          = "http_oaklandswtest";
+    public static String       TEST_OAKLANDSW_TEST_PASSWORD      = TEST_IIS_PASSWORD;
+
     public static String       TEST_URL_APP_IIS                  = "";
     public static String       TEST_URL_APP_IIS_FORM             = "Form_JScript.asp";
     public static String       TEST_URL_APP_IIS_QUERY_STRING     = "QueryString_JScript.asp";

@@ -51,7 +51,12 @@ public class NegotiateMessage extends Message
     public int decode() throws HttpException
     {
         int index = super.decode();
+        decodeAfterHeader(index);
+        return 0;
+    }
 
+    public int decodeAfterHeader(int index) throws HttpException
+    {
         if (_type != MSG_NEGOTIATE)
             throw new HttpException("Invalid message type");
 
@@ -103,19 +108,39 @@ public class NegotiateMessage extends Message
         int hostOffset = NEGOTIATE_HEADER_LEN;
         int domainOffset = NEGOTIATE_HEADER_LEN + hostLen;
 
-        _flags = NEGOTIATE_OEM
-            | NEGOTIATE_NTLM
-            | NEGOTIATE_OEM_DOMAIN_SUPPLIED
-            | NEGOTIATE_OEM_WORKSTATION_SUPPLIED
-            | NEGOTIATE_ALWAYS_SIGN;
+        if (!false)
+        {
+            // The real values
+            _flags = NEGOTIATE_OEM
+                | NEGOTIATE_NTLM
+                | NEGOTIATE_OEM_DOMAIN_SUPPLIED
+                | NEGOTIATE_OEM_WORKSTATION_SUPPLIED
+                | NEGOTIATE_ALWAYS_SIGN;
 
-        // Offer Unicode if we prefer it
-        if (HttpURLConnection.getNtlmPreferredEncoding() == HttpURLConnection.NTLM_ENCODING_UNICODE)
-            _flags |= NEGOTIATE_UNICODE;
+            // Offer Unicode if we prefer it
+            if (HttpURLConnection.getNtlmPreferredEncoding() == HttpURLConnection.NTLM_ENCODING_UNICODE)
+                _flags |= NEGOTIATE_UNICODE;
 
-        // These flags request NTLM V2 authentication if supported on the server
-        if (!_testForceV1)
-            _flags |= NEGOTIATE_NTLM2 | REQUEST_TARGET;
+            // These flags request NTLM V2 authentication if supported on the
+            // server
+            if (!_testForceV1)
+                _flags |= NEGOTIATE_NTLM2
+                    | REQUEST_TARGET
+                    | NEGOTIATE_TARGET_INFO;
+        }
+        else
+        {
+            // For testing
+            _flags = NEGOTIATE_128
+                | 0x02000000
+                | NEGOTIATE_56
+                | NEGOTIATE_NTLM
+                | NEGOTIATE_NTLM2
+                | NEGOTIATE_ALWAYS_SIGN
+                | NEGOTIATE_UNICODE
+                | REQUEST_TARGET
+                | NEGOTIATE_OEM;
+        }
 
         if (domainLen == 0)
             domainOffset = 0;

@@ -47,7 +47,6 @@
  * Software Foundation, please see <http://www.apache.org/>.
  * 
  * [Additional notices, if required by prior licensing conditions]
- * 
  */
 
 package com.oaklandsw.http.local;
@@ -73,64 +72,71 @@ public class TestURIUtil extends TestCase
         new URITestCase("http://www.server.com/path1/path2", "/path1/path2"),
         new URITestCase("http://www.server.com/path1/path2/", "/path1/path2/"),
         new URITestCase("http://www.server.com/path1/path2?query=string",
-            "/path1/path2"),
+                        "/path1/path2"),
         new URITestCase("http://www.server.com/path1/path2/?query=string",
-            "/path1/path2/"),
+                        "/path1/path2/"),
         new URITestCase("www.noscheme.com/path1/path2", "/path1/path2"),
         new URITestCase("www.noscheme.com/path1/path2#anchor?query=string",
-            "/path1/path2"),
+                        "/path1/path2"),
         new URITestCase("/noscheme/nohost/path", "/noscheme/nohost/path"),
         new URITestCase("http://www.server.com", "/"),
         new URITestCase("https://www.server.com:443/ssl/path", "/ssl/path"),
+        new URITestCase("https://[1:2:3]:443/ssl/path", "/ssl/path"),
+        new URITestCase("https://[1:2:3]/ssl/path", "/ssl/path"),
         new URITestCase("http://www.server.com:8080/path/with/port",
-            "/path/with/port")         };
+                        "/path/with/port") };
 
     URITestCase queryTests[]            = {
         new URITestCase("http://www.server.com/path1/path2", null),
         new URITestCase("http://www.server.com/path1/path2?query=string",
-            "query=string"),
+                        "query=string"),
         new URITestCase("http://www.server.com/path1/path2/?query=string",
-            "query=string"),
+                        "query=string"),
         new URITestCase("www.noscheme.com/path1/path2#anchor?query=string",
-            "query=string"),
+                        "query=string"),
         new URITestCase("/noscheme/nohost/path?query1=string1&query2=string2",
-            "query1=string1&query2=string2"),
-        new URITestCase(
-            "https://www.server.com:443/ssl/path?query1=string1&query2=string2",
-            "query1=string1&query2=string2"),
-        new URITestCase(
-            "http://www.server.com:8080/path/with/port?query1=string1&query2=string2",
-            "query1=string1&query2=string2") };
+                        "query1=string1&query2=string2"),
+        new URITestCase("https://www.server.com:443/ssl/path?query1=string1&query2=string2",
+                        "query1=string1&query2=string2"),
+        new URITestCase("https://[1:2:3]:443/ssl/path?query1=string1&query2=string2",
+                        "query1=string1&query2=string2"),
+        new URITestCase("https://[1:2:3]/ssl/path?query1=string1&query2=string2",
+                        "query1=string1&query2=string2"),
+        new URITestCase("http://www.server.com:8080/path/with/port?query1=string1&query2=string2",
+                        "query1=string1&query2=string2") };
 
     URITestCase hostPortTests[]         = {
         new URITestCase("http://www.server.com/path1/path2", "www.server.com"),
         new URITestCase("http://www.server.com:80/path1/path2",
-            "www.server.com:80"),
+                        "www.server.com:80"),
         new URITestCase("http://www.server.com/path1/path2?query=string",
-            "www.server.com"),
+                        "www.server.com"),
         new URITestCase("http://www.server.com/path1/path2/?query=string",
-            "www.server.com"),
+                        "www.server.com"),
         new URITestCase("www.noscheme.com/path1/path2#anchor?query=string",
-            "www.noscheme.com"),
+                        "www.noscheme.com"),
         new URITestCase("www.noscheme.com:443/path1/path2#anchor?query=string",
-            "www.noscheme.com:443"),
+                        "www.noscheme.com:443"),
         new URITestCase("/noscheme/nohost/path?query1=string1", null),
         new URITestCase("https://www.server.com:443/ssl/path",
-            "www.server.com:443"),
+                        "www.server.com:443"),
         new URITestCase("http://www.server.com:8080/path/with/port",
-            "www.server.com:8080"),
+                        "www.server.com:8080"),
         new URITestCase("http://www.server.com:8080#fragment",
-            "www.server.com:8080"),
+                        "www.server.com:8080"),
         new URITestCase("http://www.server.com#fragment", "www.server.com"),
         new URITestCase("http://repoman#fragment", "repoman"),
         new URITestCase("http://repoman?query=value", "repoman"),
         new URITestCase("http://www.server.com:8080?query=value",
-            "www.server.com:8080"),
+                        "www.server.com:8080"),
         new URITestCase("http://www.server.com:8080/path?query=value",
-            "www.server.com:8080"),
+                        "www.server.com:8080"),
         new URITestCase("http://www.server.com:8080/path/?query=value",
-            "www.server.com:8080"),
+                        "www.server.com:8080"),
         new URITestCase("http://www.server.com?query=value", "www.server.com"),
+        new URITestCase("http://[1:2:3]:8080", "[1:2:3]:8080"),
+        new URITestCase("http://[1]:8080", "[1]:8080"),
+        new URITestCase("http://[:1122]:8080", "[:1122]:8080"),
         new URITestCase("http://www.server.com?query=value/", "www.server.com") };
 
     URITestCase protocolTests[]         = {
@@ -138,33 +144,36 @@ public class TestURIUtil extends TestCase
         new URITestCase("https://www.server.com:80/path1/path2", "https"),
         new URITestCase("ftp://www.server.com/path1/path2?query=string", "ftp"),
         new URITestCase("www.noscheme.com/path1/path2#anchor?query=string",
-            null)                      };
+                        null)          };
 
     URITestCase protocolHostPortTests[] = {
         new URITestCase("http://www.server.com/path1/path2",
-            "http://www.server.com"),
+                        "http://www.server.com"),
         new URITestCase("https://www.server.com:80/path1/path2",
-            "https://www.server.com:80"),
+                        "https://www.server.com:80"),
         new URITestCase("ftp://www.server.com/path1/path2?query=string",
-            "ftp://www.server.com"),
+                        "ftp://www.server.com"),
         new URITestCase("www.noscheme.com/path1/path2#anchor?query=string",
-            null),
+                        null),
         new URITestCase("http://www.server.com:8080#fragment",
-            "http://www.server.com:8080"),
+                        "http://www.server.com:8080"),
         new URITestCase("http://www.server.com#fragment",
-            "http://www.server.com"),
+                        "http://www.server.com"),
         new URITestCase("http://repoman#fragment", "http://repoman"),
         new URITestCase("http://repoman?query=value", "http://repoman"),
         new URITestCase("http://www.server.com:8080?query=value",
-            "http://www.server.com:8080"),
+                        "http://www.server.com:8080"),
         new URITestCase("http://www.server.com:8080/path?query=value",
-            "http://www.server.com:8080"),
+                        "http://www.server.com:8080"),
         new URITestCase("http://www.server.com:8080/path/?query=value",
-            "http://www.server.com:8080"),
+                        "http://www.server.com:8080"),
         new URITestCase("http://www.server.com?query=value",
-            "http://www.server.com"),
+                        "http://www.server.com"),
+        new URITestCase("http://[1:2:3]:8080", "http://[1:2:3]:8080"),
+        new URITestCase("http://[1]:8080", "http://[1]:8080"),
+        new URITestCase("http://[:1122]:8080", "http://[:1122]:8080"),
         new URITestCase("http://www.server.com?query=value/",
-            "http://www.server.com")   };
+                        "http://www.server.com") };
 
     public TestURIUtil(String testName)
     {

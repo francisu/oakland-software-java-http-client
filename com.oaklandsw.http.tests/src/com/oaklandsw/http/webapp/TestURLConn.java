@@ -13,6 +13,7 @@ import junit.framework.Test;
 import junit.framework.TestSuite;
 
 import com.oaklandsw.http.HttpConnection;
+import com.oaklandsw.http.HttpTestEnv;
 import com.oaklandsw.http.HttpURLConnection;
 import com.oaklandsw.http.servlet.HeaderServlet;
 import com.oaklandsw.http.servlet.ParamServlet;
@@ -27,6 +28,14 @@ public class TestURLConn extends TestWebappBase
     public TestURLConn(String testName)
     {
         super(testName);
+        _doAuthProxyTest = false;
+        _doAuthCloseProxyTest = false;
+        _doProxyTest = false;
+        _do10ProxyTest = false;
+        _doSocksProxyTest = false;
+        _doIsaProxyTest = false;
+        _doIsaSslProxyTest = false;
+        _doHttps = true;
     }
 
     public static Test suite()
@@ -55,8 +64,6 @@ public class TestURLConn extends TestWebappBase
         assertEquals(url, urlCon.getURL());
         assertTrue(urlCon.getUseCaches());
         assertTrue(urlCon.getIfModifiedSince() == 0);
-        assertFalse(com.oaklandsw.http.HttpURLConnection
-                .getPreemptiveAuthentication());
         urlCon.setIfModifiedSince(1234);
         assertEquals(1234, urlCon.getIfModifiedSince());
     }
@@ -91,36 +98,6 @@ public class TestURLConn extends TestWebappBase
 
     }
 
-    /***************************************************************************
-     * This does not seem to work, even in the JDK stuff public void
-     * testDoInput() throws Exception { URL url = new URL(_urlBase +
-     * ParamServlet.NAME); HttpURLConnection urlCon =
-     * HttpURLConnection.openConnection(url); urlCon.setDoInput(false); try {
-     * urlCon.setRequestMethod("GET"); urlCon.connect(); fail("expected
-     * exception because input not allowed"); } catch (Exception ex) { // this
-     * is expected } }
-     **************************************************************************/
-
-    /***************************************************************************
-     * This does not seem to work, even in the JDK stuff public void
-     * testDefaultRequestProp() throws Exception { URL url = new URL(_urlBase +
-     * HeaderServlet.NAME); int response = 0;
-     * 
-     * URLConnection.setDefaultRequestProperty("default", "request");
-     * assertEquals("request",
-     * URLConnection.getDefaultRequestProperty("default"));
-     * 
-     * HttpURLConnection urlCon = HttpURLConnection.openConnection(url);
-     * urlCon.setRequestMethod("GET");
-     * 
-     * assertEquals("request", urlCon.getRequestProperty("default"));
-     * urlCon.connect(); response = urlCon.getResponseCode(); assertEquals(200,
-     * response);
-     * 
-     * checkReply(urlCon, "name=\"default\";value=\"request\" <br>
-     * "); }
-     **************************************************************************/
-
     public void testResponseStuff() throws Exception
     {
         URL url = new URL(_urlBase + HeaderServlet.NAME);
@@ -144,8 +121,12 @@ public class TestURLConn extends TestWebappBase
         assertEquals(java.net.SocketPermission.class, urlCon.getPermission()
                 .getClass());
 
-        assertEquals("text/html", URLConnection
-                .guessContentTypeFromStream(urlCon.getInputStream()));
+        // Can't guess from the input stream as it's not buffered
+        if (false)
+        {
+            assertEquals("text/html", URLConnection
+                    .guessContentTypeFromStream(urlCon.getInputStream()));
+        }
 
         _log.debug("Field 0: " + urlCon.getHeaderField(0));
         assertTrue(urlCon.getHeaderField(0).indexOf("HTTP") >= 0);
@@ -190,7 +171,7 @@ public class TestURLConn extends TestWebappBase
             urlCon.getOutputStream();
             fail("Should get an exception on getOutputStream() call");
         }
-        catch (IOException ex)
+        catch (IllegalStateException ex)
         {
             // the test worked
         }
@@ -274,7 +255,7 @@ public class TestURLConn extends TestWebappBase
         {
             // got expected exception
         }
-        catch (java.net.BindException ex)
+        catch (java.net.SocketException ex)
         {
             // got expected exception
         }
@@ -307,13 +288,18 @@ public class TestURLConn extends TestWebappBase
         urlCon.getResponseCode();
         HttpConnection conn = urlCon.getConnection();
         Socket socket = conn.getSocket();
-        assertEquals(HttpURLConnection.DEFAULT_SEND_BUFFER_SIZE, socket
-                .getSendBufferSize());
-        assertEquals(HttpURLConnection.DEFAULT_RECEIVE_BUFFER_SIZE, socket
-                .getReceiveBufferSize());
+        if (HttpURLConnection.DEFAULT_SEND_BUFFER_SIZE != -1)
+        {
+            assertEquals(HttpURLConnection.DEFAULT_SEND_BUFFER_SIZE, socket
+                    .getSendBufferSize());
+        }
+        if (HttpURLConnection.DEFAULT_RECEIVE_BUFFER_SIZE != -1)
+        {
+            assertEquals(HttpURLConnection.DEFAULT_RECEIVE_BUFFER_SIZE, socket
+                    .getReceiveBufferSize());
+        }
     }
 
-    
     public void testBufferSizesReceive() throws Exception
     {
         URL url = new URL(_urlBase + HeaderServlet.NAME);
@@ -326,8 +312,11 @@ public class TestURLConn extends TestWebappBase
         HttpConnection conn = urlCon.getConnection();
         Socket socket = conn.getSocket();
         assertEquals(16000, socket.getReceiveBufferSize());
-        assertEquals(HttpURLConnection.DEFAULT_SEND_BUFFER_SIZE, socket
-                .getSendBufferSize());
+        if (HttpURLConnection.DEFAULT_SEND_BUFFER_SIZE != -1)
+        {
+            assertEquals(HttpURLConnection.DEFAULT_SEND_BUFFER_SIZE, socket
+                    .getSendBufferSize());
+        }
     }
 
     public void testBufferSizesSend() throws Exception
@@ -341,8 +330,11 @@ public class TestURLConn extends TestWebappBase
         HttpConnection conn = urlCon.getConnection();
         Socket socket = conn.getSocket();
         assertEquals(32000, socket.getSendBufferSize());
-        assertEquals(HttpURLConnection.DEFAULT_RECEIVE_BUFFER_SIZE, socket
-                .getReceiveBufferSize());
+        if (HttpURLConnection.DEFAULT_RECEIVE_BUFFER_SIZE != -1)
+        {
+            assertEquals(HttpURLConnection.DEFAULT_RECEIVE_BUFFER_SIZE, socket
+                    .getReceiveBufferSize());
+        }
     }
 
     public void testBufferSizesBad() throws Exception
@@ -356,6 +348,55 @@ public class TestURLConn extends TestWebappBase
         {
             // Expected
         }
+    }
+
+    // Test IPV6
+    protected void testIpv6(String address, int result) throws Exception
+    {
+        URL url = new URL("http://" + address);
+        HttpURLConnection urlCon = HttpURLConnection.openConnection(url);
+        urlCon.connect();
+        assertEquals(result, urlCon.getResponseCode());
+        urlCon.getInputStream().close();
+    }
+
+    public void testIpv6_1() throws Exception
+    {
+        // Port 80 is the apache web server which will give a 403
+        testIpv6("[::1]", 403);
+    }
+
+    public void testIpv6_2() throws Exception
+    {
+        testIpv6("[::1]:"
+            + HttpTestEnv.TOMCAT_PORT_1
+            + "/"
+            + HttpTestEnv.TEST_URL_APP_TOMCAT_1
+            + ParamServlet.NAME, 200);
+    }
+
+    public void testIpv6_3() throws Exception
+    {
+        testIpv6("[" + HttpTestEnv.LINUX_HOST6 + "]", 403);
+    }
+
+    public void testIpv6_4() throws Exception
+    {
+        testIpv6("["
+            + HttpTestEnv.LINUX_HOST6
+            + "]:"
+            + HttpTestEnv.TOMCAT_PORT_1
+            + "/"
+            + HttpTestEnv.TEST_URL_APP_TOMCAT_1
+            + ParamServlet.NAME, 200);
+    }
+
+    public void allTestMethods() throws Exception
+    {
+        testIpv6_1();
+        testIpv6_2();
+        testIpv6_3();
+        testIpv6_4();
     }
 
 }

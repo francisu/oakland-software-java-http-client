@@ -437,6 +437,7 @@ public class HttpTestBase extends com.oaklandsw.TestCaseBase
 
     public static void checkNoActiveConns(URL url)
     {
+        _log.debug("checkNoActiveConns");
         int count = getActiveConns(url);
         if (count > 0)
             HttpURLConnection.dumpAll();
@@ -445,6 +446,7 @@ public class HttpTestBase extends com.oaklandsw.TestCaseBase
 
     public static void checkNoTotalConns(URL url)
     {
+        _log.debug("checkNoTotalConns");
         int count = getTotalConns(url);
         if (count > 0)
             HttpURLConnection.dumpAll();

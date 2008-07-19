@@ -23,11 +23,12 @@ public class TestUserAgent implements HttpUserAgent
     public static int        _callCountProxy;
 
     public static final int  GOOD                 = 1;
-    public static final int  NO_DOMAIN            = 2;
-    public static final int  NO_USER              = 3;
-    public static final int  NO_PASSWORD          = 4;
-    public static final int  NO_HOST              = 5;
-    public static final int  NO_HOST_OR_DOMAIN    = 6;
+    public static final int  GOOD2                = 2;
+    public static final int  NO_DOMAIN            = 3;
+    public static final int  NO_USER              = 4;
+    public static final int  NO_PASSWORD          = 5;
+    public static final int  NO_HOST              = 6;
+    public static final int  NO_HOST_OR_DOMAIN    = 7;
     public static final int  BAD                  = 10;
     public static final int  NULL                 = 11;
     public static final int  LOCAL                = 12;
@@ -39,10 +40,16 @@ public class TestUserAgent implements HttpUserAgent
     public static final int  WEBSERVER_DIGEST     = 23;
     public static final int  OAKLANDSWTEST_DOMAIN = 24;
 
+    // Overrides type if specified
+    public int               _localType;
+
     public Credential getCredential(String realm, String url, int scheme)
     {
         _callCount++;
-        return getCredential(_type, realm, url, scheme);
+        int type = _localType;
+        if (type == 0)
+            type = _type;
+        return getCredential(type, realm, url, scheme);
     }
 
     protected Credential getCredential(int type,
@@ -75,6 +82,13 @@ public class TestUserAgent implements HttpUserAgent
                     case GOOD:
                         ntlmCred.setUser(HttpTestEnv.TEST_IIS_USER);
                         ntlmCred.setPassword(HttpTestEnv.TEST_IIS_PASSWORD);
+                        ntlmCred.setDomain(HttpTestEnv.TEST_IIS_DOMAIN);
+                        ntlmCred.setHost(HttpTestEnv.TEST_IIS_HOST_5);
+                        break;
+
+                    case GOOD2:
+                        ntlmCred.setUser(HttpTestEnv.TEST_IIS_USER2);
+                        ntlmCred.setPassword(HttpTestEnv.TEST_IIS_PASSWORD2);
                         ntlmCred.setDomain(HttpTestEnv.TEST_IIS_DOMAIN);
                         ntlmCred.setHost(HttpTestEnv.TEST_IIS_HOST_5);
                         break;
@@ -140,9 +154,10 @@ public class TestUserAgent implements HttpUserAgent
                         ntlmCred.setHost("host");
                         break;
                     case OAKLANDSWTEST_DOMAIN:
-                        ntlmCred.setUser(HttpTestEnv.TEST_IIS_USER);
+                        ntlmCred.setUser(HttpTestEnv.TEST_OAKLANDSW_TEST_USER);
                         ntlmCred.setPassword(HttpTestEnv.TEST_IIS_PASSWORD);
-                        ntlmCred.setDomain("oaklandswtest.com");
+                        ntlmCred
+                                .setDomain(HttpTestEnv.TEST_OAKLANDSW_TEST_DOMAIN);
                         ntlmCred.setHost(HttpTestEnv.TEST_IIS_HOST_5);
                         break;
 
@@ -158,6 +173,11 @@ public class TestUserAgent implements HttpUserAgent
                     case GOOD:
                         basicCred.setUser("jakarta");
                         basicCred.setPassword("commons");
+                        break;
+
+                    case GOOD2:
+                        basicCred.setUser("uname");
+                        basicCred.setPassword("passwd");
                         break;
 
                     case WEBSERVER_BASIC:

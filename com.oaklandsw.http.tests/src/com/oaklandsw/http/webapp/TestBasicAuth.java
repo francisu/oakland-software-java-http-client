@@ -71,6 +71,52 @@ public class TestBasicAuth extends TestWebappBase
 
     }
 
+    // bug 2288 problem with sharing the connection based on credentials
+    public void testSimpleAuthGetNoShare() throws Exception
+    {
+        TestUserAgent._type = TestUserAgent.GOOD;
+        
+        HttpURLConnection.setDefaultUserAgent(null);
+        
+        URL url = new URL(_urlBase + BasicAuthServlet.NAME);
+        int response = 0;
+
+        HttpURLConnection urlCon = HttpURLConnection.openConnection(url);
+        urlCon.setRequestMethod("GET");
+        TestUserAgent ua = new TestUserAgent();
+        ua._localType = TestUserAgent.GOOD;
+        urlCon.setUserAgent(ua);
+        urlCon.connect();
+        response = urlCon.getResponseCode();
+        assertEquals(200, response);
+
+        String reply = getReply(urlCon);
+        assertTrue(checkReplyNoAssert(reply,
+                                      "<title>BasicAuth Servlet: GET</title>"));
+        assertTrue(checkReplyNoAssert(reply,
+                                      "<p>You have authenticated as \"jakarta:commons\"</p>"));
+        checkNoActiveConns(url);
+
+        // Try it again, should not get the same connection
+        urlCon = HttpURLConnection.openConnection(url);
+        urlCon.setRequestMethod("GET");
+        ua = new TestUserAgent();
+        ua._localType = TestUserAgent.GOOD2;
+        urlCon.setUserAgent(ua);
+
+        urlCon.connect();
+        response = urlCon.getResponseCode();
+        assertEquals(200, response);
+
+        reply = getReply(urlCon);
+        assertTrue(checkReplyNoAssert(reply,
+                                      "<title>BasicAuth Servlet: GET</title>"));
+        assertTrue(checkReplyNoAssert(reply,
+                                      "<p>You have authenticated as \"uname:passwd\"</p>"));
+        checkNoActiveConns(url);
+
+    }
+
     public void testSimpleAuthPost() throws Exception
     {
         TestUserAgent._type = TestUserAgent.GOOD;
@@ -208,6 +254,8 @@ public class TestBasicAuth extends TestWebappBase
         TestUserAgent._type = TestUserAgent.GOOD;
         TestUserAgent._callCount = 0;
         
+        HttpURLConnection.setMultiCredentialsPerAddress(false);
+        
         URL url = new URL(_urlBase + BasicAuthServlet.NAME);
         HttpURLConnection urlCon = HttpURLConnection.openConnection(url);
         getReply(urlCon);
@@ -234,6 +282,8 @@ public class TestBasicAuth extends TestWebappBase
         TestUserAgent._type = TestUserAgent.BAD;
         TestUserAgent._callCount = 0;
         
+        HttpURLConnection.setMultiCredentialsPerAddress(false);
+
         URL url = new URL(_urlBase + BasicAuthServlet.NAME);
         HttpURLConnection urlCon = HttpURLConnection.openConnection(url);
         assertEquals(401, urlCon.getResponseCode());

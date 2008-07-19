@@ -1106,7 +1106,7 @@ public class HttpURLConnectInternal
         }
         else
         {
-            // Reset this incase it was changed from a previous request
+            // Reset this in case it was changed from a previous request
             _actualMethodPropsSent = _methodProperties;
             len = method.length();
             method.getBytes(0, len, bytes, index);

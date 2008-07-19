@@ -7,6 +7,13 @@ See http://www.oaklandsoftware.com/support.html for current known problems.
 Release Notes
 ------------------------------------------------
 
+Incompatible Changes since release 2.6.0
+------------------------------------------------
+The default value for HttpURLConnection.setMultiCredentialsPerAddress() has been changed
+to true, so the behavior (by default) is as it was in releases prior to 2.5.0.  This
+effectively reverses the API incompatible change introduced in release 2.5.0.
+
+
 Incompatible Changes since release 2.5.0
 ------------------------------------------------
 As of release 2.5.0 the default behavior for managing authentication credentials

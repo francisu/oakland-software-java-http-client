@@ -150,6 +150,7 @@
 
   <!--  the jcifs args need to be the same for both filters set below
         since they are set on a process basis -->
+  <!-- this uses unmodified JCIFS authentication -->
   <filter>
     <filter-name>NtlmHttpFilter</filter-name>
     <filter-class>jcifs.http.NtlmHttpFilter</filter-class>
