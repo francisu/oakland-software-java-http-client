@@ -18,7 +18,9 @@ import com.oaklandsw.http.HttpConnection;
 import com.oaklandsw.http.HttpTestBase;
 import com.oaklandsw.http.HttpTestEnv;
 import com.oaklandsw.http.HttpURLConnection;
+import com.oaklandsw.http.TestUserAgent;
 import com.oaklandsw.http.servlet.RequestBodyServlet;
+import com.oaklandsw.util.LogUtils;
 
 public class TestSSL extends TestWebappBase
 {
@@ -136,8 +138,11 @@ public class TestSSL extends TestWebappBase
     }
 
     // Bug 2202 idle connection ping on a proxied SSL connection can cause problems
+    // bug 2546 don't do idle connection ping if authentication is in progress
     public void testHttpsPostIdleConnectionPing() throws Exception
     {
+        LogUtils.logAll();
+        
         HttpURLConnection.setDefaultIdleConnectionPing(50);
 
         URL url;
@@ -145,21 +150,34 @@ public class TestSSL extends TestWebappBase
 
         _verifierDelay = 100;
         HttpConnection._pingDone = false;
+        TestUserAgent._delayTime = 100;
         
         url = new URL(HttpTestEnv.TEST_LOCAL_SSL_URL + "httptest/index.html");
         urlCon = HttpURLConnection.openConnection(url);
         urlCon.setRequestMethod("POST");
         urlCon.connect();
         assertEquals(200, urlCon.getResponseCode());
+        String data = HttpTestBase.getReply(urlCon);
+        assertTrue("No data returned.", (data.length() > 0));
         
         // Make sure no ping happened in this case
         assertFalse(HttpConnection._pingDone);
-
-        String data = HttpTestBase.getReply(urlCon);
+        
+        Thread.sleep(400);
+        urlCon = HttpURLConnection.openConnection(url);
+        urlCon.setRequestMethod("POST");
+        urlCon.connect();
+        assertEquals(200, urlCon.getResponseCode());
+        data = HttpTestBase.getReply(urlCon);
         assertTrue("No data returned.", (data.length() > 0));
+
+        // Make sure ping is back working
+        assertTrue(HttpConnection._pingDone);
+
         checkNoActiveConns(url);
         HttpURLConnection.setDefaultIdleConnectionPing(0);
         HttpURLConnection.closeAllPooledConnections();
+        LogUtils.logNone();
     }
 
     public void allTestMethods() throws Exception

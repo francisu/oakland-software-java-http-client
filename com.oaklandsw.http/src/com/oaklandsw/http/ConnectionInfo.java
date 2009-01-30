@@ -8,8 +8,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import com.oaklandsw.util.Log;
 
 import com.oaklandsw.util.LogUtils;
 import com.oaklandsw.util.Util;
@@ -21,8 +20,8 @@ class ConnectionInfo
 {
     private static final Log        _log       = LogUtils.makeLogger();
 
-    private static final Log        _connLog   = LogFactory
-                                                       .getLog(HttpConnection.CONN_LOG);
+    private static final Log        _connLog   = LogUtils.makeLogger
+                                                       (HttpConnection.CONN_LOG);
 
     static final int                START_SIZE = 10;
 

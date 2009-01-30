@@ -12,8 +12,7 @@ import java.util.StringTokenizer;
 import javax.net.ssl.SSLSession;
 import javax.net.ssl.SSLSocketFactory;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import com.oaklandsw.util.Log;
 import org.apache.regexp.RE;
 import org.apache.regexp.RESyntaxException;
 
@@ -31,8 +30,8 @@ public class GlobalState
     private static final Log       _log                                  = LogUtils
                                                                                  .makeLogger();
 
-    private static final Log       _connLog                              = LogFactory
-                                                                                 .getLog(HttpConnection.CONN_LOG);
+    private static final Log       _connLog                              = LogUtils
+                                                                                 .makeLogger(HttpConnection.CONN_LOG);
     // From RFC 2616 section 8.1.4
     public static int              DEFAULT_MAX_CONNECTIONS               = 2;
 

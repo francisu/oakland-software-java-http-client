@@ -5,8 +5,7 @@ package com.oaklandsw.http;
 
 import java.io.InterruptedIOException;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import com.oaklandsw.util.Log;
 
 import com.oaklandsw.util.LogUtils;
 
@@ -20,8 +19,8 @@ public class HttpPipelineAsyncThread extends Thread
 {
     private static final Log _log      = LogUtils.makeLogger();
 
-    private static final Log _connLog  = LogFactory
-                                               .getLog(HttpConnection.CONN_LOG);
+    private static final Log _connLog  = LogUtils
+                                               .makeLogger(HttpConnection.CONN_LOG);
 
     // Amount of time in milliseconds this thread will wait before terminating
     static final int         WAIT_TIME = 5000;

@@ -4,9 +4,8 @@ import java.awt.Button;
 import java.awt.Event;
 import java.net.URL;
 
-import org.apache.commons.logging.Log;
-
 import com.oaklandsw.http.HttpURLConnection;
+import com.oaklandsw.util.Log;
 import com.oaklandsw.util.LogUtils;
 
 public class AppletExample extends Applet

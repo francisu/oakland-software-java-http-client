@@ -61,13 +61,13 @@ import java.util.Hashtable;
 import java.util.Map;
 import java.util.StringTokenizer;
 
-import org.apache.commons.logging.Log;
 import org.bouncycastle.util.encoders.Base64;
 
 import com.oaklandsw.http.Authenticator;
 import com.oaklandsw.http.Credential;
 import com.oaklandsw.http.HttpException;
 import com.oaklandsw.http.UserCredential;
+import com.oaklandsw.util.Log;
 import com.oaklandsw.util.LogUtils;
 
 import junit.framework.Test;

@@ -63,7 +63,7 @@ import java.util.Hashtable;
 import java.util.Map;
 import java.util.StringTokenizer;
 
-import org.apache.commons.logging.Log;
+import com.oaklandsw.util.Log;
 import org.bouncycastle.util.encoders.Base64;
 
 import com.oaklandsw.http.ntlm.Ntlm;

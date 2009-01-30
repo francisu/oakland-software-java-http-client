@@ -33,7 +33,7 @@ import org.apache.axis.soap.SOAPConstants;
 import org.apache.axis.transport.http.HTTPConstants;
 import org.apache.axis.utils.JavaUtils;
 import org.apache.axis.utils.Messages;
-import org.apache.commons.logging.Log;
+import com.oaklandsw.util.Log;
 
 import com.oaklandsw.http.Cookie;
 import com.oaklandsw.http.CookieContainer;

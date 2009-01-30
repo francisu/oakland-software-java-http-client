@@ -8,8 +8,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Properties;
 
-import org.apache.commons.logging.Log;
-
+import com.oaklandsw.util.Log;
 import com.oaklandsw.util.LogUtils;
 
 /**
@@ -17,8 +16,7 @@ import com.oaklandsw.util.LogUtils;
  */
 public class PerfComparisonTest
 {
-    static final Log             _log                   = LogUtils
-                                                                .makeLogger("com.oaklandsw.http.TestPerf");
+    static final Log             _log                   = LogUtils.makeLogger();
 
     public static final int      REPEAT_TIMES           = 3;
 
@@ -38,12 +36,13 @@ public class PerfComparisonTest
 
     // Location
     public static final String[] _locationUrls          = new String[] {
-      "http://berlioz/oaklandsw-http/", //
-//      "http://berlioz/cgi-bin/httptest.pl?size=", //
-//      "http://localhost:8080/oaklandsw-http/perf?size=", //
+        "http://berlioz/oaklandsw-http/", //
+        // "http://berlioz/cgi-bin/httptest.pl?size=", //
+        // "http://localhost:8080/oaklandsw-http/perf?size=", //
         "http://repoman:8081/", //
         "http://216.120.249.245/~oakland/", //
-                                                        // "http://67.121.125.19/oaklandsw-http/",
+                                                        // "http://67.121.125.19/oaklandsw-http/"
+                                                        // ,
                                                         // //
                                                         // "http://oaklandswint.page.us/oaklandsw-http/"
                                                         // //
@@ -183,7 +182,7 @@ public class PerfComparisonTest
             tp._quiet = false;
             tp._startTime = startTime;
             tp._expectedSize = _sizes[_currentSizeIndex] * 1024;
-            
+
             tp._requestType = TestPerf.REQ_ID;
 
             // Do a warm-up by running the tests a few times, as the numbers

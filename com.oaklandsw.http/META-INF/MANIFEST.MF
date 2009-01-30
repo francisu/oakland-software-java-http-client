@@ -7,6 +7,7 @@ Bundle-Version: 2.6.7
 Bundle-Vendor: OAKLANDSW
 Require-Bundle: com.oaklandsw.util.jars,
  com.oaklandsw.util,
+ com.oaklandsw.util.log,
  com.oaklandsw.http.jars
 Export-Package: com.oaklandsw.http,
  com.oaklandsw.http.axis,

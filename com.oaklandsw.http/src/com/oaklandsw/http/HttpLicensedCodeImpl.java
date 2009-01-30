@@ -46,11 +46,12 @@ public class HttpLicensedCodeImpl implements LicensedCode
         return null;
     }
 
-    public void showLicense(LicenseManager lm,
+    public boolean showLicense(LicenseManager lm,
                             License lic,
                             String message,
                             boolean showRegister)
     {
+        return true;
     }
 
     public int getLicenseType()
@@ -125,6 +126,16 @@ public class HttpLicensedCodeImpl implements LicensedCode
     public int getProxyPort()
     {
         return 0;
+    }
+
+    public String getProductDescription()
+    {
+        return null;
+    }
+
+    public String getProductName()
+    {
+        return null;
     }
 
 }

@@ -55,7 +55,7 @@ package com.oaklandsw.http.webext;
 import java.io.IOException;
 import java.net.URL;
 
-import org.apache.commons.logging.Log;
+import com.oaklandsw.util.Log;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;

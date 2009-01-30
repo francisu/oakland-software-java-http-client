@@ -8,7 +8,7 @@ import java.io.InterruptedIOException;
 import java.io.OutputStream;
 import java.net.SocketTimeoutException;
 
-import org.apache.commons.logging.Log;
+import com.oaklandsw.util.Log;
 
 import com.oaklandsw.util.LogUtils;
 

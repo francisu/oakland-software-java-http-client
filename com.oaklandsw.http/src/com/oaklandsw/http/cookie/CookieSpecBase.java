@@ -31,7 +31,7 @@ import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.apache.commons.logging.Log;
+import com.oaklandsw.util.Log;
 
 import com.oaklandsw.http.Cookie;
 import com.oaklandsw.http.HeaderElement;

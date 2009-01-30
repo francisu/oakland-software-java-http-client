@@ -61,8 +61,8 @@ package com.oaklandsw.http;
 import java.io.FilterInputStream;
 import java.io.InputStream;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import com.oaklandsw.util.Log;
+import com.oaklandsw.util.LogUtils;
 
 /**
  * Logs all data read to the wire log.
@@ -75,8 +75,8 @@ import org.apache.commons.logging.LogFactory;
 class WireLogInputStream extends FilterInputStream
 {
 
-    private static final Log _wireLog = LogFactory
-                                              .getLog(HttpConnection.WIRE_LOG);
+    private static final Log _wireLog = LogUtils
+                                              .makeLogger(HttpConnection.WIRE_LOG);
 
     private StringBuffer     _traceBuff;
 

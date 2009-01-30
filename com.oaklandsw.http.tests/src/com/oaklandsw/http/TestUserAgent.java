@@ -2,12 +2,11 @@
 
 package com.oaklandsw.http;
 
-import org.apache.commons.logging.Log;
-
 import com.oaklandsw.http.Credential;
 import com.oaklandsw.http.HttpUserAgent;
 import com.oaklandsw.http.NtlmCredential;
 import com.oaklandsw.http.UserCredential;
+import com.oaklandsw.util.Log;
 import com.oaklandsw.util.LogUtils;
 
 public class TestUserAgent implements HttpUserAgent
@@ -43,6 +42,13 @@ public class TestUserAgent implements HttpUserAgent
     // Overrides type if specified
     public int               _localType;
 
+    public static int        _delayTime;
+
+    public static void resetTest()
+    {
+        _delayTime = 0;
+    }
+
     public Credential getCredential(String realm, String url, int scheme)
     {
         _callCount++;
@@ -71,6 +77,18 @@ public class TestUserAgent implements HttpUserAgent
         }
 
         Credential cred = null;
+
+        if (_delayTime != 0)
+        {
+            try
+            {
+                _log.debug("TestUserAgent - Sleeping for: " + _delayTime);
+                Thread.sleep(_delayTime);
+            }
+            catch (InterruptedException e)
+            {
+            }
+        }
 
         switch (scheme)
         {
@@ -250,6 +268,18 @@ public class TestUserAgent implements HttpUserAgent
         {
             _log.debug("TestUserAgent - Returning null proxy cred");
             return null;
+        }
+
+        if (_delayTime != 0)
+        {
+            try
+            {
+                _log.debug("TestUserAgent - Sleeping for: " + _delayTime);
+                Thread.sleep(_delayTime);
+            }
+            catch (InterruptedException e)
+            {
+            }
         }
 
         Credential cred = null;

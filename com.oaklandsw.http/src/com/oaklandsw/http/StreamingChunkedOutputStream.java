@@ -6,7 +6,7 @@ package com.oaklandsw.http;
 import java.io.IOException;
 import java.io.OutputStream;
 
-import org.apache.commons.logging.Log;
+import com.oaklandsw.util.Log;
 
 import com.oaklandsw.util.LogUtils;
 import com.oaklandsw.util.Util;

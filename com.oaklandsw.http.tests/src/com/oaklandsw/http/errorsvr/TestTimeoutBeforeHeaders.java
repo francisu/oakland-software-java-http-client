@@ -1,6 +1,6 @@
 package com.oaklandsw.http.errorsvr;
 
-import org.apache.commons.logging.Log;
+import com.oaklandsw.util.Log;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;

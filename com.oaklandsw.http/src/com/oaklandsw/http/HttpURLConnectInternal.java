@@ -20,8 +20,7 @@ import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import com.oaklandsw.util.Log;
 
 import com.oaklandsw.http.cookie.MalformedCookieException;
 import com.oaklandsw.util.ExposedBufferInputStream;
@@ -39,8 +38,8 @@ public class HttpURLConnectInternal
 {
     private static final Log _log                 = LogUtils.makeLogger();
 
-    private static final Log _connLog             = LogFactory
-                                                          .getLog(HttpConnection.CONN_LOG);
+    private static final Log _connLog             = LogUtils
+                                                          .makeLogger(HttpConnection.CONN_LOG);
 
     private String           _scheme;
 

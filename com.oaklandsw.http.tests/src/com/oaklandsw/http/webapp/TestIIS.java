@@ -7,7 +7,7 @@ import java.io.OutputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-import org.apache.commons.logging.Log;
+import com.oaklandsw.util.Log;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
@@ -319,6 +319,29 @@ public class TestIIS extends HttpTestBase
         // we are running HTTP 1.0 which closes the connection
         // each time
         return !_inTestGroup || _in10ProxyTest || _inIsaProxyTest;
+    }
+
+    
+    // bug 2546 don't do idle connection ping if authentication is in progress
+    // Actually this bug only applies to the SSL proxy case
+    public void test225ConnectUserAgentWait() throws Exception
+    {
+        URL url = new URL(makeIisUrl(HttpTestEnv.TEST_URL_APP_IIS_FORM));
+
+        LogUtils.logAll();
+        
+        HttpURLConnection.setDefaultIdleConnectionPing(50);
+        
+        TestUserAgent._delayTime = 100;
+
+        HttpURLConnection.setMaxConnectionsPerHost(1);
+
+        // Create connection with the good auth params
+        HttpURLConnection urlCon = HttpURLConnection.openConnection(url);
+        urlCon.setRequestMethod("GET");
+        urlCon.getResponseCode();
+        assertEquals(200, urlCon.getResponseCode());
+        urlCon.getInputStream().close();
     }
 
     public void test230GetStream() throws MalformedURLException, IOException

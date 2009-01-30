@@ -17,12 +17,12 @@ import org.apache.commons.httpclient.auth.AuthScope;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.params.HttpConnectionManagerParams;
 import org.apache.commons.httpclient.params.HttpMethodParams;
-import org.apache.commons.logging.Log;
 
 import com.oaklandsw.http.AutomaticHttpRetryException;
 import com.oaklandsw.http.Callback;
 import com.oaklandsw.http.NtlmCredential;
 import com.oaklandsw.http.ntlm.Ntlm;
+import com.oaklandsw.util.Log;
 import com.oaklandsw.util.LogUtils;
 import com.oaklandsw.util.Util;
 
@@ -31,8 +31,7 @@ import com.oaklandsw.util.Util;
  */
 public class TestPerf
 {
-    static final Log      _log             = LogUtils
-                                                   .makeLogger("com.oaklandsw.http.TestPerf");
+    static final Log      _log             = LogUtils.makeLogger();
 
     byte[]                _buffer;
 

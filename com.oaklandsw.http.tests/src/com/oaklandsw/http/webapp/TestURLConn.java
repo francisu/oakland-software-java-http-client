@@ -7,7 +7,7 @@ import java.net.Socket;
 import java.net.URL;
 import java.net.URLConnection;
 
-import org.apache.commons.logging.Log;
+import com.oaklandsw.util.Log;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;

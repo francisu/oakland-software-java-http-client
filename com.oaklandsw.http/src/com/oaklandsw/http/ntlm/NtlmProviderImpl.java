@@ -9,7 +9,7 @@ package com.oaklandsw.http.ntlm;
 
 import java.io.UnsupportedEncodingException;
 
-import org.apache.commons.logging.Log;
+import com.oaklandsw.util.Log;
 import org.bouncycastle.crypto.Digest;
 import org.bouncycastle.crypto.digests.MD4Digest;
 import org.bouncycastle.crypto.digests.MD5Digest;

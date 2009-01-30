@@ -5,7 +5,7 @@ package com.oaklandsw.http;
 
 import java.net.Socket;
 
-import org.apache.commons.logging.Log;
+import com.oaklandsw.util.Log;
 
 import com.oaklandsw.util.LogUtils;
 

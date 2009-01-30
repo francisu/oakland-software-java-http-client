@@ -8,9 +8,8 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URL;
 
-import org.apache.commons.logging.Log;
-
 //import com.oaklandsw.http.HttpConnectionManager.CheckResults;
+import com.oaklandsw.util.Log;
 import com.oaklandsw.util.LogUtils;
 import com.oaklandsw.util.Util;
 

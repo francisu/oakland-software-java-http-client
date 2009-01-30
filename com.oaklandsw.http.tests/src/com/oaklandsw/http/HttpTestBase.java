@@ -7,11 +7,10 @@ import java.io.OutputStream;
 import java.net.Socket;
 import java.net.URL;
 
-import org.apache.commons.logging.Log;
-
 import com.oaklandsw.http.server.ErrorServer;
 import com.oaklandsw.http.servlet.ParamServlet;
 import com.oaklandsw.http.servlet.TimeoutServlet;
+import com.oaklandsw.util.Log;
 import com.oaklandsw.util.LogUtils;
 import com.oaklandsw.util.Util;
 
@@ -160,6 +159,7 @@ public class HttpTestBase extends com.oaklandsw.TestCaseBase
 
         HttpURLConnection.getConnectionManager().resetStatistics();
         Util.resetTest();
+        TestUserAgent.resetTest();
         LogUtils.logNone();
     }
 

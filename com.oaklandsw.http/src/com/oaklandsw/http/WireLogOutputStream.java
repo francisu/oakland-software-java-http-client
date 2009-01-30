@@ -9,14 +9,14 @@ package com.oaklandsw.http;
 
 import java.io.OutputStream;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import com.oaklandsw.util.Log;
+import com.oaklandsw.util.LogUtils;
 
 class WireLogOutputStream extends OutputStream
 {
 
-    private static final Log _wireLog = LogFactory
-                                              .getLog(HttpConnection.WIRE_LOG);
+    private static final Log _wireLog = LogUtils
+                                              .makeLogger(HttpConnection.WIRE_LOG);
 
     private StringBuffer     _traceBuff;
 

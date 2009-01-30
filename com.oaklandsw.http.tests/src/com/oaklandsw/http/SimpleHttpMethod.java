@@ -54,11 +54,10 @@ package com.oaklandsw.http;
 
 import java.io.IOException;
 
-import org.apache.commons.logging.Log;
-
 import com.oaklandsw.http.HttpConnection;
 import com.oaklandsw.http.HttpException;
 import com.oaklandsw.http.HttpURLConnectInternal;
+import com.oaklandsw.util.Log;
 import com.oaklandsw.util.LogUtils;
 
 /**

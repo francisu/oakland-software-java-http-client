@@ -44,7 +44,7 @@ import org.apache.axis2.util.Utils;
 import org.apache.axis2.wsdl.WSDLConstants;
 import org.apache.axis2.transport.http.*;
 
-import org.apache.commons.logging.Log;
+import com.oaklandsw.util.Log;
 
 import com.oaklandsw.http.Cookie;
 import com.oaklandsw.http.CookieContainer;

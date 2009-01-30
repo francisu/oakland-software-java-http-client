@@ -27,12 +27,13 @@ import java.util.zip.InflaterInputStream;
 import javax.net.ssl.SSLPeerUnverifiedException;
 import javax.net.ssl.SSLSocketFactory;
 
-import org.apache.commons.logging.Log;
+import com.oaklandsw.util.Log;
 
 import com.oaklandsw.http.cookie.CookieSpec;
 import com.oaklandsw.util.ExposedBufferInputStream;
 import com.oaklandsw.util.LogUtils;
 import com.oaklandsw.util.Util;
+import com.oaklandsw.util.log.Log4JLogger;
 
 /**
  * A URLConnection with support for HTTP-specific features.
@@ -706,7 +707,8 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
                 _inStaticInit++;
 
                 // Turn off the logging if there is no log4j configuration
-                LogUtils.checkInitialLogging();
+                LogUtils.checkInitialLogging(null,null,
+                                             Log4JLogger.class);
 
                 _log = LogUtils.makeLogger();
 

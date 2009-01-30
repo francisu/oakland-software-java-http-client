@@ -1,6 +1,6 @@
 package com.oaklandsw.http.webapp;
 
-import org.apache.commons.logging.Log;
+import com.oaklandsw.util.Log;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
@@ -9,7 +9,6 @@ import com.oaklandsw.http.HttpTestEnv;
 import com.oaklandsw.http.HttpURLConnection;
 import com.oaklandsw.http.TestUserAgent;
 import com.oaklandsw.http.axis.OaklandHTTPSender;
-import com.oaklandsw.util.FileUtils;
 import com.oaklandsw.util.LogUtils;
 
 import org.apache.axis.Constants;
@@ -502,7 +501,7 @@ public class TestAxis1 extends TestWebappBase
             + "iiswebservice"
             + File.separator
             + "HelloWorld.wsdl");
-        return FileUtils.fileToUriString(wFile);
+        return wFile.toURI().toString();
     }
 
     protected Map invokeWindowsService() throws Exception

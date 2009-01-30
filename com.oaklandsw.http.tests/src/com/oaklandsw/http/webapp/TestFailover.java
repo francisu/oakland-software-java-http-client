@@ -4,7 +4,7 @@ import java.net.ConnectException;
 import java.net.URL;
 import java.net.UnknownHostException;
 
-import org.apache.commons.logging.Log;
+import com.oaklandsw.util.Log;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;

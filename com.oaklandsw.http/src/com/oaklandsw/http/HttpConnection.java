@@ -76,8 +76,7 @@ import javax.net.ssl.SSLSocket;
 import javax.net.ssl.SSLSocketFactory;
 import javax.security.cert.X509Certificate;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import com.oaklandsw.util.Log;
 
 import com.oaklandsw.util.ExposedBufferInputStream;
 import com.oaklandsw.util.ExposedBufferOutputStream;
@@ -96,8 +95,8 @@ public class HttpConnection
 
     private static final Log   _log             = LogUtils.makeLogger();
 
-    private static final Log   _wireLog         = LogFactory.getLog(WIRE_LOG);
-    private static final Log   _connLog         = LogFactory.getLog(CONN_LOG);
+    private static final Log   _wireLog         = LogUtils.makeLogger(WIRE_LOG);
+    private static final Log   _connLog         = LogUtils.makeLogger(CONN_LOG);
 
     public String              _host;
     public int                 _port            = -1;
@@ -588,9 +587,15 @@ public class HttpConnection
         if (_output == null
             || _lastTimeUsed == 0
             || _idlePing == 0
-            || (System.currentTimeMillis() - _lastTimeUsed) <= _idlePing)
+            || (isSecure() && isProxied() && !_tunnelEstablished))
         {
-            _log.debug("checkConnection - skipped");
+            _log.debug("checkConnection - skipped - not set up");
+            return;
+        }
+
+        if ((System.currentTimeMillis() - _lastTimeUsed) <= _idlePing)
+        {
+            _log.debug("checkConnection - skipped - used too recently");
             return;
         }
 
@@ -878,6 +883,7 @@ public class HttpConnection
                 // Will set open for real later
                 _state = CS_VIRGIN;
                 _tunnelEstablished = true;
+                _connLog.debug("tunnel established");
 
                 // Make sure the CONNECT does not cause a ping
                 _lastTimeUsed = 0;

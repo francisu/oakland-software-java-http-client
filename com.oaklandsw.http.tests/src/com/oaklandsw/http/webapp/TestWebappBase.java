@@ -1,6 +1,6 @@
 package com.oaklandsw.http.webapp;
 
-import org.apache.commons.logging.Log;
+import com.oaklandsw.util.Log;
 
 import com.oaklandsw.http.HttpTestBase;
 import com.oaklandsw.util.LogUtils;

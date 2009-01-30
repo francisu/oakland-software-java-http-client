@@ -63,11 +63,10 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Vector;
 
-import org.apache.commons.logging.Log;
-
 import com.oaklandsw.http.HttpConnection;
 import com.oaklandsw.util.ExposedBufferInputStream;
 import com.oaklandsw.util.ExposedBufferOutputStream;
+import com.oaklandsw.util.Log;
 import com.oaklandsw.util.LogUtils;
 
 /**
