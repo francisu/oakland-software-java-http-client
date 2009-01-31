@@ -1,3 +1,16 @@
+Current test failures:
+
+Release 2.6.1 31 Jan 09
+
+TestAxis1 - test10Proxy
+TestAxis2 - testWsAmazon
+TestIIS - test10Proxy
+TestFtpProxy - testProxy, test10Proxy, testAuthProxy
+
+There was probably something that changed in Squid since the 10 proxy tests last passed.
+
+
+
 Building and Running the tests
 
 0) turn off automatic build in eclipse to make sure it does not interfere
