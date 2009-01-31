@@ -19,6 +19,7 @@ import com.oaklandsw.http.HttpTestBase;
 import com.oaklandsw.http.HttpTestEnv;
 import com.oaklandsw.http.HttpURLConnection;
 import com.oaklandsw.http.TestUserAgent;
+import com.oaklandsw.http.servlet.HeaderServlet;
 import com.oaklandsw.http.servlet.RequestBodyServlet;
 import com.oaklandsw.util.LogUtils;
 
@@ -141,8 +142,6 @@ public class TestSSL extends TestWebappBase
     // bug 2546 don't do idle connection ping if authentication is in progress
     public void testHttpsPostIdleConnectionPing() throws Exception
     {
-        LogUtils.logAll();
-        
         HttpURLConnection.setDefaultIdleConnectionPing(50);
 
         URL url;
@@ -180,10 +179,94 @@ public class TestSSL extends TestWebappBase
         LogUtils.logNone();
     }
 
+    // These tests don't work probably because of the configuration of the ISA
+    // SSL proxy
+    
+    // Test that non-https works on an https proxy
+    public void NOtestHttpsNonHttps1() throws Exception
+    {
+        LogUtils.logAll();
+        
+        URL url;
+        HttpURLConnection urlCon;
+
+        // SSL
+        url = new URL(HttpTestEnv.TEST_LOCAL_SSL_URL + "httptest/index.html");
+        urlCon = HttpURLConnection.openConnection(url);
+        urlCon.setRequestMethod("POST");
+        urlCon.connect();
+        assertEquals(200, urlCon.getResponseCode());
+        String data = HttpTestBase.getReply(urlCon);
+        assertTrue("No data returned.", (data.length() > 0));
+        
+        // Non SSL
+        url = new URL(HttpTestEnv.TEST_URL_WEBAPP + HeaderServlet.NAME);
+//        url = new URL(HttpTestEnv.TEST_ISA_URL + HttpTestEnv.TEST_URL_APP_IIS_FORM);
+        urlCon = HttpURLConnection.openConnection(url);
+        assertEquals(200, urlCon.getResponseCode());
+        data = HttpTestBase.getReply(urlCon);
+        assertTrue("No data returned.", (data.length() > 0));
+
+        checkNoActiveConns(url);
+        HttpURLConnection.setDefaultIdleConnectionPing(0);
+        HttpURLConnection.closeAllPooledConnections();
+        LogUtils.logNone();
+    }
+
+    // Test that non-https works on an https proxy
+    public void NOtestHttpsNonHttps2() throws Exception
+    {
+        URL url;
+        HttpURLConnection urlCon;
+
+        // Non-SSL
+        url = new URL(HttpTestEnv.TEST_URL_WEBAPP + HeaderServlet.NAME);
+        urlCon = HttpURLConnection.openConnection(url);
+        assertEquals(200, urlCon.getResponseCode());
+        String data = HttpTestBase.getReply(urlCon);
+        assertTrue("No data returned.", (data.length() > 0));
+
+        // SSL
+        url = new URL(HttpTestEnv.TEST_LOCAL_SSL_URL + "httptest/index.html");
+        urlCon = HttpURLConnection.openConnection(url);
+        urlCon.setRequestMethod("POST");
+        urlCon.connect();
+        assertEquals(200, urlCon.getResponseCode());
+        data = HttpTestBase.getReply(urlCon);
+        assertTrue("No data returned.", (data.length() > 0));
+        
+        checkNoActiveConns(url);
+        HttpURLConnection.setDefaultIdleConnectionPing(0);
+        HttpURLConnection.closeAllPooledConnections();
+        LogUtils.logNone();
+    }
+
+    // Test that non-https works on an https proxy
+    public void NOtestHttpsNonHttps3() throws Exception
+    {
+        URL url;
+        HttpURLConnection urlCon;
+
+        // Non-SSL
+        url = new URL(HttpTestEnv.TEST_URL_WEBAPP + HeaderServlet.NAME);
+        urlCon = HttpURLConnection.openConnection(url);
+        assertEquals(200, urlCon.getResponseCode());
+        String data = HttpTestBase.getReply(urlCon);
+        assertTrue("No data returned.", (data.length() > 0));
+
+        checkNoActiveConns(url);
+        HttpURLConnection.setDefaultIdleConnectionPing(0);
+        HttpURLConnection.closeAllPooledConnections();
+        LogUtils.logNone();
+    }
+
     public void allTestMethods() throws Exception
     {
         testHttpsNormal();
         testHttpsPostIdleConnectionPing();
+        //testHttpsNonHttps1();
+        //testHttpsNonHttps2();
+        //testHttpsNonHttps3();
 
     }
 }

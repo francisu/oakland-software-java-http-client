@@ -707,8 +707,15 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
                 _inStaticInit++;
 
                 // Turn off the logging if there is no log4j configuration
-                LogUtils.checkInitialLogging(null,null,
-                                             Log4JLogger.class);
+                try
+                {
+                    LogUtils.checkInitialLogging(null, null, Log4JLogger.class);
+                }
+                catch (Throwable ex)
+                {
+                    //System.out.println("checkInitialLoggingFailed: " + ex);
+                    // Nothing - can happen if there is no logging support
+                }
 
                 _log = LogUtils.makeLogger();
 

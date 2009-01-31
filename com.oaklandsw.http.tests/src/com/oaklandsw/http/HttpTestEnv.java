@@ -17,7 +17,7 @@ public class HttpTestEnv
     // Configured for NTLM level 5
     public static final String WINDOWS_HOST          = System
                                                              .getProperty("oaklandsw.windowshost",
-                                                                          "repoman");                   // repoman
+                                                                          "repoman");                 // repoman
 
     // Configured for NTLM level 5
     public static final String WIN2K3_HOST           = System
@@ -264,6 +264,13 @@ public class HttpTestEnv
                                                                      + APACHE_HOST
                                                                      + ":"
                                                                      + SSL_PORT
+                                                                     + "/";
+
+    public static String       TEST_ISA_URL                      = HTTP_PROTOCOL
+                                                                     + "//"
+                                                                     + ISA_HOST
+                                                                     + ":"
+                                                                     + IIS_PORT
                                                                      + "/";
 
     // Tomcat 4.1
