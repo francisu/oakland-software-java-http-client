@@ -130,39 +130,6 @@ public class ChallengeMessage extends Message
         int targetNameOffset = (int)Util.fromByteLittle(4, _msgBytes, index);
         index += 4;
 
-        _flags = Util.fromByteLittle(4, _msgBytes, index);
-        index += 4;
-
-        _nonce = new byte[NONCE_LENGTH];
-        System.arraycopy(_msgBytes, index, _nonce, 0, _nonce.length);
-        index += NONCE_LENGTH;
-
-        // Message may end here?
-        if (index >= _msgBytes.length)
-        {
-            _targetInfo = new byte[] {};
-            return 0;
-        }
-
-        // This is not used for anything
-        index += CONTEXT_LENGTH;
-
-        // Target Info
-        int targetInfoLen = (int)Util.fromByteLittle(2, _msgBytes, index);
-        index += 2;
-        // Skip max len
-        index += 2;
-        // Offset of target block from start of message
-        int targetInfoOffset = (int)Util.fromByteLittle(4, _msgBytes, index);
-        index += 4;
-
-        // This is where the version is (used only for debugging)
-        index += 8;
-
-        //
-        // Payload portion of message
-        //
-
         if ((_flags & NEGOTIATE_OEM) != 0)
         {
             _targetName = Util.fromByteAscii(targetNameLen,
@@ -176,14 +143,45 @@ public class ChallengeMessage extends Message
                                                      targetNameOffset);
         }
 
-        _targetInfo = new byte[targetInfoLen];
-        System.arraycopy(_msgBytes,
-                         targetInfoOffset,
-                         _targetInfo,
-                         0,
-                         targetInfoLen);
-        log();
+        _flags = Util.fromByteLittle(4, _msgBytes, index);
+        index += 4;
 
+        _nonce = new byte[NONCE_LENGTH];
+        System.arraycopy(_msgBytes, index, _nonce, 0, _nonce.length);
+        index += NONCE_LENGTH;
+
+        // Message may end here?
+        if (index >= _msgBytes.length
+            || targetNameOffset + targetNameLen >= _msgBytes.length)
+        {
+            _targetInfo = new byte[] {};
+        }
+        else
+        {
+            // This is not used for anything
+            index += CONTEXT_LENGTH;
+
+            // Target Info
+            int targetInfoLen = (int)Util.fromByteLittle(2, _msgBytes, index);
+            index += 2;
+            // Skip max len
+            index += 2;
+            // Offset of target block from start of message
+            int targetInfoOffset = (int)Util
+                    .fromByteLittle(4, _msgBytes, index);
+            index += 4;
+
+            // This is where the version is (used only for debugging)
+            index += 8;
+
+            _targetInfo = new byte[targetInfoLen];
+            System.arraycopy(_msgBytes,
+                             targetInfoOffset,
+                             _targetInfo,
+                             0,
+                             targetInfoLen);
+        }
+        log();
         return 0;
     }
 

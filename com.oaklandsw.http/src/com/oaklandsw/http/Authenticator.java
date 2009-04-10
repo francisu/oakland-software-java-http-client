@@ -112,6 +112,8 @@ public class Authenticator
     private static final char[]  HEXADECIMAL     = { '0', '1', '2', '3', '4',
         '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f' };
 
+    private static final String DEFAULT_DIGEST_ALGORITHM = "MD5";    
+    
     // Returns false if authentication not attempted (because we don't need it)
     // throws if fails
     public static boolean authenticate(HttpURLConnectInternal urlCon,
@@ -269,8 +271,6 @@ public class Authenticator
                                             String pwd,
                                             Map mapCreds) throws HttpException
     {
-        final String digAlg = "MD5";
-
         // Collecting required tokens
         String uri = removeQuotes((String)mapCreds.get("uri"));
         String realm = removeQuotes((String)mapCreds.get("realm"));
@@ -279,23 +279,24 @@ public class Authenticator
         String cnonce = removeQuotes((String)mapCreds.get("cnonce"));
         String qop = removeQuotes((String)mapCreds.get("qop"));
         String method = (String)mapCreds.get("methodname");
+        String algorithm = (String)mapCreds.get("algorithm");
+        if (algorithm == null)
+            algorithm = DEFAULT_DIGEST_ALGORITHM; 
 
         if (qop != null)
-        {
             qop = "auth";
-        }
-
+        
         MessageDigest md5Helper;
 
         try
         {
-            md5Helper = MessageDigest.getInstance(digAlg);
+            md5Helper = MessageDigest.getInstance(algorithm);
         }
         catch (Exception e)
         {
             throw new HttpException("Unsupported algorithm in HTTP Digest "
                 + "authentication: "
-                + digAlg);
+                + algorithm);
         }
 
         // Calculating digest according to rfc 2617
@@ -472,7 +473,7 @@ public class Authenticator
         checkCredential(cred);
 
         Map headers = getHTTPDigestCredentials(challenge);
-        headers.put("cnonce", "\"" + createCnonce() + "\"");
+        headers.put("cnonce", "\"" + createCnonce(headers) + "\"");
         headers.put("nc", "00000001");
         headers.put("uri", urlCon.getPath());
         headers.put("methodname", urlCon.getRequestMethod());
@@ -560,21 +561,23 @@ public class Authenticator
         return challengeMap;
     }
 
-    private static final String createCnonce() throws HttpException
+    private static final String createCnonce(Map headers) throws HttpException
     {
+        String algorithm = (String)headers.get("algorithm");
+        if (algorithm == null)
+            algorithm = DEFAULT_DIGEST_ALGORITHM; 
         String cnonce;
-        final String digAlg = "MD5";
         MessageDigest md5Helper;
 
         try
         {
-            md5Helper = MessageDigest.getInstance(digAlg);
+            md5Helper = MessageDigest.getInstance(algorithm);
         }
         catch (Exception e)
         {
             throw new HttpException("Unsupported algorithm in HTTP Digest "
                 + "authentication: "
-                + digAlg);
+                + algorithm);
         }
 
         cnonce = Long.toString(System.currentTimeMillis());
@@ -596,13 +599,12 @@ public class Authenticator
         String opaque = removeQuotes((String)mapCreds.get("opaque"));
         String response = digest;
         String qop = removeQuotes((String)mapCreds.get("qop"));
+        String algorithm = (String)mapCreds.get("algorithm");
+        if (algorithm == null)
+            algorithm = DEFAULT_DIGEST_ALGORITHM; 
 
         if (qop != null)
-        {
             qop = "auth"; // we only support auth
-        }
-
-        String algorithm = "MD5"; // we only support MD5
 
         sb.append("username=\"" + uname + "\"").append(", realm=\""
             + realm
