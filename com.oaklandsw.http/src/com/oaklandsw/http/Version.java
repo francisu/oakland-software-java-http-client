@@ -9,6 +9,6 @@ package com.oaklandsw.http;
 
 public class Version
 {
-    public static final String VERSION      = "2.6.2exp";
+    public static final String VERSION      = "2.6.2exp1";
 }
 
