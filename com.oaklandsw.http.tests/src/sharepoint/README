@@ -1,0 +1,3 @@
+These stubs work correctly with Axis2 versions 1.3-1.5, they do not work with version 1.2.
+
+The 1.2 stubs are in the sharepointStubs folder.
