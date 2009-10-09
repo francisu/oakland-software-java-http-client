@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.0"?>
+
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one
+  ~ or more contributor license agreements. See the NOTICE file
+  ~ distributed with this work for additional information
+  ~ regarding copyright ownership. The ASF licenses this file
+  ~ to you under the Apache License, Version 2.0 (the
+  ~ "License"); you may not use this file except in compliance
+  ~ with the License. You may obtain a copy of the License at
+  ~
+  ~ http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing,
+  ~ software distributed under the License is distributed on an
+  ~ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+  ~ KIND, either express or implied. See the License for the
+  ~ specific language governing permissions and limitations
+  ~ under the License.
+  -->
+
+<plugin
+   id="Axis2_Codegen_Wizard"
+   name="Axis2 Codegen Wizard Plug-in"
+   version="1.4.0"
+   provider-name="Apache Software Foundation"
+   class="org.apache.axis2.tool.codegen.eclipse.plugin.CodegenWizardPlugin">
+
+   <runtime>
+      <library name="Axis2CodegenWizard.jar">
+         <export name="*"/>
+      </library>
+      <library name="lib/geronimo-activation_1.1_spec-1.0.1.jar">
+         <export name="*"/>
+      </library>
+      <library name="lib/geronimo-stax-api_1.0_spec-1.0.1.jar">
+         <export name="*"/>
+      </library>
+      <library name="./lib/axiom-api-1.2.8.jar">
+         <export name="*"/>
+      </library>
+      <library name="./lib/axiom-dom-1.2.8.jar">
+         <export name="*"/>
+      </library>
+      <library name="./lib/axiom-impl-1.2.8.jar">
+         <export name="*"/>
+      </library>
+      <library name="lib/commons-logging-1.1.1.jar">
+         <export name="*"/>
+      </library>
+       <library name="lib/axis2-1.5.jar">
+       <export name="*"/>
+       </library>
+       <library name="lib/log4j-1.2.15.jar">
+         <export name="*"/>
+      </library>
+      <library name="lib/neethi-2.0.4.jar">
+         <export name="*"/>
+      </library>
+      <library name="lib/wsdl4j-1.6.2.jar">
+         <export name="*"/>
+      </library>
+      <library name="lib/xmlbeans-2.3.0.jar">
+         <export name="*"/>
+      </library>
+      <library name="lib/XmlSchema-1.4.3.jar">
+         <export name="*"/>
+      </library>
+      <library name="lib/woden-1.0M8.jar">
+         <export name="*"/>
+      </library>
+      <library name="lib/commons-httpclient-3.1.jar">
+         <export name="*"/>
+      </library>
+      <library name="lib/commons-codec-1.3.jar">
+         <export name="*"/>
+      </library>
+      <library name="lib/jibx-bind-1.2.1.jar">
+         <export name="*"/>
+      </library>
+      <library name="lib/jibx-run-1.2.1.jar">
+         <export name="*"/>
+      </library>
+      <library name="lib/mail-1.4.jar">
+         <export name="*"/>
+      </library>
+      <library name="lib/geronimo-ws-metadata_2.0_spec-1.1.2.jar">
+         <export name="*"/>
+      </library>
+   </runtime>
+
+   <requires>
+      <import plugin="org.eclipse.ui"/>
+      <import plugin="org.eclipse.ui.ide"/>
+      <import plugin="org.eclipse.core.runtime"/>
+      <import plugin="org.eclipse.core.resources"/>
+      <import plugin="org.apache.ant"/>
+   </requires>
+
+   <extension
+         point="org.eclipse.ui.newWizards">
+      <category
+            name="Axis2 Wizards"
+            id="Axis2_Wizards">
+      </category>
+      <wizard
+            name="Axis2 Code Generator"
+            icon="icons/icon.gif"
+            category="Axis2_Wizards"
+            class="org.apache.axis2.tool.codegen.eclipse.CodeGenWizard"
+            id="org.apache.axis2.tool.codegen.eclipse.CodeGenWizard">
+      </wizard>
+   </extension>
+    <extension point="org.eclipse.help.toc">
+    <toc file="help_toc.xml" primary="true" />
+</extension>
+
+</plugin>
