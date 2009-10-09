@@ -1,40 +1,36 @@
 package com.oaklandsw.http.webext;
 
-import java.net.URL;
+import com.oaklandsw.http.CookieContainer;
+import com.oaklandsw.http.HttpTestBase;
+import com.oaklandsw.http.HttpURLConnection;
 
 import com.oaklandsw.util.Log;
+import com.oaklandsw.util.LogUtils;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
-import com.oaklandsw.http.CookieContainer;
-import com.oaklandsw.http.HttpURLConnection;
-import com.oaklandsw.http.HttpTestBase;
-import com.oaklandsw.util.LogUtils;
+import java.net.URL;
 
-public class TestCookie extends HttpTestBase
-{
 
-    private static final Log   _log         = LogUtils.makeLogger();
+public class TestCookie extends HttpTestBase {
+    private static final Log _log = LogUtils.makeLogger();
 
-    public TestCookie(String testName)
-    {
+    public TestCookie(String testName) {
         super(testName);
     }
 
-    public static Test suite()
-    {
+    public static Test suite() {
         TestSuite suite = new TestSuite(TestCookie.class);
+
         return suite;
     }
 
-    public static void main(String args[])
-    {
+    public static void main(String[] args) {
         mainRun(suite(), args);
     }
 
-    public void testSetCookie() throws Exception
-    {
+    public void testSetCookie() throws Exception {
         URL url = new URL("http://google.com");
         int response = 0;
 
@@ -51,9 +47,7 @@ public class TestCookie extends HttpTestBase
         checkNoActiveConns(url);
     }
 
-    public void allTestMethods() throws Exception
-    {
+    public void allTestMethods() throws Exception {
         testSetCookie();
     }
-
 }

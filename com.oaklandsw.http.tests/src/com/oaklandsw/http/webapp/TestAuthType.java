@@ -1,186 +1,160 @@
 package com.oaklandsw.http.webapp;
 
-import com.oaklandsw.util.Log;
-
-import junit.framework.Test;
-import junit.framework.TestSuite;
-
 import com.oaklandsw.http.Credential;
 import com.oaklandsw.http.HttpURLConnection;
 import com.oaklandsw.http.PipelineTester;
 import com.oaklandsw.http.TestUserAgent;
 import com.oaklandsw.http.servlet.ParamServlet;
+
+import com.oaklandsw.util.Log;
 import com.oaklandsw.util.LogUtils;
 
-public class TestAuthType extends TestWebappBase
-{
+import junit.framework.Test;
+import junit.framework.TestSuite;
 
+
+public class TestAuthType extends TestWebappBase {
     private static final Log _log = LogUtils.makeLogger();
-
+    protected static final boolean PREEMPTIVE = true;
     protected PipelineTester _pt;
 
-    public TestAuthType(String testName)
-    {
+    public TestAuthType(String testName) {
         super(testName);
     }
 
-    public static Test suite()
-    {
+    public static Test suite() {
         TestSuite suite = new TestSuite(TestAuthType.class);
+
         return suite;
     }
 
-    public static void main(String args[])
-    {
+    public static void main(String[] args) {
         mainRun(suite(), args);
     }
 
-    public void setUp() throws Exception
-    {
+    public void setUp() throws Exception {
         super.setUp();
         _pt = null;
+
         // logAll();
     }
 
-    protected static final boolean PREEMPTIVE = true;
-
     public void testPipeliningSimple(int number, Class expectedEx)
-        throws Exception
-    {
+        throws Exception {
         testPipeliningSimpleSetup(number, expectedEx);
         testPipeliningSimpleRun(number, expectedEx);
     }
 
     public void testPipeliningSimpleSetup(int number, Class expectedEx)
-        throws Exception
-    {
-        if (number == 0)
-        {
-        }
-        else
-        {
+        throws Exception {
+        if (number == 0) {
+        } else {
             // Net proxy cannot deal with pipelining
-            if (_inAuthCloseProxyTest)
+            if (_inAuthCloseProxyTest) {
                 return;
+            }
 
-            _pt = new PipelineTester(_urlBase + ParamServlet.NAME,
-                                     number,
-                                     _pipelineOptions,
-                                     _pipelineMaxDepth);
+            _pt = new PipelineTester(_urlBase + ParamServlet.NAME, number,
+                    _pipelineOptions, _pipelineMaxDepth);
         }
     }
 
     public void testPipeliningSimpleRun(int number, Class expectedEx)
-        throws Exception
-    {
-        if (number == 0)
-        {
+        throws Exception {
+        if (number == 0) {
             // No pipelining
             doGetLikeMethod("GET", CHECK_CONTENT);
-        }
-        else
-        {
+        } else {
             // Net proxy cannot deal with pipelining
-            if (_inAuthCloseProxyTest)
+            if (_inAuthCloseProxyTest) {
                 return;
+            }
 
-            if (expectedEx != null)
+            if (expectedEx != null) {
                 _pt._checkResult = false;
+            }
+
             boolean result = _pt.runTest();
-            if (expectedEx != null)
+
+            if (expectedEx != null) {
                 assertEquals(expectedEx, _pt._failException.getClass());
-            else
+            } else {
                 assertFalse(result);
+            }
         }
     }
 
     // Check that having the auth type set will work even
     // though there is no authentication
     protected void testAuthenticationTypeSet(int type, int count)
-        throws Exception
-    {
+        throws Exception {
         testAuthenticationTypeSet(type, count, null);
     }
 
     // Check that having the auth type set will work even
     // though there is no authentication
-    protected void testAuthenticationTypeSet(int type,
-                                             int count,
-                                             Class expectedException)
-        throws Exception
-    {
+    protected void testAuthenticationTypeSet(int type, int count,
+        Class expectedException) throws Exception {
         TestUserAgent._type = TestUserAgent.GOOD;
         HttpURLConnection.setDefaultAuthenticationType(type);
         testPipeliningSimple(count, expectedException);
     }
 
-    public void testAuthenticationTypeSetBasic() throws Exception
-    {
+    public void testAuthenticationTypeSetBasic() throws Exception {
         testAuthenticationTypeSet(Credential.AUTH_BASIC, 0);
     }
 
-    public void testAuthenticationTypeSetDigest() throws Exception
-    {
+    public void testAuthenticationTypeSetDigest() throws Exception {
         testAuthenticationTypeSet(Credential.AUTH_DIGEST, 0);
     }
 
-    public void testAuthenticationTypeSetNtlm() throws Exception
-    {
+    public void testAuthenticationTypeSetNtlm() throws Exception {
         testAuthenticationTypeSet(Credential.AUTH_NTLM, 0);
     }
 
-    public void testAuthenticationTypeSetNtlmPost() throws Exception
-    {
+    public void testAuthenticationTypeSetNtlmPost() throws Exception {
         TestUserAgent._type = TestUserAgent.GOOD;
         HttpURLConnection.setDefaultAuthenticationType(Credential.AUTH_NTLM);
         doGetLikeMethod("POST", CHECK_CONTENT);
     }
 
-    public void testAuthenticationTypeSetBasic1p() throws Exception
-    {
+    public void testAuthenticationTypeSetBasic1p() throws Exception {
         testAuthenticationTypeSet(Credential.AUTH_BASIC, 1);
     }
 
-    public void testAuthenticationTypeSetDigest1p() throws Exception
-    {
+    public void testAuthenticationTypeSetDigest1p() throws Exception {
         // We don't allow digest with pipelining
         TestUserAgent._type = TestUserAgent.GOOD;
         HttpURLConnection.setDefaultAuthenticationType(Credential.AUTH_DIGEST);
         testPipeliningSimpleSetup(1, IllegalStateException.class);
-        if (_pt != null)
-        {
+
+        if (_pt != null) {
             _pt._ignoreFailType = 8;
             testPipeliningSimpleRun(1, IllegalStateException.class);
         }
     }
 
-    public void testAuthenticationTypeSetNtlm1p() throws Exception
-    {
+    public void testAuthenticationTypeSetNtlm1p() throws Exception {
         testAuthenticationTypeSet(Credential.AUTH_NTLM, 1);
     }
 
-    public void testAuthenticationTypeSetNtlm5() throws Exception
-    {
+    public void testAuthenticationTypeSetNtlm5() throws Exception {
         testAuthenticationTypeSet(Credential.AUTH_NTLM, 5);
     }
 
-    public void testAuthenticationTypeSetBasicPre() throws Exception
-    {
+    public void testAuthenticationTypeSetBasicPre() throws Exception {
         testAuthenticationTypeSet(Credential.AUTH_BASIC, 0);
     }
 
-    public void testAuthenticationTypeSetBasic1pPre() throws Exception
-    {
+    public void testAuthenticationTypeSetBasic1pPre() throws Exception {
         testAuthenticationTypeSet(Credential.AUTH_BASIC, 1);
     }
 
-    public void testAuthenticationTypeSetBasic5Pre() throws Exception
-    {
+    public void testAuthenticationTypeSetBasic5Pre() throws Exception {
         testAuthenticationTypeSet(Credential.AUTH_BASIC, 5);
     }
 
-    public void allTestMethods() throws Exception
-    {
+    public void allTestMethods() throws Exception {
         testAuthenticationTypeSetBasic();
         testAuthenticationTypeSetDigest();
         testAuthenticationTypeSetNtlm();
@@ -192,5 +166,4 @@ public class TestAuthType extends TestWebappBase
         testAuthenticationTypeSetBasic1pPre();
         testAuthenticationTypeSetBasic5Pre();
     }
-
 }

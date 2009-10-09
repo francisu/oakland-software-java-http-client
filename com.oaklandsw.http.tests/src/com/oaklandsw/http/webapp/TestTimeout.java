@@ -1,44 +1,41 @@
 package com.oaklandsw.http.webapp;
 
-import java.net.URL;
-import java.util.ArrayList;
+import com.oaklandsw.http.HttpTimeoutException;
+import com.oaklandsw.http.HttpURLConnection;
+import com.oaklandsw.http.servlet.TimeoutServlet;
 
 import com.oaklandsw.util.Log;
+import com.oaklandsw.util.LogUtils;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
-import com.oaklandsw.http.HttpTimeoutException;
-import com.oaklandsw.http.HttpURLConnection;
-import com.oaklandsw.http.servlet.TimeoutServlet;
-import com.oaklandsw.util.LogUtils;
+import java.net.URL;
 
-public class TestTimeout extends TestWebappBase
-{
+import java.util.ArrayList;
 
+
+public class TestTimeout extends TestWebappBase {
     private static final Log _log = LogUtils.makeLogger();
+    protected static final int CONN_COUNT = 10;
 
-    public TestTimeout(String testName)
-    {
+    public TestTimeout(String testName) {
         super(testName);
     }
 
-    public static Test suite()
-    {
+    public static Test suite() {
         TestSuite suite = new TestSuite(TestTimeout.class);
+
         return suite;
     }
 
-    public static void main(String args[])
-    {
+    public static void main(String[] args) {
         mainRun(suite(), args);
     }
 
     // Bug 1585 - sometimes timeouts don't work
-    public void testConnectionIdleTimeoutShutdown() throws Exception
-    {
-        com.oaklandsw.http.HttpURLConnection
-                .setDefaultIdleConnectionTimeout(2000);
+    public void testConnectionIdleTimeoutShutdown() throws Exception {
+        com.oaklandsw.http.HttpURLConnection.setDefaultIdleConnectionTimeout(2000);
 
         URL url = new URL(_urlBase + TimeoutServlet.NAME);
         int response = 0;
@@ -73,10 +70,8 @@ public class TestTimeout extends TestWebappBase
         assertEquals(connCount - 1, getTotalConns(url));
     }
 
-    public void testConnectionIdleTimeout() throws Exception
-    {
-        com.oaklandsw.http.HttpURLConnection
-                .setDefaultIdleConnectionTimeout(2000);
+    public void testConnectionIdleTimeout() throws Exception {
+        com.oaklandsw.http.HttpURLConnection.setDefaultIdleConnectionTimeout(2000);
 
         URL url = new URL(_urlBase + TimeoutServlet.NAME);
         int response = 0;
@@ -96,11 +91,8 @@ public class TestTimeout extends TestWebappBase
         assertEquals(connCount - 1, getTotalConns(url));
     }
 
-    protected static final int CONN_COUNT = 10;
-
     // Tests timeout waiting for a connection to be available
-    public void testConnectWaitForThread() throws Exception
-    {
+    public void testConnectWaitForThread() throws Exception {
         // Use up up lots of connections available by default
         for (int i = 0; i < CONN_COUNT; i++)
             (new OpenThread()).start();
@@ -119,8 +111,7 @@ public class TestTimeout extends TestWebappBase
     }
 
     // Bug 958 unlimited max connections
-    public void testUnlimitedMaxConnections() throws Exception
-    {
+    public void testUnlimitedMaxConnections() throws Exception {
         // Use up up lots of connections available by default
         for (int i = 0; i < CONN_COUNT; i++)
             (new OpenThread()).start();
@@ -133,8 +124,7 @@ public class TestTimeout extends TestWebappBase
         // Unlimited
         com.oaklandsw.http.HttpURLConnection.setMaxConnectionsPerHost(-1);
 
-        com.oaklandsw.http.HttpURLConnection urlCon = (com.oaklandsw.http.HttpURLConnection)url
-                .openConnection();
+        com.oaklandsw.http.HttpURLConnection urlCon = (com.oaklandsw.http.HttpURLConnection) url.openConnection();
 
         // Should not timeout if unlimited number of connections
         urlCon.setConnectionTimeout(1000);
@@ -144,8 +134,7 @@ public class TestTimeout extends TestWebappBase
     }
 
     // Tests timeout waiting for a connection to be available
-    public void testConnectTimeout(int type) throws Exception
-    {
+    public void testConnectTimeout(int type) throws Exception {
         // Use up the two connections available by default
         (new OpenThread()).start();
         (new OpenThread()).start();
@@ -164,55 +153,48 @@ public class TestTimeout extends TestWebappBase
         // No timeout, but this should not be able to get a connection
         urlCon.setRequestMethod("GET");
 
-        try
-        {
+        try {
             urlCon.connect();
-            if (type != CONN_REQUEST && type != DEF_REQUEST)
+
+            if ((type != CONN_REQUEST) && (type != DEF_REQUEST)) {
                 fail("Should have timed out");
-            else
+            } else {
                 urlCon.getResponseCode();
-        }
-        catch (HttpTimeoutException ex)
-        {
-            if (type == CONN_REQUEST || type == DEF_REQUEST)
+            }
+        } catch (HttpTimeoutException ex) {
+            if ((type == CONN_REQUEST) || (type == DEF_REQUEST)) {
                 fail("These timeouts should have no effect");
+            }
+
             // Got expected exception
         }
-
     }
 
-    public void testConnectTimeoutDef() throws Exception
-    {
+    public void testConnectTimeoutDef() throws Exception {
         testConnectTimeout(DEF);
     }
 
-    public void testConnectTimeoutDefConnect() throws Exception
-    {
+    public void testConnectTimeoutDefConnect() throws Exception {
         testConnectTimeout(DEF_CONNECT);
     }
 
-    public void testConnectTimeoutDefRequest() throws Exception
-    {
+    public void testConnectTimeoutDefRequest() throws Exception {
         testConnectTimeout(DEF_REQUEST);
     }
 
-    public void testConnectTimeoutConn() throws Exception
-    {
+    public void testConnectTimeoutConn() throws Exception {
         testConnectTimeout(CONN);
     }
 
-    public void testConnectTimeoutConnConnect() throws Exception
-    {
+    public void testConnectTimeoutConnConnect() throws Exception {
         testConnectTimeout(CONN_CONNECT);
     }
 
-    public void testConnectTimeoutConnRequest() throws Exception
-    {
+    public void testConnectTimeoutConnRequest() throws Exception {
         testConnectTimeout(CONN_REQUEST);
     }
 
-    public void testRequestTimeout(int type) throws Exception
-    {
+    public void testRequestTimeout(int type) throws Exception {
         setupDefaultTimeout(type, 2000);
 
         URL url = new URL(_urlBase + TimeoutServlet.NAME);
@@ -225,16 +207,17 @@ public class TestTimeout extends TestWebappBase
         urlCon.setRequestMethod("GET");
         urlCon.setRequestProperty("timeout", "5000");
 
-        try
-        {
+        try {
             response = urlCon.getResponseCode();
-            if (type != CONN_CONNECT && type != DEF_CONNECT)
+
+            if ((type != CONN_CONNECT) && (type != DEF_CONNECT)) {
                 fail("Should have timed out");
-        }
-        catch (HttpTimeoutException ex)
-        {
-            if (type == CONN_CONNECT || type == DEF_CONNECT)
+            }
+        } catch (HttpTimeoutException ex) {
+            if ((type == CONN_CONNECT) || (type == DEF_CONNECT)) {
                 fail("These timeouts should have no effect");
+            }
+
             // Got expected exception
         }
 
@@ -250,38 +233,31 @@ public class TestTimeout extends TestWebappBase
         assertEquals(200, response);
     }
 
-    public void testRequestTimeoutDef() throws Exception
-    {
+    public void testRequestTimeoutDef() throws Exception {
         testRequestTimeout(DEF);
     }
 
-    public void testRequestTimeoutDefConnect() throws Exception
-    {
+    public void testRequestTimeoutDefConnect() throws Exception {
         testRequestTimeout(DEF_CONNECT);
     }
 
-    public void testRequestTimeoutDefRequest() throws Exception
-    {
+    public void testRequestTimeoutDefRequest() throws Exception {
         testRequestTimeout(DEF_REQUEST);
     }
 
-    public void testRequestTimeoutConn() throws Exception
-    {
+    public void testRequestTimeoutConn() throws Exception {
         testRequestTimeout(CONN);
     }
 
-    public void testRequestTimeoutConnConnect() throws Exception
-    {
+    public void testRequestTimeoutConnConnect() throws Exception {
         testRequestTimeout(CONN_CONNECT);
     }
 
-    public void testRequestTimeoutConnRequest() throws Exception
-    {
+    public void testRequestTimeoutConnRequest() throws Exception {
         testRequestTimeout(CONN_REQUEST);
     }
 
-    public void testRequestNoTimeout(int type) throws Exception
-    {
+    public void testRequestNoTimeout(int type) throws Exception {
         setupDefaultTimeout(type, 5000);
 
         URL url = new URL(_urlBase + TimeoutServlet.NAME);
@@ -298,38 +274,31 @@ public class TestTimeout extends TestWebappBase
         assertEquals(200, response);
     }
 
-    public void testRequestNoTimeoutDef() throws Exception
-    {
+    public void testRequestNoTimeoutDef() throws Exception {
         testRequestNoTimeout(DEF);
     }
 
-    public void testRequestNoTimeoutDefConnect() throws Exception
-    {
+    public void testRequestNoTimeoutDefConnect() throws Exception {
         testRequestNoTimeout(DEF_CONNECT);
     }
 
-    public void testRequestNoTimeoutDefRequest() throws Exception
-    {
+    public void testRequestNoTimeoutDefRequest() throws Exception {
         testRequestNoTimeout(DEF_REQUEST);
     }
 
-    public void testRequestNoTimeoutConn() throws Exception
-    {
+    public void testRequestNoTimeoutConn() throws Exception {
         testRequestNoTimeout(CONN);
     }
 
-    public void testRequestNoTimeoutConnConnect() throws Exception
-    {
+    public void testRequestNoTimeoutConnConnect() throws Exception {
         testRequestNoTimeout(CONN_CONNECT);
     }
 
-    public void testRequestNoTimeoutConnRequest() throws Exception
-    {
+    public void testRequestNoTimeoutConnRequest() throws Exception {
         testRequestNoTimeout(CONN_REQUEST);
     }
 
-    public void testRequestNoTimeoutLoop(int type) throws Exception
-    {
+    public void testRequestNoTimeoutLoop(int type) throws Exception {
         setupDefaultTimeout(type, 5000);
 
         URL url = new URL(_urlBase + TimeoutServlet.NAME);
@@ -337,9 +306,9 @@ public class TestTimeout extends TestWebappBase
 
         com.oaklandsw.http.HttpURLConnection.closeAllPooledConnections();
 
-        for (int i = 0; i < com.oaklandsw.http.HttpURLConnection
-                .getMaxConnectionsPerHost() + 5; i++)
-        {
+        for (int i = 0;
+                i < (com.oaklandsw.http.HttpURLConnection.getMaxConnectionsPerHost() +
+                5); i++) {
             HttpURLConnection urlCon = HttpURLConnection.openConnection(url);
 
             setupConnTimeout(urlCon, type, 5000);
@@ -352,33 +321,27 @@ public class TestTimeout extends TestWebappBase
         }
     }
 
-    public void testRequestNoTimeoutLoopDef() throws Exception
-    {
+    public void testRequestNoTimeoutLoopDef() throws Exception {
         testRequestNoTimeoutLoop(DEF);
     }
 
-    public void testRequestNoTimeoutLoopDefConnect() throws Exception
-    {
+    public void testRequestNoTimeoutLoopDefConnect() throws Exception {
         testRequestNoTimeoutLoop(DEF_CONNECT);
     }
 
-    public void testRequestNoTimeoutLoopDefRequest() throws Exception
-    {
+    public void testRequestNoTimeoutLoopDefRequest() throws Exception {
         testRequestNoTimeoutLoop(DEF_REQUEST);
     }
 
-    public void testRequestNoTimeoutLoopConn() throws Exception
-    {
+    public void testRequestNoTimeoutLoopConn() throws Exception {
         testRequestNoTimeoutLoop(CONN);
     }
 
-    public void testRequestNoTimeoutLoopConnConnect() throws Exception
-    {
+    public void testRequestNoTimeoutLoopConnConnect() throws Exception {
         testRequestNoTimeoutLoop(CONN_CONNECT);
     }
 
-    public void testRequestNoTimeoutLoopConnRequest() throws Exception
-    {
+    public void testRequestNoTimeoutLoopConnRequest() throws Exception {
         testRequestNoTimeoutLoop(CONN_REQUEST);
     }
 
@@ -391,8 +354,7 @@ public class TestTimeout extends TestWebappBase
     // including timeout exceptions
     // Bug 403
     public void testRequestNoTimeoutLoopNoCloseWithGC(int type)
-        throws Exception
-    {
+        throws Exception {
         setupDefaultTimeout(type, 2000);
 
         URL url = new URL(_urlBase + TimeoutServlet.NAME);
@@ -401,9 +363,10 @@ public class TestTimeout extends TestWebappBase
         com.oaklandsw.http.HttpURLConnection.closeAllPooledConnections();
 
         int i = 0;
-        for (i = 0; i < com.oaklandsw.http.HttpURLConnection
-                .getMaxConnectionsPerHost() + 5; i++)
-        {
+
+        for (i = 0;
+                i < (com.oaklandsw.http.HttpURLConnection.getMaxConnectionsPerHost() +
+                5); i++) {
             HttpURLConnection urlCon = HttpURLConnection.openConnection(url);
 
             setupConnTimeout(urlCon, type, 2000);
@@ -412,7 +375,7 @@ public class TestTimeout extends TestWebappBase
 
             response = urlCon.getResponseCode();
             assertEquals(200, response);
-            
+
             urlCon.getInputStream().close();
 
             // If we collect, the garbage collector will finalize the connection
@@ -423,45 +386,41 @@ public class TestTimeout extends TestWebappBase
         }
     }
 
-    public void testRequestNoTimeoutLoopNoCloseWithGCDef() throws Exception
-    {
+    public void testRequestNoTimeoutLoopNoCloseWithGCDef()
+        throws Exception {
         testRequestNoTimeoutLoopNoCloseWithGC(DEF);
     }
 
     public void testRequestNoTimeoutLoopNoCloseWithGCDefConnect()
-        throws Exception
-    {
+        throws Exception {
         testRequestNoTimeoutLoopNoCloseWithGC(DEF_CONNECT);
     }
 
     public void testRequestNoTimeoutLoopNoCloseWithGCDefRequest()
-        throws Exception
-    {
+        throws Exception {
         testRequestNoTimeoutLoopNoCloseWithGC(DEF_REQUEST);
     }
 
-    public void testRequestNoTimeoutLoopNoCloseWithGCConn() throws Exception
-    {
+    public void testRequestNoTimeoutLoopNoCloseWithGCConn()
+        throws Exception {
         testRequestNoTimeoutLoopNoCloseWithGC(CONN);
     }
 
     public void testRequestNoTimeoutLoopNoCloseWithGCConnConnect()
-        throws Exception
-    {
+        throws Exception {
         testRequestNoTimeoutLoopNoCloseWithGC(CONN_CONNECT);
     }
 
     public void testRequestNoTimeoutLoopNoCloseWithGCConnRequest()
-        throws Exception
-    {
+        throws Exception {
         testRequestNoTimeoutLoopNoCloseWithGC(CONN_REQUEST);
     }
 
     // Don't close the explicit connections, so the one after the max
     // connections per host should timeout waiting for the connection
     // to be available
-    public void testRequestNoTimeoutLoopNoClose(int type) throws Exception
-    {
+    public void testRequestNoTimeoutLoopNoClose(int type)
+        throws Exception {
         setupDefaultTimeout(type, 2000);
 
         URL url = new URL(_urlBase + TimeoutServlet.NAME);
@@ -471,13 +430,12 @@ public class TestTimeout extends TestWebappBase
 
         int i = 0;
         ArrayList cons = new ArrayList();
-        try
-        {
-            for (i = 0; i < com.oaklandsw.http.HttpURLConnection
-                    .getMaxConnectionsPerHost() + 5; i++)
-            {
-                HttpURLConnection urlCon = (HttpURLConnection)url
-                        .openConnection();
+
+        try {
+            for (i = 0;
+                    i < (com.oaklandsw.http.HttpURLConnection.getMaxConnectionsPerHost() +
+                    5); i++) {
+                HttpURLConnection urlCon = (HttpURLConnection) url.openConnection();
                 // Add it to the array to prevent it from being garbage
                 // collected
                 // while it is still open
@@ -497,45 +455,41 @@ public class TestTimeout extends TestWebappBase
                 // it added to the array above
                 System.gc();
             }
+
             fail("Should have timed out");
-        }
-        catch (HttpTimeoutException ex)
-        {
-            if (i != com.oaklandsw.http.HttpURLConnection
-                    .getMaxConnectionsPerHost())
+        } catch (HttpTimeoutException ex) {
+            if (i != com.oaklandsw.http.HttpURLConnection.getMaxConnectionsPerHost()) {
                 fail("Did not get timeout at the right loop increment: " + i);
+            }
+
             // Got expected exception
         }
     }
 
-    public void testRequestNoTimeoutLoopNoCloseDef() throws Exception
-    {
+    public void testRequestNoTimeoutLoopNoCloseDef() throws Exception {
         testRequestNoTimeoutLoopNoClose(DEF);
     }
 
-    public void testRequestNoTimeoutLoopNoCloseDefConnect() throws Exception
-    {
+    public void testRequestNoTimeoutLoopNoCloseDefConnect()
+        throws Exception {
         testRequestNoTimeoutLoopNoClose(DEF_CONNECT);
     }
 
-    public void testRequestNoTimeoutLoopNoCloseConn() throws Exception
-    {
+    public void testRequestNoTimeoutLoopNoCloseConn() throws Exception {
         testRequestNoTimeoutLoopNoClose(CONN);
     }
 
-    public void testRequestNoTimeoutLoopNoCloseConnConnect() throws Exception
-    {
+    public void testRequestNoTimeoutLoopNoCloseConnConnect()
+        throws Exception {
         testRequestNoTimeoutLoopNoClose(CONN_CONNECT);
     }
 
     // Bug 968 mix of zero/non zero request timeout in MT does not work
-    public void testMtRequestTimeout() throws Exception
-    {
+    public void testMtRequestTimeout() throws Exception {
         URL url = new URL(_urlBase + TimeoutServlet.NAME);
         int response = 0;
 
-        com.oaklandsw.http.HttpURLConnection urlCon = (com.oaklandsw.http.HttpURLConnection)url
-                .openConnection();
+        com.oaklandsw.http.HttpURLConnection urlCon = (com.oaklandsw.http.HttpURLConnection) url.openConnection();
 
         // First one, set request timeout
         urlCon.setTimeout(2000);
@@ -545,7 +499,7 @@ public class TestTimeout extends TestWebappBase
         assertEquals(200, response);
 
         // Second one, don't set timeout, should not have a request timeout
-        urlCon = (com.oaklandsw.http.HttpURLConnection)url.openConnection();
+        urlCon = (com.oaklandsw.http.HttpURLConnection) url.openConnection();
         urlCon.setRequestMethod("GET");
         urlCon.setRequestProperty("timeout", "4000");
 
@@ -558,5 +512,4 @@ public class TestTimeout extends TestWebappBase
 
         assertEquals(200, response);
     }
-
 }

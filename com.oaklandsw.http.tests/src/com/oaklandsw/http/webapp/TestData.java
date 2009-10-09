@@ -1,42 +1,37 @@
 package com.oaklandsw.http.webapp;
 
-import java.net.URL;
+import com.oaklandsw.http.HttpTestEnv;
+import com.oaklandsw.http.HttpURLConnection;
+import com.oaklandsw.http.servlet.RequestBodyServlet;
 
 import com.oaklandsw.util.Log;
+import com.oaklandsw.util.LogUtils;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
-import com.oaklandsw.http.HttpTestEnv;
-import com.oaklandsw.http.HttpURLConnection;
-import com.oaklandsw.http.servlet.RequestBodyServlet;
-import com.oaklandsw.util.LogUtils;
+import java.net.URL;
 
-public class TestData extends TestWebappBase
-{
 
-    private static final Log _log      = LogUtils.makeLogger();
+public class TestData extends TestWebappBase {
+    private static final Log _log = LogUtils.makeLogger();
+    protected static String _errorUrl = HttpTestEnv.TEST_URL_HOST_ERRORSVR;
 
-    protected static String  _errorUrl = HttpTestEnv.TEST_URL_HOST_ERRORSVR;
-
-    public TestData(String testName)
-    {
+    public TestData(String testName) {
         super(testName);
     }
 
-    public static Test suite()
-    {
+    public static Test suite() {
         TestSuite suite = new TestSuite(TestData.class);
+
         return suite;
     }
 
-    public static void main(String args[])
-    {
+    public static void main(String[] args) {
         mainRun(suite(), args);
     }
 
-    public void testDisconnect() throws Exception
-    {
+    public void testDisconnect() throws Exception {
         URL url = new URL(_urlBase + RequestBodyServlet.NAME);
 
         HttpURLConnection urlCon = HttpURLConnection.openConnection(url);
@@ -51,8 +46,7 @@ public class TestData extends TestWebappBase
         checkNoActiveConns(url);
     }
 
-    public void testAccessAfterClose() throws Exception
-    {
+    public void testAccessAfterClose() throws Exception {
         URL url = new URL(_urlBase + RequestBodyServlet.NAME);
 
         HttpURLConnection urlCon = HttpURLConnection.openConnection(url);
@@ -67,11 +61,8 @@ public class TestData extends TestWebappBase
         checkNoActiveConns(url);
     }
 
-    public void allTestMethods() throws Exception
-    {
+    public void allTestMethods() throws Exception {
         testAccessAfterClose();
         testDisconnect();
-
     }
-
 }

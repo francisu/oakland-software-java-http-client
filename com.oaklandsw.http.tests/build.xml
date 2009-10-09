@@ -2,6 +2,12 @@
 
 	<import file="../com.oaklandsw.build/build.common.xml" />
 
+	<path id="axis.classpath">
+		<fileset dir="${basedir}/../com.oaklandsw.http.external.axis2.1.5/lib">
+			<include name="*.jar" />
+		</fileset>
+	</path>
+
 	<!-- =================================================================== -->
 	<!-- Initialization target                                               -->
 	<!-- =================================================================== -->
@@ -53,8 +59,8 @@
 
 	<target name="create-versions" />
 
-	<property name="tomcat.root" location="/usr/local/apache-tomcat"/>
-	
+	<property name="tomcat.root" location="/var/lib/tomcat6" />
+
 
 	<!-- =================================================================== -->
 	<!-- HTTP Tomcat test WAR file                                           -->
@@ -63,45 +69,25 @@
 	     before building this, as this depends on those jar files -->
 	<target name="http-war" depends="init, compile-java, package-java" description="Build all the files and package them into a WAR file">
 		<antcall target="http-war-internal">
-			<param name="tomcat.number" value="1"/>
-		</antcall>	
-		<antcall target="http-war-internal">
-			<param name="tomcat.number" value="2"/>
-		</antcall>	
-		<antcall target="http-war-internal">
-			<param name="tomcat.number" value="3"/>
-		</antcall>	
-		<antcall target="http-war-internal">
-			<param name="tomcat.number" value="4"/>
-		</antcall>	
+		</antcall>
 	</target>
-	
+
 	<target name="deploy-war" depends="http-war">
 		<antcall target="deploy-war-internal">
-			<param name="tomcat.number" value="1"/>
-		</antcall>	
-		<antcall target="deploy-war-internal">
-			<param name="tomcat.number" value="2"/>
-		</antcall>	
-		<antcall target="deploy-war-internal">
-			<param name="tomcat.number" value="3"/>
-		</antcall>	
-		<antcall target="deploy-war-internal">
-			<param name="tomcat.number" value="4"/>
-		</antcall>	
+		</antcall>
 	</target>
 
 	<target name="deploy-war-internal">
-		<delete file="${tomcat.root}${tomcat.number}/webapps/oaklandsw-http${tomcat.number}.war"/>
-		<delete dir="${tomcat.root}${tomcat.number}/webapps/oaklandsw-http${tomcat.number}"/>
-		<copy file="oaklandsw-http${tomcat.number}.war" todir="${tomcat.root}${tomcat.number}/webapps/"/>
+		<delete file="${tomcat.root}/webapps/oaklandsw-http.war" />
+		<delete dir="${tomcat.root}/webapps/oaklandsw-http" />
+		<copy file="warfiles/oaklandsw-http.war" todir="${tomcat.root}/webapps/" />
 	</target>
 
 	<target name="http-war-internal">
 		<signjar jar="${basedir}/../com.oaklandsw.http/http.jar" signedjar="${basedir}/../com.oaklandsw.http/http-signed.jar" alias="oaklandsw" keystore="keystore" storepass="oaklandsw" />
 		<signjar jar="${basedir}/../com.oaklandsw.http.tests/httptests.jar" signedjar="${basedir}/../com.oaklandsw.http.tests/httptests-signed.jar" alias="oaklandsw" keystore="keystore" storepass="oaklandsw" />
 		<signjar jar="${basedir}/../com.oaklandsw.http.tests/deployment.jar" signedjar="${basedir}/../com.oaklandsw.http.tests/deployment-signed.jar" alias="oaklandsw" keystore="keystore" storepass="oaklandsw" />
-		<war destfile="oaklandsw-http${tomcat.number}.war" webxml="webapp/http/conf/web${tomcat.number}.xml">
+		<war destfile="warfiles/oaklandsw-http.war" webxml="webapp/http/conf/web.xml">
 			<webinf dir="webapp/http/conf">
 				<exclude name="web*.xml" />
 			</webinf>
@@ -120,6 +106,23 @@
 				<exclude name="conf/**" />
 				<exclude name="lib/**" />
 			</fileset>
+
+			<fileset dir="${basedir}/../com.oaklandsw.http">
+				<include name="http.jar" />
+				<include name="http-signed.jar" />
+			</fileset>
+
+			<fileset dir="${basedir}/../com.oaklandsw.util.jars">
+				<include name="log4j*.jar" />
+				<include name="commons-log*.jar" />
+			</fileset>
+
+			<fileset dir="${basedir}/../com.oaklandsw.http.tests">
+				<include name="httptests.jar" />
+				<include name="httptests-signed.jar" />
+				<include name="deployment-signed.jar" />
+			</fileset>
+
 			<classes dir="webapp/http">
 				<include name="log4j.properties" />
 			</classes>
@@ -136,6 +139,19 @@
 				<include name="com/oaklandsw/http/webservice/**" />
 			</fileset>
 		</jar>
+	</target>
+
+	<target name="axis2-wsdl2java">
+		  <java classname="org.apache.axis2.wsdl.WSDL2Java" fork="true">
+		          <classpath refid="axis.classpath"/> 
+		          <arg value="-d"/>
+		          <arg value="adb"/>
+		          <arg value="-uri"/>
+		          <arg file="List.wsdl"/>
+		          <arg value="-g"/>
+		          <arg value="-p"/>
+		          <arg value="sharepoint"/>
+		  </java>
 	</target>
 
 	<!-- =================================================================== -->

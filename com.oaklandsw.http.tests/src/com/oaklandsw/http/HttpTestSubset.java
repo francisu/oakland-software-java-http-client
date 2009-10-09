@@ -4,10 +4,9 @@ import com.oaklandsw.http.cookie.AllCookieTests;
 import com.oaklandsw.http.errorsvr.AllErrorsvrTests;
 import com.oaklandsw.http.errorsvr.TestStatusLine;
 import com.oaklandsw.http.errorsvr.TestTimeout;
+import com.oaklandsw.http.local.AllLocalTests;
 import com.oaklandsw.http.local.TestConnectionManagerLocal;
 import com.oaklandsw.http.local.TestDefaults;
-import com.oaklandsw.http.webapp.TestHeaders;
-import com.oaklandsw.http.local.AllLocalTests;
 import com.oaklandsw.http.local.TestHttpStatus;
 import com.oaklandsw.http.local.TestNtlmMessages;
 import com.oaklandsw.http.local.TestRequestHeaders;
@@ -24,8 +23,8 @@ import com.oaklandsw.http.webapp.TestDisconnect;
 import com.oaklandsw.http.webapp.TestExplicitConnection;
 import com.oaklandsw.http.webapp.TestFailover;
 import com.oaklandsw.http.webapp.TestFtpProxy;
+import com.oaklandsw.http.webapp.TestHeaders;
 import com.oaklandsw.http.webapp.TestIIS;
-import com.oaklandsw.http.webapp.TestJCIFS;
 import com.oaklandsw.http.webapp.TestMultiThread;
 import com.oaklandsw.http.webapp.TestNoData;
 import com.oaklandsw.http.webapp.TestOutputStream;
@@ -38,6 +37,7 @@ import com.oaklandsw.http.webapp.TestPipeliningRough;
 import com.oaklandsw.http.webapp.TestRedirect;
 import com.oaklandsw.http.webapp.TestSSL;
 import com.oaklandsw.http.webapp.TestTunneling;
+import com.oaklandsw.http.webapp.TestURLConn;
 import com.oaklandsw.http.webapp.TestWebStart;
 import com.oaklandsw.http.webext.TestBugs;
 import com.oaklandsw.http.webext.TestHttps;
@@ -48,16 +48,13 @@ import com.oaklandsw.http.webserver.TestWebDavMethods;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
-public class HttpTestSubset extends HttpTestBase
-{
 
-    public HttpTestSubset(String testName)
-    {
+public class HttpTestSubset extends HttpTestBase {
+    public HttpTestSubset(String testName) {
         super(testName);
     }
 
-    public static Test suite()
-    {
+    public static Test suite() {
         TestSuite suite = new TestSuite(HttpTestSubset.class.getName());
 
         // Local tests must run first
@@ -68,19 +65,23 @@ public class HttpTestSubset extends HttpTestBase
 
         // This test must run first
         // suite.addTest(TestProperties.suite());
+        suite.addTest(TestAxis1.suite());
+        suite.addTest(TestAxis2.suite());
 
-        if (false)
-        {
+        suite.addTest(TestPipelining.suite());
+        suite.addTest(TestPipeliningRough.suite());
+
+        if (false) {
             suite.addTest(TestFailover.suite());
             suite.addTest(TestAxis1.suite());
             suite.addTest(TestAxis2.suite());
             suite.addTest(TestIIS.suite());
-            suite.addTest(TestJCIFS.suite());
             suite.addTest(TestExplicitConnection.suite());
             suite.addTest(TestMethods.suite());
             suite.addTest(TestAuthType.suite());
             suite.addTest(TestPipelining.suite());
             suite.addTest(TestPipeliningRough.suite());
+            suite.addTest(TestURLConn.suite());
             suite.addTest(TestOutputStream.suite());
             suite.addTest(TestOutputStreamChunked.suite());
             suite.addTest(TestOutputStreamFixed.suite());
@@ -105,15 +106,12 @@ public class HttpTestSubset extends HttpTestBase
             suite.addTest(AllWebappTests.suite());
         }
 
-
         // Most Webapp tests
-        if (false)
-        {
+        if (false) {
             suite.addTest(TestFailover.suite());
             suite.addTest(TestAxis1.suite());
             suite.addTest(TestAxis2.suite());
             suite.addTest(TestIIS.suite());
-            suite.addTest(TestJCIFS.suite());
             suite.addTest(TestExplicitConnection.suite());
             suite.addTest(TestMethods.suite());
             suite.addTest(TestAuthType.suite());
@@ -135,21 +133,20 @@ public class HttpTestSubset extends HttpTestBase
             suite.addTest(TestTunneling.suite());
             suite.addTest(TestFtpProxy.suite());
             suite.addTest(TestSSL.suite());
+
+            suite.addTest(TestHeaders.suite());
+            suite.addTest(TestRedirect.suite());
+            suite.addTest(TestBasicAuth.suite());
+            suite.addTest(TestCookie.suite());
+            suite.addTest(TestNoData.suite());
+            suite.addTest(TestDisconnect.suite());
+            suite.addTest(TestWebStart.suite());
+            suite.addTest(TestTunneling.suite());
+            suite.addTest(TestFtpProxy.suite());
+            suite.addTest(TestSSL.suite());
         }
 
-        suite.addTest(TestHeaders.suite());
-        suite.addTest(TestRedirect.suite());
-        suite.addTest(TestBasicAuth.suite());
-        suite.addTest(TestCookie.suite());
-        suite.addTest(TestNoData.suite());
-        suite.addTest(TestDisconnect.suite());
-        suite.addTest(TestWebStart.suite());
-        suite.addTest(TestTunneling.suite());
-        suite.addTest(TestFtpProxy.suite());
-        suite.addTest(TestSSL.suite());
-
-        if (false)
-        {
+        if (false) {
             suite.addTest(TestOutputStreamRaw.suite());
             suite.addTest(TestAxis1.suite());
             suite.addTest(TestAxis2.suite());
@@ -184,7 +181,6 @@ public class HttpTestSubset extends HttpTestBase
             suite.addTest(TestRedirect.suite());
             suite.addTest(TestBasicAuth.suite());
             suite.addTest(TestIIS.suite());
-            suite.addTest(TestJCIFS.suite());
             suite.addTest(TestMultiThread.suite());
             suite.addTest(TestOutputStreamChunked.suite());
             suite.addTest(TestAuthType.suite());
@@ -200,8 +196,7 @@ public class HttpTestSubset extends HttpTestBase
         return suite;
     }
 
-    public static void main(String args[])
-    {
+    public static void main(String[] args) {
         mainRun(suite(), args);
     }
 }

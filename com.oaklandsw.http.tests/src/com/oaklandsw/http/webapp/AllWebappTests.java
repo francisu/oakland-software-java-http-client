@@ -1,20 +1,17 @@
 package com.oaklandsw.http.webapp;
 
+import com.oaklandsw.TestCaseBase;
+
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
-import com.oaklandsw.TestCaseBase;
 
-public class AllWebappTests extends TestCaseBase
-{
-
-    public AllWebappTests(String testName)
-    {
+public class AllWebappTests extends TestCaseBase {
+    public AllWebappTests(String testName) {
         super(testName);
     }
 
-    public static Test suite()
-    {
+    public static Test suite() {
         TestSuite suite = new TestSuite(AllWebappTests.class.getName());
         suite.addTest(TestTimeout.suite());
         suite.addTest(TestFailover.suite());
@@ -46,12 +43,11 @@ public class AllWebappTests extends TestCaseBase
         suite.addTest(TestURLConn.suite());
         suite.addTest(TestURLMultiConn.suite());
         suite.addTest(TestSSL.suite());
+
         return suite;
     }
 
-    public static void main(String args[])
-    {
+    public static void main(String[] args) {
         mainRun(suite(), args);
     }
-
 }

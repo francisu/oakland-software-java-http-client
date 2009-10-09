@@ -1,42 +1,38 @@
 package com.oaklandsw.http.webapp;
 
-import java.net.ConnectException;
-import java.net.URL;
-import java.net.UnknownHostException;
+import com.oaklandsw.http.HttpTestEnv;
+import com.oaklandsw.http.HttpURLConnection;
+import com.oaklandsw.http.servlet.TimeoutServlet;
 
 import com.oaklandsw.util.Log;
+import com.oaklandsw.util.LogUtils;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
-import com.oaklandsw.http.HttpTestEnv;
-import com.oaklandsw.http.HttpURLConnection;
-import com.oaklandsw.http.servlet.TimeoutServlet;
-import com.oaklandsw.util.LogUtils;
+import java.net.ConnectException;
+import java.net.URL;
+import java.net.UnknownHostException;
 
-public class TestFailover extends TestWebappBase
-{
 
+public class TestFailover extends TestWebappBase {
     private static final Log _log = LogUtils.makeLogger();
 
-    public TestFailover(String testName)
-    {
+    public TestFailover(String testName) {
         super(testName);
     }
 
-    public static Test suite()
-    {
+    public static Test suite() {
         TestSuite suite = new TestSuite(TestFailover.class);
+
         return suite;
     }
 
-    public static void main(String args[])
-    {
+    public static void main(String[] args) {
         mainRun(suite(), args);
     }
 
-    public void testConnectProxyHostBad() throws Exception
-    {
+    public void testConnectProxyHostBad() throws Exception {
         URL url = new URL(_urlBase + TimeoutServlet.NAME);
 
         HttpURLConnection urlCon = HttpURLConnection.openConnection(url);
@@ -47,15 +43,11 @@ public class TestFailover extends TestWebappBase
         // Note this test may fail if OpenDNS is used and it redirects
         // to it's root page. You can fix this by altering the preferences
         // of OpenDNS in the network.
-
-        try
-        {
+        try {
             urlCon.setRequestMethod("GET");
             urlCon.connect();
             fail("Did not get expected exception");
-        }
-        catch (UnknownHostException ex)
-        {
+        } catch (UnknownHostException ex) {
             // Expected
             // System.out.println(ex);
         }
@@ -66,8 +58,7 @@ public class TestFailover extends TestWebappBase
         urlCon.getResponseCode();
     }
 
-    public void testConnectProxyPortBad() throws Exception
-    {
+    public void testConnectProxyPortBad() throws Exception {
         URL url = new URL(_urlBase + TimeoutServlet.NAME);
 
         HttpURLConnection urlCon = HttpURLConnection.openConnection(url);
@@ -76,14 +67,11 @@ public class TestFailover extends TestWebappBase
         ngUrlCon.setConnectionProxyHost(HttpTestEnv.TOMCAT_HOST);
         ngUrlCon.setConnectionProxyPort(1);
 
-        try
-        {
+        try {
             urlCon.setRequestMethod("GET");
             urlCon.connect();
             fail("Did not get expected exception");
-        }
-        catch (ConnectException ex)
-        {
+        } catch (ConnectException ex) {
             // Expected
             // System.out.println(ex);
         }
@@ -94,8 +82,7 @@ public class TestFailover extends TestWebappBase
         urlCon.getResponseCode();
     }
 
-    public void testConnectProxyGood() throws Exception
-    {
+    public void testConnectProxyGood() throws Exception {
         URL url = new URL(_urlBase + TimeoutServlet.NAME);
 
         HttpURLConnection urlCon = HttpURLConnection.openConnection(url);
@@ -108,34 +95,27 @@ public class TestFailover extends TestWebappBase
         ngUrlCon.setConnectionProxyPort(HttpTestEnv.NORMAL_PROXY_PORT);
 
         assertEquals(ngUrlCon.getConnectionProxyHost(),
-                     HttpTestEnv.TEST_PROXY_HOST);
+            HttpTestEnv.TEST_PROXY_HOST);
         assertEquals(ngUrlCon.getConnectionProxyPort(),
-                     HttpTestEnv.NORMAL_PROXY_PORT);
+            HttpTestEnv.NORMAL_PROXY_PORT);
 
         urlCon.setRequestMethod("GET");
         urlCon.connect();
 
-        try
-        {
+        try {
             ngUrlCon.setConnectionProxyHost("xxx");
             fail("Expected exception");
-        }
-        catch (IllegalStateException ex)
-        {
+        } catch (IllegalStateException ex) {
             // Expected
         }
 
-        try
-        {
+        try {
             ngUrlCon.setConnectionProxyPort(122);
             fail("Expected exception");
-        }
-        catch (IllegalStateException ex)
-        {
+        } catch (IllegalStateException ex) {
             // Expected
         }
 
         urlCon.getResponseCode();
     }
-
 }

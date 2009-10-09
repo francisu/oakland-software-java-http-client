@@ -26,6 +26,9 @@ public class Ntlm
     public static int          _authMessageNtResponse;
     public static int          _authMessageLmResponse;
 
+    // Use the Negotiate flags that work with NT systems. See bug 2607, 2596
+    public static boolean      _useNtNegotiateFlags;
+
     public static long         _authMessageFlags;
     public static long         _challengeMessageFlags;
 

@@ -1,35 +1,35 @@
 /*
  * ====================================================================
- * 
+ *
  * The Apache Software License, Version 1.1
- * 
+ *
  * Copyright (c) 1999 The Apache Software Foundation. All rights reserved.
- * 
+ *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  * this list of conditions and the following disclaimer.
- * 
+ *
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  * this list of conditions and the following disclaimer in the documentation
  * and/or other materials provided with the distribution.
- * 
+ *
  * 3. The end-user documentation included with the redistribution, if any, must
  * include the following acknowlegement: "This product includes software
  * developed by the Apache Software Foundation (http://www.apache.org/)."
  * Alternately, this acknowlegement may appear in the software itself, if and
  * wherever such third-party acknowlegements normally appear.
- * 
+ *
  * 4. The names "The Jakarta Project", "Tomcat", and "Apache Software
  * Foundation" must not be used to endorse or promote products derived from this
  * software without prior written permission. For written permission, please
  * contact apache@apache.org.
- * 
+ *
  * 5. Products derived from this software may not be called "Apache" nor may
  * "Apache" appear in their names without prior written permission of the Apache
  * Group.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED ``AS IS'' AND ANY EXPRESSED OR IMPLIED WARRANTIES,
  * INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND
  * FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE APACHE
@@ -41,114 +41,96 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * ====================================================================
- * 
+ *
  * This software consists of voluntary contributions made by many individuals on
  * behalf of the Apache Software Foundation. For more information on the Apache
  * Software Foundation, please see <http://www.apache.org/>.
- * 
+ *
  * [Additional notices, if required by prior licensing conditions]
- * 
+ *
  */
-
 package com.oaklandsw.http.servlet;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+
 import java.util.Enumeration;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-public class HeaderServlet extends MultiMethodServlet
-{
-    // The part of the URL where this servlet is installed
-    public static final String NAME       = "/headers";
 
+public class HeaderServlet extends MultiMethodServlet {
+    // The part of the URL where this servlet is installed
+    public static final String NAME = "/headers";
     public static final String TEXT_CONST = "abcdefghijklmnopqrstuvwxyz0123456789";
 
     protected void genericService(HttpServletRequest request,
-                                  HttpServletResponse response)
-        throws IOException,
-            ServletException
-    {
+        HttpServletResponse response) throws IOException, ServletException {
         response.setHeader("HeaderSetByServlet", "Yes");
 
         String respCode = null;
-        try
-        {
+
+        try {
             respCode = request.getParameter("responseCode");
-        }
-        catch (Exception ex)
-        {
+        } catch (Exception ex) {
             // Must not be present
         }
 
-        if (respCode != null)
-        {
+        if (respCode != null) {
             int respInt = 0;
-            try
-            {
+
+            try {
                 respInt = Integer.parseInt(respCode);
+            } catch (Exception ex) {
             }
-            catch (Exception ex)
-            {
-            }
+
             response.setStatus(respInt);
 
             // Don't give a body if this is some kind of error
-            if (request.getParameter("noBody") != null)
+            if (request.getParameter("noBody") != null) {
                 return;
+            }
         }
 
         response.setContentType("text/html");
 
         PrintWriter out = response.getWriter();
         out.println("<html>");
-        out.println("<head><title>Header Servlet: "
-            + request.getMethod()
-            + "</title></head>");
+        out.println("<head><title>Header Servlet: " + request.getMethod() +
+            "</title></head>");
         out.println("<body>");
 
-        out.println("<p>This is a response to an HTTP "
-            + request.getMethod()
-            + " request.</p>");
+        out.println("<p>This is a response to an HTTP " + request.getMethod() +
+            " request.</p>");
         out.println("<p>Request Headers:</p>");
 
         Enumeration names = request.getHeaderNames();
         int length = 0;
-        while (names.hasMoreElements())
-        {
-            String name = (String)(names.nextElement());
+
+        while (names.hasMoreElements()) {
+            String name = (String) (names.nextElement());
             Enumeration values = request.getHeaders(name);
-            while (values.hasMoreElements())
-            {
+
+            while (values.hasMoreElements()) {
                 Object value = values.nextElement();
 
                 // Allows and abitrary amount of text to be emitted
-                if (name.equalsIgnoreCase("emit-text"))
-                {
-                    try
-                    {
-                        length = Integer.parseInt((String)value);
-                    }
-                    catch (Exception e)
-                    {
+                if (name.equalsIgnoreCase("emit-text")) {
+                    try {
+                        length = Integer.parseInt((String) value);
+                    } catch (Exception e) {
                         length = 0;
                     }
                 }
 
-                out
-                        .println("name=\""
-                            + name
-                            + "\";value=\""
-                            + value
-                            + "\"<br>");
+                out.println("name=\"" + name + "\";value=\"" + value +
+                    "\"<br>");
             }
         }
 
-        if (length > 0)
-        {
+        if (length > 0) {
             for (int i = 0; i < length; i++)
                 out.print(TEXT_CONST);
         }

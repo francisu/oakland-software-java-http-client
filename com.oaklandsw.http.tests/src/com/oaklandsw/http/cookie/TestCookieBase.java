@@ -25,11 +25,11 @@
  * <http://www.apache.org/>.
  *
  */
-
 package com.oaklandsw.http.cookie;
 
 import com.oaklandsw.http.Cookie;
 import com.oaklandsw.http.HttpTestBase;
+
 
 /**
  * Test cases for Cookie
@@ -38,27 +38,22 @@ import com.oaklandsw.http.HttpTestBase;
  * @version $Revision: 155418 $
  */
 public class TestCookieBase extends HttpTestBase {
-
     // ------------------------------------------------------------ Constructor
-
     public TestCookieBase(String name) {
         super(name);
     }
 
-    public static Cookie[] cookieParse(
-        final CookieSpec parser,
-        String host1,
-        int port1,
-        String path,
-        boolean isSecure,
-        String setHeader)
+    public static Cookie[] cookieParse(final CookieSpec parser, String host1,
+        int port1, String path, boolean isSecure, String setHeader)
         throws MalformedCookieException {
         Cookie[] cookies = parser.parse(host1, port1, path, isSecure, setHeader);
+
         if (cookies != null) {
             for (int i = 0; i < cookies.length; i++) {
                 parser.validate(host1, port1, path, isSecure, cookies[i]);
             }
         }
+
         return cookies;
     }
 }

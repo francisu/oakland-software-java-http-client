@@ -1,61 +1,47 @@
 package com.oaklandsw.http.webserver;
 
-import java.io.IOException;
-import java.io.OutputStream;
-import java.net.URL;
-
-import junit.framework.Test;
-import junit.framework.TestSuite;
-
 import com.oaklandsw.http.HttpTestBase;
 import com.oaklandsw.http.HttpTestEnv;
 import com.oaklandsw.http.HttpURLConnection;
 
+import junit.framework.Test;
+import junit.framework.TestSuite;
+
+import java.io.IOException;
+import java.io.OutputStream;
+
+import java.net.URL;
+
+
 /**
  * Test webdav methods
  */
-public class TestWebDavMethods extends HttpTestBase
-{
-
+public class TestWebDavMethods extends HttpTestBase {
     private static String _host = HttpTestEnv.TEST_WEBDAV_HOST;
+    private static int _port = HttpTestEnv.WEBDAV_PORT;
 
-    private static int    _port = HttpTestEnv.WEBDAV_PORT;
-
-    public TestWebDavMethods(String testName)
-    {
+    public TestWebDavMethods(String testName) {
         super(testName);
         _doProxyTest = true;
         _do10ProxyTest = true;
         _doExplicitTest = true;
     }
 
-    public static void main(String args[])
-    {
+    public static void main(String[] args) {
         mainRun(suite(), args);
     }
 
-    public static Test suite()
-    {
+    public static Test suite() {
         return new TestSuite(TestWebDavMethods.class);
     }
 
-    public void testMkCol() throws IOException
-    {
-        URL collectionUrl = new URL("http://"
-            + _host
-            + ":"
-            + _port
-            + "/dav/newcol/");
-        URL resourceUrl = new URL("http://"
-            + _host
-            + ":"
-            + _port
-            + "/dav/newcol/resource");
-        URL movedUrl = new URL("http://"
-            + _host
-            + ":"
-            + _port
-            + "/dav/newcol/resource1");
+    public void testMkCol() throws IOException {
+        URL collectionUrl = new URL("http://" + _host + ":" + _port +
+                "/dav/newcol/");
+        URL resourceUrl = new URL("http://" + _host + ":" + _port +
+                "/dav/newcol/resource");
+        URL movedUrl = new URL("http://" + _host + ":" + _port +
+                "/dav/newcol/resource1");
         int response = 0;
         String resourceContent = "This is a resource";
         String data;
@@ -103,16 +89,11 @@ public class TestWebDavMethods extends HttpTestBase
         urlCon.setRequestMethod("PROPPATCH");
         urlCon.setDoOutput(true);
         outStr = urlCon.getOutputStream();
-        msg = "<?xml version='1.0' ?>"
-            + "<D:propertyupdate xmlns:D='DAV:' xmlns:Z='http://www.w3.com/standards/z39.50/'>"
-            + " <D:set>"
-            + "<D:prop>"
-            + "<Z:authors>"
-            + "<Z:Author>Jim Whitehead</Z:Author>"
-            + "</Z:authors>"
-            + "</D:prop>"
-            + "</D:set>"
-            + "</D:propertyupdate>";
+        msg = "<?xml version='1.0' ?>" +
+            "<D:propertyupdate xmlns:D='DAV:' xmlns:Z='http://www.w3.com/standards/z39.50/'>" +
+            " <D:set>" + "<D:prop>" + "<Z:authors>" +
+            "<Z:Author>Jim Whitehead</Z:Author>" + "</Z:authors>" +
+            "</D:prop>" + "</D:set>" + "</D:propertyupdate>";
         outStr.write(msg.getBytes());
         outStr.close();
         response = urlCon.getResponseCode();
@@ -127,12 +108,9 @@ public class TestWebDavMethods extends HttpTestBase
         urlCon.setRequestMethod("PROPFIND");
         urlCon.setDoOutput(true);
         outStr = urlCon.getOutputStream();
-        msg = "<?xml version='1.0' ?>"
-            + "<D:propfind xmlns:D='DAV:' xmlns:Z='http://www.w3.com/standards/z39.50/'>"
-            + "<D:prop>"
-            + "<Z:authors/>"
-            + "</D:prop>"
-            + "</D:propfind>";
+        msg = "<?xml version='1.0' ?>" +
+            "<D:propfind xmlns:D='DAV:' xmlns:Z='http://www.w3.com/standards/z39.50/'>" +
+            "<D:prop>" + "<Z:authors/>" + "</D:prop>" + "</D:propfind>";
         outStr.write(msg.getBytes());
         outStr.close();
         response = urlCon.getResponseCode();
@@ -156,12 +134,11 @@ public class TestWebDavMethods extends HttpTestBase
         urlCon = HttpURLConnection.openConnection(movedUrl);
         urlCon.setRequestMethod("LOCK");
         urlCon.setRequestProperty("Depth", "0");
-        msg = "<?xml version='1.0' ?>"
-            + "<lockinfo xmlns='DAV:'>"
-            + "<lockscope><exclusive/></lockscope>"
-            + "<locktype><write/></locktype>"
-            + "<owner><href>http://oaklandsoftware.com</href></owner>"
-            + "</lockinfo>";
+        msg = "<?xml version='1.0' ?>" + "<lockinfo xmlns='DAV:'>" +
+            "<lockscope><exclusive/></lockscope>" +
+            "<locktype><write/></locktype>" +
+            "<owner><href>http://oaklandsoftware.com</href></owner>" +
+            "</lockinfo>";
         urlCon.setDoOutput(true);
         outStr = urlCon.getOutputStream();
         outStr.write(msg.getBytes());
@@ -235,8 +212,7 @@ public class TestWebDavMethods extends HttpTestBase
         checkNoActiveConns(collectionUrl);
     }
 
-    public void testPropfind() throws IOException
-    {
+    public void testPropfind() throws IOException {
         URL url = new URL("http://" + _host + ":" + _port + "/svn/main");
         int response = 0;
 
@@ -245,11 +221,10 @@ public class TestWebDavMethods extends HttpTestBase
         urlCon.setRequestProperty("Depth", "1");
 
         urlCon.setDoOutput(true);
+
         OutputStream outStr = urlCon.getOutputStream();
-        String msg = "<?xml version='1.0' ?>"
-            + "<propfind xmlns='DAV:'>"
-            + "<propname/>"
-            + "</propfind>";
+        String msg = "<?xml version='1.0' ?>" + "<propfind xmlns='DAV:'>" +
+            "<propname/>" + "</propfind>";
         outStr.write(msg.getBytes());
         outStr.close();
 
@@ -264,10 +239,8 @@ public class TestWebDavMethods extends HttpTestBase
         checkNoActiveConns(url);
     }
 
-    public void allTestMethods() throws Exception
-    {
+    public void allTestMethods() throws Exception {
         testMkCol();
         testPropfind();
     }
-
 }

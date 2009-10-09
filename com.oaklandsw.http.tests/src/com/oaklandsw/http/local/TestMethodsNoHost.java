@@ -4,36 +4,36 @@
  * 1.7 2002/08/06 15:15:32 jsdever Exp $ $Revision: 1.7 $ $Date: 2002/08/06
  * 15:15:32 $
  * ====================================================================
- * 
+ *
  * The Apache Software License, Version 1.1
- * 
+ *
  * Copyright (c) 1999-2002 The Apache Software Foundation. All rights reserved.
- * 
+ *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  * this list of conditions and the following disclaimer.
- * 
+ *
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  * this list of conditions and the following disclaimer in the documentation
  * and/or other materials provided with the distribution.
- * 
+ *
  * 3. The end-user documentation included with the redistribution, if any, must
  * include the following acknowlegement: "This product includes software
  * developed by the Apache Software Foundation (http://www.apache.org/)."
  * Alternately, this acknowlegement may appear in the software itself, if and
  * wherever such third-party acknowlegements normally appear.
- * 
+ *
  * 4. The names "The Jakarta Project", "Tomcat", and "Apache Software
  * Foundation" must not be used to endorse or promote products derived from this
  * software without prior written permission. For written permission, please
  * contact apache@apache.org.
- * 
+ *
  * 5. Products derived from this software may not be called "Apache" nor may
  * "Apache" appear in their names without prior written permission of the Apache
  * Group.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED ``AS IS'' AND ANY EXPRESSED OR IMPLIED WARRANTIES,
  * INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND
  * FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE APACHE
@@ -45,63 +45,59 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * ====================================================================
- * 
+ *
  * This software consists of voluntary contributions made by many individuals on
  * behalf of the Apache Software Foundation. For more information on the Apache
  * Software Foundation, please see <http://www.apache.org/>.
- * 
+ *
  * [Additional notices, if required by prior licensing conditions]
- * 
+ *
  */
-
 package com.oaklandsw.http.local;
 
-import java.net.URL;
+import com.oaklandsw.http.HttpTestBase;
+import com.oaklandsw.http.HttpURLConnection;
+import com.oaklandsw.http.SimpleHttpMethod;
 
 import com.oaklandsw.util.Log;
+import com.oaklandsw.util.LogUtils;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
-import com.oaklandsw.http.HttpURLConnection;
-import com.oaklandsw.http.SimpleHttpMethod;
-import com.oaklandsw.http.HttpTestBase;
-import com.oaklandsw.util.LogUtils;
+import java.net.URL;
+
 
 /**
  * @author Rodney Waldhoff
  * @author <a href="mailto:jsdever@apache.org">Jeff Dever </a>
  * @version $Revision: 1.7 $ $Date: 2002/08/06 15:15:32 $
  */
-public class TestMethodsNoHost extends HttpTestBase
-{
+public class TestMethodsNoHost extends HttpTestBase {
     private static final Log _log = LogUtils.makeLogger();
 
-    public TestMethodsNoHost(String testName)
-    {
+    public TestMethodsNoHost(String testName) {
         super(testName);
     }
 
-    public static Test suite()
-    {
+    public static Test suite() {
         return new TestSuite(TestMethodsNoHost.class);
     }
 
-    public void testHttpMethodBasePaths() throws Exception
-    {
+    public void testHttpMethodBasePaths() throws Exception {
         SimpleHttpMethod simple = new SimpleHttpMethod();
-        String[] paths = { "/some/absolute/path", "../some/relative/path", "/",
-            "/some/path/with?query=string" };
+        String[] paths = {
+                "/some/absolute/path", "../some/relative/path", "/",
+                "/some/path/with?query=string"
+            };
 
-        for (int i = 0; i < paths.length; i++)
-        {
+        for (int i = 0; i < paths.length; i++) {
             simple.setPathQuery(paths[i]);
             assertEquals(paths[i], simple.getPathQuery());
         }
     }
 
-    public void testHttpMethodBaseDefaultPath() throws Exception
-    {
+    public void testHttpMethodBaseDefaultPath() throws Exception {
         SimpleHttpMethod simple = new SimpleHttpMethod();
         assertEquals("/", simple.getPath());
 
@@ -112,8 +108,7 @@ public class TestMethodsNoHost extends HttpTestBase
         assertEquals("/", simple.getPath());
     }
 
-    public void testHttpMethodBasePathConstructor() throws Exception
-    {
+    public void testHttpMethodBasePathConstructor() throws Exception {
         SimpleHttpMethod simple = new SimpleHttpMethod();
         assertEquals("/", simple.getPath());
 
@@ -127,31 +122,28 @@ public class TestMethodsNoHost extends HttpTestBase
     }
 
     // Leaks connections if there is a failure to connect
-    public void testBug385() throws Exception
-    {
+    public void testBug385() throws Exception {
         // Bad location
         URL url = new URL("http://localhost:55555");
 
         HttpURLConnection urlCon = HttpURLConnection.openConnection(url);
         urlCon.setRequestMethod("GET");
-        try
-        {
+
+        try {
             // Should fail
             urlCon.connect();
             fail("Did not get expected exception");
-        }
-        catch (Exception ex)
-        {
+        } catch (Exception ex) {
             // Expected
         }
 
         // Should be no connections
         checkNoTotalConns(url);
+
         // com.oaklandsw.http.HttpURLConnection.dumpConnectionPool();
     }
 
-    public void testStreamBadChunkSize() throws Exception
-    {
+    public void testStreamBadChunkSize() throws Exception {
         URL url = new URL("http://doesnotmatter");
 
         HttpURLConnection urlCon = HttpURLConnection.openConnection(url);
@@ -162,8 +154,7 @@ public class TestMethodsNoHost extends HttpTestBase
         urlCon.setChunkedStreamingMode(25);
     }
 
-    public void testStreamRawMultipleTimes() throws Exception
-    {
+    public void testStreamRawMultipleTimes() throws Exception {
         URL url = new URL("http://doesnotmatter");
 
         HttpURLConnection urlCon = HttpURLConnection.openConnection(url);
@@ -175,36 +166,27 @@ public class TestMethodsNoHost extends HttpTestBase
         urlCon.setRawStreamingMode(true);
 
         // Should not work since using raw
-        try
-        {
+        try {
             urlCon.setFixedLengthStreamingMode(10);
             fail("Expected exception");
-        }
-        catch (IllegalStateException ex)
-        {
+        } catch (IllegalStateException ex) {
             // OK
         }
-
     }
 
-    public void testStreamBadFixedSize() throws Exception
-    {
+    public void testStreamBadFixedSize() throws Exception {
         URL url = new URL("http://doesnotmatter");
 
         HttpURLConnection urlCon = HttpURLConnection.openConnection(url);
 
-        try
-        {
+        try {
             urlCon.setFixedLengthStreamingMode(-1);
             fail("Expected exception");
-        }
-        catch (IllegalArgumentException ex)
-        {
+        } catch (IllegalArgumentException ex) {
             // OK
         }
 
         urlCon.setFixedLengthStreamingMode(0);
         urlCon.setFixedLengthStreamingMode(100);
     }
-
 }

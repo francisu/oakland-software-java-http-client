@@ -3,33 +3,36 @@
  */
 package com.oaklandsw.http;
 
-import org.bouncycastle.util.encoders.Base64;
-
 import com.oaklandsw.http.ntlm.AuthenticateMessage;
 import com.oaklandsw.http.ntlm.ChallengeMessage;
 import com.oaklandsw.http.ntlm.Message;
 import com.oaklandsw.http.ntlm.NegotiateMessage;
 
-public class NtlmDecode
-{
-    public static void main(String args[]) throws Exception
-    {
+import org.bouncycastle.util.encoders.Base64;
+
+
+public class NtlmDecode {
+    public static void main(String[] args) throws Exception {
         // Decode using generic message to find type
         Message msg = new Message();
         msg.setBytes(Base64.decode(args[0].getBytes("8859_1")));
         msg.decode();
 
-        switch (msg.getType())
-        {
-            case Message.MSG_CHALLENGE:
-                msg = new ChallengeMessage();
-                break;
-            case Message.MSG_NEGOTIATE:
-                msg = new NegotiateMessage();
-                break;
-            case Message.MSG_AUTHENTICATE:
-                msg = new AuthenticateMessage();
-                break;
+        switch (msg.getType()) {
+        case Message.MSG_CHALLENGE:
+            msg = new ChallengeMessage();
+
+            break;
+
+        case Message.MSG_NEGOTIATE:
+            msg = new NegotiateMessage();
+
+            break;
+
+        case Message.MSG_AUTHENTICATE:
+            msg = new AuthenticateMessage();
+
+            break;
         }
 
         // Decode real message
@@ -38,5 +41,4 @@ public class NtlmDecode
 
         System.out.println(msg.toStringDump(0));
     }
-
 }

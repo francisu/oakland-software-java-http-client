@@ -9,6 +9,11 @@
 
 		<property name="command.file" value="${basedir}/lictool.scr" />
 
+		<!-- Use this when building test kits for different versions, it's normal
+		setting should be the highest supported Axis2 version (1.5 right now)
+		-->
+		<property name="axis2.version" value="1.2"/>
+		
 		<!-- this is the 1.2 compiler - only use this for building 1.xxx of product -->
 		<!--
 		<property name="build.compiler" value="jikes" />
@@ -160,13 +165,13 @@
 				<include name="servlet.jar" />
 			</fileset>
 			<fileset dir="${basedir}/../com.oaklandsw.http.jars">
-				<include name="jcifs*.jar" />
-				<include name="saaj.jar" />
 				<include name="backport-util-concurrent.jar" />
-				<include name="axis*.jar" />
-				<include name="axiom*.jar" />
-				<include name="activation.jar" />
-				<include name="jaxrpc.jar" />
+			</fileset>
+			<fileset dir="${basedir}/../com.oaklandsw.http.external.axis/lib">
+				<include name="*.jar" />
+			</fileset>
+			<fileset dir="${basedir}/../com.oaklandsw.http.external.axis2.${axis2.version}/lib">
+				<include name="*.jar" />
 			</fileset>
 		</path>
 

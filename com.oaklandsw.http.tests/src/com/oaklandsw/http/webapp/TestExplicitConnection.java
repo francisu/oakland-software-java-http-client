@@ -1,50 +1,44 @@
 package com.oaklandsw.http.webapp;
 
-import java.net.URL;
-
-import com.oaklandsw.util.Log;
-
-import junit.framework.Test;
-import junit.framework.TestSuite;
-
 import com.oaklandsw.http.HttpConnection;
 import com.oaklandsw.http.HttpConnectionManager;
 import com.oaklandsw.http.HttpURLConnection;
 import com.oaklandsw.http.servlet.ParamServlet;
 import com.oaklandsw.http.servlet.RequestBodyServlet;
+
+import com.oaklandsw.util.Log;
 import com.oaklandsw.util.LogUtils;
 
-public class TestExplicitConnection extends TestWebappBase
-{
+import junit.framework.Test;
+import junit.framework.TestSuite;
 
-    private static final Log   _log         = LogUtils.makeLogger();
+import java.net.URL;
 
+
+public class TestExplicitConnection extends TestWebappBase {
+    private static final Log _log = LogUtils.makeLogger();
     protected HttpConnectionManager _connManager;
-    
-    public TestExplicitConnection(String testName)
-    {
+
+    public TestExplicitConnection(String testName) {
         super(testName);
     }
 
-    public static Test suite()
-    {
+    public static Test suite() {
         TestSuite suite = new TestSuite(TestExplicitConnection.class);
+
         return suite;
     }
 
-    public static void main(String args[])
-    {
+    public static void main(String[] args) {
         mainRun(suite(), args);
     }
 
-    public void setUp() throws Exception
-    {
+    public void setUp() throws Exception {
         super.setUp();
         _connManager = HttpURLConnection.getConnectionManager();
     }
 
-    public void testConnect() throws Exception
-    {
+    public void testConnect() throws Exception {
         URL url;
         HttpURLConnection urlCon;
 
@@ -86,8 +80,7 @@ public class TestExplicitConnection extends TestWebappBase
         checkNoActiveConns(url);
     }
 
-    public void testConnect2Conns() throws Exception
-    {
+    public void testConnect2Conns() throws Exception {
         URL url;
         HttpURLConnection urlCon;
 
@@ -104,6 +97,7 @@ public class TestExplicitConnection extends TestWebappBase
 
         // Once
         urlCon = HttpURLConnection.openConnection(url);
+
         HttpURLConnection urlCon2 = HttpURLConnection.openConnection(url);
         urlCon = HttpURLConnection.openConnection(url);
         urlCon2 = HttpURLConnection.openConnection(url);
@@ -126,8 +120,7 @@ public class TestExplicitConnection extends TestWebappBase
         checkNoActiveConns(url);
     }
 
-    public void testConnectBadState() throws Exception
-    {
+    public void testConnectBadState() throws Exception {
         URL url;
         HttpURLConnection urlCon;
 
@@ -141,13 +134,11 @@ public class TestExplicitConnection extends TestWebappBase
         // Once
         urlCon = HttpURLConnection.openConnection(url);
         urlCon.connect();
-        try
-        {
+
+        try {
             urlCon.setConnection(conn);
             fail("Missed expected exception");
-        }
-        catch (IllegalStateException ex)
-        {
+        } catch (IllegalStateException ex) {
             // expected
         }
 
@@ -163,5 +154,4 @@ public class TestExplicitConnection extends TestWebappBase
 
         checkNoActiveConns(url);
     }
-
 }

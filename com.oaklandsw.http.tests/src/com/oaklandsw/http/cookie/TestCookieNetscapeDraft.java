@@ -4,28 +4,27 @@
  * 1.2 2004/04/24 23:28:04 olegk Exp $ $Revision: 327789 $ $Date: 2005-10-23
  * 06:17:00 -0700 (Sun, 23 Oct 2005) $
  * ====================================================================
- * 
+ *
  * Copyright 1999-2004 The Apache Software Foundation
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
  * License for the specific language governing permissions and limitations under
  * the License.
  * ====================================================================
- * 
+ *
  * This software consists of voluntary contributions made by many individuals on
  * behalf of the Apache Software Foundation. For more information on the Apache
  * Software Foundation, please see <http://www.apache.org/>.
- * 
+ *
  */
-
 package com.oaklandsw.http.cookie;
 
 import com.oaklandsw.http.Cookie;
@@ -35,176 +34,137 @@ import com.oaklandsw.http.NameValuePair;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
+
 /**
  * Test cases for Netscape cookie draft
- * 
+ *
  * @author <a href="mailto:oleg@ural.ru">Oleg Kalnichevski</a>
- * 
+ *
  * @version $Revision: 327789 $
  */
-public class TestCookieNetscapeDraft extends TestCookieBase
-{
-
+public class TestCookieNetscapeDraft extends TestCookieBase {
     // ------------------------------------------------------------ Constructor
-
-    public TestCookieNetscapeDraft(String name)
-    {
+    public TestCookieNetscapeDraft(String name) {
         super(name);
     }
 
     // ------------------------------------------------------- TestCase Methods
-
-    public static Test suite()
-    {
+    public static Test suite() {
         return new TestSuite(TestCookieNetscapeDraft.class);
     }
 
-    public void testParseAttributeInvalidAttrib() throws Exception
-    {
+    public void testParseAttributeInvalidAttrib() throws Exception {
         CookieSpec cookiespec = new NetscapeDraftSpec();
-        try
-        {
+
+        try {
             cookiespec.parseAttribute(null, null);
             fail("IllegalArgumentException must have been thrown");
-        }
-        catch (IllegalArgumentException expected)
-        {
+        } catch (IllegalArgumentException expected) {
         }
     }
 
-    public void testParseAttributeInvalidCookie() throws Exception
-    {
+    public void testParseAttributeInvalidCookie() throws Exception {
         CookieSpec cookiespec = new NetscapeDraftSpec();
-        try
-        {
+
+        try {
             cookiespec.parseAttribute(new NameValuePair("name", "value"), null);
             fail("IllegalArgumentException must have been thrown");
-        }
-        catch (IllegalArgumentException expected)
-        {
+        } catch (IllegalArgumentException expected) {
         }
     }
 
-    public void testParseAttributeInvalidCookieExpires() throws Exception
-    {
+    public void testParseAttributeInvalidCookieExpires()
+        throws Exception {
         CookieSpec cookiespec = new NetscapeDraftSpec();
         Cookie cookie = new Cookie();
-        try
-        {
-            cookiespec.parseAttribute(new NameValuePair("expires", null),
-                                      cookie);
+
+        try {
+            cookiespec.parseAttribute(new NameValuePair("expires", null), cookie);
             fail("MalformedCookieException must have been thrown");
-        }
-        catch (MalformedCookieException expected)
-        {
+        } catch (MalformedCookieException expected) {
         }
     }
 
-    public void testParseWithNullHost() throws Exception
-    {
+    public void testParseWithNullHost() throws Exception {
         String header = "cookie-name=cookie-value; domain=127.0.0.1; path=/; secure";
 
         CookieSpec cookiespec = new NetscapeDraftSpec();
-        try
-        {
+
+        try {
             cookieParse(cookiespec, null, 80, "/", false, header);
             fail("IllegalArgumentException should have been thrown");
-        }
-        catch (IllegalArgumentException e)
-        {
+        } catch (IllegalArgumentException e) {
             // expected
         }
     }
 
-    public void testParseWithBlankHost() throws Exception
-    {
+    public void testParseWithBlankHost() throws Exception {
         String header = "cookie-name=cookie-value; domain=127.0.0.1; path=/; secure";
 
         CookieSpec cookiespec = new NetscapeDraftSpec();
-        try
-        {
+
+        try {
             cookieParse(cookiespec, "  ", 80, "/", false, header);
             fail("IllegalArgumentException should have been thrown");
-        }
-        catch (IllegalArgumentException e)
-        {
+        } catch (IllegalArgumentException e) {
             // expected
         }
     }
 
-    public void testParseWithNullPath() throws Exception
-    {
+    public void testParseWithNullPath() throws Exception {
         String header = "cookie-name=cookie-value; domain=127.0.0.1; path=/; secure";
 
         CookieSpec cookiespec = new NetscapeDraftSpec();
-        try
-        {
+
+        try {
             cookieParse(cookiespec, "127.0.0.1", 80, null, false, header);
             fail("IllegalArgumentException should have been thrown");
-        }
-        catch (IllegalArgumentException e)
-        {
+        } catch (IllegalArgumentException e) {
             // expected
         }
     }
 
-    public void testParseWithBlankPath() throws Exception
-    {
+    public void testParseWithBlankPath() throws Exception {
         String header = "cookie-name=cookie-value; domain=127.0.0.1; path=/; secure";
 
         CookieSpec cookiespec = new NetscapeDraftSpec();
-        Cookie[] parsed = cookieParse(cookiespec,
-                                      "127.0.0.1",
-                                      80,
-                                      "  ",
-                                      false,
-                                      header);
+        Cookie[] parsed = cookieParse(cookiespec, "127.0.0.1", 80, "  ", false,
+                header);
         assertNotNull(parsed);
         assertEquals(1, parsed.length);
         assertEquals("/", parsed[0].getPath());
     }
 
-    public void testParseWithNegativePort() throws Exception
-    {
+    public void testParseWithNegativePort() throws Exception {
         String header = "cookie-name=cookie-value; domain=127.0.0.1; path=/; secure";
 
         CookieSpec cookiespec = new NetscapeDraftSpec();
-        try
-        {
+
+        try {
             cookieParse(cookiespec, "127.0.0.1", -80, null, false, header);
             fail("IllegalArgumentException should have been thrown");
-        }
-        catch (IllegalArgumentException e)
-        {
+        } catch (IllegalArgumentException e) {
             // expected
         }
     }
 
-    public void testParseWithInvalidHeader1() throws Exception
-    {
+    public void testParseWithInvalidHeader1() throws Exception {
         CookieSpec cookiespec = new NetscapeDraftSpec();
-        try
-        {
-            cookiespec.parse("127.0.0.1", 80, "/foo", false, (String)null);
+
+        try {
+            cookiespec.parse("127.0.0.1", 80, "/foo", false, (String) null);
             fail("IllegalArgumentException should have been thrown.");
-        }
-        catch (IllegalArgumentException e)
-        {
+        } catch (IllegalArgumentException e) {
             // expected
         }
     }
 
-    public void testParseAbsPath() throws Exception
-    {
+    public void testParseAbsPath() throws Exception {
         String header = "name1=value1;Path=/path/";
 
         CookieSpec cookiespec = new NetscapeDraftSpec();
-        Cookie[] parsed = cookieParse(cookiespec,
-                                      "host",
-                                      80,
-                                      "/path/",
-                                      true,
-                                      header);
+        Cookie[] parsed = cookieParse(cookiespec, "host", 80, "/path/", true,
+                header);
         assertEquals("Found 1 cookies.", 1, parsed.length);
         assertEquals("Name", "name1", parsed[0].getName());
         assertEquals("Value", "value1", parsed[0].getValue());
@@ -212,8 +172,7 @@ public class TestCookieNetscapeDraft extends TestCookieBase
         assertEquals("Path", "/path/", parsed[0].getPath());
     }
 
-    public void testParseAbsPath2() throws Exception
-    {
+    public void testParseAbsPath2() throws Exception {
         String header = "name1=value1;Path=/";
 
         CookieSpec cookiespec = new NetscapeDraftSpec();
@@ -225,17 +184,12 @@ public class TestCookieNetscapeDraft extends TestCookieBase
         assertEquals("Path", "/", parsed[0].getPath());
     }
 
-    public void testParseRelativePath() throws Exception
-    {
+    public void testParseRelativePath() throws Exception {
         String header = "name1=value1;Path=whatever";
 
         CookieSpec cookiespec = new NetscapeDraftSpec();
-        Cookie[] parsed = cookieParse(cookiespec,
-                                      "host",
-                                      80,
-                                      "whatever",
-                                      true,
-                                      header);
+        Cookie[] parsed = cookieParse(cookiespec, "host", 80, "whatever", true,
+                header);
         assertEquals("Found 1 cookies.", 1, parsed.length);
         assertEquals("Name", "name1", parsed[0].getName());
         assertEquals("Value", "value1", parsed[0].getValue());
@@ -243,34 +197,28 @@ public class TestCookieNetscapeDraft extends TestCookieBase
         assertEquals("Path", "whatever", parsed[0].getPath());
     }
 
-    public void testParseWithIllegalNetscapeDomain1() throws Exception
-    {
+    public void testParseWithIllegalNetscapeDomain1() throws Exception {
         String header = "cookie-name=cookie-value; domain=.com";
 
         CookieSpec cookiespec = new NetscapeDraftSpec();
-        try
-        {
+
+        try {
             cookieParse(cookiespec, "a.com", 80, "/", false, header);
             fail("HttpException exception should have been thrown");
-        }
-        catch (HttpException e)
-        {
+        } catch (HttpException e) {
             // expected
         }
     }
 
-    public void testParseWithWrongNetscapeDomain2() throws Exception
-    {
+    public void testParseWithWrongNetscapeDomain2() throws Exception {
         String header = "cookie-name=cookie-value; domain=.y.z";
 
         CookieSpec cookiespec = new NetscapeDraftSpec();
-        try
-        {
+
+        try {
             cookieParse(cookiespec, "x.y.z", 80, "/", false, header);
             fail("HttpException exception should have been thrown");
-        }
-        catch (HttpException e)
-        {
+        } catch (HttpException e) {
             // expected
         }
     }
@@ -278,17 +226,13 @@ public class TestCookieNetscapeDraft extends TestCookieBase
     /**
      * Tests Netscape specific cookie formatting.
      */
-
-    public void testNetscapeCookieFormatting() throws Exception
-    {
+    public void testNetscapeCookieFormatting() throws Exception {
         String header = "name=value; path=/; domain=.mydomain.com";
         CookieSpec cookiespec = new NetscapeDraftSpec();
-        Cookie[] cookies = cookiespec.parse("myhost.mydomain.com",
-                                            80,
-                                            "/",
-                                            false,
-                                            header);
+        Cookie[] cookies = cookiespec.parse("myhost.mydomain.com", 80, "/",
+                false, header);
         cookiespec.validate("myhost.mydomain.com", 80, "/", false, cookies[0]);
+
         String s = cookiespec.formatCookie(cookies[0]);
         assertEquals("name=value", s);
     }
@@ -296,50 +240,36 @@ public class TestCookieNetscapeDraft extends TestCookieBase
     /**
      * Tests Netscape specific expire attribute parsing.
      */
-    public void testNetscapeCookieExpireAttribute() throws Exception
-    {
+    public void testNetscapeCookieExpireAttribute() throws Exception {
         CookieSpec cookiespec = new NetscapeDraftSpec();
         String header = "name=value; path=/; domain=.mydomain.com; expires=Thu, 01-Jan-2070 00:00:10 GMT; comment=no_comment";
-        Cookie[] cookies = cookiespec.parse("myhost.mydomain.com",
-                                            80,
-                                            "/",
-                                            false,
-                                            header);
+        Cookie[] cookies = cookiespec.parse("myhost.mydomain.com", 80, "/",
+                false, header);
         cookiespec.validate("myhost.mydomain.com", 80, "/", false, cookies[0]);
         header = "name=value; path=/; domain=.mydomain.com; expires=Thu 01-Jan-2070 00:00:10 GMT; comment=no_comment";
-        try
-        {
-            cookies = cookiespec.parse("myhost.mydomain.com",
-                                       80,
-                                       "/",
-                                       false,
-                                       header);
-            cookiespec.validate("myhost.mydomain.com",
-                                80,
-                                "/",
-                                false,
-                                cookies[0]);
+
+        try {
+            cookies = cookiespec.parse("myhost.mydomain.com", 80, "/", false,
+                    header);
+            cookiespec.validate("myhost.mydomain.com", 80, "/", false,
+                cookies[0]);
             fail("MalformedCookieException must have been thrown");
-        }
-        catch (MalformedCookieException expected)
-        {
+        } catch (MalformedCookieException expected) {
         }
     }
 
     /**
      * Tests Netscape specific expire attribute without a time zone.
      */
-    public void testNetscapeCookieExpireAttributeNoTimeZone() throws Exception
-    {
+    public void testNetscapeCookieExpireAttributeNoTimeZone()
+        throws Exception {
         CookieSpec cookiespec = new NetscapeDraftSpec();
         String header = "name=value; expires=Thu, 01-Jan-2006 00:00:00 ";
-        try
-        {
+
+        try {
             cookiespec.parse("myhost.mydomain.com", 80, "/", false, header);
             fail("MalformedCookieException should have been thrown");
-        }
-        catch (MalformedCookieException ex)
-        {
+        } catch (MalformedCookieException ex) {
             // expected
         }
     }
@@ -347,16 +277,13 @@ public class TestCookieNetscapeDraft extends TestCookieBase
     /**
      * Tests if cookie values with embedded comma are handled correctly.
      */
-    public void testCookieWithComma() throws Exception
-    {
+    public void testCookieWithComma() throws Exception {
         String header = "a=b,c";
 
         CookieSpec cookiespec = new NetscapeDraftSpec();
-        Cookie[] cookies = cookiespec
-                .parse("localhost", 80, "/", false, header);
+        Cookie[] cookies = cookiespec.parse("localhost", 80, "/", false, header);
         assertEquals("number of cookies", 1, cookies.length);
         assertEquals("a", cookies[0].getName());
         assertEquals("b,c", cookies[0].getValue());
     }
-
 }

@@ -1,42 +1,34 @@
 package com.oaklandsw.http.local;
 
-import junit.framework.Test;
-import junit.framework.TestSuite;
-
 import com.oaklandsw.http.HttpTestBase;
 import com.oaklandsw.http.HttpURLConnection;
 
-public class TestProperties extends HttpTestBase
-{
+import junit.framework.Test;
+import junit.framework.TestSuite;
 
-    static final String proxyHost     = "testproxyhost";
 
-    static final int    proxyPort     = 123;
-
+public class TestProperties extends HttpTestBase {
+    static final String proxyHost = "testproxyhost";
+    static final int proxyPort = 123;
     static final String nonProxyHosts = "test1|.*.test2.com|123.345.222.333|.*.com";
 
-    public TestProperties(String testName)
-    {
+    public TestProperties(String testName) {
         super(testName);
     }
 
-    public static void main(String args[])
-    {
+    public static void main(String[] args) {
         String[] testCaseName = { TestProperties.class.getName() };
         junit.textui.TestRunner.main(testCaseName);
     }
 
-    public static Test suite()
-    {
+    public static Test suite() {
         return new TestSuite(TestProperties.class);
     }
 
-    public static void setProperties()
-    {
+    public static void setProperties() {
         // Set property values before TestEnv.setUp is called as
         // the properties are detected in the HttpURLConnection
         // static initializer
-
         System.setProperty("http.proxyHost", proxyHost);
         System.setProperty("http.proxyPort", Integer.toString(proxyPort));
         System.setProperty("http.nonProxyHosts", nonProxyHosts);
@@ -44,8 +36,7 @@ public class TestProperties extends HttpTestBase
         System.setProperty("com.oaklandsw.http.pipelining", "true");
     }
 
-    public static void resetProperties()
-    {
+    public static void resetProperties() {
         System.getProperties().remove("http.proxyHost");
         System.getProperties().remove("http.proxyPort");
         System.getProperties().remove("https.proxyHost");
@@ -55,62 +46,54 @@ public class TestProperties extends HttpTestBase
         System.getProperties().remove("com.oaklandsw.http.skipEnvironmentInit");
     }
 
-    public void setUp() throws Exception
-    {
+    public void setUp() throws Exception {
         super.setUp();
     }
 
-    public void tearDown() throws Exception
-    {
+    public void tearDown() throws Exception {
         super.tearDown();
         resetProperties();
     }
 
-    public void testPropsSkip() throws Exception
-    {
+    public void testPropsSkip() throws Exception {
         System.setProperty("com.oaklandsw.http.skipEnvironmentInit", "true");
         setProperties();
         HttpURLConnection.resetGlobalState();
         assertEquals(null, com.oaklandsw.http.HttpURLConnection.getProxyHost());
         assertEquals(-1, com.oaklandsw.http.HttpURLConnection.getProxyPort());
-        assertEquals(null, com.oaklandsw.http.HttpURLConnection
-                .getNonProxyHosts());
-
+        assertEquals(null,
+            com.oaklandsw.http.HttpURLConnection.getNonProxyHosts());
     }
 
-    public void testProps() throws Exception
-    {
+    public void testProps() throws Exception {
         setProperties();
         HttpURLConnection.resetGlobalState();
-        assertEquals(proxyHost, com.oaklandsw.http.HttpURLConnection
-                .getProxyHost());
-        assertEquals(proxyPort, com.oaklandsw.http.HttpURLConnection
-                .getProxyPort());
-        assertEquals(nonProxyHosts, com.oaklandsw.http.HttpURLConnection
-                .getNonProxyHosts());
-        assertEquals(true, com.oaklandsw.http.HttpURLConnection
-                .isDefaultPipelining());
+        assertEquals(proxyHost,
+            com.oaklandsw.http.HttpURLConnection.getProxyHost());
+        assertEquals(proxyPort,
+            com.oaklandsw.http.HttpURLConnection.getProxyPort());
+        assertEquals(nonProxyHosts,
+            com.oaklandsw.http.HttpURLConnection.getNonProxyHosts());
+        assertEquals(true,
+            com.oaklandsw.http.HttpURLConnection.isDefaultPipelining());
     }
 
-    public void testPropsSslProxy() throws Exception
-    {
+    public void testPropsSslProxy() throws Exception {
         System.setProperty("https.proxyHost", proxyHost);
         System.setProperty("https.proxyPort", Integer.toString(proxyPort));
         HttpURLConnection.resetGlobalState();
-        assertEquals(proxyHost, com.oaklandsw.http.HttpURLConnection
-                .getProxyHost());
-        assertEquals(proxyPort, com.oaklandsw.http.HttpURLConnection
-                .getProxyPort());
+        assertEquals(proxyHost,
+            com.oaklandsw.http.HttpURLConnection.getProxyHost());
+        assertEquals(proxyPort,
+            com.oaklandsw.http.HttpURLConnection.getProxyPort());
         assertEquals(true, com.oaklandsw.http.HttpURLConnection.isProxySsl());
     }
 
     // 961 and 966
-    public void testDefaultTimeoutValues() throws Exception
-    {
-        assertEquals(14000, com.oaklandsw.http.HttpURLConnection
-                .getDefaultIdleConnectionTimeout());
-        assertEquals(0, com.oaklandsw.http.HttpURLConnection
-                .getDefaultIdleConnectionPing());
+    public void testDefaultTimeoutValues() throws Exception {
+        assertEquals(14000,
+            com.oaklandsw.http.HttpURLConnection.getDefaultIdleConnectionTimeout());
+        assertEquals(0,
+            com.oaklandsw.http.HttpURLConnection.getDefaultIdleConnectionPing());
     }
-
 }

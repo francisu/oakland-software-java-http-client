@@ -53,7 +53,6 @@
  * Software Foundation, please see <http://www.apache.org/>.
  * 
  * [Additional notices, if required by prior licensing conditions]
- * 
  */
 package com.oaklandsw.http;
 
@@ -64,6 +63,7 @@ import java.util.Map;
 import java.util.StringTokenizer;
 
 import com.oaklandsw.util.Log;
+
 import org.bouncycastle.util.encoders.Base64;
 
 import com.oaklandsw.http.ntlm.Ntlm;
@@ -91,29 +91,29 @@ import com.oaklandsw.util.LogUtils;
  */
 public class Authenticator
 {
-    private static final Log     _log            = LogUtils.makeLogger();
+    private static final Log     _log             = LogUtils.makeLogger();
 
-    public static final String   BASIC           = "basic";
+    public static final String   BASIC            = "basic";
 
-    public static final String   DIGEST          = "digest";
+    public static final String   DIGEST           = "digest";
 
-    public static final String   NTLM            = "ntlm";
+    public static final String   NTLM             = "ntlm";
 
-    public static final String[] RESP_HEADERS    = new String[] {
-        "Authorization", "Proxy-Authorization"  };
-    public static final byte[][] RESP_HEADERS_LC = new byte[][] {
+    public static final String[] RESP_HEADERS     = new String[] {
+        "Authorization", "Proxy-Authorization"   };
+    public static final byte[][] RESP_HEADERS_LC  = new byte[][] {
         "Authorization".getBytes(), "Proxy-Authorization".getBytes() };
 
-    public static final String[] REQ_HEADERS     = new String[] {
+    public static final String[] REQ_HEADERS      = new String[] {
         "WWW-Authenticate", "Proxy-Authenticate" };
-    public static final byte[][] REQ_HEADERS_LC  = new byte[][] {
+    public static final byte[][] REQ_HEADERS_LC   = new byte[][] {
         "www-authenticate".getBytes(), "proxy-authenticate".getBytes() };
 
-    private static final char[]  HEXADECIMAL     = { '0', '1', '2', '3', '4',
+    private static final char[]  HEXADECIMAL      = { '0', '1', '2', '3', '4',
         '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f' };
 
-    private static final String DEFAULT_DIGEST_ALGORITHM = "MD5";    
-    
+    private static final String  DIGEST_ALGORITHM = "MD5";
+
     // Returns false if authentication not attempted (because we don't need it)
     // throws if fails
     public static boolean authenticate(HttpURLConnectInternal urlCon,
@@ -198,31 +198,48 @@ public class Authenticator
                 + sentCred);
         }
 
+        boolean gotChallenge = false;
+
         // determine the most secure request header to add
         if (challengeMap.containsKey(NTLM))
         {
             String challenge = (String)challengeMap.get(NTLM);
-            Authenticator.ntlm(challenge,
-                               urlCon,
-                               respHeader,
-                               reqType,
-                               normalOrProxy);
+            if (challenge.length() > NTLM.length()
+                || urlCon._authState[normalOrProxy] < HttpURLConnectInternal.AS_INITIAL_AUTH_SENT)
+            {
+                gotChallenge = true;
+                Authenticator.ntlm(challenge,
+                                   urlCon,
+                                   respHeader,
+                                   reqType,
+                                   normalOrProxy);
+            }
         }
         else if (challengeMap.containsKey(DIGEST))
         {
             String challenge = (String)challengeMap.get(DIGEST);
-            String realm = parseRealmFromChallenge(challenge, urlCon);
-            Authenticator.digest(realm,
-                                 challenge,
-                                 urlCon,
-                                 respHeader,
-                                 normalOrProxy);
+            if (challenge.length() > DIGEST.length()
+                || urlCon._authState[normalOrProxy] < HttpURLConnectInternal.AS_INITIAL_AUTH_SENT)
+            {
+                gotChallenge = true;
+                String realm = parseRealmFromChallenge(challenge, urlCon);
+                Authenticator.digest(realm,
+                                     challenge,
+                                     urlCon,
+                                     respHeader,
+                                     normalOrProxy);
+            }
         }
         else if (challengeMap.containsKey(BASIC))
         {
             String challenge = (String)challengeMap.get(BASIC);
-            String realm = parseRealmFromChallenge(challenge, urlCon);
-            Authenticator.basic(realm, urlCon, respHeader, normalOrProxy);
+            if (challenge.length() > BASIC.length()
+                || urlCon._authState[normalOrProxy] < HttpURLConnectInternal.AS_INITIAL_AUTH_SENT)
+            {
+                gotChallenge = true;
+                String realm = parseRealmFromChallenge(challenge, urlCon);
+                Authenticator.basic(realm, urlCon, respHeader, normalOrProxy);
+            }
         }
         else if (challengeMap.size() == 0)
         {
@@ -236,6 +253,12 @@ public class Authenticator
                 + "scheme "
                 + challengeMap.keySet()
                 + " is unsupported");
+        }
+
+        if (!gotChallenge)
+        {
+            throw new HttpException("Reponse to challenge was empty in "
+                + reqType);
         }
 
         return true;
@@ -281,34 +304,61 @@ public class Authenticator
         String method = (String)mapCreds.get("methodname");
         String algorithm = (String)mapCreds.get("algorithm");
         if (algorithm == null)
-            algorithm = DEFAULT_DIGEST_ALGORITHM; 
+            algorithm = DIGEST_ALGORITHM;
 
-        if (qop != null)
-            qop = "auth";
-        
+        if (qop != null && !qop.equals("auth"))
+            throw new HttpException("Only qop=\"auth\" is supported");
+
         MessageDigest md5Helper;
 
         try
         {
-            md5Helper = MessageDigest.getInstance(algorithm);
+            md5Helper = MessageDigest.getInstance(DIGEST_ALGORITHM);
         }
         catch (Exception e)
         {
             throw new HttpException("Unsupported algorithm in HTTP Digest "
                 + "authentication: "
-                + algorithm);
+                + DIGEST_ALGORITHM);
         }
 
+        if (_log.isDebugEnabled())
+            _log.debug("createDigest: " + mapCreds);
+
         // Calculating digest according to rfc 2617
-        String a2 = method + ":" + uri;
-        String md5a2 = encode(md5Helper.digest(a2.getBytes()));
+
+        // A1 calculation
         String digestValue = uname + ":" + realm + ":" + pwd;
         String md5a1 = encode(md5Helper.digest(digestValue.getBytes()));
+        if (_log.isDebugEnabled())
+            _log.debug("createDigest: digestValue: "
+                + digestValue
+                + " md5a1: "
+                + md5a1);
+        if (algorithm.equalsIgnoreCase("md5-sess"))
+        {
+            digestValue = md5a1 + ":" + nonce + ":" + cnonce;
+            md5a1 = encode(md5Helper.digest(digestValue.getBytes()));
+            if (_log.isDebugEnabled())
+                _log.debug("createDigest: digestValue (md5-sess): "
+                    + digestValue
+                    + " md5a1: "
+                    + md5a1);
+        }
+
+        String a2 = method + ":" + uri;
+        String md5a2 = encode(md5Helper.digest(a2.getBytes()));
+        if (_log.isDebugEnabled())
+            _log.debug("createDigest: a2: " + a2 + " md5a2: " + md5a2);
+
         String serverDigestValue;
 
         if (qop == null)
         {
             serverDigestValue = md5a1 + ":" + nonce + ":" + md5a2;
+            if (_log.isDebugEnabled())
+                _log.debug("createDigest: serverDigestValue: (no qop) "
+                    + serverDigestValue);
         }
         else
         {
@@ -325,8 +375,20 @@ public class Authenticator
                 + md5a2;
         }
 
+        if (_log.isDebugEnabled())
+            _log.debug("createDigest: serverDigestValue: "
+                + serverDigestValue
+                + " qop: "
+                + qop);
+
         String serverDigest = encode(md5Helper.digest(serverDigestValue
                 .getBytes()));
+
+        if (_log.isDebugEnabled())
+            _log.debug("createDigest: serverDigest: "
+                + serverDigest
+                + " qop: "
+                + qop);
 
         return serverDigest;
     }
@@ -563,21 +625,17 @@ public class Authenticator
 
     private static final String createCnonce(Map headers) throws HttpException
     {
-        String algorithm = (String)headers.get("algorithm");
-        if (algorithm == null)
-            algorithm = DEFAULT_DIGEST_ALGORITHM; 
         String cnonce;
         MessageDigest md5Helper;
 
         try
         {
-            md5Helper = MessageDigest.getInstance(algorithm);
+            md5Helper = MessageDigest.getInstance(DIGEST_ALGORITHM);
         }
         catch (Exception e)
         {
             throw new HttpException("Unsupported algorithm in HTTP Digest "
-                + "authentication: "
-                + algorithm);
+                + "authentication: md5");
         }
 
         cnonce = Long.toString(System.currentTimeMillis());
@@ -589,6 +647,7 @@ public class Authenticator
     private static final String createDigestHeader(String uname,
                                                    Map mapCreds,
                                                    String digest)
+        throws HttpException
     {
         StringBuffer sb = new StringBuffer();
         String uri = removeQuotes((String)mapCreds.get("uri"));
@@ -601,10 +660,10 @@ public class Authenticator
         String qop = removeQuotes((String)mapCreds.get("qop"));
         String algorithm = (String)mapCreds.get("algorithm");
         if (algorithm == null)
-            algorithm = DEFAULT_DIGEST_ALGORITHM; 
+            algorithm = DIGEST_ALGORITHM;
 
-        if (qop != null)
-            qop = "auth"; // we only support auth
+        if (qop != null && !qop.equals("auth"))
+            throw new HttpException("Only qop=\"auth\" is supported");
 
         sb.append("username=\"" + uname + "\"").append(", realm=\""
             + realm

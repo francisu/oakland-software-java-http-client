@@ -1,44 +1,45 @@
 package com.oaklandsw.http.webapp;
 
-import java.io.InputStream;
-import java.net.URL;
+import com.oaklandsw.http.HttpURLConnection;
+import com.oaklandsw.http.servlet.HeaderServlet;
 
 import com.oaklandsw.util.Log;
+import com.oaklandsw.util.LogUtils;
+import com.oaklandsw.util.Util;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
-import com.oaklandsw.http.HttpURLConnection;
-import com.oaklandsw.http.servlet.HeaderServlet;
-import com.oaklandsw.util.LogUtils;
-import com.oaklandsw.util.Util;
+import java.io.InputStream;
 
-public class TestNoData extends TestWebappBase
-{
+import java.net.URL;
 
+
+public class TestNoData extends TestWebappBase {
     private static final Log _log = LogUtils.makeLogger();
 
-    public TestNoData(String testName)
-    {
+    public TestNoData(String testName) {
         super(testName);
     }
 
-    public static Test suite()
-    {
+    public static Test suite() {
         TestSuite suite = new TestSuite(TestNoData.class);
+
         return suite;
     }
 
-    public static void main(String args[])
-    {
+    public static void main(String[] args) {
         mainRun(suite(), args);
     }
 
-    public void testNullInputStream(int code, boolean noBody) throws Exception
-    {
-        String urlStr = _urlBase + HeaderServlet.NAME + "?responseCode=" + code;
-        if (noBody)
+    public void testNullInputStream(int code, boolean noBody)
+        throws Exception {
+        String urlStr = _urlBase + HeaderServlet.NAME + "?responseCode=" +
+            code;
+
+        if (noBody) {
             urlStr += "&noBody=true";
+        }
 
         URL url = new URL(urlStr);
 
@@ -63,12 +64,9 @@ public class TestNoData extends TestWebappBase
         checkNoActiveConns(url);
     }
 
-    public void testPostNoResponseData() throws Exception
-    {
-        String urlStr = _urlBase
-            + HeaderServlet.NAME
-            + "?responseCode=200"
-            + "&noBody=true";
+    public void testPostNoResponseData() throws Exception {
+        String urlStr = _urlBase + HeaderServlet.NAME + "?responseCode=200" +
+            "&noBody=true";
         URL url = new URL(urlStr);
 
         int response = 0;
@@ -82,8 +80,7 @@ public class TestNoData extends TestWebappBase
         // Should not need to close connection
     }
 
-    public void testNullInputStream() throws Exception
-    {
+    public void testNullInputStream() throws Exception {
         testPostNoResponseData();
 
         testNullInputStream(204, true);
@@ -98,26 +95,24 @@ public class TestNoData extends TestWebappBase
     }
 
     // Bug 1956
-    public void testHangIfStreamNotRead() throws Exception
-    {
+    public void testHangIfStreamNotRead() throws Exception {
         HttpURLConnection.resetUrlConReleased();
 
         String urlStr = _urlBase + HeaderServlet.NAME;
         URL url = new URL(urlStr);
 
-        try
-        {
+        try {
             HttpURLConnection urlCon = HttpURLConnection.openConnection(url);
-            for (int i = 0; i < HttpURLConnection.getMaxConnectionsPerHost() + 1; i++)
-            {
+
+            for (int i = 0;
+                    i < (HttpURLConnection.getMaxConnectionsPerHost() + 1);
+                    i++) {
                 urlCon = HttpURLConnection.openConnection(url);
                 // The last of of these will hang here because all of the
                 // connections are allocated
                 urlCon.getResponseCode();
             }
-        }
-        catch (IllegalStateException is)
-        {
+        } catch (IllegalStateException is) {
             // Expected
         }
 
@@ -125,9 +120,7 @@ public class TestNoData extends TestWebappBase
         assertEquals(2, getActiveConns(url));
     }
 
-    public void allTestMethods() throws Exception
-    {
+    public void allTestMethods() throws Exception {
         testNullInputStream();
     }
-
 }

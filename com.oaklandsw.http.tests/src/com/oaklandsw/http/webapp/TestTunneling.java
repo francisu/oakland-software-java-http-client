@@ -1,47 +1,45 @@
 package com.oaklandsw.http.webapp;
 
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.net.URL;
+import com.oaklandsw.http.HttpTestEnv;
+import com.oaklandsw.http.HttpURLConnection;
 
 import com.oaklandsw.util.Log;
+import com.oaklandsw.util.LogUtils;
+import com.oaklandsw.util.Util;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
-import com.oaklandsw.http.HttpTestEnv;
-import com.oaklandsw.http.HttpURLConnection;
-import com.oaklandsw.util.LogUtils;
-import com.oaklandsw.util.Util;
+import java.io.InputStream;
+import java.io.OutputStream;
 
-public class TestTunneling extends TestWebappBase
-{
+import java.net.URL;
 
+
+public class TestTunneling extends TestWebappBase {
     private static final Log _log = LogUtils.makeLogger();
 
-    public TestTunneling(String testName)
-    {
+    public TestTunneling(String testName) {
         super(testName);
     }
 
-    public static Test suite()
-    {
+    public static Test suite() {
         TestSuite suite = new TestSuite(TestTunneling.class);
+
         return suite;
     }
 
-    public static void main(String args[])
-    {
+    public static void main(String[] args) {
         mainRun(suite(), args);
     }
 
     // FIXME - more tests are necessary for this
 
     // Test using the connect method and tunneled streaming mode
-    public void testTunnelConnect() throws Exception
-    {
-        if (!_in10ProxyTest)
+    public void testTunnelConnect() throws Exception {
+        if (!_in10ProxyTest) {
             return;
+        }
 
         URL url = new URL("http://" + HttpTestEnv.FTP_HOST + ":21");
         int response = 0;
@@ -78,10 +76,10 @@ public class TestTunneling extends TestWebappBase
     }
 
     // Test using the connect method and tunneled streaming mode
-    public void testTunnelMethodCheck() throws Exception
-    {
-        if (!_in10ProxyTest)
+    public void testTunnelMethodCheck() throws Exception {
+        if (!_in10ProxyTest) {
             return;
+        }
 
         URL url = new URL("http://" + HttpTestEnv.FTP_HOST + ":21");
 
@@ -91,21 +89,16 @@ public class TestTunneling extends TestWebappBase
         urlCon.setDoInput(true);
         urlCon.setTunneledStreamingMode(true);
 
-        try
-        {
+        try {
             urlCon.getOutputStream();
             fail("Did not get expected exception");
-        }
-        catch (IllegalStateException ex)
-        {
+        } catch (IllegalStateException ex) {
             // Expected
         }
     }
 
-    public void allTestMethods() throws Exception
-    {
+    public void allTestMethods() throws Exception {
         testTunnelConnect();
         testTunnelMethodCheck();
     }
-
 }

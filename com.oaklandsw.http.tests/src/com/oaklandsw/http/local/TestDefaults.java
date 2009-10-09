@@ -3,51 +3,49 @@
  */
 package com.oaklandsw.http.local;
 
-import java.net.URL;
+import com.oaklandsw.http.HttpTestBase;
+import com.oaklandsw.http.HttpURLConnection;
 
 import com.oaklandsw.util.Log;
+import com.oaklandsw.util.LogUtils;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
-import com.oaklandsw.http.HttpURLConnection;
-import com.oaklandsw.http.HttpTestBase;
-import com.oaklandsw.util.LogUtils;
+import java.net.URL;
+
 
 /**
  * Tests for default values
  */
-public class TestDefaults extends HttpTestBase
-{
-
+public class TestDefaults extends HttpTestBase {
     private static final Log _log = LogUtils.makeLogger();
 
-    public TestDefaults(String testName)
-    {
+    public TestDefaults(String testName) {
         super(testName);
     }
 
-    public static Test suite()
-    {
+    public static Test suite() {
         TestSuite suite = new TestSuite(TestDefaults.class);
+
         return suite;
     }
 
-    public static void main(String args[])
-    {
+    public static void main(String[] args) {
         mainRun(suite(), args);
     }
 
     // 962 - per connection idle timeout does not work properly
-    public void testDefaultConnectionTimeout() throws Exception
-    {
+    public void testDefaultConnectionTimeout() throws Exception {
         HttpURLConnection.setDefaultIdleConnectionTimeout(99);
+
         URL url = new URL("http://dummy");
         HttpURLConnection urlCon1 = HttpURLConnection.openConnection(url);
         assertEquals(99, urlCon1.getIdleConnectionTimeout());
         urlCon1.setIdleConnectionTimeout(10);
 
         HttpURLConnection.setDefaultIdleConnectionTimeout(99);
+
         HttpURLConnection urlCon2 = HttpURLConnection.openConnection(url);
         assertEquals(99, urlCon2.getIdleConnectionTimeout());
 
@@ -56,15 +54,16 @@ public class TestDefaults extends HttpTestBase
     }
 
     // Same as above except for ping
-    public void testDefaultConnectionPing() throws Exception
-    {
+    public void testDefaultConnectionPing() throws Exception {
         HttpURLConnection.setDefaultIdleConnectionPing(99);
+
         URL url = new URL("http://dummy");
         HttpURLConnection urlCon1 = HttpURLConnection.openConnection(url);
         assertEquals(99, urlCon1.getIdleConnectionPing());
         urlCon1.setIdleConnectionPing(10);
 
         HttpURLConnection.setDefaultIdleConnectionPing(99);
+
         HttpURLConnection urlCon2 = HttpURLConnection.openConnection(url);
         assertEquals(99, urlCon2.getIdleConnectionPing());
 
@@ -72,23 +71,20 @@ public class TestDefaults extends HttpTestBase
         assertEquals(10, urlCon1.getIdleConnectionPing());
     }
 
-    public void testDefaultPipelining() throws Exception
-    {
+    public void testDefaultPipelining() throws Exception {
         HttpURLConnection.setDefaultPipelining(true);
+
         URL url = new URL("http://dummy");
         HttpURLConnection urlCon1 = HttpURLConnection.openConnection(url);
         assertEquals(true, urlCon1.isPipelining());
 
         // Execute this pipelining connection (since it's associated with the
         // thread
-        try
-        {
+        try {
             // Will throw since no Callback is set
             urlCon1.pipelineExecute();
             fail("Expected exception");
-        }
-        catch (IllegalStateException ex)
-        {
+        } catch (IllegalStateException ex) {
             // Expected
         }
 
@@ -96,7 +92,5 @@ public class TestDefaults extends HttpTestBase
 
         urlCon1 = HttpURLConnection.openConnection(url);
         assertEquals(false, urlCon1.isPipelining());
-
     }
-
 }

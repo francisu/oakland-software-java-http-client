@@ -1,62 +1,56 @@
 package com.oaklandsw.http.webapp;
 
-import java.net.URL;
-
-import com.oaklandsw.util.Log;
-
-import junit.framework.Test;
-import junit.framework.TestSuite;
-
 import com.oaklandsw.http.Cookie;
 import com.oaklandsw.http.CookieContainer;
 import com.oaklandsw.http.HttpURLConnection;
 import com.oaklandsw.http.servlet.ReadCookieServlet;
 import com.oaklandsw.http.servlet.WriteCookieServlet;
+
+import com.oaklandsw.util.Log;
 import com.oaklandsw.util.LogUtils;
 
-public class TestCookie extends TestWebappBase
-{
+import junit.framework.Test;
+import junit.framework.TestSuite;
 
-    private static final Log   _log         = LogUtils.makeLogger();
+import java.net.URL;
 
-    public TestCookie(String testName)
-    {
+
+public class TestCookie extends TestWebappBase {
+    private static final Log _log = LogUtils.makeLogger();
+
+    public TestCookie(String testName) {
         super(testName);
     }
 
-    public static Test suite()
-    {
+    public static Test suite() {
         TestSuite suite = new TestSuite(TestCookie.class);
+
         return suite;
     }
 
-    public static void main(String args[])
-    {
+    public static void main(String[] args) {
         mainRun(suite(), args);
     }
 
-    public void testSetCookieTooLate() throws Exception
-    {
+    public void testSetCookieTooLate() throws Exception {
         URL url = new URL(_urlBase + WriteCookieServlet.NAME + "?simple=set");
 
         CookieContainer cc = new CookieContainer();
 
         HttpURLConnection urlCon = HttpURLConnection.openConnection(url);
         urlCon.connect();
-        try
-        {
+
+        try {
             urlCon.setCookieSupport(cc, null);
             fail("Expected exception");
-        }
-        catch (Exception ex)
-        {
+        } catch (Exception ex) {
             assertTrue(ex.getMessage().indexOf("has been established") > -1);
         }
+
         getReply(urlCon);
     }
 
-    public void testSetCookie(String method) throws Exception
-    {
+    public void testSetCookie(String method) throws Exception {
         URL url = new URL(_urlBase + WriteCookieServlet.NAME + "?simple=set");
         int response = 0;
 
@@ -69,6 +63,7 @@ public class TestCookie extends TestWebappBase
         assertEquals(200, response);
 
         assertEquals(1, cc.getCookies().length);
+
         Cookie c = cc.getCookies()[0];
         assertEquals("simplecookie", c.getName());
         assertEquals("value", c.getValue());
@@ -85,12 +80,12 @@ public class TestCookie extends TestWebappBase
         urlCon.setCookieSupport(cc, null);
         response = urlCon.getResponseCode();
         assertEquals(200, response);
+
         String reply = getReply(urlCon);
-        assertTrue(checkReplyNoAssert(reply, "<title>ReadCookieServlet: "
-            + method
-            + "</title>"));
+        assertTrue(checkReplyNoAssert(reply,
+                "<title>ReadCookieServlet: " + method + "</title>"));
         assertTrue(checkReplyNoAssert(reply, "simplecookie=\"valueupdated\""));
-        
+
         // Now have the cookie removed
         url = new URL(_urlBase + WriteCookieServlet.NAME + "?simple=unset");
 
@@ -105,29 +100,25 @@ public class TestCookie extends TestWebappBase
         checkNoActiveConns(url);
     }
 
-    public void testSetCookieGet() throws Exception
-    {
+    public void testSetCookieGet() throws Exception {
         testSetCookie("GET");
     }
 
-    public void testSetCookiePost() throws Exception
-    {
+    public void testSetCookiePost() throws Exception {
         testSetCookie("POST");
     }
 
-    public void testSetCookiePut() throws Exception
-    {
-        if (_inAuthCloseProxyTest)
+    public void testSetCookiePut() throws Exception {
+        if (_inAuthCloseProxyTest) {
             return;
+        }
 
         testSetCookie("PUT");
     }
 
-    public void testSetMultiCookie(String method) throws Exception
-    {
-        URL url = new URL(_urlBase
-            + WriteCookieServlet.NAME
-            + "?simple=set&domain=set");
+    public void testSetMultiCookie(String method) throws Exception {
+        URL url = new URL(_urlBase + WriteCookieServlet.NAME +
+                "?simple=set&domain=set");
         int response = 0;
 
         CookieContainer cc = new CookieContainer();
@@ -140,49 +131,49 @@ public class TestCookie extends TestWebappBase
         assertEquals(200, response);
 
         int numFound = 0;
-        for (int i = 0; i < cc.getCookies().length; i++)
-        {
+
+        for (int i = 0; i < cc.getCookies().length; i++) {
             Cookie cookie = cc.getCookies()[i];
+
             // System.out.println(cookie);
-            if (cookie.getName().equals("simplecookie"))
+            if (cookie.getName().equals("simplecookie")) {
                 numFound++;
-            if (cookie.getName().equals("domaincookie"))
+            }
+
+            if (cookie.getName().equals("domaincookie")) {
                 numFound++;
+            }
         }
 
         assertEquals(2, numFound);
 
         String reply = getReply(urlCon);
-        assertTrue(checkReplyNoAssert(reply, "<title>WriteCookieServlet: "
-            + method
-            + "</title>"));
+        assertTrue(checkReplyNoAssert(reply,
+                "<title>WriteCookieServlet: " + method + "</title>"));
         assertTrue(checkReplyNoAssert(reply, "Wrote simplecookie.<br>"));
         assertTrue(checkReplyNoAssert(reply, "Wrote domaincookie.<br>"));
         checkNoActiveConns(url);
     }
 
-    public void testSetMultiCookieGet() throws Exception
-    {
+    public void testSetMultiCookieGet() throws Exception {
         testSetMultiCookie("GET");
     }
 
-    public void testSetMultiCookiePost() throws Exception
-    {
+    public void testSetMultiCookiePost() throws Exception {
         testSetMultiCookie("POST");
     }
 
-    public void testSetMultiCookiePut() throws Exception
-    {
-        if (_inAuthCloseProxyTest)
+    public void testSetMultiCookiePut() throws Exception {
+        if (_inAuthCloseProxyTest) {
             return;
+        }
+
         testSetMultiCookie("PUT");
     }
 
-    public void testSetExpiredCookie(String method) throws Exception
-    {
-        URL url = new URL(_urlBase
-            + WriteCookieServlet.NAME
-            + "?simple=set&expire=1");
+    public void testSetExpiredCookie(String method) throws Exception {
+        URL url = new URL(_urlBase + WriteCookieServlet.NAME +
+                "?simple=set&expire=1");
         int response = 0;
 
         CookieContainer cc = new CookieContainer();
@@ -203,25 +194,23 @@ public class TestCookie extends TestWebappBase
         assertEquals(0, cc.getCookies().length);
     }
 
-    public void testSetExpiredCookieGet() throws Exception
-    {
+    public void testSetExpiredCookieGet() throws Exception {
         testSetExpiredCookie("GET");
     }
 
-    public void testSetExpiredCookiePost() throws Exception
-    {
+    public void testSetExpiredCookiePost() throws Exception {
         testSetExpiredCookie("POST");
     }
 
-    public void testSetExpiredCookiePut() throws Exception
-    {
-        if (_inAuthCloseProxyTest)
+    public void testSetExpiredCookiePut() throws Exception {
+        if (_inAuthCloseProxyTest) {
             return;
+        }
+
         testSetExpiredCookie("PUT");
     }
 
-    public void allTestMethods() throws Exception
-    {
+    public void allTestMethods() throws Exception {
         testSetCookieTooLate();
         testSetCookieGet();
         testSetCookiePost();
@@ -235,5 +224,4 @@ public class TestCookie extends TestWebappBase
         testSetExpiredCookiePost();
         testSetExpiredCookiePut();
     }
-
 }

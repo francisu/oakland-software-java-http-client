@@ -1,44 +1,40 @@
 package com.oaklandsw.http.webapp;
 
-import java.io.OutputStream;
-import java.net.URL;
+import com.oaklandsw.http.HttpTestEnv;
+import com.oaklandsw.http.HttpURLConnection;
+import com.oaklandsw.http.servlet.ParamServlet;
 
 import com.oaklandsw.util.Log;
+import com.oaklandsw.util.LogUtils;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
-import com.oaklandsw.http.HttpTestEnv;
-import com.oaklandsw.http.HttpURLConnection;
-import com.oaklandsw.http.servlet.ParamServlet;
-import com.oaklandsw.util.LogUtils;
+import java.io.OutputStream;
 
-public class TestParameters extends TestWebappBase
-{
+import java.net.URL;
 
-    private static final Log   _log         = LogUtils.makeLogger();
 
-    public TestParameters(String testName)
-    {
+public class TestParameters extends TestWebappBase {
+    private static final Log _log = LogUtils.makeLogger();
+
+    public TestParameters(String testName) {
         super(testName);
     }
 
-    public static Test suite()
-    {
+    public static Test suite() {
         TestSuite suite = new TestSuite(TestParameters.class);
+
         return suite;
     }
 
-    public static void main(String args[])
-    {
+    public static void main(String[] args) {
         mainRun(suite(), args);
     }
 
-    public void testGetMethodQueryString() throws Exception
-    {
-        URL url = new URL(_urlBase
-            + ParamServlet.NAME
-            + "?hadQuestionMark=true");
+    public void testGetMethodQueryString() throws Exception {
+        URL url = new URL(_urlBase + ParamServlet.NAME +
+                "?hadQuestionMark=true");
         int response = 0;
 
         HttpURLConnection urlCon = HttpURLConnection.openConnection(url);
@@ -48,16 +44,14 @@ public class TestParameters extends TestWebappBase
         assertEquals(200, response);
 
         String reply = getReply(urlCon);
+        assertTrue(checkReplyNoAssert(reply, "<title>Param Servlet: GET</title>"));
         assertTrue(checkReplyNoAssert(reply,
-                                      "<title>Param Servlet: GET</title>"));
-        assertTrue(checkReplyNoAssert(reply,
-                                      "<p>QueryString=\"hadQuestionMark=true\"</p>"));
+                "<p>QueryString=\"hadQuestionMark=true\"</p>"));
 
         checkNoActiveConns(url);
     }
 
-    public void testGetMethodEmptyQueryString() throws Exception
-    {
+    public void testGetMethodEmptyQueryString() throws Exception {
         URL url = new URL(_urlBase + ParamServlet.NAME + "?");
         int response = 0;
 
@@ -68,8 +62,7 @@ public class TestParameters extends TestWebappBase
         assertEquals(200, response);
 
         String reply = getReply(urlCon);
-        assertTrue(checkReplyNoAssert(reply,
-                                      "<title>Param Servlet: GET</title>"));
+        assertTrue(checkReplyNoAssert(reply, "<title>Param Servlet: GET</title>"));
 
         // This might fail when being tested with Tomcat 3.2, but since we are
         // not
@@ -82,8 +75,7 @@ public class TestParameters extends TestWebappBase
         checkNoActiveConns(url);
     }
 
-    public void testGetMethodNoQueryString() throws Exception
-    {
+    public void testGetMethodNoQueryString() throws Exception {
         URL url = new URL(_urlBase + ParamServlet.NAME);
         int response = 0;
 
@@ -94,18 +86,15 @@ public class TestParameters extends TestWebappBase
         assertEquals(200, response);
 
         String reply = getReply(urlCon);
-        assertTrue(checkReplyNoAssert(reply,
-                                      "<title>Param Servlet: GET</title>"));
+        assertTrue(checkReplyNoAssert(reply, "<title>Param Servlet: GET</title>"));
         assertTrue(checkReplyNoAssert(reply, "<p>QueryString=null</p>"));
 
         checkNoActiveConns(url);
     }
 
-    public void testGetMethodQueryString2() throws Exception
-    {
-        URL url = new URL(_urlBase
-            + ParamServlet.NAME
-            + "?hadQuestionMark=false");
+    public void testGetMethodQueryString2() throws Exception {
+        URL url = new URL(_urlBase + ParamServlet.NAME +
+                "?hadQuestionMark=false");
         int response = 0;
 
         HttpURLConnection urlCon = HttpURLConnection.openConnection(url);
@@ -115,18 +104,15 @@ public class TestParameters extends TestWebappBase
         assertEquals(200, response);
 
         String reply = getReply(urlCon);
+        assertTrue(checkReplyNoAssert(reply, "<title>Param Servlet: GET</title>"));
         assertTrue(checkReplyNoAssert(reply,
-                                      "<title>Param Servlet: GET</title>"));
-        assertTrue(checkReplyNoAssert(reply,
-                                      "<p>QueryString=\"hadQuestionMark=false\"</p>"));
+                "<p>QueryString=\"hadQuestionMark=false\"</p>"));
         checkNoActiveConns(url);
     }
 
-    public void testGetMethodParameters() throws Exception
-    {
-        URL url = new URL(_urlBase
-            + ParamServlet.NAME
-            + "?param-one=param-value");
+    public void testGetMethodParameters() throws Exception {
+        URL url = new URL(_urlBase + ParamServlet.NAME +
+                "?param-one=param-value");
         int response = 0;
 
         HttpURLConnection urlCon = HttpURLConnection.openConnection(url);
@@ -136,17 +122,16 @@ public class TestParameters extends TestWebappBase
         assertEquals(200, response);
 
         String reply = getReply(urlCon);
+        assertTrue(checkReplyNoAssert(reply, "<title>Param Servlet: GET</title>"));
         assertTrue(checkReplyNoAssert(reply,
-                                      "<title>Param Servlet: GET</title>"));
+                "<p>QueryString=\"param-one=param-value\"</p>"));
         assertTrue(checkReplyNoAssert(reply,
-                                      "<p>QueryString=\"param-one=param-value\"</p>"));
-        assertTrue(checkReplyNoAssert(reply, "<p>Parameters</p>\r\n"
-            + "name=\"param-one\";value=\"param-value\"<br>"));
+                "<p>Parameters</p>\r\n" +
+                "name=\"param-one\";value=\"param-value\"<br>"));
         checkNoActiveConns(url);
     }
 
-    public void testPostMethodParameters() throws Exception
-    {
+    public void testPostMethodParameters() throws Exception {
         URL url = new URL(_urlBase + ParamServlet.NAME);
         int response = 0;
 
@@ -154,6 +139,7 @@ public class TestParameters extends TestWebappBase
         urlCon.setRequestMethod("POST");
 
         urlCon.setDoOutput(true);
+
         OutputStream os = urlCon.getOutputStream();
         os.write("param-one=param-value".getBytes("ASCII"));
 
@@ -163,18 +149,17 @@ public class TestParameters extends TestWebappBase
 
         String reply = getReply(urlCon);
         assertTrue(checkReplyNoAssert(reply,
-                                      "<title>Param Servlet: POST</title>"));
-        assertTrue(checkReplyNoAssert(reply, "<p>Parameters</p>\r\n"
-            + "name=\"param-one\";value=\"param-value\"<br>"));
+                "<title>Param Servlet: POST</title>"));
+        assertTrue(checkReplyNoAssert(reply,
+                "<p>Parameters</p>\r\n" +
+                "name=\"param-one\";value=\"param-value\"<br>"));
         checkNoActiveConns(url);
     }
 
-    public void testGetMethodMultiParameters() throws Exception
-    {
-        URL url = new URL(_urlBase
-            + ParamServlet.NAME
-            + "?param-one=param-value&param-two=param-value2"
-            + "&special-chars=:/?~.");
+    public void testGetMethodMultiParameters() throws Exception {
+        URL url = new URL(_urlBase + ParamServlet.NAME +
+                "?param-one=param-value&param-two=param-value2" +
+                "&special-chars=:/?~.");
         int response = 0;
 
         HttpURLConnection urlCon = HttpURLConnection.openConnection(url);
@@ -184,19 +169,17 @@ public class TestParameters extends TestWebappBase
         assertEquals(200, response);
 
         String reply = getReply(urlCon);
+        assertTrue(checkReplyNoAssert(reply, "<title>Param Servlet: GET</title>"));
         assertTrue(checkReplyNoAssert(reply,
-                                      "<title>Param Servlet: GET</title>"));
+                "name=\"special-chars\";value=\":/?~.\""));
         assertTrue(checkReplyNoAssert(reply,
-                                      "name=\"special-chars\";value=\":/?~.\""));
+                "name=\"param-one\";value=\"param-value\""));
         assertTrue(checkReplyNoAssert(reply,
-                                      "name=\"param-one\";value=\"param-value\""));
-        assertTrue(checkReplyNoAssert(reply,
-                                      "name=\"param-two\";value=\"param-value2\""));
+                "name=\"param-two\";value=\"param-value2\""));
         checkNoActiveConns(url);
     }
 
-    public void testPostMethodMultiParameters() throws Exception
-    {
+    public void testPostMethodMultiParameters() throws Exception {
         URL url = new URL(_urlBase + ParamServlet.NAME);
         int response = 0;
 
@@ -204,9 +187,10 @@ public class TestParameters extends TestWebappBase
         urlCon.setRequestMethod("POST");
 
         urlCon.setDoOutput(true);
+
         OutputStream os = urlCon.getOutputStream();
-        os.write(("param-one=param-value&param-two=param-value2"
-            + "&special-chars=:/?~.").getBytes("ASCII"));
+        os.write(("param-one=param-value&param-two=param-value2" +
+            "&special-chars=:/?~.").getBytes("ASCII"));
 
         urlCon.connect();
         response = urlCon.getResponseCode();
@@ -214,7 +198,7 @@ public class TestParameters extends TestWebappBase
 
         String reply = getReply(urlCon);
         assertTrue(checkReplyNoAssert(reply,
-                                      "<title>Param Servlet: POST</title>"));
+                "<title>Param Servlet: POST</title>"));
         /***********************************************************************
          * assertTrue(checkReplyNoAssert(reply, "
          * <p>
@@ -224,19 +208,17 @@ public class TestParameters extends TestWebappBase
          * "&special-chars=:/?~."));
          **********************************************************************/
         assertTrue(checkReplyNoAssert(reply,
-                                      "name=\"special-chars\";value=\":/?~.\""));
+                "name=\"special-chars\";value=\":/?~.\""));
         assertTrue(checkReplyNoAssert(reply,
-                                      "name=\"param-one\";value=\"param-value\""));
+                "name=\"param-one\";value=\"param-value\""));
         assertTrue(checkReplyNoAssert(reply,
-                                      "name=\"param-two\";value=\"param-value2\""));
+                "name=\"param-two\";value=\"param-value2\""));
         checkNoActiveConns(url);
     }
 
-    public void testGetMethodParameterWithoutValue() throws Exception
-    {
-        URL url = new URL(_urlBase
-            + ParamServlet.NAME
-            + "?param-without-value=");
+    public void testGetMethodParameterWithoutValue() throws Exception {
+        URL url = new URL(_urlBase + ParamServlet.NAME +
+                "?param-without-value=");
         int response = 0;
 
         HttpURLConnection urlCon = HttpURLConnection.openConnection(url);
@@ -246,15 +228,13 @@ public class TestParameters extends TestWebappBase
         assertEquals(200, response);
 
         String reply = getReply(urlCon);
+        assertTrue(checkReplyNoAssert(reply, "<title>Param Servlet: GET</title>"));
         assertTrue(checkReplyNoAssert(reply,
-                                      "<title>Param Servlet: GET</title>"));
-        assertTrue(checkReplyNoAssert(reply,
-                                      "<p>QueryString=\"param-without-value=\"</p>"));
+                "<p>QueryString=\"param-without-value=\"</p>"));
         checkNoActiveConns(url);
     }
 
-    public void testGetMethodParameterAppearsTwice() throws Exception
-    {
+    public void testGetMethodParameterAppearsTwice() throws Exception {
         URL url = new URL(_urlBase + ParamServlet.NAME + "?foo=one&foo=two");
         int response = 0;
 
@@ -265,16 +245,14 @@ public class TestParameters extends TestWebappBase
         assertEquals(200, response);
 
         String reply = getReply(urlCon);
-        assertTrue(checkReplyNoAssert(reply,
-                                      "<title>Param Servlet: GET</title>"));
+        assertTrue(checkReplyNoAssert(reply, "<title>Param Servlet: GET</title>"));
         assertTrue(checkReplyNoAssert(reply, "name=\"foo\";value=\"one\""));
         assertTrue(checkReplyNoAssert(reply, "name=\"foo\";value=\"two\""));
         checkNoActiveConns(url);
     }
 
     // Bug 973
-    public void testGetMethodNoSlashParameters() throws Exception
-    {
+    public void testGetMethodNoSlashParameters() throws Exception {
         URL url = new URL("http://" + HttpTestEnv.TOMCAT_HOST + "?foo=one");
         int response = 0;
 
@@ -285,8 +263,7 @@ public class TestParameters extends TestWebappBase
         assertEquals(200, response);
     }
 
-    public void testGetMethodSlashParameters() throws Exception
-    {
+    public void testGetMethodSlashParameters() throws Exception {
         URL url = new URL("http://" + HttpTestEnv.TOMCAT_HOST + "/?foo=one");
         int response = 0;
 
@@ -297,8 +274,7 @@ public class TestParameters extends TestWebappBase
         assertEquals(200, response);
     }
 
-    public void allTestMethods() throws Exception
-    {
+    public void allTestMethods() throws Exception {
         testGetMethodQueryString();
         testGetMethodEmptyQueryString();
         testGetMethodNoQueryString();
@@ -329,7 +305,7 @@ public class TestParameters extends TestWebappBase
      * 0);
      * assertTrue(method.getResponseBodyAsString().indexOf("name=\"para\";value=\"meter\"") >=
      * 0); }
-     * 
+     *
      */
 
     /***************************************************************************
@@ -351,7 +327,6 @@ public class TestParameters extends TestWebappBase
      * 0);
      * assertTrue(method.getResponseBodyAsString().indexOf("name=\"para\";value=\"meter\"") >=
      * 0); }
-     * 
+     *
      **************************************************************************/
-
 }

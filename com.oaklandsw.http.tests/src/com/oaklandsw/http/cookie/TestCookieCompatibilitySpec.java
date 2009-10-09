@@ -1,30 +1,27 @@
 /*
  * ====================================================================
- * 
+ *
  * Copyright 1999-2004 The Apache Software Foundation
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
  * License for the specific language governing permissions and limitations under
  * the License.
  * ====================================================================
- * 
+ *
  * This software consists of voluntary contributions made by many individuals on
  * behalf of the Apache Software Foundation. For more information on the Apache
  * Software Foundation, please see <http://www.apache.org/>.
- * 
+ *
  */
-
 package com.oaklandsw.http.cookie;
-
-import java.util.Date;
 
 import com.oaklandsw.http.Cookie;
 import com.oaklandsw.http.CookieContainer;
@@ -34,9 +31,12 @@ import com.oaklandsw.http.NameValuePair;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
+import java.util.Date;
+
+
 /**
  * Test cases for Cookie
- * 
+ *
  * @author BC Holmes
  * @author Rod Waldhoff
  * @author dIon Gillard
@@ -45,239 +45,184 @@ import junit.framework.TestSuite;
  * @author <a href="mailto:oleg@ural.ru">Oleg Kalnichevski</a>
  * @version $Revision: 345737 $
  */
-public class TestCookieCompatibilitySpec extends TestCookieBase
-{
-
+public class TestCookieCompatibilitySpec extends TestCookieBase {
     // ------------------------------------------------------------ Constructor
-
-    public TestCookieCompatibilitySpec(String name)
-    {
+    public TestCookieCompatibilitySpec(String name) {
         super(name);
     }
 
     // ------------------------------------------------------- TestCase Methods
-
-    public static Test suite()
-    {
+    public static Test suite() {
         return new TestSuite(TestCookieCompatibilitySpec.class);
     }
 
-    public void testParseAttributeInvalidAttrib() throws Exception
-    {
+    public void testParseAttributeInvalidAttrib() throws Exception {
         CookieSpec cookiespec = new CookieSpecBase();
-        try
-        {
+
+        try {
             cookiespec.parseAttribute(null, null);
             fail("IllegalArgumentException must have been thrown");
-        }
-        catch (IllegalArgumentException expected)
-        {
+        } catch (IllegalArgumentException expected) {
         }
     }
 
-    public void testParseAttributeInvalidCookie() throws Exception
-    {
+    public void testParseAttributeInvalidCookie() throws Exception {
         CookieSpec cookiespec = new CookieSpecBase();
-        try
-        {
+
+        try {
             cookiespec.parseAttribute(new NameValuePair("name", "value"), null);
             fail("IllegalArgumentException must have been thrown");
-        }
-        catch (IllegalArgumentException expected)
-        {
+        } catch (IllegalArgumentException expected) {
         }
     }
 
-    public void testParseAttributeNullPath() throws Exception
-    {
+    public void testParseAttributeNullPath() throws Exception {
         CookieSpec cookiespec = new CookieSpecBase();
         Cookie cookie = new Cookie();
         cookiespec.parseAttribute(new NameValuePair("path", null), cookie);
         assertEquals("/", cookie.getPath());
     }
 
-    public void testParseAttributeBlankPath() throws Exception
-    {
+    public void testParseAttributeBlankPath() throws Exception {
         CookieSpec cookiespec = new CookieSpecBase();
         Cookie cookie = new Cookie();
         cookiespec.parseAttribute(new NameValuePair("path", "   "), cookie);
         assertEquals("/", cookie.getPath());
     }
 
-    public void testParseAttributeNullDomain() throws Exception
-    {
+    public void testParseAttributeNullDomain() throws Exception {
         CookieSpec cookiespec = new CookieSpecBase();
         Cookie cookie = new Cookie();
-        try
-        {
-            cookiespec
-                    .parseAttribute(new NameValuePair("domain", null), cookie);
+
+        try {
+            cookiespec.parseAttribute(new NameValuePair("domain", null), cookie);
             fail("MalformedCookieException must have been thrown");
-        }
-        catch (MalformedCookieException expected)
-        {
+        } catch (MalformedCookieException expected) {
         }
     }
 
-    public void testParseAttributeBlankDomain() throws Exception
-    {
+    public void testParseAttributeBlankDomain() throws Exception {
         CookieSpec cookiespec = new CookieSpecBase();
         Cookie cookie = new Cookie();
-        try
-        {
-            cookiespec.parseAttribute(new NameValuePair("domain", "   "),
-                                      cookie);
+
+        try {
+            cookiespec.parseAttribute(new NameValuePair("domain", "   "), cookie);
             fail("MalformedCookieException must have been thrown");
-        }
-        catch (MalformedCookieException expected)
-        {
+        } catch (MalformedCookieException expected) {
         }
     }
 
-    public void testParseAttributeNullMaxAge() throws Exception
-    {
+    public void testParseAttributeNullMaxAge() throws Exception {
         CookieSpec cookiespec = new CookieSpecBase();
         Cookie cookie = new Cookie();
-        try
-        {
-            cookiespec.parseAttribute(new NameValuePair("max-age", null),
-                                      cookie);
+
+        try {
+            cookiespec.parseAttribute(new NameValuePair("max-age", null), cookie);
             fail("MalformedCookieException must have been thrown");
-        }
-        catch (MalformedCookieException expected)
-        {
+        } catch (MalformedCookieException expected) {
         }
     }
 
-    public void testParseAttributeInvalidMaxAge() throws Exception
-    {
+    public void testParseAttributeInvalidMaxAge() throws Exception {
         CookieSpec cookiespec = new CookieSpecBase();
         Cookie cookie = new Cookie();
-        try
-        {
+
+        try {
             cookiespec.parseAttribute(new NameValuePair("max-age", "crap"),
-                                      cookie);
+                cookie);
             fail("MalformedCookieException must have been thrown");
-        }
-        catch (MalformedCookieException expected)
-        {
+        } catch (MalformedCookieException expected) {
         }
     }
 
-    public void testParseAttributeNullExpires() throws Exception
-    {
+    public void testParseAttributeNullExpires() throws Exception {
         CookieSpec cookiespec = new CookieSpecBase();
         Cookie cookie = new Cookie();
-        try
-        {
-            cookiespec.parseAttribute(new NameValuePair("expires", null),
-                                      cookie);
+
+        try {
+            cookiespec.parseAttribute(new NameValuePair("expires", null), cookie);
             fail("MalformedCookieException must have been thrown");
-        }
-        catch (MalformedCookieException expected)
-        {
+        } catch (MalformedCookieException expected) {
         }
     }
 
-    public void testParseAttributeUnknownValue() throws Exception
-    {
+    public void testParseAttributeUnknownValue() throws Exception {
         CookieSpec cookiespec = new CookieSpecBase();
         Cookie cookie = new Cookie();
         cookiespec.parseAttribute(new NameValuePair("nonsense", null), cookie);
     }
 
-    public void testValidateNullHost() throws Exception
-    {
+    public void testValidateNullHost() throws Exception {
         CookieSpec cookiespec = new CookieSpecBase();
         Cookie cookie = new Cookie();
-        try
-        {
+
+        try {
             cookiespec.validate(null, 80, "/", false, cookie);
             fail("IllegalArgumentException must have been thrown");
-        }
-        catch (IllegalArgumentException expected)
-        {
+        } catch (IllegalArgumentException expected) {
         }
     }
 
-    public void testValidateBlankHost() throws Exception
-    {
+    public void testValidateBlankHost() throws Exception {
         CookieSpec cookiespec = new CookieSpecBase();
         Cookie cookie = new Cookie();
-        try
-        {
+
+        try {
             cookiespec.validate("   ", 80, "/", false, cookie);
             fail("IllegalArgumentException must have been thrown");
-        }
-        catch (IllegalArgumentException expected)
-        {
+        } catch (IllegalArgumentException expected) {
         }
     }
 
-    public void testValidateNullPath() throws Exception
-    {
+    public void testValidateNullPath() throws Exception {
         CookieSpec cookiespec = new CookieSpecBase();
         Cookie cookie = new Cookie();
-        try
-        {
+
+        try {
             cookiespec.validate("host", 80, null, false, cookie);
             fail("IllegalArgumentException must have been thrown");
-        }
-        catch (IllegalArgumentException expected)
-        {
+        } catch (IllegalArgumentException expected) {
         }
     }
 
-    public void testValidateBlankPath() throws Exception
-    {
+    public void testValidateBlankPath() throws Exception {
         CookieSpec cookiespec = new CookieSpecBase();
         Cookie cookie = new Cookie("host", "name", "value", "/", null, false);
         cookiespec.validate("host", 80, "   ", false, cookie);
     }
 
-    public void testValidateInvalidPort() throws Exception
-    {
+    public void testValidateInvalidPort() throws Exception {
         CookieSpec cookiespec = new CookieSpecBase();
         Cookie cookie = new Cookie();
-        try
-        {
+
+        try {
             cookiespec.validate("host", -80, "/", false, cookie);
             fail("IllegalArgumentException must have been thrown");
-        }
-        catch (IllegalArgumentException expected)
-        {
+        } catch (IllegalArgumentException expected) {
         }
     }
 
-    public void testValidateInvalidCookieVersion() throws Exception
-    {
+    public void testValidateInvalidCookieVersion() throws Exception {
         CookieSpec cookiespec = new CookieSpecBase();
         Cookie cookie = new Cookie();
         cookie.setVersion(-1);
-        try
-        {
+
+        try {
             cookiespec.validate("host", 80, "/", false, cookie);
             fail("MalformedCookieException must have been thrown");
-        }
-        catch (MalformedCookieException expected)
-        {
+        } catch (MalformedCookieException expected) {
         }
     }
 
     /**
      * Tests whether domain attribute check is case-insensitive.
      */
-    public void testDomainCaseInsensitivity() throws Exception
-    {
+    public void testDomainCaseInsensitivity() throws Exception {
         String header = "name=value; path=/; domain=.whatever.com";
 
         CookieSpec cookiespec = new CookieSpecBase();
-        Cookie[] parsed = cookieParse(cookiespec,
-                                      "www.WhatEver.com",
-                                      80,
-                                      "/",
-                                      false,
-                                      header);
+        Cookie[] parsed = cookieParse(cookiespec, "www.WhatEver.com", 80, "/",
+                false, header);
         assertNotNull(parsed);
         assertEquals(1, parsed.length);
         assertEquals(".whatever.com", parsed[0].getDomain());
@@ -286,18 +231,13 @@ public class TestCookieCompatibilitySpec extends TestCookieBase
     /**
      * Test basic parse (with various spacings
      */
-    public void testParse1() throws Exception
-    {
-        String headerValue = "custno = 12345; comment=test; version=1,"
-            + " name=John; version=1; max-age=600; secure; domain=.apache.org";
+    public void testParse1() throws Exception {
+        String headerValue = "custno = 12345; comment=test; version=1," +
+            " name=John; version=1; max-age=600; secure; domain=.apache.org";
 
         CookieSpec cookiespec = new CookieSpecBase();
-        Cookie[] cookies = cookieParse(cookiespec,
-                                       "www.apache.org",
-                                       80,
-                                       "/",
-                                       false,
-                                       headerValue);
+        Cookie[] cookies = cookieParse(cookiespec, "www.apache.org", 80, "/",
+                false, headerValue);
         assertEquals(2, cookies.length);
 
         assertEquals("custno", cookies[0].getName());
@@ -320,18 +260,13 @@ public class TestCookieCompatibilitySpec extends TestCookieBase
     /**
      * Test no spaces
      */
-    public void testParse2() throws Exception
-    {
-        String headerValue = "custno=12345;comment=test; version=1,"
-            + "name=John;version=1;max-age=600;secure;domain=.apache.org";
+    public void testParse2() throws Exception {
+        String headerValue = "custno=12345;comment=test; version=1," +
+            "name=John;version=1;max-age=600;secure;domain=.apache.org";
 
         CookieSpec cookiespec = new CookieSpecBase();
-        Cookie[] cookies = cookieParse(cookiespec,
-                                       "www.apache.org",
-                                       80,
-                                       "/",
-                                       false,
-                                       headerValue);
+        Cookie[] cookies = cookieParse(cookiespec, "www.apache.org", 80, "/",
+                false, headerValue);
 
         assertEquals(2, cookies.length);
 
@@ -355,17 +290,12 @@ public class TestCookieCompatibilitySpec extends TestCookieBase
     /**
      * Test parse with quoted text
      */
-    public void testParse3() throws Exception
-    {
+    public void testParse3() throws Exception {
         String headerValue = "name=\"Doe, John\";version=1;max-age=600;secure;domain=.apache.org";
 
         CookieSpec cookiespec = new CookieSpecBase();
-        Cookie[] cookies = cookieParse(cookiespec,
-                                       "www.apache.org",
-                                       80,
-                                       "/",
-                                       false,
-                                       headerValue);
+        Cookie[] cookies = cookieParse(cookiespec, "www.apache.org", 80, "/",
+                false, headerValue);
 
         assertEquals(1, cookies.length);
 
@@ -379,56 +309,39 @@ public class TestCookieCompatibilitySpec extends TestCookieBase
     }
 
     // see issue #5279
-    public void testQuotedExpiresAttribute() throws Exception
-    {
+    public void testQuotedExpiresAttribute() throws Exception {
         String headerValue = "custno=12345;Expires='Thu, 01-Jan-2070 00:00:10 GMT'";
 
         CookieSpec cookiespec = new CookieSpecBase();
-        Cookie[] cookies = cookieParse(cookiespec,
-                                       "www.apache.org",
-                                       80,
-                                       "/",
-                                       true,
-                                       headerValue);
+        Cookie[] cookies = cookieParse(cookiespec, "www.apache.org", 80, "/",
+                true, headerValue);
         assertNotNull("Expected some cookies", cookies);
         assertEquals("Expected 1 cookie", 1, cookies.length);
-        assertNotNull("Expected cookie to have getExpiryDate", cookies[0]
-                .getExpiryDate());
+        assertNotNull("Expected cookie to have getExpiryDate",
+            cookies[0].getExpiryDate());
     }
 
-    public void testSecurityError() throws Exception
-    {
-        String headerValue = "custno=12345;comment=test; version=1,"
-            + "name=John;version=1;max-age=600;secure;domain=jakarta.apache.org";
+    public void testSecurityError() throws Exception {
+        String headerValue = "custno=12345;comment=test; version=1," +
+            "name=John;version=1;max-age=600;secure;domain=jakarta.apache.org";
 
         CookieSpec cookiespec = new CookieSpecBase();
-        try
-        {
-            cookieParse(cookiespec,
-                        "www.apache.org",
-                        80,
-                        "/",
-                        false,
-                        headerValue);
+
+        try {
+            cookieParse(cookiespec, "www.apache.org", 80, "/", false,
+                headerValue);
             fail("HttpException exception should have been thrown");
-        }
-        catch (HttpException e)
-        {
+        } catch (HttpException e) {
             // expected
         }
     }
 
-    public void testParseSimple() throws Exception
-    {
+    public void testParseSimple() throws Exception {
         String header = "cookie-name=cookie-value";
 
         CookieSpec cookiespec = new CookieSpecBase();
-        Cookie[] parsed = cookieParse(cookiespec,
-                                      "127.0.0.1",
-                                      80,
-                                      "/path/path",
-                                      false,
-                                      header);
+        Cookie[] parsed = cookieParse(cookiespec, "127.0.0.1", 80,
+                "/path/path", false, header);
         assertEquals("Found 1 cookie.", 1, parsed.length);
         assertEquals("Name", "cookie-name", parsed[0].getName());
         assertEquals("Value", "cookie-value", parsed[0].getValue());
@@ -442,17 +355,12 @@ public class TestCookieCompatibilitySpec extends TestCookieBase
         assertEquals("Version", 0, parsed[0].getVersion());
     }
 
-    public void testParseSimple2() throws Exception
-    {
+    public void testParseSimple2() throws Exception {
         String header = "cookie-name=cookie-value";
 
         CookieSpec cookiespec = new CookieSpecBase();
-        Cookie[] parsed = cookieParse(cookiespec,
-                                      "127.0.0.1",
-                                      80,
-                                      "/path",
-                                      false,
-                                      header);
+        Cookie[] parsed = cookieParse(cookiespec, "127.0.0.1", 80, "/path",
+                false, header);
         assertEquals("Found 1 cookie.", 1, parsed.length);
         assertEquals("Name", "cookie-name", parsed[0].getName());
         assertEquals("Value", "cookie-value", parsed[0].getValue());
@@ -466,33 +374,25 @@ public class TestCookieCompatibilitySpec extends TestCookieBase
         assertEquals("Version", 0, parsed[0].getVersion());
     }
 
-    public void testParseNoName() throws Exception
-    {
+    public void testParseNoName() throws Exception {
         String header = "=stuff; path=/";
 
         CookieSpec cookiespec = new CookieSpecBase();
-        try
-        {
+
+        try {
             cookieParse(cookiespec, "127.0.0.1", 80, "/", false, header);
             fail("MalformedCookieException should have been thrown");
-        }
-        catch (MalformedCookieException ex)
-        {
+        } catch (MalformedCookieException ex) {
             // expected
         }
     }
 
-    public void testParseNoValue() throws Exception
-    {
+    public void testParseNoValue() throws Exception {
         String header = "cookie-name=";
 
         CookieSpec cookiespec = new CookieSpecBase();
-        Cookie[] parsed = cookieParse(cookiespec,
-                                      "127.0.0.1",
-                                      80,
-                                      "/",
-                                      false,
-                                      header);
+        Cookie[] parsed = cookieParse(cookiespec, "127.0.0.1", 80, "/", false,
+                header);
         assertEquals("Found 1 cookie.", 1, parsed.length);
         assertEquals("Name", "cookie-name", parsed[0].getName());
         assertEquals("Value", "", parsed[0].getValue());
@@ -506,17 +406,12 @@ public class TestCookieCompatibilitySpec extends TestCookieBase
         assertEquals("Version", 0, parsed[0].getVersion());
     }
 
-    public void testParseWithWhiteSpace() throws Exception
-    {
+    public void testParseWithWhiteSpace() throws Exception {
         String header = " cookie-name  =    cookie-value  ";
 
         CookieSpec cookiespec = new CookieSpecBase();
-        Cookie[] parsed = cookieParse(cookiespec,
-                                      "127.0.0.1",
-                                      80,
-                                      "/",
-                                      false,
-                                      header);
+        Cookie[] parsed = cookieParse(cookiespec, "127.0.0.1", 80, "/", false,
+                header);
         assertEquals("Found 1 cookie.", 1, parsed.length);
         assertEquals("Name", "cookie-name", parsed[0].getName());
         assertEquals("Value", "cookie-value", parsed[0].getValue());
@@ -527,17 +422,12 @@ public class TestCookieCompatibilitySpec extends TestCookieBase
         assertTrue("Comment", null == parsed[0].getComment());
     }
 
-    public void testParseWithQuotes() throws Exception
-    {
+    public void testParseWithQuotes() throws Exception {
         String header = " cookie-name  =  \" cookie-value \" ;path=/";
 
         CookieSpec cookiespec = new CookieSpecBase();
-        Cookie[] parsed = cookieParse(cookiespec,
-                                      "127.0.0.1",
-                                      80,
-                                      "/",
-                                      false,
-                                      header);
+        Cookie[] parsed = cookieParse(cookiespec, "127.0.0.1", 80, "/", false,
+                header);
         assertEquals("Found 1 cookie.", 1, parsed.length);
         assertEquals("Name", "cookie-name", parsed[0].getName());
         assertEquals("Value", " cookie-value ", parsed[0].getValue());
@@ -548,17 +438,12 @@ public class TestCookieCompatibilitySpec extends TestCookieBase
         assertTrue("Comment", null == parsed[0].getComment());
     }
 
-    public void testParseWithPath() throws Exception
-    {
+    public void testParseWithPath() throws Exception {
         String header = "cookie-name=cookie-value; Path=/path/";
 
         CookieSpec cookiespec = new CookieSpecBase();
-        Cookie[] parsed = cookieParse(cookiespec,
-                                      "127.0.0.1",
-                                      80,
-                                      "/path/path",
-                                      false,
-                                      header);
+        Cookie[] parsed = cookieParse(cookiespec, "127.0.0.1", 80,
+                "/path/path", false, header);
         assertEquals("Found 1 cookie.", 1, parsed.length);
         assertEquals("Name", "cookie-name", parsed[0].getName());
         assertEquals("Value", "cookie-value", parsed[0].getValue());
@@ -569,17 +454,12 @@ public class TestCookieCompatibilitySpec extends TestCookieBase
         assertTrue("Comment", null == parsed[0].getComment());
     }
 
-    public void testParseWithDomain() throws Exception
-    {
+    public void testParseWithDomain() throws Exception {
         String header = "cookie-name=cookie-value; Domain=127.0.0.1";
 
         CookieSpec cookiespec = new CookieSpecBase();
-        Cookie[] parsed = cookieParse(cookiespec,
-                                      "127.0.0.1",
-                                      80,
-                                      "/",
-                                      false,
-                                      header);
+        Cookie[] parsed = cookieParse(cookiespec, "127.0.0.1", 80, "/", false,
+                header);
         assertEquals("Found 1 cookie.", 1, parsed.length);
         assertEquals("Name", "cookie-name", parsed[0].getName());
         assertEquals("Value", "cookie-value", parsed[0].getValue());
@@ -590,17 +470,12 @@ public class TestCookieCompatibilitySpec extends TestCookieBase
         assertTrue("Comment", null == parsed[0].getComment());
     }
 
-    public void testParseWithSecure() throws Exception
-    {
+    public void testParseWithSecure() throws Exception {
         String header = "cookie-name=cookie-value; secure";
 
         CookieSpec cookiespec = new CookieSpecBase();
-        Cookie[] parsed = cookieParse(cookiespec,
-                                      "127.0.0.1",
-                                      80,
-                                      "/",
-                                      true,
-                                      header);
+        Cookie[] parsed = cookieParse(cookiespec, "127.0.0.1", 80, "/", true,
+                header);
         assertEquals("Found 1 cookie.", 1, parsed.length);
         assertEquals("Name", "cookie-name", parsed[0].getName());
         assertEquals("Value", "cookie-value", parsed[0].getValue());
@@ -611,17 +486,12 @@ public class TestCookieCompatibilitySpec extends TestCookieBase
         assertTrue("Comment", null == parsed[0].getComment());
     }
 
-    public void testParseWithComment() throws Exception
-    {
+    public void testParseWithComment() throws Exception {
         String header = "cookie-name=cookie-value; comment=\"This is a comment.\"";
 
         CookieSpec cookiespec = new CookieSpecBase();
-        Cookie[] parsed = cookieParse(cookiespec,
-                                      "127.0.0.1",
-                                      80,
-                                      "/",
-                                      true,
-                                      header);
+        Cookie[] parsed = cookieParse(cookiespec, "127.0.0.1", 80, "/", true,
+                header);
         assertEquals("Found 1 cookie.", 1, parsed.length);
         assertEquals("Name", "cookie-name", parsed[0].getName());
         assertEquals("Value", "cookie-value", parsed[0].getValue());
@@ -632,17 +502,12 @@ public class TestCookieCompatibilitySpec extends TestCookieBase
         assertEquals("Comment", "This is a comment.", parsed[0].getComment());
     }
 
-    public void testParseWithExpires() throws Exception
-    {
+    public void testParseWithExpires() throws Exception {
         String header = "cookie-name=cookie-value;Expires=Thu, 01-Jan-1970 00:00:10 GMT";
 
         CookieSpec cookiespec = new CookieSpecBase();
-        Cookie[] parsed = cookieParse(cookiespec,
-                                      "127.0.0.1",
-                                      80,
-                                      "/",
-                                      true,
-                                      header);
+        Cookie[] parsed = cookieParse(cookiespec, "127.0.0.1", 80, "/", true,
+                header);
         assertEquals("Found 1 cookie.", 1, parsed.length);
         assertEquals("Name", "cookie-name", parsed[0].getName());
         assertEquals("Value", "cookie-value", parsed[0].getValue());
@@ -653,18 +518,13 @@ public class TestCookieCompatibilitySpec extends TestCookieBase
         assertTrue("Comment", null == parsed[0].getComment());
     }
 
-    public void testParseWithAll() throws Exception
-    {
-        String header = "cookie-name=cookie-value;Version=1;Path=/commons;Domain=.apache.org;"
-            + "Comment=This is a comment.;secure;Expires=Thu, 01-Jan-1970 00:00:10 GMT";
+    public void testParseWithAll() throws Exception {
+        String header = "cookie-name=cookie-value;Version=1;Path=/commons;Domain=.apache.org;" +
+            "Comment=This is a comment.;secure;Expires=Thu, 01-Jan-1970 00:00:10 GMT";
 
         CookieSpec cookiespec = new CookieSpecBase();
-        Cookie[] parsed = cookieParse(cookiespec,
-                                      ".apache.org",
-                                      80,
-                                      "/commons/httpclient",
-                                      true,
-                                      header);
+        Cookie[] parsed = cookieParse(cookiespec, ".apache.org", 80,
+                "/commons/httpclient", true, header);
         assertEquals("Found 1 cookie.", 1, parsed.length);
         assertEquals("Name", "cookie-name", parsed[0].getName());
         assertEquals("Value", "cookie-value", parsed[0].getValue());
@@ -676,20 +536,16 @@ public class TestCookieCompatibilitySpec extends TestCookieBase
         assertEquals("Version", 0, parsed[0].getVersion());
     }
 
-    public void testParseMultipleDifferentPaths() throws Exception
-    {
-        String header = "name1=value1;Version=1;Path=/commons,name1=value2;Version=1;"
-            + "Path=/commons/httpclient;Version=1";
+    public void testParseMultipleDifferentPaths() throws Exception {
+        String header = "name1=value1;Version=1;Path=/commons,name1=value2;Version=1;" +
+            "Path=/commons/httpclient;Version=1";
 
         CookieSpec cookiespec = new CookieSpecBase();
-        Cookie[] parsed = cookieParse(cookiespec,
-                                      ".apache.org",
-                                      80,
-                                      "/commons/httpclient",
-                                      true,
-                                      header);
+        Cookie[] parsed = cookieParse(cookiespec, ".apache.org", 80,
+                "/commons/httpclient", true, header);
         CookieContainer state = new CookieContainer();
         state.addCookies(parsed);
+
         Cookie[] cookies = state.getCookies();
         assertEquals("Wrong number of cookies.", 2, cookies.length);
         assertEquals("Name", "name1", cookies[0].getName());
@@ -698,210 +554,166 @@ public class TestCookieCompatibilitySpec extends TestCookieBase
         assertEquals("Value", "value2", cookies[1].getValue());
     }
 
-    public void testParseMultipleSamePaths() throws Exception
-    {
+    public void testParseMultipleSamePaths() throws Exception {
         String header = "name1=value1;Version=1;Path=/commons,name1=value2;Version=1;Path=/commons";
 
         CookieSpec cookiespec = new CookieSpecBase();
-        Cookie[] parsed = cookieParse(cookiespec,
-                                      ".apache.org",
-                                      80,
-                                      "/commons/httpclient",
-                                      true,
-                                      header);
+        Cookie[] parsed = cookieParse(cookiespec, ".apache.org", 80,
+                "/commons/httpclient", true, header);
         CookieContainer state = new CookieContainer();
         state.addCookies(parsed);
+
         Cookie[] cookies = state.getCookies();
         assertEquals("Found 1 cookies.", 1, cookies.length);
         assertEquals("Name", "name1", cookies[0].getName());
         assertEquals("Value", "value2", cookies[0].getValue());
     }
 
-    public void testParseRelativePath() throws Exception
-    {
+    public void testParseRelativePath() throws Exception {
         String header = "name1=value1;Path=whatever";
 
         CookieSpec cookiespec = new CookieSpecBase();
-        Cookie[] parsed = cookieParse(cookiespec,
-                                      ".apache.org",
-                                      80,
-                                      "whatever",
-                                      true,
-                                      header);
+        Cookie[] parsed = cookieParse(cookiespec, ".apache.org", 80,
+                "whatever", true, header);
         assertEquals("Found 1 cookies.", 1, parsed.length);
         assertEquals("Name", "name1", parsed[0].getName());
         assertEquals("Value", "value1", parsed[0].getValue());
         assertEquals("Path", "whatever", parsed[0].getPath());
     }
 
-    public void testParseWithWrongDomain() throws Exception
-    {
+    public void testParseWithWrongDomain() throws Exception {
         String header = "cookie-name=cookie-value; domain=127.0.0.1; version=1";
 
         CookieSpec cookiespec = new CookieSpecBase();
-        try
-        {
+
+        try {
             cookieParse(cookiespec, "127.0.0.2", 80, "/", false, header);
             fail("HttpException exception should have been thrown");
-        }
-        catch (HttpException e)
-        {
+        } catch (HttpException e) {
             // expected
         }
     }
 
-    public void testParseWithNullHost() throws Exception
-    {
+    public void testParseWithNullHost() throws Exception {
         String header = "cookie-name=cookie-value; domain=127.0.0.1; path=/; secure";
 
         CookieSpec cookiespec = new CookieSpecBase();
-        try
-        {
+
+        try {
             cookieParse(cookiespec, null, 80, "/", false, header);
             fail("IllegalArgumentException should have been thrown");
-        }
-        catch (IllegalArgumentException e)
-        {
+        } catch (IllegalArgumentException e) {
             // expected
         }
     }
 
-    public void testParseWithBlankHost() throws Exception
-    {
+    public void testParseWithBlankHost() throws Exception {
         String header = "cookie-name=cookie-value; domain=127.0.0.1; path=/; secure";
 
         CookieSpec cookiespec = new CookieSpecBase();
-        try
-        {
+
+        try {
             cookieParse(cookiespec, "  ", 80, "/", false, header);
             fail("IllegalArgumentException should have been thrown");
-        }
-        catch (IllegalArgumentException e)
-        {
+        } catch (IllegalArgumentException e) {
             // expected
         }
     }
 
-    public void testParseWithNullPath() throws Exception
-    {
+    public void testParseWithNullPath() throws Exception {
         String header = "cookie-name=cookie-value; domain=127.0.0.1; path=/; secure";
 
         CookieSpec cookiespec = new CookieSpecBase();
-        try
-        {
+
+        try {
             cookieParse(cookiespec, "127.0.0.1", 80, null, false, header);
             fail("IllegalArgumentException should have been thrown");
-        }
-        catch (IllegalArgumentException e)
-        {
+        } catch (IllegalArgumentException e) {
             // expected
         }
     }
 
-    public void testParseWithBlankPath() throws Exception
-    {
+    public void testParseWithBlankPath() throws Exception {
         String header = "cookie-name=cookie-value; domain=127.0.0.1; path=/; secure";
 
         CookieSpec cookiespec = new CookieSpecBase();
-        Cookie[] parsed = cookieParse(cookiespec,
-                                      "127.0.0.1",
-                                      80,
-                                      "  ",
-                                      false,
-                                      header);
+        Cookie[] parsed = cookieParse(cookiespec, "127.0.0.1", 80, "  ", false,
+                header);
         assertNotNull(parsed);
         assertEquals(1, parsed.length);
         assertEquals("/", parsed[0].getPath());
     }
 
-    public void testParseWithNegativePort() throws Exception
-    {
+    public void testParseWithNegativePort() throws Exception {
         String header = "cookie-name=cookie-value; domain=127.0.0.1; path=/; secure";
 
         CookieSpec cookiespec = new CookieSpecBase();
-        try
-        {
+
+        try {
             cookieParse(cookiespec, "127.0.0.1", -80, null, false, header);
             fail("IllegalArgumentException should have been thrown");
-        }
-        catch (IllegalArgumentException e)
-        {
+        } catch (IllegalArgumentException e) {
             // expected
         }
     }
 
-    public void testParseWithNullHostAndPath() throws Exception
-    {
+    public void testParseWithNullHostAndPath() throws Exception {
         String header = "cookie-name=cookie-value; domain=127.0.0.1; path=/; secure";
 
         CookieSpec cookiespec = new CookieSpecBase();
-        try
-        {
+
+        try {
             cookieParse(cookiespec, null, 80, null, false, header);
             fail("IllegalArgumentException should have been thrown");
-        }
-        catch (IllegalArgumentException e)
-        {
+        } catch (IllegalArgumentException e) {
             // expected
         }
     }
 
-    public void testParseWithPathMismatch() throws Exception
-    {
+    public void testParseWithPathMismatch() throws Exception {
         String header = "cookie-name=cookie-value; path=/path/path/path";
 
         CookieSpec cookiespec = new CookieSpecBase();
-        try
-        {
+
+        try {
             cookieParse(cookiespec, "127.0.0.1", 80, "/path", false, header);
             fail("MalformedCookieException should have been thrown.");
-        }
-        catch (MalformedCookieException e)
-        {
+        } catch (MalformedCookieException e) {
             // expected
         }
     }
 
-    public void testParseWithPathMismatch2() throws Exception
-    {
+    public void testParseWithPathMismatch2() throws Exception {
         String header = "cookie-name=cookie-value; path=/foobar";
 
         CookieSpec cookiespec = new CookieSpecBase();
-        try
-        {
+
+        try {
             cookieParse(cookiespec, "127.0.0.1", 80, "/foo", false, header);
             fail("MalformedCookieException should have been thrown.");
-        }
-        catch (MalformedCookieException e)
-        {
+        } catch (MalformedCookieException e) {
             // expected
         }
     }
 
-    public void testParseWithInvalidHeader1() throws Exception
-    {
+    public void testParseWithInvalidHeader1() throws Exception {
         CookieSpec cookiespec = new CookieSpecBase();
-        try
-        {
+
+        try {
             cookiespec.parse("127.0.0.1", 80, "/foo", false, null);
             fail("IllegalArgumentException should have been thrown.");
-        }
-        catch (IllegalArgumentException e)
-        {
+        } catch (IllegalArgumentException e) {
             // expected
         }
     }
 
-    public void testParseWithInvalidHeader2() throws Exception
-    {
+    public void testParseWithInvalidHeader2() throws Exception {
         CookieSpec cookiespec = new CookieSpecBase();
-        try
-        {
+
+        try {
             cookiespec.parse("127.0.0.1", 80, "/foo", false, null);
             fail("IllegalArgumentException should have been thrown.");
-        }
-        catch (IllegalArgumentException e)
-        {
+        } catch (IllegalArgumentException e) {
             // expected
         }
     }
@@ -909,16 +721,11 @@ public class TestCookieCompatibilitySpec extends TestCookieBase
     /**
      * Tests if cookie constructor rejects cookie name containing blanks.
      */
-    public void testCookieNameWithBlanks() throws Exception
-    {
+    public void testCookieNameWithBlanks() throws Exception {
         String setcookie = "invalid name=";
         CookieSpec cookiespec = new CookieSpecBase();
-        Cookie[] parsed = cookieParse(cookiespec,
-                                      "127.0.0.1",
-                                      80,
-                                      "/",
-                                      false,
-                                      setcookie);
+        Cookie[] parsed = cookieParse(cookiespec, "127.0.0.1", 80, "/", false,
+                setcookie);
         assertNotNull(parsed);
         assertEquals(1, parsed.length);
     }
@@ -926,16 +733,12 @@ public class TestCookieCompatibilitySpec extends TestCookieBase
     /**
      * Tests if cookie constructor rejects cookie name starting with $.
      */
-    public void testCookieNameStartingWithDollarSign() throws Exception
-    {
+    public void testCookieNameStartingWithDollarSign()
+        throws Exception {
         String setcookie = "$invalid_name=";
         CookieSpec cookiespec = new CookieSpecBase();
-        Cookie[] parsed = cookieParse(cookiespec,
-                                      "127.0.0.1",
-                                      80,
-                                      "/",
-                                      false,
-                                      setcookie);
+        Cookie[] parsed = cookieParse(cookiespec, "127.0.0.1", 80, "/", false,
+                setcookie);
         assertNotNull(parsed);
         assertEquals(1, parsed.length);
     }
@@ -943,26 +746,22 @@ public class TestCookieCompatibilitySpec extends TestCookieBase
     /**
      * Tests if malformatted expires attribute is parsed correctly.
      */
-    public void testCookieWithComma() throws Exception
-    {
+    public void testCookieWithComma() throws Exception {
         String header = "name=value; expires=\"Thu, 01-Jan-1970 00:00:00 GMT";
 
         CookieSpec cookiespec = new CookieSpecBase();
-        try
-        {
+
+        try {
             cookiespec.parse("localhost", 80, "/", false, header);
             fail("MalformedCookieException should have been thrown");
-        }
-        catch (MalformedCookieException expected)
-        {
+        } catch (MalformedCookieException expected) {
         }
     }
 
     /**
      * Tests several date formats.
      */
-    public void testDateFormats() throws Exception
-    {
+    public void testDateFormats() throws Exception {
         // comma, dashes
         checkDate("Thu, 01-Jan-70 00:00:10 GMT");
         checkDate("Thu, 01-Jan-2070 00:00:10 GMT");
@@ -978,19 +777,15 @@ public class TestCookieCompatibilitySpec extends TestCookieBase
         // weird stuff
         checkDate("Wed, 20-Nov-2002 09-38-33 GMT");
 
-        try
-        {
+        try {
             checkDate("this aint a date");
             fail("Date check is bogous");
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             /* must fail */
         }
     }
 
-    private void checkDate(String date) throws Exception
-    {
+    private void checkDate(String date) throws Exception {
         String header = "custno=12345;Expires='" + date + "';";
         CookieSpec cookiespec = new CookieSpecBase();
         cookieParse(cookiespec, "localhost", 80, "/", false, header);
@@ -1000,14 +795,9 @@ public class TestCookieCompatibilitySpec extends TestCookieBase
      * Tests if invalid second domain level cookie gets accepted in the browser
      * compatibility mode.
      */
-    public void testSecondDomainLevelCookie() throws Exception
-    {
-        Cookie cookie = new Cookie(".sourceforge.net",
-                                   "name",
-                                   null,
-                                   "/",
-                                   null,
-                                   false);
+    public void testSecondDomainLevelCookie() throws Exception {
+        Cookie cookie = new Cookie(".sourceforge.net", "name", null, "/", null,
+                false);
         cookie.setDomainAttributeSpecified(true);
         cookie.setPathAttributeSpecified(true);
 
@@ -1015,14 +805,9 @@ public class TestCookieCompatibilitySpec extends TestCookieBase
         cookiespec.validate("sourceforge.net", 80, "/", false, cookie);
     }
 
-    public void testSecondDomainLevelCookieMatch1() throws Exception
-    {
-        Cookie cookie = new Cookie(".sourceforge.net",
-                                   "name",
-                                   null,
-                                   "/",
-                                   null,
-                                   false);
+    public void testSecondDomainLevelCookieMatch1() throws Exception {
+        Cookie cookie = new Cookie(".sourceforge.net", "name", null, "/", null,
+                false);
         cookie.setDomainAttributeSpecified(true);
         cookie.setPathAttributeSpecified(true);
 
@@ -1030,310 +815,210 @@ public class TestCookieCompatibilitySpec extends TestCookieBase
         assertTrue(cookiespec.match("sourceforge.net", 80, "/", false, cookie));
     }
 
-    public void testSecondDomainLevelCookieMatch2() throws Exception
-    {
-        Cookie cookie = new Cookie("sourceforge.net",
-                                   "name",
-                                   null,
-                                   "/",
-                                   null,
-                                   false);
+    public void testSecondDomainLevelCookieMatch2() throws Exception {
+        Cookie cookie = new Cookie("sourceforge.net", "name", null, "/", null,
+                false);
         cookie.setDomainAttributeSpecified(true);
         cookie.setPathAttributeSpecified(true);
 
         CookieSpec cookiespec = new CookieSpecBase();
-        assertTrue(cookiespec.match("www.sourceforge.net",
-                                    80,
-                                    "/",
-                                    false,
-                                    cookie));
+        assertTrue(cookiespec.match("www.sourceforge.net", 80, "/", false,
+                cookie));
     }
 
-    public void testSecondDomainLevelCookieMatch3() throws Exception
-    {
-        Cookie cookie = new Cookie(".sourceforge.net",
-                                   "name",
-                                   null,
-                                   "/",
-                                   null,
-                                   false);
+    public void testSecondDomainLevelCookieMatch3() throws Exception {
+        Cookie cookie = new Cookie(".sourceforge.net", "name", null, "/", null,
+                false);
         cookie.setDomainAttributeSpecified(true);
         cookie.setPathAttributeSpecified(true);
 
         CookieSpec cookiespec = new CookieSpecBase();
-        assertTrue(cookiespec.match("www.sourceforge.net",
-                                    80,
-                                    "/",
-                                    false,
-                                    cookie));
+        assertTrue(cookiespec.match("www.sourceforge.net", 80, "/", false,
+                cookie));
     }
 
-    public void testInvalidSecondDomainLevelCookieMatch1() throws Exception
-    {
-        Cookie cookie = new Cookie(".sourceforge.net",
-                                   "name",
-                                   null,
-                                   "/",
-                                   null,
-                                   false);
+    public void testInvalidSecondDomainLevelCookieMatch1()
+        throws Exception {
+        Cookie cookie = new Cookie(".sourceforge.net", "name", null, "/", null,
+                false);
         cookie.setDomainAttributeSpecified(true);
         cookie.setPathAttributeSpecified(true);
 
         CookieSpec cookiespec = new CookieSpecBase();
-        assertFalse(cookiespec.match("antisourceforge.net",
-                                     80,
-                                     "/",
-                                     false,
-                                     cookie));
+        assertFalse(cookiespec.match("antisourceforge.net", 80, "/", false,
+                cookie));
     }
 
-    public void testInvalidSecondDomainLevelCookieMatch2() throws Exception
-    {
-        Cookie cookie = new Cookie("sourceforge.net",
-                                   "name",
-                                   null,
-                                   "/",
-                                   null,
-                                   false);
+    public void testInvalidSecondDomainLevelCookieMatch2()
+        throws Exception {
+        Cookie cookie = new Cookie("sourceforge.net", "name", null, "/", null,
+                false);
         cookie.setDomainAttributeSpecified(true);
         cookie.setPathAttributeSpecified(true);
 
         CookieSpec cookiespec = new CookieSpecBase();
-        assertFalse(cookiespec.match("antisourceforge.net",
-                                     80,
-                                     "/",
-                                     false,
-                                     cookie));
+        assertFalse(cookiespec.match("antisourceforge.net", 80, "/", false,
+                cookie));
     }
 
-    public void testMatchNullHost() throws Exception
-    {
+    public void testMatchNullHost() throws Exception {
         CookieSpec cookiespec = new CookieSpecBase();
         Cookie cookie = new Cookie();
-        try
-        {
+
+        try {
             cookiespec.match(null, 80, "/", false, cookie);
             fail("IllegalArgumentException must have been thrown");
-        }
-        catch (IllegalArgumentException expected)
-        {
+        } catch (IllegalArgumentException expected) {
         }
     }
 
-    public void testMatchBlankHost() throws Exception
-    {
+    public void testMatchBlankHost() throws Exception {
         CookieSpec cookiespec = new CookieSpecBase();
         Cookie cookie = new Cookie();
-        try
-        {
+
+        try {
             cookiespec.match("   ", 80, "/", false, cookie);
             fail("IllegalArgumentException must have been thrown");
-        }
-        catch (IllegalArgumentException expected)
-        {
+        } catch (IllegalArgumentException expected) {
         }
     }
 
-    public void testMatchInvalidPort() throws Exception
-    {
+    public void testMatchInvalidPort() throws Exception {
         CookieSpec cookiespec = new CookieSpecBase();
         Cookie cookie = new Cookie();
-        try
-        {
+
+        try {
             cookiespec.match("host", -80, "/", false, cookie);
             fail("IllegalArgumentException must have been thrown");
-        }
-        catch (IllegalArgumentException expected)
-        {
+        } catch (IllegalArgumentException expected) {
         }
     }
 
-    public void testMatchNullPath() throws Exception
-    {
+    public void testMatchNullPath() throws Exception {
         CookieSpec cookiespec = new CookieSpecBase();
         Cookie cookie = new Cookie();
-        try
-        {
+
+        try {
             cookiespec.match("host", 80, null, false, cookie);
             fail("IllegalArgumentException must have been thrown");
-        }
-        catch (IllegalArgumentException expected)
-        {
+        } catch (IllegalArgumentException expected) {
         }
     }
 
-    public void testMatchBlankPath() throws Exception
-    {
+    public void testMatchBlankPath() throws Exception {
         CookieSpec cookiespec = new CookieSpecBase();
         Cookie cookie = new Cookie("host", "name", "value", "/", null, false);
         assertTrue(cookiespec.match("host", 80, "  ", false, cookie));
     }
 
-    public void testMatchNullCookie() throws Exception
-    {
+    public void testMatchNullCookie() throws Exception {
         CookieSpec cookiespec = new CookieSpecBase();
-        try
-        {
-            cookiespec.match("host", 80, "/", false, (Cookie)null);
+
+        try {
+            cookiespec.match("host", 80, "/", false, (Cookie) null);
             fail("IllegalArgumentException must have been thrown");
-        }
-        catch (IllegalArgumentException expected)
-        {
+        } catch (IllegalArgumentException expected) {
         }
     }
 
-    public void testMatchNullCookieDomain() throws Exception
-    {
+    public void testMatchNullCookieDomain() throws Exception {
         CookieSpec cookiespec = new CookieSpecBase();
         Cookie cookie = new Cookie(null, "name", "value", "/", null, false);
         assertFalse(cookiespec.match("host", 80, "/", false, cookie));
     }
 
-    public void testMatchNullCookiePath() throws Exception
-    {
+    public void testMatchNullCookiePath() throws Exception {
         CookieSpec cookiespec = new CookieSpecBase();
         Cookie cookie = new Cookie("host", "name", "value", null, null, false);
         assertFalse(cookiespec.match("host", 80, "/", false, cookie));
     }
 
-    public void testCookieMatch1() throws Exception
-    {
+    public void testCookieMatch1() throws Exception {
         CookieSpec cookiespec = new CookieSpecBase();
         Cookie cookie = new Cookie("host", "name", "value", "/", null, false);
         assertTrue(cookiespec.match("host", 80, "/", false, cookie));
     }
 
-    public void testCookieMatch2() throws Exception
-    {
+    public void testCookieMatch2() throws Exception {
         CookieSpec cookiespec = new CookieSpecBase();
-        Cookie cookie = new Cookie(".whatever.com",
-                                   "name",
-                                   "value",
-                                   "/",
-                                   null,
-                                   false);
+        Cookie cookie = new Cookie(".whatever.com", "name", "value", "/", null,
+                false);
         assertTrue(cookiespec.match(".whatever.com", 80, "/", false, cookie));
     }
 
-    public void testCookieMatch3() throws Exception
-    {
+    public void testCookieMatch3() throws Exception {
         CookieSpec cookiespec = new CookieSpecBase();
-        Cookie cookie = new Cookie(".whatever.com",
-                                   "name",
-                                   "value",
-                                   "/",
-                                   null,
-                                   false);
-        assertTrue(cookiespec.match(".really.whatever.com",
-                                    80,
-                                    "/",
-                                    false,
-                                    cookie));
+        Cookie cookie = new Cookie(".whatever.com", "name", "value", "/", null,
+                false);
+        assertTrue(cookiespec.match(".really.whatever.com", 80, "/", false,
+                cookie));
     }
 
-    public void testCookieMatch4() throws Exception
-    {
+    public void testCookieMatch4() throws Exception {
         CookieSpec cookiespec = new CookieSpecBase();
         Cookie cookie = new Cookie("host", "name", "value", "/", null, false);
         assertTrue(cookiespec.match("host", 80, "/foobar", false, cookie));
     }
 
-    public void testCookieMismatch1() throws Exception
-    {
+    public void testCookieMismatch1() throws Exception {
         CookieSpec cookiespec = new CookieSpecBase();
         Cookie cookie = new Cookie("host1", "name", "value", "/", null, false);
         assertFalse(cookiespec.match("host2", 80, "/", false, cookie));
     }
 
-    public void testCookieMismatch2() throws Exception
-    {
+    public void testCookieMismatch2() throws Exception {
         CookieSpec cookiespec = new CookieSpecBase();
-        Cookie cookie = new Cookie(".aaaaaaaaa.com",
-                                   "name",
-                                   "value",
-                                   "/",
-                                   null,
-                                   false);
+        Cookie cookie = new Cookie(".aaaaaaaaa.com", "name", "value", "/",
+                null, false);
         assertFalse(cookiespec.match(".bbbbbbbb.com", 80, "/", false, cookie));
     }
 
-    public void testCookieMismatch3() throws Exception
-    {
+    public void testCookieMismatch3() throws Exception {
         CookieSpec cookiespec = new CookieSpecBase();
-        Cookie cookie = new Cookie("host",
-                                   "name",
-                                   "value",
-                                   "/foobar",
-                                   null,
-                                   false);
+        Cookie cookie = new Cookie("host", "name", "value", "/foobar", null,
+                false);
         assertFalse(cookiespec.match("host", 80, "/foo", false, cookie));
     }
 
-    public void testCookieMismatch4() throws Exception
-    {
+    public void testCookieMismatch4() throws Exception {
         CookieSpec cookiespec = new CookieSpecBase();
-        Cookie cookie = new Cookie("host",
-                                   "name",
-                                   "value",
-                                   "/foobar",
-                                   null,
-                                   true);
+        Cookie cookie = new Cookie("host", "name", "value", "/foobar", null,
+                true);
         assertFalse(cookiespec.match("host", 80, "/foobar/", false, cookie));
     }
 
-    public void testCookieMatch5() throws Exception
-    {
+    public void testCookieMatch5() throws Exception {
         CookieSpec cookiespec = new CookieSpecBase();
-        Cookie cookie = new Cookie("host",
-                                   "name",
-                                   "value",
-                                   "/foobar/r",
-                                   null,
-                                   false);
+        Cookie cookie = new Cookie("host", "name", "value", "/foobar/r", null,
+                false);
         assertFalse(cookiespec.match("host", 80, "/foobar/", false, cookie));
     }
 
-    public void testCookieMismatch6() throws Exception
-    {
+    public void testCookieMismatch6() throws Exception {
         CookieSpec cookiespec = new CookieSpecBase();
-        Cookie cookie = new Cookie("host",
-                                   "name",
-                                   "value",
-                                   "/foobar",
-                                   null,
-                                   true);
+        Cookie cookie = new Cookie("host", "name", "value", "/foobar", null,
+                true);
         assertFalse(cookiespec.match("host", 80, "/foobar", false, cookie));
     }
 
-    public void testMatchNullCookies() throws Exception
-    {
+    public void testMatchNullCookies() throws Exception {
         CookieSpec cookiespec = new CookieSpecBase();
-        Cookie[] matched = cookiespec.match("host",
-                                            80,
-                                            "/foobar",
-                                            false,
-                                            (Cookie[])null);
+        Cookie[] matched = cookiespec.match("host", 80, "/foobar", false,
+                (Cookie[]) null);
         assertNull(matched);
     }
 
-    public void testMatchedCookiesOrder() throws Exception
-    {
+    public void testMatchedCookiesOrder() throws Exception {
         CookieSpec cookiespec = new CookieSpecBase();
         Cookie[] cookies = {
-            new Cookie("host", "nomatch", "value", "/noway", null, false),
-            new Cookie("host", "name2", "value", "/foobar/yada", null, false),
-            new Cookie("host", "name3", "value", "/foobar", null, false),
-            new Cookie("host",
-                       "name1",
-                       "value",
-                       "/foobar/yada/yada",
-                       null,
-                       false) };
-        Cookie[] matched = cookiespec.match("host",
-                                            80,
-                                            "/foobar/yada/yada",
-                                            false,
-                                            cookies);
+                new Cookie("host", "nomatch", "value", "/noway", null, false),
+                new Cookie("host", "name2", "value", "/foobar/yada", null, false),
+                new Cookie("host", "name3", "value", "/foobar", null, false),
+                new Cookie("host", "name1", "value", "/foobar/yada/yada", null,
+                    false)
+            };
+        Cookie[] matched = cookiespec.match("host", 80, "/foobar/yada/yada",
+                false, cookies);
         assertNotNull(matched);
         assertEquals(3, matched.length);
         assertEquals("name1", matched[0].getName());
@@ -1341,66 +1026,49 @@ public class TestCookieCompatibilitySpec extends TestCookieBase
         assertEquals("name3", matched[2].getName());
     }
 
-    public void testInvalidMatchDomain() throws Exception
-    {
-        Cookie cookie = new Cookie("beta.gamma.com",
-                                   "name",
-                                   null,
-                                   "/",
-                                   null,
-                                   false);
+    public void testInvalidMatchDomain() throws Exception {
+        Cookie cookie = new Cookie("beta.gamma.com", "name", null, "/", null,
+                false);
         cookie.setDomainAttributeSpecified(true);
         cookie.setPathAttributeSpecified(true);
 
         CookieSpec cookiespec = new CookieSpecBase();
         cookiespec.validate("alpha.beta.gamma.com", 80, "/", false, cookie);
-        assertTrue(cookiespec.match("alpha.beta.gamma.com",
-                                    80,
-                                    "/",
-                                    false,
-                                    cookie));
+        assertTrue(cookiespec.match("alpha.beta.gamma.com", 80, "/", false,
+                cookie));
     }
 
-    public void testFormatInvalidCookie() throws Exception
-    {
+    public void testFormatInvalidCookie() throws Exception {
         CookieSpec cookiespec = new CookieSpecBase();
-        try
-        {
+
+        try {
             cookiespec.formatCookie(null);
             fail("IllegalArgumentException nust have been thrown");
-        }
-        catch (IllegalArgumentException expected)
-        {
+        } catch (IllegalArgumentException expected) {
         }
     }
 
     /**
      * Tests generic cookie formatting.
      */
-    public void testGenericCookieFormatting() throws Exception
-    {
+    public void testGenericCookieFormatting() throws Exception {
         String header = "name=value; path=/; domain=.mydomain.com";
         CookieSpec cookiespec = new CookieSpecBase();
-        Cookie[] cookies = cookiespec.parse("myhost.mydomain.com",
-                                            80,
-                                            "/",
-                                            false,
-                                            header);
+        Cookie[] cookies = cookiespec.parse("myhost.mydomain.com", 80, "/",
+                false, header);
         cookiespec.validate("myhost.mydomain.com", 80, "/", false, cookies[0]);
+
         String s = cookiespec.formatCookie(cookies[0]);
         assertEquals("name=value", s);
     }
 
-    public void testGenericCookieFormattingAsHeader() throws Exception
-    {
+    public void testGenericCookieFormattingAsHeader() throws Exception {
         String header = "name=value; path=/; domain=.mydomain.com";
         CookieSpec cookiespec = new CookieSpecBase();
-        Cookie[] cookies = cookiespec.parse("myhost.mydomain.com",
-                                            80,
-                                            "/",
-                                            false,
-                                            header);
+        Cookie[] cookies = cookiespec.parse("myhost.mydomain.com", 80, "/",
+                false, header);
         cookiespec.validate("myhost.mydomain.com", 80, "/", false, cookies[0]);
+
         String cookieheader = cookiespec.formatCookie(cookies[0]);
         assertEquals("name=value", cookieheader);
     }
@@ -1408,14 +1076,9 @@ public class TestCookieCompatibilitySpec extends TestCookieBase
     /**
      * Tests if null cookie values are handled correctly.
      */
-    public void testNullCookieValueFormatting()
-    {
-        Cookie cookie = new Cookie(".whatever.com",
-                                   "name",
-                                   null,
-                                   "/",
-                                   null,
-                                   false);
+    public void testNullCookieValueFormatting() {
+        Cookie cookie = new Cookie(".whatever.com", "name", null, "/", null,
+                false);
         cookie.setDomainAttributeSpecified(true);
         cookie.setPathAttributeSpecified(true);
 
@@ -1424,70 +1087,52 @@ public class TestCookieCompatibilitySpec extends TestCookieBase
         assertEquals("name=", s);
     }
 
-    public void testFormatInvalidCookies() throws Exception
-    {
+    public void testFormatInvalidCookies() throws Exception {
         CookieSpec cookiespec = new CookieSpecBase();
-        try
-        {
+
+        try {
             cookiespec.formatCookies(null);
             fail("IllegalArgumentException nust have been thrown");
-        }
-        catch (IllegalArgumentException expected)
-        {
+        } catch (IllegalArgumentException expected) {
         }
     }
 
-    public void testFormatZeroCookies() throws Exception
-    {
+    public void testFormatZeroCookies() throws Exception {
         CookieSpec cookiespec = new CookieSpecBase();
-        try
-        {
-            cookiespec.formatCookies(new Cookie[] {});
+
+        try {
+            cookiespec.formatCookies(new Cookie[] {  });
             fail("IllegalArgumentException nust have been thrown");
-        }
-        catch (IllegalArgumentException expected)
-        {
+        } catch (IllegalArgumentException expected) {
         }
     }
 
     /**
      * Tests generic cookie formatting.
      */
-    public void testFormatSeveralCookies() throws Exception
-    {
+    public void testFormatSeveralCookies() throws Exception {
         String header = "name1=value1; path=/; domain=.mydomain.com, name2 = value2 ; path=/; domain=.mydomain.com";
         CookieSpec cookiespec = new CookieSpecBase();
-        Cookie[] cookies = cookiespec.parse("myhost.mydomain.com",
-                                            80,
-                                            "/",
-                                            false,
-                                            header);
+        Cookie[] cookies = cookiespec.parse("myhost.mydomain.com", 80, "/",
+                false, header);
         String s = cookiespec.formatCookies(cookies);
         assertEquals("name1=value1; name2=value2", s);
     }
 
-    public void testFormatOneCookie() throws Exception
-    {
+    public void testFormatOneCookie() throws Exception {
         String header = "name1=value1; path=/; domain=.mydomain.com;";
         CookieSpec cookiespec = new CookieSpecBase();
-        Cookie[] cookies = cookiespec.parse("myhost.mydomain.com",
-                                            80,
-                                            "/",
-                                            false,
-                                            header);
+        Cookie[] cookies = cookiespec.parse("myhost.mydomain.com", 80, "/",
+                false, header);
         String s = cookiespec.formatCookies(cookies);
         assertEquals("name1=value1", s);
     }
 
-    public void testFormatSeveralCookiesAsHeader() throws Exception
-    {
+    public void testFormatSeveralCookiesAsHeader() throws Exception {
         String header = "name1=value1; path=/; domain=.mydomain.com, name2 = value2 ; path=/; domain=.mydomain.com";
         CookieSpec cookiespec = new CookieSpecBase();
-        Cookie[] cookies = cookiespec.parse("myhost.mydomain.com",
-                                            80,
-                                            "/",
-                                            false,
-                                            header);
+        Cookie[] cookies = cookiespec.parse("myhost.mydomain.com", 80, "/",
+                false, header);
         String cookieheader = cookiespec.formatCookies(cookies);
         assertEquals("name1=value1; name2=value2", cookieheader);
     }
@@ -1499,5 +1144,4 @@ public class TestCookieCompatibilitySpec extends TestCookieBase
     // MalformedCookieException ex3 = new MalformedCookieException("whatever",
     // null);
     // }
-
 }

@@ -1,44 +1,38 @@
 // Copyright 2002 oakland software, All rights reserved
-
 package com.oaklandsw.http.local;
-
-import java.io.IOException;
-import java.net.MalformedURLException;
-
-import junit.framework.Test;
-import junit.framework.TestSuite;
 
 import com.oaklandsw.http.HttpTestBase;
 import com.oaklandsw.http.ntlm.AuthenticateMessage;
 import com.oaklandsw.http.ntlm.ChallengeMessage;
 import com.oaklandsw.http.ntlm.NegotiateMessage;
 
-public class TestNtlmMessages extends HttpTestBase
-{
+import junit.framework.Test;
+import junit.framework.TestSuite;
 
-    public TestNtlmMessages(String name)
-    {
+import java.io.IOException;
+
+import java.net.MalformedURLException;
+
+
+public class TestNtlmMessages extends HttpTestBase {
+    public TestNtlmMessages(String name) {
         super(name);
     }
 
-    public static void main(String[] args)
-    {
+    public static void main(String[] args) {
         mainRun(suite(), args);
     }
 
     // We assume the web server is running
-    public void setUp() throws Exception
-    {
+    public void setUp() throws Exception {
         super.setUp();
     }
 
-    public static Test suite()
-    {
+    public static Test suite() {
         return new TestSuite(TestNtlmMessages.class);
     }
 
-    public void test100Messages() throws MalformedURLException, IOException
-    {
+    public void test100Messages() throws MalformedURLException, IOException {
         byte[] msgBytes;
 
         NegotiateMessage msg = new NegotiateMessage();
@@ -82,5 +76,4 @@ public class TestNtlmMessages extends HttpTestBase
         amsg.setNonce(nonce);
         amsg.encode();
     }
-
 }

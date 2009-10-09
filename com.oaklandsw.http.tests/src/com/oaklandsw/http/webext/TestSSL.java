@@ -1,24 +1,24 @@
 package com.oaklandsw.http.webext;
 
+import com.oaklandsw.http.HttpTestBase;
+import com.oaklandsw.http.HttpTestEnv;
+import com.oaklandsw.http.HttpURLConnection;
+
+import junit.framework.Test;
+import junit.framework.TestSuite;
+
 import java.io.IOException;
+
 import java.net.URL;
+
 import java.security.cert.Certificate;
 import java.security.cert.X509Certificate;
 
 import javax.net.ssl.SSLSocketFactory;
 
-import junit.framework.Test;
-import junit.framework.TestSuite;
 
-import com.oaklandsw.http.HttpTestBase;
-import com.oaklandsw.http.HttpTestEnv;
-import com.oaklandsw.http.HttpURLConnection;
-
-public class TestSSL extends HttpTestBase
-{
-
-    public TestSSL(String testName)
-    {
+public class TestSSL extends HttpTestBase {
+    public TestSSL(String testName) {
         super(testName);
 
         _doAuthProxyTest = true;
@@ -29,31 +29,24 @@ public class TestSSL extends HttpTestBase
         _doAppletTest = true;
     }
 
-    public static void main(String args[])
-    {
+    public static void main(String[] args) {
         mainRun(suite(), args);
     }
 
-    public static Test suite()
-    {
+    public static Test suite() {
         return new TestSuite(TestSSL.class);
-
     }
 
-    public void tearDown() throws Exception
-    {
+    public void tearDown() throws Exception {
         super.tearDown();
-        com.oaklandsw.http.HttpURLConnection
-                .setDefaultSSLSocketFactory((SSLSocketFactory)SSLSocketFactory
-                        .getDefault());
+        com.oaklandsw.http.HttpURLConnection.setDefaultSSLSocketFactory((SSLSocketFactory) SSLSocketFactory.getDefault());
         // Need to leave it as it is to check that the default hostname
         // verifier is properly setup
         // com.oaklandsw.http.HttpURLConnection.setDefaultHostnameVerifier(null);
         com.oaklandsw.http.HttpConnection._testNonMatchHost = false;
     }
 
-    public void testHttpsGet(URL url) throws IOException
-    {
+    public void testHttpsGet(URL url) throws IOException {
         // System.out.println(System.currentTimeMillis() + " do get");
         HttpURLConnection urlCon = HttpURLConnection.openConnection(url);
         urlCon.setRequestMethod("GET");
@@ -65,51 +58,49 @@ public class TestSSL extends HttpTestBase
         checkNoActiveConns(url);
     }
 
-    public void testHttpsGetNothing() throws Exception
-    {
+    public void testHttpsGetNothing() throws Exception {
         testHttpsGet(new URL(HttpTestEnv.TEST_WEBEXT_SSL_URL));
     }
 
-    public void testHttpsGetSetDefault() throws Exception
-    {
+    public void testHttpsGetSetDefault() throws Exception {
         TestSSLSocketFactory sf = new TestSSLSocketFactory();
 
         com.oaklandsw.http.HttpURLConnection.setDefaultSSLSocketFactory(sf);
         testHttpsGet(new URL(HttpTestEnv.TEST_WEBEXT_SSL_URL));
 
-        if (com.oaklandsw.http.HttpURLConnection.getDefaultSSLSocketFactory() != sf)
+        if (com.oaklandsw.http.HttpURLConnection.getDefaultSSLSocketFactory() != sf) {
             fail("Socket factory mismatch");
+        }
 
-        if (!sf._used)
+        if (!sf._used) {
             fail("Default socket factory not used");
+        }
     }
 
-    public void testHttpsNullSocketFromFactory() throws Exception
-    {
+    public void testHttpsNullSocketFromFactory() throws Exception {
         TestSSLSocketFactory sf = new TestSSLSocketFactory();
         sf._returnNull = true;
         com.oaklandsw.http.HttpURLConnection.setDefaultSSLSocketFactory(sf);
-        try
-        {
+
+        try {
             testHttpsGet(new URL(HttpTestEnv.TEST_WEBEXT_SSL_URL));
             fail("Did not get expected exception");
-        }
-        catch (IOException ex)
-        {
+        } catch (IOException ex) {
             assertContains(ex.getMessage(), "returned null for");
         }
     }
 
-    public void testHttpsGetSetDefaultCheck() throws Exception
-    {
+    public void testHttpsGetSetDefaultCheck() throws Exception {
         TestSSLSocketFactory sf = new TestSSLSocketFactory();
 
         com.oaklandsw.http.HttpURLConnection.setDefaultSSLSocketFactory(sf);
+
         URL url = new URL(HttpTestEnv.TEST_WEBEXT_SSL_URL);
         HttpURLConnection urlCon = HttpURLConnection.openConnection(url);
 
-        if ((urlCon).getSSLSocketFactory() != sf)
+        if ((urlCon).getSSLSocketFactory() != sf) {
             fail("Socket factory mismatch");
+        }
 
         urlCon.setRequestMethod("GET");
         urlCon.connect();
@@ -118,8 +109,7 @@ public class TestSSL extends HttpTestBase
         checkNoActiveConns(url);
     }
 
-    public void testHttpsGetSetConnection() throws Exception
-    {
+    public void testHttpsGetSetConnection() throws Exception {
         TestSSLSocketFactory sf = new TestSSLSocketFactory();
 
         URL url = new URL(HttpTestEnv.TEST_WEBEXT_SSL_URL);
@@ -130,41 +120,43 @@ public class TestSSL extends HttpTestBase
         urlCon.connect();
         assertEquals(200, urlCon.getResponseCode());
         urlCon.getInputStream().close();
-        if ((urlCon).getSSLSocketFactory() != sf)
+
+        if ((urlCon).getSSLSocketFactory() != sf) {
             fail("Socket factory mismatch");
-        if (!sf._used)
+        }
+
+        if (!sf._used) {
             fail("Default socket factory not used");
+        }
+
         checkNoActiveConns(url);
     }
 
     // Bug 1143 - a default hostname verifier should be installed which fails
     // if the hostname does not match
     // NOTE - must be first before the DefaultHostnameVerifier is disturbed
-    public void testHttpsGetSetHasDefaultVerifier() throws Exception
-    {
-        if (com.oaklandsw.http.HttpURLConnection.getDefaultHostnameVerifier() == null)
+    public void testHttpsGetSetHasDefaultVerifier() throws Exception {
+        if (com.oaklandsw.http.HttpURLConnection.getDefaultHostnameVerifier() == null) {
             fail("No default verifier present");
+        }
     }
 
     // Bug 1143 - a default hostname verifier should be installed which fails
     // if the hostname does not match
     // NOTE - must be first before the DefaultHostnameVerifier is disturbed
-    public void testHttpsGetSetNoVerifierUsedFail() throws Exception
-    {
+    public void testHttpsGetSetNoVerifierUsedFail() throws Exception {
         com.oaklandsw.http.HttpConnection._testNonMatchHost = true;
-        try
-        {
+
+        try {
             testHttpsGet(new URL(HttpTestEnv.TEST_WEBEXT_SSL_URL));
             fail("did not get expected exception");
-        }
-        catch (IOException ex)
-        {
+        } catch (IOException ex) {
             // System.out.println("exc: " + ex);
         }
     }
 
-    public void testHttpsGetSetDefaultVerifierUsedPass() throws Exception
-    {
+    public void testHttpsGetSetDefaultVerifierUsedPass()
+        throws Exception {
         TestHostnameVerifier ver = new TestHostnameVerifier();
 
         ver._shouldPass = true;
@@ -172,68 +164,65 @@ public class TestSSL extends HttpTestBase
         com.oaklandsw.http.HttpConnection._testNonMatchHost = true;
         testHttpsGet(new URL(HttpTestEnv.TEST_WEBEXT_SSL_URL));
 
-        if (com.oaklandsw.http.HttpURLConnection.getDefaultHostnameVerifier() != ver)
+        if (com.oaklandsw.http.HttpURLConnection.getDefaultHostnameVerifier() != ver) {
             fail("Verifier factory mismatch");
+        }
 
-        if (!ver._used)
+        if (!ver._used) {
             fail("Default verifier not used");
-
+        }
     }
 
-    public void testHttpsGetSetDefaultVerifierUsedFail() throws Exception
-    {
+    public void testHttpsGetSetDefaultVerifierUsedFail()
+        throws Exception {
         TestHostnameVerifier ver = new TestHostnameVerifier();
 
         ver._shouldPass = false;
         com.oaklandsw.http.HttpURLConnection.setDefaultHostnameVerifier(ver);
         com.oaklandsw.http.HttpConnection._testNonMatchHost = true;
 
-        try
-        {
+        try {
             testHttpsGet(new URL(HttpTestEnv.TEST_WEBEXT_SSL_URL));
             fail("did not get expected exception");
-        }
-        catch (IOException ex)
-        {
+        } catch (IOException ex) {
             // System.out.println("exc: " + ex);
         }
     }
 
-    public void testHttpsGetSetDefaultVerifierUsedException() throws Exception
-    {
+    public void testHttpsGetSetDefaultVerifierUsedException()
+        throws Exception {
         TestHostnameVerifier ver = new TestHostnameVerifier();
 
         ver._doThrow = true;
         com.oaklandsw.http.HttpURLConnection.setDefaultHostnameVerifier(ver);
         com.oaklandsw.http.HttpConnection._testNonMatchHost = true;
-        try
-        {
+
+        try {
             testHttpsGet(new URL(HttpTestEnv.TEST_WEBEXT_SSL_URL));
             fail("did not get expected exception");
-        }
-        catch (IOException ex)
-        {
+        } catch (IOException ex) {
             // System.out.println("exc: " + ex);
         }
     }
 
-    public void testHttpsGetSetDefaultVerifierNotUsed() throws Exception
-    {
+    public void testHttpsGetSetDefaultVerifierNotUsed()
+        throws Exception {
         TestHostnameVerifier ver = new TestHostnameVerifier();
 
         com.oaklandsw.http.HttpURLConnection.setDefaultHostnameVerifier(ver);
         testHttpsGet(new URL(HttpTestEnv.TEST_WEBEXT_SSL_URL));
 
-        if (com.oaklandsw.http.HttpURLConnection.getDefaultHostnameVerifier() != ver)
+        if (com.oaklandsw.http.HttpURLConnection.getDefaultHostnameVerifier() != ver) {
             fail("Verifier factory mismatch");
+        }
 
-        if (ver._used)
+        if (ver._used) {
             fail("Default verifier unexpectedly used");
-
+        }
     }
 
-    public void testHttpsGetSetDefaultVerifierNotUsedSetCon() throws Exception
-    {
+    public void testHttpsGetSetDefaultVerifierNotUsedSetCon()
+        throws Exception {
         TestHostnameVerifier ver = new TestHostnameVerifier();
 
         URL url = new URL(HttpTestEnv.TEST_WEBEXT_SSL_URL);
@@ -242,19 +231,21 @@ public class TestSSL extends HttpTestBase
         urlCon.setRequestMethod("GET");
         urlCon.connect();
 
-        if ((urlCon).getHostnameVerifier() != ver)
+        if ((urlCon).getHostnameVerifier() != ver) {
             fail("Verifier factory mismatch");
+        }
 
-        if (ver._used)
+        if (ver._used) {
             fail("Default verifier unexpectedly not used");
+        }
+
         assertEquals(200, urlCon.getResponseCode());
         urlCon.getInputStream().close();
         checkNoActiveConns(url);
     }
 
     public void testHttpsGetSetDefaultVerifierNotUsedSetAfterCon()
-        throws Exception
-    {
+        throws Exception {
         TestHostnameVerifier ver = new TestHostnameVerifier();
 
         URL url = new URL(HttpTestEnv.TEST_WEBEXT_SSL_URL);
@@ -262,66 +253,72 @@ public class TestSSL extends HttpTestBase
         urlCon.setRequestMethod("GET");
         urlCon.connect();
 
-        try
-        {
+        try {
             (urlCon).setHostnameVerifier(ver);
             fail("Did not get expected IllegalStateException");
+        } catch (IllegalStateException ex) {
         }
-        catch (IllegalStateException ex)
-        {
-        }
+
         assertEquals(200, urlCon.getResponseCode());
         urlCon.getInputStream().close();
         checkNoActiveConns(url);
     }
 
-    public void testHttpsGetLocalCert() throws Exception
-    {
+    public void testHttpsGetLocalCert() throws Exception {
         URL url = new URL(HttpTestEnv.TEST_WEBEXT_SSL_URL);
         HttpURLConnection urlCon = HttpURLConnection.openConnection(url);
 
         urlCon.setRequestMethod("GET");
         urlCon.connect();
+
         Certificate[] certs = (urlCon).getLocalCertificates();
-        if (certs != null)
+
+        if (certs != null) {
             fail("Unexpected local certificates");
+        }
+
         assertEquals(200, urlCon.getResponseCode());
         urlCon.getInputStream().close();
         checkNoActiveConns(url);
     }
 
-    public void testHttpsGetServerCert() throws Exception
-    {
+    public void testHttpsGetServerCert() throws Exception {
         URL url = new URL(HttpTestEnv.TEST_WEBEXT_SSL_URL);
         HttpURLConnection urlCon = HttpURLConnection.openConnection(url);
 
         urlCon.setRequestMethod("GET");
         urlCon.connect();
+
         Certificate[] certs = (urlCon).getServerCertificates();
-        if (!(certs[0] instanceof X509Certificate))
+
+        if (!(certs[0] instanceof X509Certificate)) {
             fail("Invalid certificate");
+        }
+
         assertEquals(200, urlCon.getResponseCode());
         urlCon.getInputStream().close();
         checkNoActiveConns(url);
     }
 
-    public void testHttpsGetCipherSuite() throws Exception
-    {
+    public void testHttpsGetCipherSuite() throws Exception {
         URL url = new URL(HttpTestEnv.TEST_WEBEXT_SSL_URL);
         HttpURLConnection urlCon = HttpURLConnection.openConnection(url);
 
         urlCon.setRequestMethod("GET");
         urlCon.connect();
+
         String cipherSuite = (urlCon).getCipherSuite();
-        if (cipherSuite.indexOf("SSL") != 0)
+
+        if (cipherSuite.indexOf("SSL") != 0) {
             fail("Invalid cipher suite");
+        }
+
         assertEquals(200, urlCon.getResponseCode());
         urlCon.getInputStream().close();
         checkNoActiveConns(url);
     }
 
-    public void allTestMethods() throws Exception
-    {
+    public void allTestMethods() throws Exception {
         testHttpsGetNothing();
         tearDown();
         testHttpsGetSetDefault();

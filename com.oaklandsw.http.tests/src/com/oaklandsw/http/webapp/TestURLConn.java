@@ -1,32 +1,31 @@
 package com.oaklandsw.http.webapp;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.net.Socket;
-import java.net.URL;
-import java.net.URLConnection;
-
-import com.oaklandsw.util.Log;
-
-import junit.framework.Test;
-import junit.framework.TestSuite;
-
 import com.oaklandsw.http.HttpConnection;
 import com.oaklandsw.http.HttpTestEnv;
 import com.oaklandsw.http.HttpURLConnection;
 import com.oaklandsw.http.servlet.HeaderServlet;
 import com.oaklandsw.http.servlet.ParamServlet;
+
+import com.oaklandsw.util.Log;
 import com.oaklandsw.util.LogUtils;
 import com.oaklandsw.util.Util;
 
-public class TestURLConn extends TestWebappBase
-{
+import junit.framework.Test;
+import junit.framework.TestSuite;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+
+import java.net.Socket;
+import java.net.URL;
+import java.net.URLConnection;
+
+
+public class TestURLConn extends TestWebappBase {
     private static final Log _log = LogUtils.makeLogger();
 
-    public TestURLConn(String testName)
-    {
+    public TestURLConn(String testName) {
         super(testName);
         _doAuthProxyTest = false;
         _doAuthCloseProxyTest = false;
@@ -38,19 +37,17 @@ public class TestURLConn extends TestWebappBase
         _doHttps = true;
     }
 
-    public static Test suite()
-    {
+    public static Test suite() {
         TestSuite suite = new TestSuite(TestURLConn.class);
+
         return suite;
     }
 
-    public static void main(String args[])
-    {
+    public static void main(String[] args) {
         mainRun(suite(), args);
     }
 
-    public void testDefaultValues() throws Exception
-    {
+    public void testDefaultValues() throws Exception {
         URL url = new URL(_urlBase + ParamServlet.NAME);
         HttpURLConnection urlCon = HttpURLConnection.openConnection(url);
         assertFalse(urlCon.getAllowUserInteraction());
@@ -68,10 +65,10 @@ public class TestURLConn extends TestWebappBase
         assertEquals(1234, urlCon.getIfModifiedSince());
     }
 
-    public void testDefaultAllowUser() throws Exception
-    {
+    public void testDefaultAllowUser() throws Exception {
         URL url = new URL(_urlBase + ParamServlet.NAME);
         URLConnection.setDefaultAllowUserInteraction(true);
+
         HttpURLConnection urlCon = HttpURLConnection.openConnection(url);
         assertTrue(urlCon.getAllowUserInteraction());
         assertTrue(URLConnection.getDefaultAllowUserInteraction());
@@ -80,11 +77,9 @@ public class TestURLConn extends TestWebappBase
         urlCon = HttpURLConnection.openConnection(url);
         assertFalse(urlCon.getAllowUserInteraction());
         assertFalse(URLConnection.getDefaultAllowUserInteraction());
-
     }
 
-    public void testDefaultUseCache() throws Exception
-    {
+    public void testDefaultUseCache() throws Exception {
         URL url = new URL(_urlBase + ParamServlet.NAME);
         HttpURLConnection urlCon = HttpURLConnection.openConnection(url);
         urlCon.setDefaultUseCaches(true);
@@ -95,11 +90,9 @@ public class TestURLConn extends TestWebappBase
         urlCon = HttpURLConnection.openConnection(url);
         assertFalse(urlCon.getUseCaches());
         assertFalse(urlCon.getDefaultUseCaches());
-
     }
 
-    public void testResponseStuff() throws Exception
-    {
+    public void testResponseStuff() throws Exception {
         URL url = new URL(_urlBase + HeaderServlet.NAME);
         int response = 0;
 
@@ -118,22 +111,21 @@ public class TestURLConn extends TestWebappBase
         assertTrue(urlCon.getDate() > 0);
         assertTrue(urlCon.getExpiration() == 0);
         assertTrue(urlCon.getLastModified() == 0);
-        assertEquals(java.net.SocketPermission.class, urlCon.getPermission()
-                .getClass());
+        assertEquals(java.net.SocketPermission.class,
+            urlCon.getPermission().getClass());
 
         // Can't guess from the input stream as it's not buffered
-        if (false)
-        {
-            assertEquals("text/html", URLConnection
-                    .guessContentTypeFromStream(urlCon.getInputStream()));
+        if (false) {
+            assertEquals("text/html",
+                URLConnection.guessContentTypeFromStream(
+                    urlCon.getInputStream()));
         }
 
         _log.debug("Field 0: " + urlCon.getHeaderField(0));
         assertTrue(urlCon.getHeaderField(0).indexOf("HTTP") >= 0);
     }
 
-    public void testGetOutput() throws Exception
-    {
+    public void testGetOutput() throws Exception {
         URL url = new URL(_urlBase + HeaderServlet.NAME);
         int response = 0;
 
@@ -151,8 +143,7 @@ public class TestURLConn extends TestWebappBase
         assertEquals(200, response);
     }
 
-    public void testGetOutputFailed() throws Exception
-    {
+    public void testGetOutputFailed() throws Exception {
         URL url = new URL(_urlBase + HeaderServlet.NAME);
         int response = 0;
 
@@ -165,48 +156,44 @@ public class TestURLConn extends TestWebappBase
         response = urlCon.getResponseCode();
         assertEquals(200, response);
 
-        try
-        {
+        try {
             // Make sure we can't get an output stream after we get the reply
             urlCon.getOutputStream();
             fail("Should get an exception on getOutputStream() call");
-        }
-        catch (IllegalStateException ex)
-        {
+        } catch (IllegalStateException ex) {
             // the test worked
         }
-
     }
 
-    public void testErrorStream() throws Exception
-    {
+    public void testErrorStream() throws Exception {
         URL url = new URL(_urlBase + "/filenot_found/a/c/");
         HttpURLConnection urlCon = HttpURLConnection.openConnection(url);
         urlCon.connect();
 
         InputStream is = urlCon.getErrorStream();
         assertTrue(is != null);
+
         String errorStr = Util.getStringFromInputStream(is);
         assertTrue(errorStr.length() > 0);
         _log.debug("error stream: " + errorStr);
     }
 
-    public void testErrorStreamGetResp() throws Exception
-    {
+    public void testErrorStreamGetResp() throws Exception {
         URL url = new URL(_urlBase + "/filenot_found/a/c/");
         HttpURLConnection urlCon = HttpURLConnection.openConnection(url);
         urlCon.connect();
 
         assertEquals(404, urlCon.getResponseCode());
+
         InputStream is = urlCon.getErrorStream();
         assertTrue(is != null);
+
         String errorStr = Util.getStringFromInputStream(is);
         assertTrue(errorStr.length() > 0);
         _log.debug("error stream: " + errorStr);
     }
 
-    public void testErrorStreamNoError() throws Exception
-    {
+    public void testErrorStreamNoError() throws Exception {
         URL url = new URL(_urlBase + HeaderServlet.NAME);
         HttpURLConnection urlCon = HttpURLConnection.openConnection(url);
         urlCon.connect();
@@ -215,8 +202,7 @@ public class TestURLConn extends TestWebappBase
         assertEquals(null, is);
     }
 
-    public void testErrorStreamBeforeConnect() throws Exception
-    {
+    public void testErrorStreamBeforeConnect() throws Exception {
         URL url = new URL(_urlBase + HeaderServlet.NAME);
         HttpURLConnection urlCon = HttpURLConnection.openConnection(url);
 
@@ -225,134 +211,117 @@ public class TestURLConn extends TestWebappBase
     }
 
     // bug 281
-    public void testBadHost() throws Exception
-    {
+    public void testBadHost() throws Exception {
         URL url = new URL("http://thisisbad");
         HttpURLConnection urlCon = HttpURLConnection.openConnection(url);
-        try
-        {
+
+        try {
             urlCon.connect();
             fail("Expected exception");
-        }
-        catch (java.net.UnknownHostException ex)
-        {
+        } catch (java.net.UnknownHostException ex) {
             // got expected exception
         }
-
     }
 
     // bug 281
-    public void testBadHost2() throws Exception
-    {
+    public void testBadHost2() throws Exception {
         URL url = new URL("http://127.0.0.0");
         HttpURLConnection urlCon = HttpURLConnection.openConnection(url);
-        try
-        {
+
+        try {
             urlCon.connect();
             fail("Expected exception");
-        }
-        catch (java.net.ConnectException ex)
-        {
+        } catch (java.net.ConnectException ex) {
+            // got expected exception
+        } catch (java.net.SocketException ex) {
             // got expected exception
         }
-        catch (java.net.SocketException ex)
-        {
-            // got expected exception
-        }
-
     }
 
     // bug 281
-    public void testBadPort() throws Exception
-    {
+    public void testBadPort() throws Exception {
         URL url = new URL("http://localhost:9999");
         HttpURLConnection urlCon = HttpURLConnection.openConnection(url);
-        try
-        {
+
+        try {
             urlCon.connect();
             fail("Expected exception");
-        }
-        catch (IOException ex)
-        {
+        } catch (IOException ex) {
             // got expected exception
         }
     }
 
-    public void testBufferSizesDefault() throws Exception
-    {
+    public void testBufferSizesDefault() throws Exception {
         HttpURLConnection urlCon;
 
         // Create a new connection
         URL url = new URL(_urlBase + HeaderServlet.NAME);
         urlCon = HttpURLConnection.openConnection(url);
         urlCon.getResponseCode();
+
         HttpConnection conn = urlCon.getConnection();
         Socket socket = conn.getSocket();
-        if (HttpURLConnection.DEFAULT_SEND_BUFFER_SIZE != -1)
-        {
-            assertEquals(HttpURLConnection.DEFAULT_SEND_BUFFER_SIZE, socket
-                    .getSendBufferSize());
+
+        if (HttpURLConnection.DEFAULT_SEND_BUFFER_SIZE != -1) {
+            assertEquals(HttpURLConnection.DEFAULT_SEND_BUFFER_SIZE,
+                socket.getSendBufferSize());
         }
-        if (HttpURLConnection.DEFAULT_RECEIVE_BUFFER_SIZE != -1)
-        {
-            assertEquals(HttpURLConnection.DEFAULT_RECEIVE_BUFFER_SIZE, socket
-                    .getReceiveBufferSize());
+
+        if (HttpURLConnection.DEFAULT_RECEIVE_BUFFER_SIZE != -1) {
+            assertEquals(HttpURLConnection.DEFAULT_RECEIVE_BUFFER_SIZE,
+                socket.getReceiveBufferSize());
         }
     }
 
-    public void testBufferSizesReceive() throws Exception
-    {
+    public void testBufferSizesReceive() throws Exception {
         URL url = new URL(_urlBase + HeaderServlet.NAME);
         HttpURLConnection urlCon;
 
         HttpURLConnection.setSocketBufferSize(HttpURLConnection.SOCKET_RECEIVE,
-                                              16000);
+            16000);
         urlCon = HttpURLConnection.openConnection(url);
         urlCon.getResponseCode();
+
         HttpConnection conn = urlCon.getConnection();
         Socket socket = conn.getSocket();
         assertEquals(16000, socket.getReceiveBufferSize());
-        if (HttpURLConnection.DEFAULT_SEND_BUFFER_SIZE != -1)
-        {
-            assertEquals(HttpURLConnection.DEFAULT_SEND_BUFFER_SIZE, socket
-                    .getSendBufferSize());
+
+        if (HttpURLConnection.DEFAULT_SEND_BUFFER_SIZE != -1) {
+            assertEquals(HttpURLConnection.DEFAULT_SEND_BUFFER_SIZE,
+                socket.getSendBufferSize());
         }
     }
 
-    public void testBufferSizesSend() throws Exception
-    {
+    public void testBufferSizesSend() throws Exception {
         URL url = new URL(_urlBase + HeaderServlet.NAME);
         HttpURLConnection urlCon;
         HttpURLConnection.setSocketBufferSize(HttpURLConnection.SOCKET_SEND,
-                                              32000);
+            32000);
         urlCon = HttpURLConnection.openConnection(url);
         urlCon.getResponseCode();
+
         HttpConnection conn = urlCon.getConnection();
         Socket socket = conn.getSocket();
         assertEquals(32000, socket.getSendBufferSize());
-        if (HttpURLConnection.DEFAULT_RECEIVE_BUFFER_SIZE != -1)
-        {
-            assertEquals(HttpURLConnection.DEFAULT_RECEIVE_BUFFER_SIZE, socket
-                    .getReceiveBufferSize());
+
+        if (HttpURLConnection.DEFAULT_RECEIVE_BUFFER_SIZE != -1) {
+            assertEquals(HttpURLConnection.DEFAULT_RECEIVE_BUFFER_SIZE,
+                socket.getReceiveBufferSize());
         }
     }
 
-    public void testBufferSizesBad() throws Exception
-    {
-        try
-        {
+    public void testBufferSizesBad() throws Exception {
+        try {
             HttpURLConnection.setSocketBufferSize(0, 1000);
             fail("did not get exception");
-        }
-        catch (IllegalArgumentException ex)
-        {
+        } catch (IllegalArgumentException ex) {
             // Expected
         }
     }
 
     // Test IPV6
-    protected void testIpv6(String address, int result) throws Exception
-    {
+    protected void testIpv6(String address, int result)
+        throws Exception {
         URL url = new URL("http://" + address);
         HttpURLConnection urlCon = HttpURLConnection.openConnection(url);
         urlCon.connect();
@@ -360,43 +329,33 @@ public class TestURLConn extends TestWebappBase
         urlCon.getInputStream().close();
     }
 
-    public void testIpv6_1() throws Exception
-    {
+    // Fails due to: https://bugs.launchpad.net/ubuntu/+source/apache2/+bug/397393
+    public void XXtestIpv6_1() throws Exception {
         // Port 80 is the apache web server which will give a 403
         testIpv6("[::1]", 403);
     }
 
-    public void testIpv6_2() throws Exception
-    {
-        testIpv6("[::1]:"
-            + HttpTestEnv.TOMCAT_PORT_1
-            + "/"
-            + HttpTestEnv.TEST_URL_APP_TOMCAT_1
-            + ParamServlet.NAME, 200);
+    public void testIpv6_2() throws Exception {
+        testIpv6("[::1]:" + HttpTestEnv.TOMCAT_PORT_1 + "/" +
+            HttpTestEnv.TEST_URL_APP_TOMCAT_1 + ParamServlet.NAME, 200);
     }
 
-    public void testIpv6_3() throws Exception
-    {
+    // Fails due to: https://bugs.launchpad.net/ubuntu/+source/apache2/+bug/397393
+    public void XXtestIpv6_3() throws Exception {
         testIpv6("[" + HttpTestEnv.LINUX_HOST6 + "]", 403);
     }
 
-    public void testIpv6_4() throws Exception
-    {
-        testIpv6("["
-            + HttpTestEnv.LINUX_HOST6
-            + "]:"
-            + HttpTestEnv.TOMCAT_PORT_1
-            + "/"
-            + HttpTestEnv.TEST_URL_APP_TOMCAT_1
-            + ParamServlet.NAME, 200);
+    public void testIpv6_4() throws Exception {
+        testIpv6("[" + HttpTestEnv.LINUX_HOST6 + "]:" +
+            HttpTestEnv.TOMCAT_PORT_1 + "/" +
+            HttpTestEnv.TEST_URL_APP_TOMCAT_1 + ParamServlet.NAME, 200);
     }
 
-    public void allTestMethods() throws Exception
-    {
-        testIpv6_1();
+    public void allTestMethods() throws Exception {
+        // See above notes about failures
+        //testIpv6_1();
         testIpv6_2();
-        testIpv6_3();
+        //testIpv6_3();
         testIpv6_4();
     }
-
 }

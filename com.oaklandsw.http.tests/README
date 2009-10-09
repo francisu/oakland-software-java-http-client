@@ -7,6 +7,9 @@ TestAxis2 - testWsAmazon
 TestIIS - test10Proxy
 TestFtpProxy - testProxy, test10Proxy, testAuthProxy
 
+TestURLConn - testIpv6_1, _3 fail, due to this: https://bugs.launchpad.net/ubuntu/+source/apache2/+bug/397393
+
+
 There was probably something that changed in Squid since the 10 proxy tests last passed.
 
 
@@ -34,7 +37,7 @@ running:
 
 Window machine - default is repoman
 Linux machine - default is berlioz
-win2k3 (vm windows 2003 server running ISA - NTLM level 5)
+win2k3 (vm windows 2003 server running ISA - NTLM level 5, also IIS with digest auth on port 80)
 win2k3-2 (vm windows 2003 running IIS, NTLM level 0)
 
 All of these ports and hosts are controlled by properties, see the HttpTestEnv file.
@@ -58,26 +61,7 @@ Instructions for each type of server:
 
 SQUID - port 3128
 
-The machine to use for the non-squid is set by the nogoop.localhost property, 
-which defaults to localhost.
-
-The machine to use for squid is set by nogoop.squidhost property which defaults to berlioz.
-
-In the squid.conf file, you may need to set visible_hostname to be 'berlioz', as squid
-expects to find a fully qualified hostname.
-
-Also, add the line "no_cache deny all" somewhere after the acl definitions.  This
-turns off caching, which is essential for things like DAV
-
-Finally, allow access to anything in our network:
-
-# Example rule allowing access from your local networks. Adapt
-# to list your (internal) IP networks from where browsing should
-# be allowed
-acl our_networks src 192.168.1.0/24 192.168.2.0/24
-http_access allow our_networks
-
-Start Squid by using /etc/rc.d/rc4.d/K25squid
+See machine configuration in Wiki for Squid setup. 
 
 
 HTTPD - ports 80, 8089
@@ -135,8 +119,14 @@ Axis
 This uses Axis V1.4 (any 1.x after that is fine).  Axis2 is not presently used, even though
 it may be installed.
 
-The tests depend on Axis being installed on the webapp (above) Tomcat in the axis
+The tests (both Axis2 and Axis) depend on Axis being installed on the webapp (above) Tomcat in the axis
 directory.
+
+To do this, get the binary kit for Axis and just copy the webapps/axis directory into 
+the tomcat webapps directory.
+
+Also, you will need to update the Tomcat webapps.policy to include: 
+   permission java.security.AllPermission;
 
 The com.oaklandsw.http.webservice package contains the web services to be deployed for testing.
 None are used right now, testing is done only with the Axis built-in services.
@@ -144,6 +134,21 @@ None are used right now, testing is done only with the Axis built-in services.
 The webservice2 package is setup for Axis2 and is not currently used.
 
 Tomcat must be manually started using /usr/local/apache-tomcat/bin/startup.sh.
+
+To get the wsdl, add the ?wsdl extension to the end of the file, this should return the wsdl file.
+
+The only wsdl file used for the Axis/Axis2 stub testing is List.wsdl in the com.oaklandsw.http.tests
+directory.
+
+
+Axis2 testing
+
+The product supports Axis2 versions from 1.2 through 1.5, to do this reflection is used.  It is also
+used in the tests.  Each of the versions needs to be tested manually using the following steps:
+
+1) Change the dependent Axis plugin to the one for the correct version in the manifest
+for com.oaklandsw.http.jars
+2) Copy the correct stub files from the sharepointStubs folder into the src/sharepoint folder.
 
 
 IIS - windows port 80

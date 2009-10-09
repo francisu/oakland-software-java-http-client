@@ -1,0 +1,14 @@
+Apache Axis/Axis2
+
+The com.oaklandsw.http.external.axis* plugins contain the contents of the source and binary 
+distribution for the Axis (Axis2) version unmodified.
+
+This is used for compilation and testing purposes for Axis/Axis2.
+
+To test with different versions, simply point the com.oaklandsw.http plugin
+to the desired Axis plugin.
+
+The com.oaklandsw.http.external.axis plugin should always be enabled because
+we support only version 1.4 of that.
+
+We support versions 1.2-1.5 of Axis2 and each of those needs to be tested separately.

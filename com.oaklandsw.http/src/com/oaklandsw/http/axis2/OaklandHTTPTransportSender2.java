@@ -69,6 +69,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -98,6 +99,70 @@ public class OaklandHTTPTransportSender2 extends AbstractHandler
     private boolean                   _chunked           = false;
 
     int                               CHUNK_LEN          = 1024;
+
+    protected static Class            _transportUtils;
+
+    protected static Method           _methodDoWriteMTOM;
+    protected static Method           _methodDoWriteSwA;
+    protected static Method           _methodIsDoingRest;
+    protected static Method           _methodGetCharSetEncoding;
+
+    static
+    {
+        ClassLoader cl = Thread.currentThread().getContextClassLoader();
+
+        try
+        {
+            // Versions prior to 1.5
+            _transportUtils = cl
+                    .loadClass("org.apache.axis2.transport.http.HTTPTransportUtils");
+            // The method is here in these earlier versions
+            _methodDoWriteMTOM = _transportUtils
+                    .getMethod("doWriteMTOM",
+                               new Class[] { MessageContext.class });
+        }
+        catch (Exception ex)
+        {
+            _transportUtils = null;
+        }
+
+        if (_transportUtils == null)
+        {
+            try
+            {
+                // 1.5 and higher
+                _transportUtils = cl
+                        .loadClass("org.apache.axis2.transport.TransportUtils");
+            }
+            catch (Exception ex)
+            {
+
+            }
+        }
+        if (_transportUtils == null)
+            Util.impossible("TransportUtils not found");
+
+        try
+        {
+            _methodDoWriteMTOM = _transportUtils
+                    .getMethod("doWriteMTOM",
+                               new Class[] { MessageContext.class });
+            _methodDoWriteSwA = _transportUtils
+                    .getMethod("doWriteSwA",
+                               new Class[] { MessageContext.class });
+            _methodIsDoingRest = _transportUtils
+                    .getMethod("isDoingREST",
+                               new Class[] { MessageContext.class });
+            _methodGetCharSetEncoding = _transportUtils
+                    .getMethod("getCharSetEncoding",
+                               new Class[] { MessageContext.class });
+        }
+        catch (Exception e)
+        {
+            Util.impossible("Can't get TransportUtils method", e);
+        }
+
+    }
 
     /**
      * proxydiscription
@@ -205,15 +270,30 @@ public class OaklandHTTPTransportSender2 extends AbstractHandler
         try
         {
             OMOutputFormat format = new OMOutputFormat();
-            // if (!msgContext.isDoingMTOM())
-            msgContext.setDoingMTOM(HTTPTransportUtils.doWriteMTOM(msgContext));
-            msgContext.setDoingSwA(HTTPTransportUtils.doWriteSwA(msgContext));
-            msgContext.setDoingREST(HTTPTransportUtils.isDoingREST(msgContext));
+            try
+            {
+                msgContext.setDoingMTOM(((Boolean)_methodDoWriteMTOM
+                        .invoke(null, new Object[] { msgContext }))
+                        .booleanValue());
+                msgContext.setDoingSwA(((Boolean)_methodDoWriteSwA
+                        .invoke(null, new Object[] { msgContext }))
+                        .booleanValue());
+                msgContext.setDoingREST(((Boolean)_methodIsDoingRest
+                        .invoke(null, new Object[] { msgContext }))
+                        .booleanValue());
+                format.setCharSetEncoding((String)_methodGetCharSetEncoding
+                        .invoke(null, new Object[] { msgContext }));
+            }
+            catch (Exception e)
+            {
+                Util
+                        .impossible("Problem with reflection method invocations",
+                                    e);
+            }
+
             format.setSOAP11(msgContext.isSOAP11());
             format.setDoOptimize(msgContext.isDoingMTOM());
             format.setDoingSWA(msgContext.isDoingSwA());
-            format.setCharSetEncoding(HTTPTransportUtils
-                    .getCharSetEncoding(msgContext));
 
             Object mimeBoundaryProperty = msgContext
                     .getProperty(Constants.Configuration.MIME_BOUNDARY);
@@ -466,7 +546,8 @@ public class OaklandHTTPTransportSender2 extends AbstractHandler
             }
 
             // Setup web services for dummy authentication startup for NTLM
-            HttpURLConnectInternal.setupAuthDummy(urlCon, msgContext.isSOAP11());
+            HttpURLConnectInternal
+                    .setupAuthDummy(urlCon, msgContext.isSOAP11());
 
             // Content type
             String contentType = messageFormatter
@@ -577,11 +658,10 @@ public class OaklandHTTPTransportSender2 extends AbstractHandler
                     {
                         if (_chunked)
                         {
-                            messageFormatter
-                                    .writeTo(msgContext,
-                                             format,
-                                             outStream,
-                                             true /* isAllowedRetry */);
+                            messageFormatter.writeTo(msgContext,
+                                                     format,
+                                                     outStream,
+                                                     true /* isAllowedRetry */);
                         }
                         else
                         {

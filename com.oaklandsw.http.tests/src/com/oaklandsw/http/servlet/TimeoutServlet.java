@@ -7,44 +7,35 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-public class TimeoutServlet extends MultiMethodServlet
-{
+
+public class TimeoutServlet extends MultiMethodServlet {
     // The part of the URL where this servlet is installed
     public static final String NAME = "/timeout";
 
     protected void genericService(HttpServletRequest request,
-                                  HttpServletResponse response)
-        throws IOException,
-            ServletException
-    {
+        HttpServletResponse response) throws IOException, ServletException {
         response.setContentType("text/html");
+
         PrintWriter out = response.getWriter();
         out.println("<html>");
-        out.println("<head><title>Timeout Servlet: "
-            + request.getMethod()
-            + "</title></head>");
+        out.println("<head><title>Timeout Servlet: " + request.getMethod() +
+            "</title></head>");
         out.println("<body>");
 
         int timeout = 0;
 
         String timeoutStr = request.getHeader("timeout");
-        if (timeoutStr != null)
-        {
-            try
-            {
+
+        if (timeoutStr != null) {
+            try {
                 timeout = Integer.parseInt(timeoutStr);
-            }
-            catch (Exception e)
-            {
+            } catch (Exception e) {
             }
         }
 
-        try
-        {
+        try {
             Thread.sleep(timeout);
-        }
-        catch (InterruptedException ex)
-        {
+        } catch (InterruptedException ex) {
             // Ignore
         }
 

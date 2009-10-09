@@ -1,16 +1,5 @@
 // Copyright 2002 oakland software, All rights reserved
-
 package com.oaklandsw.http.webapp;
-
-import java.io.IOException;
-import java.io.OutputStream;
-import java.net.MalformedURLException;
-import java.net.URL;
-
-import com.oaklandsw.util.Log;
-
-import junit.framework.Test;
-import junit.framework.TestSuite;
 
 import com.oaklandsw.http.Credential;
 import com.oaklandsw.http.HttpConnection;
@@ -22,20 +11,28 @@ import com.oaklandsw.http.PipelineTester;
 import com.oaklandsw.http.TestUserAgent;
 import com.oaklandsw.http.ntlm.NegotiateMessage;
 import com.oaklandsw.http.servlet.RequestBodyServlet;
+
+import com.oaklandsw.util.Log;
 import com.oaklandsw.util.LogUtils;
 
-public class TestIIS extends HttpTestBase
-{
+import junit.framework.Test;
+import junit.framework.TestSuite;
+
+import java.io.IOException;
+import java.io.OutputStream;
+
+import java.net.MalformedURLException;
+import java.net.URL;
+
+
+public class TestIIS extends HttpTestBase {
     private static final Log _log = LogUtils.makeLogger();
+    public static final boolean MULTI = true;
+    String _getForm;
+    HttpURLConnection _urlCon;
+    boolean _useIisNtlm_5;
 
-    String                   _getForm;
-
-    HttpURLConnection        _urlCon;
-
-    boolean                  _useIisNtlm_5;
-
-    public TestIIS(String name)
-    {
+    public TestIIS(String name) {
         super(name);
         // These are actually disabled by the check in allTestMethods()
         // See the comments about NTLM in HttpTestBase for more information
@@ -44,8 +41,8 @@ public class TestIIS extends HttpTestBase
         _doAuthProxyTest = true;
 
         // Squid works fine as a proxy for NTLM
-        _do10ProxyTest = true;
-
+        // Nope, not any more 24 Sep 09
+        //_do10ProxyTest = true;
         _doIsaProxyTest = true;
 
         _doExplicitTest = true;
@@ -56,14 +53,12 @@ public class TestIIS extends HttpTestBase
         _useIisNtlm_5 = true;
     }
 
-    public static void main(String[] args)
-    {
+    public static void main(String[] args) {
         mainRun(suite(), args);
     }
 
     // We assume the web server is running
-    public void setUp() throws Exception
-    {
+    public void setUp() throws Exception {
         super.setUp();
         TestUserAgent._type = TestUserAgent.GOOD;
         TestUserAgent._proxyType = TestUserAgent.GOOD;
@@ -71,34 +66,31 @@ public class TestIIS extends HttpTestBase
         _showStats = true;
     }
 
-    public void tearDown() throws Exception
-    {
+    public void tearDown() throws Exception {
         super.tearDown();
         _urlCon = null;
     }
 
-    public static Test suite()
-    {
+    public static Test suite() {
         return new TestSuite(TestIIS.class);
     }
 
-    protected String makeIisUrl(String path)
-    {
-        if (_useIisNtlm_5)
+    protected String makeIisUrl(String path) {
+        if (_useIisNtlm_5) {
             return HttpTestEnv.TEST_URL_IIS_5 + path;
+        }
+
         return HttpTestEnv.TEST_URL_IIS_0 + path;
     }
 
-    public void iisCheckReply(String reply)
-    {
+    public void iisCheckReply(String reply) {
         assertTrue("Incorrect reply",
-                   reply.indexOf("This sample is provided") >= 0);
+            reply.indexOf("This sample is provided") >= 0);
         assertTrue("Incorrect reply", reply.indexOf("This page will take") >= 0);
         assertTrue("Incorrect reply", reply.indexOf("</HTML>") >= 0);
     }
 
-    public void test100PostNormal() throws MalformedURLException, IOException
-    {
+    public void test100PostNormal() throws MalformedURLException, IOException {
         URL url = new URL(makeIisUrl(HttpTestEnv.TEST_URL_APP_IIS_FORM));
         int response = 0;
 
@@ -109,6 +101,7 @@ public class TestIIS extends HttpTestBase
         setupStreaming(_urlCon, str.length());
         _urlCon.setRequestMethod("POST");
         _urlCon.setDoOutput(true);
+
         OutputStream outStr = _urlCon.getOutputStream();
         outStr.write(str.getBytes("ASCII"));
         outStr.close();
@@ -123,16 +116,13 @@ public class TestIIS extends HttpTestBase
         checkNoActiveConns(url);
     }
 
-    public void test110PostClose() throws MalformedURLException, IOException
-    {
+    public void test110PostClose() throws MalformedURLException, IOException {
         test100PostNormal();
         _urlCon.disconnect();
     }
 
     public void test120MultiPostClose()
-        throws MalformedURLException,
-            IOException
-    {
+        throws MalformedURLException, IOException {
         test110PostClose();
         test110PostClose();
         test100PostNormal();
@@ -140,24 +130,21 @@ public class TestIIS extends HttpTestBase
         test100PostNormal();
     }
 
-    public void test130PostChunked() throws MalformedURLException, IOException
-    {
+    public void test130PostChunked() throws MalformedURLException, IOException {
         _streamingType = STREAM_CHUNKED;
         HttpURLConnection.setDefaultAuthenticationType(Credential.AUTH_NTLM);
         test100PostNormal();
         _streamingType = STREAM_NONE;
     }
 
-    public void test130PostFixed() throws MalformedURLException, IOException
-    {
+    public void test130PostFixed() throws MalformedURLException, IOException {
         _streamingType = STREAM_FIXED;
         HttpURLConnection.setDefaultAuthenticationType(Credential.AUTH_NTLM);
         test100PostNormal();
         _streamingType = STREAM_NONE;
     }
 
-    public void test200Get() throws MalformedURLException, IOException
-    {
+    public void test200Get() throws MalformedURLException, IOException {
         URL url = new URL(makeIisUrl(HttpTestEnv.TEST_URL_APP_IIS_QUERY_STRING));
         int response = 0;
 
@@ -172,19 +159,14 @@ public class TestIIS extends HttpTestBase
         checkNoActiveConns(url);
     }
 
-    public void test205MultiGet() throws MalformedURLException, IOException
-    {
+    public void test205MultiGet() throws MalformedURLException, IOException {
         test200Get();
         test200Get();
         test200Get();
     }
 
-    public static final boolean MULTI = true;
-
     public void testConnectionReuse(boolean multi)
-        throws MalformedURLException,
-            IOException
-    {
+        throws MalformedURLException, IOException {
         URL url = new URL(makeIisUrl(HttpTestEnv.TEST_URL_APP_IIS_FORM));
         int response = 0;
 
@@ -202,12 +184,14 @@ public class TestIIS extends HttpTestBase
         TestUserAgent._type = TestUserAgent.BAD;
         urlCon = HttpURLConnection.openConnection(url);
         response = urlCon.getResponseCode();
+
         // Multi will get a new connection, otherwise we will reuse the
         // connection
-        if (multi)
+        if (multi) {
             assertEquals(401, response);
-        else
+        } else {
             assertEquals(200, response);
+        }
 
         reply = getReply(urlCon);
         checkNoActiveConns(url);
@@ -215,23 +199,17 @@ public class TestIIS extends HttpTestBase
     }
 
     public void test210ConnectionReuseMulti()
-        throws MalformedURLException,
-            IOException
-    {
+        throws MalformedURLException, IOException {
         testConnectionReuse(MULTI);
     }
 
     public void test211ConnectionReuseNoMulti()
-        throws MalformedURLException,
-            IOException
-    {
+        throws MalformedURLException, IOException {
         testConnectionReuse(!MULTI);
     }
 
     public void testConnectionReuse2(boolean multi)
-        throws MalformedURLException,
-            IOException
-    {
+        throws MalformedURLException, IOException {
         URL url = new URL(makeIisUrl(HttpTestEnv.TEST_URL_APP_IIS_FORM));
         int response = 0;
 
@@ -240,6 +218,7 @@ public class TestIIS extends HttpTestBase
         HttpURLConnection urlCon;
         urlCon = HttpURLConnection.openConnection(url);
         response = urlCon.getResponseCode();
+
         HttpConnection conn = urlCon.getConnection();
         assertEquals(200, response);
 
@@ -251,12 +230,15 @@ public class TestIIS extends HttpTestBase
         urlCon = HttpURLConnection.openConnection(url);
         response = urlCon.getResponseCode();
         assertEquals(200, response);
+
         // Multi will get a new connection, otherwise we will reuse the
         // connection
-        if (multi)
+        if (multi) {
             assertTrue(conn != urlCon.getConnection());
-        else
+        } else {
             assertTrue(conn == urlCon.getConnection());
+        }
+
         reply = getReply(urlCon);
         iisCheckReply(reply);
 
@@ -264,22 +246,17 @@ public class TestIIS extends HttpTestBase
     }
 
     public void test212ConnectionReuseMulti2()
-        throws MalformedURLException,
-            IOException
-    {
+        throws MalformedURLException, IOException {
         testConnectionReuse2(MULTI);
     }
 
     public void test213ConnectionReuseNoMulti2()
-        throws MalformedURLException,
-            IOException
-    {
+        throws MalformedURLException, IOException {
         testConnectionReuse2(!MULTI);
     }
 
     // Bug 1949 - Test that an idle connection timeout frees up a connection
-    public void test220ConnectWaitForIdle() throws Exception
-    {
+    public void test220ConnectWaitForIdle() throws Exception {
         URL url = new URL(makeIisUrl(HttpTestEnv.TEST_URL_APP_IIS_FORM));
 
         int waitTime = 2000;
@@ -309,11 +286,10 @@ public class TestIIS extends HttpTestBase
         assertEquals(0, getTotalConns(url));
 
         // Make sure we actually waited for the idle timeout
-        assertTrue(System.currentTimeMillis() - startTime > waitTime);
+        assertTrue((System.currentTimeMillis() - startTime) > waitTime);
     }
 
-    protected boolean isExpectRetryException()
-    {
+    protected boolean isExpectRetryException() {
         // If in a group of tests, this test is in the middle so
         // the connection will have been authenticated, except when
         // we are running HTTP 1.0 which closes the connection
@@ -321,17 +297,15 @@ public class TestIIS extends HttpTestBase
         return !_inTestGroup || _in10ProxyTest || _inIsaProxyTest;
     }
 
-    
     // bug 2546 don't do idle connection ping if authentication is in progress
     // Actually this bug only applies to the SSL proxy case
-    public void test225ConnectUserAgentWait() throws Exception
-    {
+    public void test225ConnectUserAgentWait() throws Exception {
         URL url = new URL(makeIisUrl(HttpTestEnv.TEST_URL_APP_IIS_FORM));
 
         LogUtils.logAll();
-        
+
         HttpURLConnection.setDefaultIdleConnectionPing(50);
-        
+
         TestUserAgent._delayTime = 100;
 
         HttpURLConnection.setMaxConnectionsPerHost(1);
@@ -344,8 +318,7 @@ public class TestIIS extends HttpTestBase
         urlCon.getInputStream().close();
     }
 
-    public void test230GetStream() throws MalformedURLException, IOException
-    {
+    public void test230GetStream() throws MalformedURLException, IOException {
         URL url = new URL(makeIisUrl(HttpTestEnv.TEST_URL_APP_IIS_FORM));
 
         HttpURLConnection urlCon;
@@ -356,64 +329,63 @@ public class TestIIS extends HttpTestBase
         urlCon.getOutputStream().write("12345".getBytes("ASCII"));
         urlCon.getOutputStream().close();
 
-        try
-        {
+        try {
             // Since authentication happens, it should fail at this point
             urlCon.getResponseCode();
+
             // We are in a group of tests, the initial tests will authenticate
             // the connection, so we won't fail
-            if (isExpectRetryException())
+            if (isExpectRetryException()) {
                 fail("Should have gotten retry exception");
+            }
 
             urlCon.getInputStream().close();
-        }
-        catch (HttpRetryException ex)
-        {
-            if (!isExpectRetryException())
-                fail("Should not get exception here because already authenticated");
+        } catch (HttpRetryException ex) {
+            if (!isExpectRetryException()) {
+                fail(
+                    "Should not get exception here because already authenticated");
+            }
+
             assertEquals("Unexpected response code", 401, ex.responseCode());
         }
+
         checkNoActiveConns(url);
     }
 
-    public void test240GetPipeline(int num) throws Exception
-    {
+    public void test240GetPipeline(int num) throws Exception {
         // LogUtils.logFile("/home/francis/log4jout.txt");
         // Pipelining does not work with netproxy
-        if (_inAuthCloseProxyTest)
+        if (_inAuthCloseProxyTest) {
             return;
+        }
+
         HttpURLConnection.setDefaultAuthenticationType(Credential.AUTH_NTLM);
-        PipelineTester pt = new PipelineTester(makeIisUrl(HttpTestEnv.TEST_URL_APP_IIS_QUERY_STRING),
-                                               num,
-                                               _pipelineOptions,
-                                               _pipelineMaxDepth);
+
+        PipelineTester pt = new PipelineTester(makeIisUrl(
+                    HttpTestEnv.TEST_URL_APP_IIS_QUERY_STRING), num,
+                _pipelineOptions, _pipelineMaxDepth);
         assertFalse(pt.runTest());
     }
 
-    public void test240GetPipeline1() throws Exception
-    {
+    public void test240GetPipeline1() throws Exception {
         test240GetPipeline(1);
     }
 
-    public void test240GetPipeline2() throws Exception
-    {
+    public void test240GetPipeline2() throws Exception {
         test240GetPipeline(2);
     }
 
-    public void test240GetPipeline10() throws Exception
-    {
+    public void test240GetPipeline10() throws Exception {
         test240GetPipeline(10);
     }
 
-    public void test240GetPipeline100() throws Exception
-    {
+    public void test240GetPipeline100() throws Exception {
         test240GetPipeline(100);
     }
 
     // Make sure we get a proper failure upon a bad credential
     // Bug 2181
-    public void test300GetBadCred() throws Exception
-    {
+    public void test300GetBadCred() throws Exception {
         TestUserAgent._type = TestUserAgent.BAD;
 
         // Clean out connections
@@ -447,12 +419,13 @@ public class TestIIS extends HttpTestBase
 
     // Make sure we get a proper failure upon a bad proxy credential
     // Bug 2181
-    public void test301GetBadCredProxy() throws Exception
-    {
-        if (!_inIsaProxyTest)
+    public void test301GetBadCredProxy() throws Exception {
+        if (!_inIsaProxyTest) {
             return;
+        }
 
         TestUserAgent._type = TestUserAgent.GOOD;
+
         int saveProxyType = TestUserAgent._proxyType;
         TestUserAgent._proxyType = TestUserAgent.NULL;
 
@@ -475,8 +448,7 @@ public class TestIIS extends HttpTestBase
     }
 
     // Bug 2181
-    public void test305GetNullCred() throws Exception
-    {
+    public void test305GetNullCred() throws Exception {
         TestUserAgent._type = TestUserAgent.NULL;
 
         // Clean out connections
@@ -499,15 +471,16 @@ public class TestIIS extends HttpTestBase
     }
 
     // Bug 2181
-    public void test310GetNullCredProxy() throws Exception
-    {
-        if (!_inIsaProxyTest)
+    public void test310GetNullCredProxy() throws Exception {
+        if (!_inIsaProxyTest) {
             return;
+        }
 
         // Clean out connections
         HttpURLConnection.closeAllPooledConnections();
 
         TestUserAgent._type = TestUserAgent.GOOD;
+
         int saveProxyType = TestUserAgent._proxyType;
         TestUserAgent._proxyType = TestUserAgent.NULL;
 
@@ -527,13 +500,12 @@ public class TestIIS extends HttpTestBase
         checkNoTotalConns(url);
     }
 
-    public void test320SimpleAuthGetCache() throws Exception
-    {
+    public void test320SimpleAuthGetCache() throws Exception {
         // Clean out connections
         HttpURLConnection.closeAllPooledConnections();
 
         HttpURLConnection.setMultiCredentialsPerAddress(false);
-        
+
         TestUserAgent._type = TestUserAgent.GOOD;
         TestUserAgent._callCount = 0;
 
@@ -561,10 +533,10 @@ public class TestIIS extends HttpTestBase
         assertEquals(2, TestUserAgent._callCount);
     }
 
-    public void test321SimpleAuthGetCacheProxy() throws Exception
-    {
-        if (!_inIsaProxyTest)
+    public void test321SimpleAuthGetCacheProxy() throws Exception {
+        if (!_inIsaProxyTest) {
             return;
+        }
 
         // Clean out connections
         HttpURLConnection.closeAllPooledConnections();
@@ -610,8 +582,7 @@ public class TestIIS extends HttpTestBase
         assertEquals(2, TestUserAgent._callCountProxy);
     }
 
-    public void test325SimpleAuthGetCacheFail() throws Exception
-    {
+    public void test325SimpleAuthGetCacheFail() throws Exception {
         // Clean out connections
         HttpURLConnection.closeAllPooledConnections();
 
@@ -643,15 +614,16 @@ public class TestIIS extends HttpTestBase
         assertEquals(2, TestUserAgent._callCount);
     }
 
-    public void test326SimpleAuthGetCacheFailProxy() throws Exception
-    {
-        if (!_inIsaProxyTest)
+    public void test326SimpleAuthGetCacheFailProxy() throws Exception {
+        if (!_inIsaProxyTest) {
             return;
+        }
 
         // Clean out connections
         HttpURLConnection.closeAllPooledConnections();
 
         TestUserAgent._type = TestUserAgent.GOOD;
+
         int saveProxyType = TestUserAgent._proxyType;
         TestUserAgent._proxyType = TestUserAgent.BAD;
         TestUserAgent._callCount = 0;
@@ -684,8 +656,7 @@ public class TestIIS extends HttpTestBase
         TestUserAgent._proxyType = saveProxyType;
     }
 
-    public void test330SimpleAuthGetNoCache() throws Exception
-    {
+    public void test330SimpleAuthGetNoCache() throws Exception {
         HttpURLConnection.setMultiCredentialsPerAddress(true);
 
         TestUserAgent._type = TestUserAgent.GOOD;
@@ -706,10 +677,10 @@ public class TestIIS extends HttpTestBase
         HttpURLConnection.setMultiCredentialsPerAddress(false);
     }
 
-    public void test331SimpleAuthGetNoCacheProxy() throws Exception
-    {
-        if (!_inIsaProxyTest)
+    public void test331SimpleAuthGetNoCacheProxy() throws Exception {
+        if (!_inIsaProxyTest) {
             return;
+        }
 
         HttpURLConnection.setMultiCredentialsPerAddress(true);
 
@@ -730,15 +701,16 @@ public class TestIIS extends HttpTestBase
         getReply(urlCon);
 
         assertTrue(TestUserAgent._callCount > callCount);
+
         // FIXME
-        if (false)
+        if (false) {
             assertTrue(TestUserAgent._callCountProxy > callCountProxy);
+        }
 
         HttpURLConnection.setMultiCredentialsPerAddress(false);
     }
 
-    public void test400MultiGetPost() throws MalformedURLException, IOException
-    {
+    public void test400MultiGetPost() throws MalformedURLException, IOException {
         test200Get();
         test100PostNormal();
         test200Get();
@@ -747,17 +719,18 @@ public class TestIIS extends HttpTestBase
         test100PostNormal();
     }
 
-    public void allTestMethods() throws Exception
-    {
-        if (!isAllowNtlmProxy())
+    public void allTestMethods() throws Exception {
+        if (!isAllowNtlmProxy()) {
             return;
+        }
 
         _showStats = false;
-        if (false && _in10ProxyTest)
+
+        if (false && _in10ProxyTest) {
             LogUtils.logFile("/home/francis/log4j10proxy.txt");
+        }
 
         // LogUtils.logWireOnly();
-
         test100PostNormal();
         test110PostClose();
         test120MultiPostClose();
@@ -769,30 +742,36 @@ public class TestIIS extends HttpTestBase
         test230GetStream();
 
         // Pipelining does not appear to work through the ISA PROXY
-        if (!_inIsaProxyTest)
-        {
+        if (!_inIsaProxyTest) {
             test240GetPipeline1();
             test240GetPipeline2();
 
-            if (false && _in10ProxyTest)
+            if (false && _in10ProxyTest) {
                 LogUtils.logConnOnly();
-            test240GetPipeline10();
-            int count = 1;
-            if (_in10ProxyTest)
-                count = 5;
-            for (int i = 0; i < count; i++)
-            {
-                test240GetPipeline100();
-                if (false && _in10ProxyTest)
-                    HttpURLConnection.dumpAll();
             }
 
-            if (false && _in10ProxyTest)
-            {
+            test240GetPipeline10();
+
+            int count = 1;
+
+            if (_in10ProxyTest) {
+                count = 5;
+            }
+
+            for (int i = 0; i < count; i++) {
+                test240GetPipeline100();
+
+                if (false && _in10ProxyTest) {
+                    HttpURLConnection.dumpAll();
+                }
+            }
+
+            if (false && _in10ProxyTest) {
                 System.out.println("****sleeping for profile");
                 Thread.sleep(10000000);
             }
         }
+
         test300GetBadCred();
         test301GetBadCredProxy();
         test305GetNullCred();
@@ -806,50 +785,36 @@ public class TestIIS extends HttpTestBase
         test331SimpleAuthGetNoCacheProxy();
 
         test400MultiGetPost();
-
     }
 
-    public void testBadEncoding()
-    {
-        try
-        {
+    public void testBadEncoding() {
+        try {
             // Bad value
             com.oaklandsw.http.HttpURLConnection.setNtlmPreferredEncoding(18);
             fail("Expected exception");
-        }
-        catch (IllegalArgumentException ex)
-        {
-
+        } catch (IllegalArgumentException ex) {
         }
     }
 
     // Test everything with NTLM OEM response forced
-    public void testForceOem() throws Exception
-    {
-        com.oaklandsw.http.HttpURLConnection
-                .setNtlmPreferredEncoding(com.oaklandsw.http.HttpURLConnection.NTLM_ENCODING_OEM);
+    public void testForceOem() throws Exception {
+        com.oaklandsw.http.HttpURLConnection.setNtlmPreferredEncoding(com.oaklandsw.http.HttpURLConnection.NTLM_ENCODING_OEM);
         _inTestGroup = true;
         allTestMethods();
-        com.oaklandsw.http.HttpURLConnection
-                .setNtlmPreferredEncoding(com.oaklandsw.http.HttpURLConnection.NTLM_ENCODING_UNICODE);
+        com.oaklandsw.http.HttpURLConnection.setNtlmPreferredEncoding(com.oaklandsw.http.HttpURLConnection.NTLM_ENCODING_UNICODE);
     }
 
     // Test test force NTLM V1
-    public void testForceNtlmV1() throws Exception
-    {
+    public void testForceNtlmV1() throws Exception {
         _useIisNtlm_5 = false;
         _inTestGroup = true;
-        try
-        {
+
+        try {
             NegotiateMessage._testForceV1 = true;
             allTestMethods();
-        }
-        finally
-        {
+        } finally {
             _useIisNtlm_5 = true;
             NegotiateMessage._testForceV1 = false;
         }
-
     }
-
 }

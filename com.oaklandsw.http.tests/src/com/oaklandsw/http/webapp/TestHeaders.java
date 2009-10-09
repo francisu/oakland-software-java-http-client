@@ -1,44 +1,41 @@
 package com.oaklandsw.http.webapp;
 
-import java.net.InetAddress;
-import java.net.URL;
-import java.util.List;
-import java.util.Map;
+import com.oaklandsw.http.HttpTestEnv;
+import com.oaklandsw.http.HttpURLConnection;
+import com.oaklandsw.http.servlet.HeaderServlet;
 
 import com.oaklandsw.util.Log;
+import com.oaklandsw.util.LogUtils;
+import com.oaklandsw.util.NetUtils;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
-import com.oaklandsw.http.HttpTestEnv;
-import com.oaklandsw.http.HttpURLConnection;
-import com.oaklandsw.http.servlet.HeaderServlet;
-import com.oaklandsw.util.LogUtils;
-import com.oaklandsw.util.NetUtils;
+import java.net.InetAddress;
+import java.net.URL;
 
-public class TestHeaders extends TestWebappBase
-{
+import java.util.List;
+import java.util.Map;
 
+
+public class TestHeaders extends TestWebappBase {
     private static final Log _log = LogUtils.makeLogger();
 
-    public TestHeaders(String testName)
-    {
+    public TestHeaders(String testName) {
         super(testName);
     }
 
-    public static Test suite()
-    {
+    public static Test suite() {
         TestSuite suite = new TestSuite(TestHeaders.class);
+
         return suite;
     }
 
-    public static void main(String args[])
-    {
+    public static void main(String[] args) {
         mainRun(suite(), args);
     }
 
-    public void testAddRequestHeader() throws Exception
-    {
+    public void testAddRequestHeader() throws Exception {
         URL url = new URL(_urlBase + HeaderServlet.NAME);
         int response = 0;
 
@@ -50,17 +47,15 @@ public class TestHeaders extends TestWebappBase
         assertEquals(200, response);
 
         // Netproxy seems to strip the header
-        if (!_inAuthCloseProxyTest)
-        {
+        if (!_inAuthCloseProxyTest) {
             // Tomcat 4 at least converts the header name to lower case
-            checkReply(urlCon, "name=\"addrequestheader"
-                + "\";value=\"Also True\"<br>");
-        }
-        else
-        {
+            checkReply(urlCon,
+                "name=\"addrequestheader" + "\";value=\"Also True\"<br>");
+        } else {
             // checkReply - above gets the InputStream
             urlCon.getInputStream().close();
         }
+
         checkNoActiveConns(url);
     }
 
@@ -85,9 +80,7 @@ public class TestHeaders extends TestWebappBase
     // assertTrue(!(method.getResponseBodyAsString().indexOf("xxx-a-header") >=
     // 0));
     // }
-
-    public void testOverwriteRequestHeader() throws Exception
-    {
+    public void testOverwriteRequestHeader() throws Exception {
         URL url = new URL(_urlBase + HeaderServlet.NAME);
         int response = 0;
 
@@ -100,15 +93,16 @@ public class TestHeaders extends TestWebappBase
         assertEquals(200, response);
 
         // Netproxy seems to strip the header
-        if (!_inAuthCloseProxyTest)
+        if (!_inAuthCloseProxyTest) {
             checkReply(urlCon, "name=\"xxx-a-header\";value=\"two\"<br>");
-        else
+        } else {
             urlCon.getInputStream().close();
+        }
+
         checkNoActiveConns(url);
     }
 
-    public void testGetResponseHeader() throws Exception
-    {
+    public void testGetResponseHeader() throws Exception {
         URL url = new URL(_urlBase + HeaderServlet.NAME);
         int response = 0;
 
@@ -122,17 +116,15 @@ public class TestHeaders extends TestWebappBase
         // Bug 1440 getHeaderFields() not implemented
         // Need to cast this since getHeaderFields() is not provided prior
         // to JDK14
-        Map headerMap = urlCon
-                .getHeaderFields();
-        List headerField = (List)headerMap.get("HeaderSetByServlet");
+        Map headerMap = urlCon.getHeaderFields();
+        List headerField = (List) headerMap.get("HeaderSetByServlet");
         assertEquals("Yes", headerField.get(0));
 
         urlCon.getInputStream().close();
         checkNoActiveConns(url);
     }
 
-    public void testGetResponseHeader0() throws Exception
-    {
+    public void testGetResponseHeader0() throws Exception {
         URL url = new URL(_urlBase + HeaderServlet.NAME);
         int response = 0;
 
@@ -147,14 +139,13 @@ public class TestHeaders extends TestWebappBase
         checkNoActiveConns(url);
     }
 
-    public void testHostRequestHeaderIp() throws Exception
-    {
+    public void testHostRequestHeaderIp() throws Exception {
         // This only works if we are proxying through something on this
         // machine
-        if (com.oaklandsw.http.HttpURLConnection.getProxyHost() != null
-            && !com.oaklandsw.http.HttpURLConnection.getProxyHost()
-                    .equals(InetAddress.getLocalHost().getHostName()))
-        {
+        if ((com.oaklandsw.http.HttpURLConnection.getProxyHost() != null) &&
+                !com.oaklandsw.http.HttpURLConnection.getProxyHost()
+                                                         .equals(InetAddress.getLocalHost()
+                                                                                .getHostName())) {
             return;
         }
 
@@ -163,16 +154,14 @@ public class TestHeaders extends TestWebappBase
         hostRequestHeader(ip);
     }
 
-    public void testHostRequestHeaderName() throws Exception
-    {
+    public void testHostRequestHeaderName() throws Exception {
         InetAddress addr = InetAddress.getByName(HttpTestEnv.TOMCAT_HOST);
         String hostname = addr.getHostName();
         hostRequestHeader(hostname);
     }
 
     // Bug 1031 allow user-agent header to be set by user
-    public void testUserAgentHeader() throws Exception
-    {
+    public void testUserAgentHeader() throws Exception {
         URL url = new URL(_urlBase + HeaderServlet.NAME);
         int response = 0;
 
@@ -183,16 +172,15 @@ public class TestHeaders extends TestWebappBase
 
         // Tomcat 4 at least converts the header name to lower case
         // checkReply("name=\"addrequestheader(header)\";value=\"True\"<br>");
-        checkReply(urlCon, "name=\"user-agent"
-            + "\";value=\"TestUserAgent\"<br>");
+        checkReply(urlCon,
+            "name=\"user-agent" + "\";value=\"TestUserAgent\"<br>");
 
         // checkReply closes the connection
         checkNoActiveConns(url);
     }
 
     // Make sure normal user-agent header is correct
-    public void testNormalUserAgentHeader() throws Exception
-    {
+    public void testNormalUserAgentHeader() throws Exception {
         URL url = new URL(_urlBase + HeaderServlet.NAME);
         int response = 0;
 
@@ -202,24 +190,19 @@ public class TestHeaders extends TestWebappBase
 
         // Tomcat 4 at least converts the header name to lower case
         // checkReply("name=\"addrequestheader(header)\";value=\"True\"<br>");
-        checkReply(urlCon, "name=\"user-agent"
-            + "\";value=\""
-            + new String(com.oaklandsw.http.HttpURLConnection.DEFAULT_USER_AGENT)
-            + "\"<br>");
+        checkReply(urlCon,
+            "name=\"user-agent" + "\";value=\"" +
+            new String(com.oaklandsw.http.HttpURLConnection.DEFAULT_USER_AGENT) +
+            "\"<br>");
 
         // checkReply closes the connection
         checkNoActiveConns(url);
     }
 
-    public void hostRequestHeader(String connectAddr) throws Exception
-    {
-
-        URL url = new URL("http://"
-            + connectAddr
-            + ":"
-            + HttpTestEnv.TOMCAT_PORT_1 + "/"
-            + HttpTestEnv.TEST_URL_APP_TOMCAT_1
-            + HeaderServlet.NAME);
+    public void hostRequestHeader(String connectAddr) throws Exception {
+        URL url = new URL("http://" + connectAddr + ":" +
+                HttpTestEnv.TOMCAT_PORT_1 + "/" +
+                HttpTestEnv.TEST_URL_APP_TOMCAT_1 + HeaderServlet.NAME);
         int response = 0;
 
         HttpURLConnection urlCon = HttpURLConnection.openConnection(url);
@@ -230,33 +213,29 @@ public class TestHeaders extends TestWebappBase
 
         _log.debug(NetUtils.dumpHeaders(urlCon));
 
-        if (HttpTestEnv.TOMCAT_PORT_1 == 80)
-        {
-            checkReply(urlCon, "name=\"host\";value=\""
-                + connectAddr
-                + "\"<br>");
-        }
-        else
-        {
-            checkReply(urlCon, "name=\"host\";value=\""
-                + connectAddr
-                + ":"
-                + HttpTestEnv.TOMCAT_PORT_1
-                + "\"<br>");
+        if (HttpTestEnv.TOMCAT_PORT_1 == 80) {
+            checkReply(urlCon, "name=\"host\";value=\"" + connectAddr +
+                "\"<br>");
+        } else {
+            checkReply(urlCon,
+                "name=\"host\";value=\"" + connectAddr + ":" +
+                HttpTestEnv.TOMCAT_PORT_1 + "\"<br>");
         }
 
         // checkReply closes the connection
         checkNoActiveConns(url);
     }
 
-    public void allTestMethods() throws Exception
-    {
+    public void allTestMethods() throws Exception {
         testAddRequestHeader();
         testOverwriteRequestHeader();
         testGetResponseHeader();
         testUserAgentHeader();
         testHostRequestHeaderIp();
-        testHostRequestHeaderName();
-    }
 
+        // Netproxy does not seem to like this now 24 sep 09 FRU
+        if (!_inAuthCloseProxyTest) {
+            testHostRequestHeaderName();
+        }
+    }
 }

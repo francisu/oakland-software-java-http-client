@@ -1,45 +1,43 @@
 package com.oaklandsw.http.local;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.util.List;
-import java.util.Map;
-
-import com.oaklandsw.util.Log;
-
-import junit.framework.Test;
-import junit.framework.TestSuite;
-
 import com.oaklandsw.http.Headers;
 import com.oaklandsw.http.HttpException;
 import com.oaklandsw.http.HttpTestBase;
 import com.oaklandsw.http.HttpURLConnectInternal;
+
 import com.oaklandsw.util.ExposedBufferInputStream;
+import com.oaklandsw.util.Log;
 import com.oaklandsw.util.LogUtils;
 
-public class TestHeaders extends HttpTestBase
-{
+import junit.framework.Test;
+import junit.framework.TestSuite;
+
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+
+import java.util.List;
+import java.util.Map;
+
+
+public class TestHeaders extends HttpTestBase {
     private static final Log _log = LogUtils.makeLogger();
 
-    public TestHeaders(String testName)
-    {
+    public TestHeaders(String testName) {
         super(testName);
     }
 
-    public static void main(String args[])
-    {
+    public static void main(String[] args) {
         String[] testCaseName = { TestHeaders.class.getName() };
         junit.textui.TestRunner.main(testCaseName);
     }
 
-    public static Test suite()
-    {
+    public static Test suite() {
         return new TestSuite(TestHeaders.class);
     }
 
-    protected void checkText(String text, Headers headers) throws IOException
-    {
+    protected void checkText(String text, Headers headers)
+        throws IOException {
         ByteArrayOutputStream os = new ByteArrayOutputStream();
         headers.write(os);
         os.close();
@@ -49,8 +47,7 @@ public class TestHeaders extends HttpTestBase
     }
 
     protected void checkTextEquals(String text, Headers headers)
-        throws IOException
-    {
+        throws IOException {
         ByteArrayOutputStream os = new ByteArrayOutputStream();
         headers.write(os);
         os.close();
@@ -61,14 +58,12 @@ public class TestHeaders extends HttpTestBase
         assertEquals(text, outText);
     }
 
-    protected ExposedBufferInputStream getInputStream(String str)
-    {
-        return new ExposedBufferInputStream(new ByteArrayInputStream(str
-                .getBytes()), 1000);
+    protected ExposedBufferInputStream getInputStream(String str) {
+        return new ExposedBufferInputStream(new ByteArrayInputStream(
+                str.getBytes()), 1000);
     }
 
-    public void testBasic() throws Exception
-    {
+    public void testBasic() throws Exception {
         Headers h = new Headers();
         h.add("one", "oneval");
         h.add("two", "twoval");
@@ -76,8 +71,7 @@ public class TestHeaders extends HttpTestBase
         checkText("twoval", h);
     }
 
-    public void testSet() throws Exception
-    {
+    public void testSet() throws Exception {
         Headers h = new Headers();
         h.set("one", "oneval");
         h.set("one", "onevalrevised");
@@ -86,22 +80,18 @@ public class TestHeaders extends HttpTestBase
         checkTextEquals("one: onevalrevised\r\n", h);
     }
 
-    public void testSetNull() throws Exception
-    {
+    public void testSetNull() throws Exception {
         Headers h = new Headers();
-        try
-        {
+
+        try {
             h.set("one", null);
             fail("Expected exception for null value");
-        }
-        catch (IllegalArgumentException ex)
-        {
+        } catch (IllegalArgumentException ex) {
             // Expected
         }
     }
 
-    public void testAdd() throws Exception
-    {
+    public void testAdd() throws Exception {
         Headers h = new Headers();
         h.add("one", "onevaloriginal");
         h.add("one", "onevalnew");
@@ -118,7 +108,7 @@ public class TestHeaders extends HttpTestBase
 
         // Bug 1440 getHeaderFields() not implemented
         Map map = h.getMap();
-        List list = (List)map.get("one");
+        List list = (List) map.get("one");
         assertEquals(4, list.size());
         assertEquals("onevaloriginal", list.get(0));
         assertEquals("onevalnew", list.get(1));
@@ -126,11 +116,9 @@ public class TestHeaders extends HttpTestBase
         assertEquals("onevalnew2", list.get(3));
 
         assertEquals(null, map.get("two"));
-
     }
 
-    public void testAddIndex() throws Exception
-    {
+    public void testAddIndex() throws Exception {
         Headers h = new Headers();
         h.add("one", "onevaloriginal");
         h.add("one", "onevalnew");
@@ -149,8 +137,7 @@ public class TestHeaders extends HttpTestBase
         assertEquals(null, h.getKeyAsString(3));
     }
 
-    public void testSetIndex() throws Exception
-    {
+    public void testSetIndex() throws Exception {
         Headers h = new Headers();
         h.set("One", "onevaloriginal");
         h.set("one", "onevalnew");
@@ -166,8 +153,7 @@ public class TestHeaders extends HttpTestBase
         assertEquals(null, h.getKeyAsString(1));
     }
 
-    public void testRemove() throws Exception
-    {
+    public void testRemove() throws Exception {
         Headers h = new Headers();
         h.add("one", "onevaloriginal");
         h.remove("one");
@@ -179,11 +165,10 @@ public class TestHeaders extends HttpTestBase
         assertEquals(null, h.getAsString("one"));
     }
 
-    public void testBig() throws Exception
-    {
+    public void testBig() throws Exception {
         Headers h = new Headers();
-        for (int i = 0; i < 1000; i++)
-        {
+
+        for (int i = 0; i < 1000; i++) {
             h.add(("one" + i), ("oneval" + i));
         }
 
@@ -200,42 +185,33 @@ public class TestHeaders extends HttpTestBase
         assertEquals("one999", h.getKeyAsString(999));
     }
 
-    public void testReadEmpty1() throws Exception
-    {
+    public void testReadEmpty1() throws Exception {
         Headers h = new Headers();
 
         String str = "\n";
         h.read(getInputStream(str), new HttpURLConnectInternal(), true, 0);
     }
 
-    public void testReadEmpty2() throws Exception
-    {
+    public void testReadEmpty2() throws Exception {
         Headers h = new Headers();
 
         String str = "\n\n";
         h.read(getInputStream(str), new HttpURLConnectInternal(), true, 0);
     }
 
-    public void testReadEmpty3() throws Exception
-    {
+    public void testReadEmpty3() throws Exception {
         Headers h = new Headers();
 
         String str = "\r\n";
         h.read(getInputStream(str), new HttpURLConnectInternal());
     }
 
-    public void testReadGood() throws Exception
-    {
+    public void testReadGood() throws Exception {
         Headers h = new Headers();
 
-        String str = "head1: val1\r\n"
-            + "head2:val2\r\n"
-            + "head3 : val3\r\n"
-            + "head4: val4   \r\n"
-            + "head5: val5\t\r\n"
-            + "head6:\tval6\t \r\n"
-            + "head7: val7 \t \r\n"
-            + "\r\n";
+        String str = "head1: val1\r\n" + "head2:val2\r\n" + "head3 : val3\r\n" +
+            "head4: val4   \r\n" + "head5: val5\t\r\n" + "head6:\tval6\t \r\n" +
+            "head7: val7 \t \r\n" + "\r\n";
 
         h.read(getInputStream(str), new HttpURLConnectInternal());
 
@@ -255,20 +231,14 @@ public class TestHeaders extends HttpTestBase
         assertEquals("val7", h.getAsString("head7"));
     }
 
-    public void testReadGoodCont() throws Exception
-    {
+    public void testReadGoodCont() throws Exception {
         Headers h = new Headers();
 
-        String str = "head1: val1\r\n"
-            + " more value 1\r\n"
-            + "head2:val2\r\n"
-            + "       more value 2\r\n"
-            + "head3 : \r\n"
-            + "head4: val4   \r\n"
-            + "       more value 4\r\n"
-            + "       still more value 4\r\n"
-            + "head5:  val with    lots of spaces    in it   \r\n"
-            + "\r\n";
+        String str = "head1: val1\r\n" + " more value 1\r\n" +
+            "head2:val2\r\n" + "       more value 2\r\n" + "head3 : \r\n" +
+            "head4: val4   \r\n" + "       more value 4\r\n" +
+            "       still more value 4\r\n" +
+            "head5:  val with    lots of spaces    in it   \r\n" + "\r\n";
 
         h.read(getInputStream(str), new HttpURLConnectInternal());
 
@@ -279,27 +249,20 @@ public class TestHeaders extends HttpTestBase
         assertEquals(null, h.getAsString(2));
         assertEquals(null, h.getAsString("head3"));
         assertEquals("val4 more value 4 still more value 4", h.getAsString(3));
-        assertEquals("val4 more value 4 still more value 4", h
-                .getAsString("head4"));
+        assertEquals("val4 more value 4 still more value 4",
+            h.getAsString("head4"));
         assertEquals("val with lots of spaces in it", h.getAsString(4));
         assertEquals("val with lots of spaces in it", h.getAsString("head5"));
     }
 
-    public void testReadGoodPermissive() throws Exception
-    {
+    public void testReadGoodPermissive() throws Exception {
         Headers h = new Headers();
 
-        String str = "head1: val1\r\n"
-            + "head2:val2:val2a\r\n"
-            + "head3 : val3\r\n"
-            + "head4: val4   \r\n"
-            + "head5: val5   \r\n"
-            + "head6    :     val6    \r\n"
-            + "head7 :     val7\t\r\n"
-            + "head8 :     val8\t\t\r\n"
-            + "head9 :     val9\t \t\r\n"
-            + "head10 :     val10  \t \t  \r\n"
-            + "\r\n";
+        String str = "head1: val1\r\n" + "head2:val2:val2a\r\n" +
+            "head3 : val3\r\n" + "head4: val4   \r\n" + "head5: val5   \r\n" +
+            "head6    :     val6    \r\n" + "head7 :     val7\t\r\n" +
+            "head8 :     val8\t\t\r\n" + "head9 :     val9\t \t\r\n" +
+            "head10 :     val10  \t \t  \r\n" + "\r\n";
 
         h.read(getInputStream(str), new HttpURLConnectInternal());
 
@@ -319,34 +282,26 @@ public class TestHeaders extends HttpTestBase
         assertEquals("val10", h.getAsString("head10"));
     }
 
-    public void testReadGoodPermissive2() throws Exception
-    {
+    public void testReadGoodPermissive2() throws Exception {
         Headers h = new Headers();
 
         String str = "head1: val1\n\n";
 
-        h.read(getInputStream(str),
-               new HttpURLConnectInternal(),
-               Headers.SINGLE_EOL_CHAR,
-               0);
+        h.read(getInputStream(str), new HttpURLConnectInternal(),
+            Headers.SINGLE_EOL_CHAR, 0);
 
         assertEquals("val1", h.getAsString(0));
         assertEquals("val1", h.getAsString("head1"));
     }
 
-    public void testReadGoodPermissive3() throws Exception
-    {
+    public void testReadGoodPermissive3() throws Exception {
         Headers h = new Headers();
 
-        String str = "head1: val1\n"
-            + "head2: val2   \r"
-            + "head3: val3   \n"
-            + "\n";
+        String str = "head1: val1\n" + "head2: val2   \r" + "head3: val3   \n" +
+            "\n";
 
-        h.read(getInputStream(str),
-               new HttpURLConnectInternal(),
-               Headers.SINGLE_EOL_CHAR,
-               0);
+        h.read(getInputStream(str), new HttpURLConnectInternal(),
+            Headers.SINGLE_EOL_CHAR, 0);
 
         assertEquals("val1", h.getAsString(0));
         assertEquals("val1", h.getAsString("head1"));
@@ -356,33 +311,24 @@ public class TestHeaders extends HttpTestBase
         assertEquals("val3", h.getAsString("head3"));
     }
 
-    public void testReadBad() throws Exception
-    {
+    public void testReadBad() throws Exception {
         Headers h = new Headers();
 
-        String str = "head1: val1\r\n"
-            + "head2:val2\r\n"
-            + "head3 : val3\r"
-            + "head4: val4   \r\n"
-            + "\r\n";
+        String str = "head1: val1\r\n" + "head2:val2\r\n" + "head3 : val3\r" +
+            "head4: val4   \r\n" + "\r\n";
 
-        try
-        {
+        try {
             h.read(getInputStream(str), new HttpURLConnectInternal());
-        }
-        catch (HttpException ex)
-        {
-            assertTrue("Wrong exception: " + ex.getMessage(), ex.getMessage()
-                    .indexOf("'h'") >= 0);
+        } catch (HttpException ex) {
+            assertTrue("Wrong exception: " + ex.getMessage(),
+                ex.getMessage().indexOf("'h'") >= 0);
         }
     }
 
-    public void testCase() throws Exception
-    {
+    public void testCase() throws Exception {
         Headers h = new Headers();
         h.add("One", "onevaloriginal");
         assertEquals("onevaloriginal", h.getAsString("one"));
         checkText("onevaloriginal", h);
     }
-
 }
