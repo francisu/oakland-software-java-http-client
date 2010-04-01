@@ -5,7 +5,7 @@ In general, if you redistribute this code (subject to the Oakland Software
 License), then you must include the following text files as part of
 your distribution:
 
-INCLUDED_LICENSE
+INCLUDED_LICENSE.txt
 NOTICE.txt
 
 Oakland Software Incorporated Java HTTP Client Binary or Source Code License
