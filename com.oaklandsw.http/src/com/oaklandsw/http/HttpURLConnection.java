@@ -1,9 +1,24 @@
 //
 // Copyright 2002-2006, oakland software, all rights reserved.
 //
-// May not be used or redistributed without specific written
-// permission from oakland software.
-//
+
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ * 
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.oaklandsw.http;
 
 import java.io.ByteArrayInputStream;
@@ -15,7 +30,6 @@ import java.io.InterruptedIOException;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.io.Reader;
-import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.security.cert.Certificate;
@@ -27,7 +41,7 @@ import java.util.zip.InflaterInputStream;
 import javax.net.ssl.SSLPeerUnverifiedException;
 import javax.net.ssl.SSLSocketFactory;
 
-import com.oaklandsw.util.Log;
+import com.oaklandsw.utillog.Log;
 
 import com.oaklandsw.http.cookie.CookieSpec;
 import com.oaklandsw.util.ExposedBufferInputStream;
@@ -662,8 +676,6 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
 
     protected int                      _hdrContentLengthInt;
 
-    private static boolean             _inLicenseCheck;
-
     // Used only for testing purposes
     private static URL                 _testURL;
 
@@ -723,8 +735,6 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
                 resetGlobalState();
 
                 checkConnectionManager();
-
-                initLicense();
             }
         }
         finally
@@ -1079,51 +1089,6 @@ public abstract class HttpURLConnection extends java.net.HttpURLConnection
 
         _inStaticInit--;
 
-    }
-
-    private static void initLicense()
-    {
-        // Do the license check last to make sure we are fully up, because
-        // the license check can cause a use of the HTTP client (in the
-        // case where it needs to get a resource) which we must
-        // allow.
-        if (_inLicenseCheck)
-            return;
-
-        // Do the license check dynamically so we don't need to ship
-        // the license stuff with the source (and those who build from
-        // the source do not have to deal with license issues)
-        ClassLoader cl = HttpURLConnection.class.getClassLoader();
-        Class licClass = null;
-        try
-        {
-            _inLicenseCheck = true;
-            licClass = cl.loadClass("com.oaklandsw.http.HttpLicenseCheck");
-            Object licObject = licClass.newInstance();
-            Method licMethod = licClass.getMethod("checkLicense",
-                                                  new Class[] {});
-            licMethod.invoke(licObject, new Object[] {});
-        }
-        catch (ClassNotFoundException e)
-        {
-            // Ignored, means there is no license check required
-        }
-        catch (RuntimeException e)
-        {
-            // This is a failure in the license check
-            System.err.println(e);
-            e.printStackTrace(System.err);
-            throw new RuntimeException();
-        }
-        catch (Exception e)
-        {
-            // Something else is wrong
-            Util.impossible(e);
-        }
-        finally
-        {
-            _inLicenseCheck = false;
-        }
     }
 
     public HttpURLConnection()

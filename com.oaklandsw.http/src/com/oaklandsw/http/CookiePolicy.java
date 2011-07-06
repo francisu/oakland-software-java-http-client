@@ -28,7 +28,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.oaklandsw.util.Log;
+import com.oaklandsw.utillog.Log;
 
 import com.oaklandsw.http.cookie.CookieSpec;
 import com.oaklandsw.http.cookie.CookieSpecBase;

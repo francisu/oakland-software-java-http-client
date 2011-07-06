@@ -16,9 +16,6 @@
 //
 // Portions Copyright 2006-2007, oakland software, all rights reserved.
 //
-// May not be used or redistributed without specific written
-// permission from oakland software.
-//
 package com.oaklandsw.http.axis2;
 
 import org.apache.axiom.om.OMAttribute;
@@ -44,7 +41,7 @@ import org.apache.axis2.util.Utils;
 import org.apache.axis2.wsdl.WSDLConstants;
 import org.apache.axis2.transport.http.*;
 
-import com.oaklandsw.util.Log;
+import com.oaklandsw.utillog.Log;
 
 import com.oaklandsw.http.Cookie;
 import com.oaklandsw.http.CookieContainer;

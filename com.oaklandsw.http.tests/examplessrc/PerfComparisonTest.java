@@ -8,7 +8,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Properties;
 
-import com.oaklandsw.util.Log;
+import com.oaklandsw.utillog.Log;
 import com.oaklandsw.util.LogUtils;
 
 /**

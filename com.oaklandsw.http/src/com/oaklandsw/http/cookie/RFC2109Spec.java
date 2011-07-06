@@ -24,7 +24,7 @@
 
 package com.oaklandsw.http.cookie;
 
-import com.oaklandsw.util.Log;
+import com.oaklandsw.utillog.Log;
 
 import com.oaklandsw.http.Cookie;
 import com.oaklandsw.http.NameValuePair;

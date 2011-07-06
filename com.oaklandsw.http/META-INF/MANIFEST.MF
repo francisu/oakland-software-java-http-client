@@ -5,15 +5,12 @@ Bundle-Name: Http Plug-in
 Bundle-SymbolicName: com.oaklandsw.http
 Bundle-Version: 2.7.0
 Bundle-Vendor: OAKLANDSW
-Require-Bundle: com.oaklandsw.util.jars,
- com.oaklandsw.util,
- com.oaklandsw.util.log,
- com.oaklandsw.util.log4j,
- com.oaklandsw.http.jars,
+Require-Bundle: com.oaklandsw.http.jars,
  com.oaklandsw.http.external.axis
 Export-Package: com.oaklandsw.http,
  com.oaklandsw.http.axis,
  com.oaklandsw.http.axis2,
  com.oaklandsw.http.cookie,
  com.oaklandsw.http.ntlm,
- com.oaklandsw.https
+ com.oaklandsw.https,
+ com.oaklandsw.util

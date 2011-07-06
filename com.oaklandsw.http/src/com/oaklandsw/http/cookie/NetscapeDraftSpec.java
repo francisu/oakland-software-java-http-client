@@ -31,7 +31,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.text.ParseException;
 
-import com.oaklandsw.util.Log;
+import com.oaklandsw.utillog.Log;
 
 import com.oaklandsw.http.Cookie;
 import com.oaklandsw.http.HeaderElement;

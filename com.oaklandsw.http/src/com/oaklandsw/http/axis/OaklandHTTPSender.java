@@ -1,3 +1,6 @@
+//
+// Portions Copyright 2006, oakland software, all rights reserved.
+//
 /*
  * Copyright 2001-2004 The Apache Software Foundation.
  * 
@@ -13,12 +16,6 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-//
-// Portions Copyright 2006, oakland software, all rights reserved.
-//
-// May not be used or redistributed without specific written
-// permission from oakland software.
-//
 package com.oaklandsw.http.axis;
 
 import org.apache.axis.AxisFault;
@@ -33,7 +30,7 @@ import org.apache.axis.soap.SOAPConstants;
 import org.apache.axis.transport.http.HTTPConstants;
 import org.apache.axis.utils.JavaUtils;
 import org.apache.axis.utils.Messages;
-import com.oaklandsw.util.Log;
+import com.oaklandsw.utillog.Log;
 
 import com.oaklandsw.http.Cookie;
 import com.oaklandsw.http.CookieContainer;

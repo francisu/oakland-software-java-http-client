@@ -22,7 +22,7 @@ import com.oaklandsw.http.AutomaticHttpRetryException;
 import com.oaklandsw.http.Callback;
 import com.oaklandsw.http.NtlmCredential;
 import com.oaklandsw.http.ntlm.Ntlm;
-import com.oaklandsw.util.Log;
+import com.oaklandsw.utillog.Log;
 import com.oaklandsw.util.LogUtils;
 import com.oaklandsw.util.Util;
 

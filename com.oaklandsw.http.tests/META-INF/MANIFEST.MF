@@ -6,12 +6,9 @@ Bundle-SymbolicName: com.oaklandsw.http.tests
 Bundle-Version: 2.6.7
 Bundle-Vendor: OAKLANDSW
 Require-Bundle: com.oaklandsw.http,
- com.oaklandsw.util.jars,
- com.oaklandsw.util,
  org.junit,
  com.oaklandsw.http.jars,
  com.oaklandsw.http.tests.jars,
- com.oaklandsw.build,
  com.oaklandsw.http.external.axis
 Bundle-ClassPath: httpNonObf.jar,
  .

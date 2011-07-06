@@ -3,7 +3,7 @@ import com.oaklandsw.http.Credential;
 import com.oaklandsw.http.HttpUserAgent;
 import com.oaklandsw.http.NtlmCredential;
 import com.oaklandsw.http.UserCredential;
-import com.oaklandsw.util.Log;
+import com.oaklandsw.utillog.Log;
 import com.oaklandsw.util.LogUtils;
 
 public class SampleUserAgent implements HttpUserAgent
