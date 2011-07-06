@@ -1,0 +1,9 @@
+
+syntax: regexp
+^com\.oaklandsw\.http/dist$
+syntax: regexp
+^com\.oaklandsw\.http/javadocs$
+syntax: regexp
+^com\.oaklandsw\.http/http\.jar$
+syntax: regexp
+^com\.oaklandsw\.http/http-signed\.jar$
