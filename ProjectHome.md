@@ -1,0 +1,3 @@
+This was an Oakland Software product for many years and was originally derived from the Apache Jakarta HTTP client circa 2002. In addition to many bug fixes and more tests, it was heavily adapted to be plug compatible with the JRE implementation. Most of its features are now in other Java HTTP client implementations, so this software was discontinued as a commercial product. There is a pipelining feature that was developed that might be of interest.
+
+There is a very sophisticated test suite that requires a lot of setup and windows machines and various windows software to make sure the NTLM support is working correctly.
